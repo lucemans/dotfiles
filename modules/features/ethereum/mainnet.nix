@@ -181,6 +181,7 @@
             {
               name = "Prometheus";
               type = "prometheus";
+              uid = "prometheus";
               access = "proxy";
               url = "http://127.0.0.1:9090";
               isDefault = true;
@@ -188,6 +189,7 @@
             {
               name = "Loki";
               type = "loki";
+              uid = "loki";
               access = "proxy";
               url = "http://127.0.0.1:3100";
             }
