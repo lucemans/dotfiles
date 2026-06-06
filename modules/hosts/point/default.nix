@@ -11,19 +11,7 @@
         self.nixosModules.pointDisko
         self.nixosModules.environment
         self.nixosModules.pointPhysical
-
-        (
-          { pkgs, ... }:
-          {
-            environment.systemPackages = (
-              with inputs.ethereum-nix.packages.${pkgs.system};
-              [
-                lighthouse
-                reth
-              ]
-            );
-          }
-        )
+        self.nixosModules.ethereumMainnet
       ];
     };
   };
