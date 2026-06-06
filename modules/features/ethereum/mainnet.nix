@@ -192,6 +192,26 @@
               url = "http://127.0.0.1:3100";
             }
           ];
+          dashboards.settings.providers = [
+            {
+              name = "Reth";
+              orgId = 1;
+              folder = "Reth";
+              type = "file";
+              disableDeletion = false;
+              editable = true;
+              options.path = ./monitoring/dashboards/reth;
+            }
+            {
+              name = "Lighthouse";
+              orgId = 1;
+              folder = "Lighthouse";
+              type = "file";
+              disableDeletion = false;
+              editable = true;
+              options.path = ./monitoring/dashboards/lighthouse;
+            }
+          ];
         };
       };
 
