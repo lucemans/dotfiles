@@ -36,7 +36,7 @@
         "builtIn": 1,
         "datasource": {
           "type": "grafana",
-          "uid": "-- Grafana --"
+          "uid": "grafana"
         },
         "enable": true,
         "hide": true,

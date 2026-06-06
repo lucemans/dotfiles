@@ -3956,7 +3956,7 @@
         "current": {},
         "datasource": {
           "type": "prometheus",
-          "uid": "${datasource}"
+          "uid": "prometheus"
         },
         "definition": "label_values(reth_info,$instance_label)",
         "hide": 0,
