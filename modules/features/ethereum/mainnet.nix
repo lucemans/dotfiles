@@ -177,23 +177,36 @@
 
         provision = {
           enable = true;
-          datasources.settings.datasources = [
-            {
-              name = "Prometheus";
-              type = "prometheus";
-              uid = "prometheus";
-              access = "proxy";
-              url = "http://127.0.0.1:9090";
-              isDefault = true;
-            }
-            {
-              name = "Loki";
-              type = "loki";
-              uid = "loki";
-              access = "proxy";
-              url = "http://127.0.0.1:3100";
-            }
-          ];
+          datasources.settings = {
+            apiVersion = 1;
+            deleteDatasources = [
+              {
+                name = "Prometheus";
+                orgId = 1;
+              }
+              {
+                name = "Loki";
+                orgId = 1;
+              }
+            ];
+            datasources = [
+              {
+                name = "Prometheus";
+                type = "prometheus";
+                uid = "prometheus";
+                access = "proxy";
+                url = "http://127.0.0.1:9090";
+                isDefault = true;
+              }
+              {
+                name = "Loki";
+                type = "loki";
+                uid = "loki";
+                access = "proxy";
+                url = "http://127.0.0.1:3100";
+              }
+            ];
+          };
           dashboards.settings.providers = [
             {
               name = "Reth";
