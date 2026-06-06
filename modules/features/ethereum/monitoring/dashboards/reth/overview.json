@@ -12035,6 +12035,25 @@
   "templating": {
     "list": [
       {
+        "hide": 2,
+        "label": "Instance Label",
+        "name": "instance_label",
+        "query": "job",
+        "skipUrlSync": true,
+        "type": "constant"
+      },
+      {
+        "current": {},
+        "includeAll": false,
+        "label": "Datasource",
+        "name": "datasource",
+        "options": [],
+        "query": "prometheus",
+        "refresh": 1,
+        "regex": "",
+        "type": "datasource"
+      },
+      {
         "current": {},
         "datasource": {
           "type": "prometheus",
@@ -12054,37 +12073,6 @@
         "regex": "",
         "sort": 1,
         "type": "query"
-      },
-      {
-        "current": {},
-        "includeAll": false,
-        "label": "Datasource",
-        "name": "datasource",
-        "options": [],
-        "query": "prometheus",
-        "refresh": 1,
-        "regex": "",
-        "type": "datasource"
-      },
-      {
-        "current": {
-          "value": "${VAR_INSTANCE_LABEL}",
-          "text": "${VAR_INSTANCE_LABEL}",
-          "selected": false
-        },
-        "hide": 2,
-        "label": "Instance Label",
-        "name": "instance_label",
-        "query": "${VAR_INSTANCE_LABEL}",
-        "skipUrlSync": true,
-        "type": "constant",
-        "options": [
-          {
-            "value": "${VAR_INSTANCE_LABEL}",
-            "text": "${VAR_INSTANCE_LABEL}",
-            "selected": false
-          }
-        ]
       }
     ]
   },

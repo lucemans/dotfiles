@@ -9,3 +9,5 @@ git checkout main
 cd etc/grafana/dashboards
 git checkout main
 ```
+
+migrated $DS_PROMETHEUS to hardcoded `prometheus` datasource uid

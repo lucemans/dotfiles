@@ -1327,6 +1327,14 @@
   "templating": {
     "list": [
       {
+        "hide": 2,
+        "label": "Instance Label",
+        "name": "instance_label",
+        "query": "job",
+        "skipUrlSync": true,
+        "type": "constant"
+      },
+      {
         "current": {},
         "includeAll": false,
         "label": "Datasource",
@@ -1375,26 +1383,6 @@
         "refresh": 1,
         "regex": "",
         "type": "query"
-      },
-      {
-        "hide": 2,
-        "label": "Instance Label",
-        "name": "instance_label",
-        "query": "${VAR_INSTANCE_LABEL}",
-        "skipUrlSync": true,
-        "type": "constant",
-        "current": {
-          "value": "${VAR_INSTANCE_LABEL}",
-          "text": "${VAR_INSTANCE_LABEL}",
-          "selected": false
-        },
-        "options": [
-          {
-            "value": "${VAR_INSTANCE_LABEL}",
-            "text": "${VAR_INSTANCE_LABEL}",
-            "selected": false
-          }
-        ]
       }
     ]
   },
