@@ -11,7 +11,6 @@
   }: let
     neovim = pkgs.neovim;
   in {
-    # Kitty terminal running the wrapped dev shell (fish + CLI tools).
     packages.terminal =
       (inputs.wrappers.wrapperModules.kitty.apply {
         inherit pkgs;
@@ -19,10 +18,9 @@
         shell = lib.getExe self'.packages.environment;
       }).wrapper;
 
-    # Primary dev shell: fish with nix/CLI tooling on PATH.
     packages.environment = inputs.wrappers.lib.wrapPackage {
       inherit pkgs;
-      package = self'.packages.fish;
+      package = self'.packages.zsh;
       runtimeInputs = [
         # nix
         pkgs.nil
@@ -90,7 +88,7 @@
       };
 
       users.users.luc = {
-        shell = lib.mkForce "${environment}/bin/fish";
+        shell = lib.mkForce "${environment}/bin/zsh";
       };
     };
 }

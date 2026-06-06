@@ -131,36 +131,36 @@
 
       environment.etc."alloy/ethereum.alloy".text = ''
         loki.source.journal "systemd" {
-                max_age = "24h"
+          max_age = "24h"
 
-                labels = {
-                        job = "systemd-journal",
-                        host = "v3x-point",
-                }
+          labels = {
+                  job = "systemd-journal",
+                  host = "v3x-point",
+          }
 
-        relabel_rules = loki.relabel.journal.rules
-                forward_to = [loki.write.local.receiver]
-        }
+          relabel_rules = loki.relabel.journal.rules
+                  forward_to = [loki.write.local.receiver]
+          }
 
-        loki.relabel "journal" {
-                rule {
-                        source_labels = ["__journal__systemd_unit"]
-                        target_label = "unit"
-                }
+          loki.relabel "journal" {
+                  rule {
+                          source_labels = ["__journal__systemd_unit"]
+                          target_label = "unit"
+                  }
 
-                rule {
-                        source_labels = ["__journal__hostname"]
-                        target_label = "host"
-                }
+                  rule {
+                          source_labels = ["__journal__hostname"]
+                          target_label = "host"
+                  }
 
-                forward_to = []
-        }
+                  forward_to = []
+          }
 
-        loki.write "local" {
-                endpoint {
-                        url = "http://127.0.0.1:3100/loki/api/v1/push"
-                }
-        }
+          loki.write "local" {
+                  endpoint {
+                          url = "http://127.0.0.1:3100/loki/api/v1/push"
+                  }
+          }
       '';
 
       services.grafana = {
