@@ -55,6 +55,7 @@
         scrapeConfigs = [
           {
             job_name = "reth";
+            scrape_interval = "15s";
             static_configs = [
               {
                 targets = [ "127.0.0.1:6060" ];
@@ -64,9 +65,9 @@
               }
             ];
           }
-
           {
             job_name = "lighthouse";
+            scrape_interval = "15s";
             static_configs = [
               {
                 targets = [ "127.0.0.1:5054" ];
