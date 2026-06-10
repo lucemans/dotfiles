@@ -57,8 +57,28 @@
           fastfetch
           zed-editor
           gitkraken
-          signal-desktop
           opencode
+
+          sops
+          age
+          jq
+          gnupg
+
+          signal-desktop
+          telegram-desktop
+          mattermost-desktop
+
+          (discord.override {
+            withOpenASAR = true;
+            withVencord = true;
+          })
+
+          thunderbird
+          prismlauncher
+          rpi-imager
+
+          obs-studio
+          vlc
         ];
       };
 

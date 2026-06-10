@@ -1,7 +1,7 @@
 { self, inputs, ... }:
 {
   flake.nixosModules.desktop =
-    { config, pkgs, lib, ... }:
+    { config, pkgs, lib, ... }: let nixosConfig = config; in
   {
     imports = [
       inputs.home-manager.nixosModules.home-manager
@@ -33,12 +33,54 @@
 
     home-manager.sharedModules = [
       inputs.plasma-manager.homeModules.plasma-manager
+      inputs.sops-nix.homeManagerModules.sops
     ];
 
     home-manager.users.luc =
-      { self, pkgs, lib, ... }:
+      { self, pkgs, lib, config, ... }:
       {
-        home.stateVersion = config.system.stateVersion;
+        home = {
+          packages = with pkgs; [];
+
+          username = "luc";
+          homeDirectory = "/home/luc";
+
+          stateVersion = nixosConfig.system.stateVersion;
+        };
+
+        sops = {
+          age.keyFile = "/home/luc/.config/sops/age/keys.txt";
+          defaultSopsFile = ../secrets/secrets.yaml;
+          secrets = {
+            ssh-public-key = {
+              path = "/home/luc/.ssh/id_ed25519.pub";
+              mode = "0644";
+            };
+            ssh-private-key = {
+              path = "/home/luc/.ssh/id_ed25519";
+              mode = "0600";
+            };
+            crates-io-token = { };
+            npm-token = { };
+          };
+          templates = {
+            cargo-credentials = {
+              content = ''
+                [registry]
+                token = "${config.sops.placeholder.crates-io-token}"
+              '';
+              path = "/home/luc/.cargo/credentials.toml";
+              mode = "0600";
+            };
+            npmrc = {
+              content = ''
+                //registry.npmjs.org/:_authToken=${config.sops.placeholder.npm-token}
+              '';
+              path = "/home/luc/.npmrc";
+              mode = "0600";
+            };
+          };
+        };
 
         # home.activation.dolphinDevelop = lib.hm.dag.entryAfter ["writeBoundary"] ''
         #   path="$HOME/.local/share/user-places.xbel"
@@ -79,13 +121,25 @@
           enable = true;
           overrideConfig = true;
 
-          workspace.wallpaper = "${self.wallpaper}";
+          workspace = {
+            wallpaper = "${self.wallpaper}";
+            colorScheme = "BreezeDark";
+            theme = "breeze-dark";
+            tooltipDelay = 3;
+          };
 
-          # panels = [
-          #   {
-          #     location = "top";
-          #     # One panel on the primary screen; set a different index on fighter if needed.
-          #     screen = 0;
+          hotkeys.commands."launch-konsole" = {
+            name = "Launch Konsole";
+            key = "Alt+K";
+            command = "konsole";
+          };
+
+          panels = [
+            {
+              location = "top";
+              screen = 2;
+              height = 32;
+              floating = false;
           #     widgets = [
           #       {
           #         kickoff = {
@@ -99,8 +153,8 @@
           #       "org.kde.plasma.digitalclock"
           #       "org.kde.plasma.showdesktop"
           #     ];
-          #   }
-          # ];
+            }
+          ];
         };
 
         programs.git = {
