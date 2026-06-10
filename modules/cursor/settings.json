@@ -1,0 +1,243 @@
+{
+    "tabnine.experimentalAutoImports": true,
+    "window.titleBarStyle": "custom",
+    "[typescriptreact]": {
+        "editor.defaultFormatter": "vscode.typescript-language-features"
+    },
+    "typescript.updateImportsOnFileMove.enabled": "always",
+    "editor.fontFamily": "'Hack FC Ligatured', 'Fira Code', 'Hack', 'Droid Sans Mono', 'Comic Sans MS', 'monospace', monospace, 'Droid Sans Fallback'",
+    "editor.fontLigatures": true,
+    "[typescript]": {
+        "editor.defaultFormatter": "vscode.typescript-language-features"
+    },
+    "editor.snippetSuggestions": "none",
+    "editor.minimap.enabled": false,
+    "breadcrumbs.enabled": true,
+    "editor.renderWhitespace": "none",
+    "editor.renderControlCharacters": false,
+    "git.enableSmartCommit": true,
+    "explorer.confirmDragAndDrop": false,
+    "C_Cpp.updateChannel": "Insiders",
+    "terminal.integrated.shell.linux": "/bin/bash",
+    "[javascript]": {
+        "editor.defaultFormatter": "vscode.typescript-language-features"
+    },
+    "[rust]": {
+        "editor.defaultFormatter": "rust-lang.rust-analyzer"
+    },
+    "[json]": {
+        "editor.defaultFormatter": "vscode.json-language-features"
+    },
+    "[scss]": {
+        "editor.defaultFormatter": "sibiraj-s.vscode-scss-formatter"
+    },
+    "[html]": {
+        "editor.defaultFormatter": "vscode.html-language-features"
+    },
+    "[jsonc]": {
+        "editor.defaultFormatter": "vscode.json-language-features"
+    },
+    "workbench.editorAssociations": {
+        "*.ipynb": "jupyter.notebook.ipynb"
+    },
+    "editor.cursorBlinking": "expand",
+    "liveServer.settings.donotShowInfoMsg": true,
+    "[yaml]": {
+        "editor.defaultFormatter": "redhat.vscode-yaml"
+    },
+    "javascript.updateImportsOnFileMove.enabled": "always",
+    "workbench.settings.enableNaturalLanguageSearch": false,
+    "[css]": {
+        "editor.defaultFormatter": "sibiraj-s.vscode-scss-formatter"
+    },
+    "liveshare.anonymousGuestApproval": "accept",
+    "redhat.telemetry.enabled": false,
+    "warmUp.changeCount": "15",
+    "warmUp.changeTypingMode": "code snippets",
+    "i18n-ally.displayLanguage": "en",
+    "svelte.enable-ts-plugin": true,
+    "liveshare.presence": true,
+    "prettier.tabWidth": 4,
+    "prettier.trailingComma": "all",
+    "bracketPairColorizer.depreciation-notice": false,
+    "[vue]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[markdown]": {
+        "editor.defaultFormatter": "yzhang.markdown-all-in-one"
+    },
+    "editor.linkedEditing": true,
+    "Lua.telemetry.enable": false,
+    "solidity.packageDefaultDependenciesContractsDirectory": "src",
+    "solidity.packageDefaultDependenciesDirectory": "lib",
+    "workbench.startupEditor": "none",
+    "liveshare.languages.allowGuestCommandControl": true,
+    "git.autofetch": true,
+    "liveshare.publishWorkspaceInfo": true,
+    "[xml]": {
+        "editor.defaultFormatter": "redhat.vscode-xml"
+    },
+    "hardhat.telemetry": false,
+    "[solidity]": {
+        "editor.defaultFormatter": "JuanBlanco.solidity"
+    },
+    "svelte.plugin.svelte.note-new-transformation": false,
+    "workbench.editor.labelFormat": "short",
+    "editor.inlineSuggest.enabled": true,
+    "github.copilot.enable": {
+        "*": true,
+        "plaintext": false,
+        "markdown": true,
+        "scminput": false,
+        "yaml": true,
+        "typescript": true
+    },
+    "cSpell.userWords": [
+        "abigen",
+        "ccip",
+        "Cheatsheet",
+        "DNSSEC",
+        "ensdomains",
+        "ensip",
+        "ensips",
+        "ensjs",
+        "entrancy",
+        "ETHCC",
+        "fastentry",
+        "Fastify",
+        "gaslessly",
+        "gskril",
+        "ICANN",
+        "Kampen",
+        "keycloak",
+        "kohaku",
+        "launchy",
+        "lucemans",
+        "moonlander",
+        "multicall",
+        "Multichain",
+        "Multicoin",
+        "Ntfy",
+        "ntfys",
+        "Offchain",
+        "openlv",
+        "opentelemetry",
+        "organisation",
+        "paho",
+        "poap",
+        "Provejs",
+        "railgun",
+        "Reentrancy",
+        "reqwest",
+        "restic",
+        "Sadaf",
+        "safewallet",
+        "SIWE",
+        "smoldapp",
+        "solady",
+        "tanstack",
+        "tlds",
+        "Unshield",
+        "utoipa",
+        "viem",
+        "wagmi",
+        "xlabs",
+        "XMRP",
+        "zcount"
+    ],
+    "[javascriptreact]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "window.dialogStyle": "custom",
+    "[python]": {
+        "editor.formatOnType": true
+    },
+    "solidity.telemetry": false,
+    "errorLens.excludeBySource": [
+        "ts(2503)"
+    ],
+    // "typescript.inlayHints.functionLikeReturnTypes.enabled": true,
+    // "typescript.inlayHints.parameterNames.enabled": "all",
+    // "typescript.inlayHints.variableTypes.enabled": true,
+    // "typescript.inlayHints.propertyDeclarationTypes.enabled": true,
+    // "typescript.inlayHints.parameterTypes.enabled": true,
+    "rust-analyzer.check.command": "clippy",
+    "mdx.experimentalLanguageServer": true,
+    "explorer.excludeGitIgnore": true,
+    "python.analysis.extraPaths": [
+        "/home/luc/.vscode/extensions/continue.continue-0.0.413-linux-x64"
+    ],
+    "python.autoComplete.extraPaths": [
+        "/home/luc/.vscode/extensions/continue.continue-0.0.413-linux-x64"
+    ],
+    "window.zoomLevel": 1,
+    "workbench.iconTheme": "vscode-icons",
+    "[mdx]": {
+        "editor.defaultFormatter": "unifiedjs.vscode-mdx"
+    },
+    "cSpell.enableFiletypes": [
+        "mdx"
+    ],
+    "luc-disabled-editor.tokenColorCustomizations": {
+        "comments": "#FF9900",
+        "functions": "#569AFF",
+        "keywords": "#B86EDD",
+        "strings": "#F6A93C",
+        "types": "#E34631",
+        "variables": "#FF0099"
+    },
+    "supermaven.enable": {
+        "*": true
+    },
+    "cursor.cpp.disabledLanguages": [
+        "plaintext",
+        "scminput"
+    ],
+    "animations.Enabled": true,
+    "vscode_custom_css.imports": [],
+    "animations.Install-Method": "Custom UI Style",
+    "custom-ui-style.external.imports": [
+        "file:///home/luc/.cursor/extensions/brandonkirbyson.vscode-animations-2.0.7/dist/updateHandler.js"
+    ],
+    "js/ts.implicitProjectConfig.checkJs": true,
+    "window.customTitleBarVisibility": "auto",
+    "workbench.panel.defaultLocation": "bottom",
+    "firedbg.showWelcome": false,
+    "update.releaseTrack": "dev",
+    "cursor.composer.shouldAllowCustomModes": true,
+    "terminal.integrated.windowsEnableConpty": false,
+    "terminal.integrated.gpuAcceleration": "off",
+    "dev.containers.gpuAvailability": "none",
+    "extensions.autoUpdate": false,
+    "git.blame.editorDecoration.enabled": true,
+    "files.associations": {
+        "*.yaml": "yaml"
+    },
+    "cursor.terminal.usePreviewBox": true,
+    "cursor.composer.queueMessageDefaultBehavior": "queue",
+    "workbench.colorTheme": "GitHub Light",
+    "tailwindCSS.classFunctions": [
+        "cva",
+        "clsx",
+        "cn",
+        "tv"
+    ],
+    "workbench.editor.enablePreview": false,
+    "update.mode": "silentlyApplyOnQuit",
+    "terminal.integrated.automationProfile.linux": {},
+    "terminal.integrated.defaultProfile.linux": "zsh",
+    "yaml.schemas": {
+        "https://json.schemastore.org/traefik-v3.json": [
+            "traefik.yaml",
+            "traefik.yml",
+            "**/traefik.yaml",
+            "**/traefik.yml",
+        ],
+        "https://www.schemastore.org/traefik-v3-file-provider.json": [
+            "provider-*.yml"
+        ]
+    },
+    "cursor.cpp.enablePartialAccepts": true,
+    "window.autoDetectColorScheme": false,
+    "workbench.agentsWindowButton.enabled": false
+}

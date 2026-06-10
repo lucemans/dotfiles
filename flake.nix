@@ -6,6 +6,7 @@
     disko.inputs.nixpkgs.follows = "nixpkgs";
 
     flake-parts.url = "github:hercules-ci/flake-parts";
+    import-tree.url = "github:vic/import-tree";
 
     preservation.url = "github:nix-community/preservation";
 
@@ -37,27 +38,9 @@
       systems = ["x86_64-linux"];
 
       imports = [
-        # hosts - fighter
-        ./hosts/fighter/default.nix
-        ./hosts/fighter/configuration.nix
-        ./hosts/fighter/hardware-configuration.nix
-        ./hosts/fighter/thermal.nix
-        # hosts - point
-        ./hosts/point/default.nix
-        ./hosts/point/configuration.nix
-        ./hosts/point/disko.nix
-        ./hosts/point/hardware-configuration.nix
-        # features
-        ./modules/theme/theme.nix
-        ./modules/zsh.nix
-        ./modules/kitty.nix
-        ./modules/plasma-vm.nix
-        ./modules/develop.nix
-        ./modules/gaming.nix
-        ./modules/nix.nix
-        ./modules/desktop.nix
-        ./modules/environment.nix
-        ./modules/ethereum/mainnet.nix
+        inputs.home-manager.flakeModules.home-manager
+        (inputs.import-tree ./hosts)
+        (inputs.import-tree ./modules)
       ];
     };
 }
