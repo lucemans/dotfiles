@@ -93,6 +93,13 @@
 
           obs-studio
           vlc
+
+          nil
+          nixd
+          statix
+          alejandra
+          manix
+          nix-inspect
         ];
       };
 

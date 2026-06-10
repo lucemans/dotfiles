@@ -54,6 +54,7 @@
         ./modules/features/plasma-vm.nix
         ./modules/features/develop.nix
         ./modules/features/gaming.nix
+        ./modules/features/nix.nix
         ./modules/features/desktop.nix
         ./modules/features/environment.nix
         ./modules/features/ethereum/mainnet.nix
