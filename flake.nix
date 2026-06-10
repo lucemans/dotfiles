@@ -38,26 +38,26 @@
 
       imports = [
         # hosts - fighter
-        ./modules/hosts/fighter/default.nix
-        ./modules/hosts/fighter/configuration.nix
-        ./modules/hosts/fighter/hardware-configuration.nix
-        ./modules/hosts/fighter/thermal.nix
+        ./hosts/fighter/default.nix
+        ./hosts/fighter/configuration.nix
+        ./hosts/fighter/hardware-configuration.nix
+        ./hosts/fighter/thermal.nix
         # hosts - point
-        ./modules/hosts/point/default.nix
-        ./modules/hosts/point/configuration.nix
-        ./modules/hosts/point/disko.nix
-        ./modules/hosts/point/hardware-configuration.nix
+        ./hosts/point/default.nix
+        ./hosts/point/configuration.nix
+        ./hosts/point/disko.nix
+        ./hosts/point/hardware-configuration.nix
         # features
-        ./modules/features/theme/theme.nix
-        ./modules/features/zsh.nix
-        ./modules/features/kitty.nix
-        ./modules/features/plasma-vm.nix
-        ./modules/features/develop.nix
-        ./modules/features/gaming.nix
-        ./modules/features/nix.nix
-        ./modules/features/desktop.nix
-        ./modules/features/environment.nix
-        ./modules/features/ethereum/mainnet.nix
+        ./modules/theme/theme.nix
+        ./modules/zsh.nix
+        ./modules/kitty.nix
+        ./modules/plasma-vm.nix
+        ./modules/develop.nix
+        ./modules/gaming.nix
+        ./modules/nix.nix
+        ./modules/desktop.nix
+        ./modules/environment.nix
+        ./modules/ethereum/mainnet.nix
       ];
     };
 }
