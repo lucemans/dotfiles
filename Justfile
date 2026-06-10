@@ -7,3 +7,7 @@ vm:
 switch-point:
   nix flake update
   nixos-rebuild switch --flake /etc/nixos#point
+
+switch-fighter:
+  nix flake update
+  nixos-rebuild switch --flake /etc/nixos#fighter
