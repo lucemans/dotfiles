@@ -12,7 +12,7 @@
         self.nixosModules.fighter
         # self.nixosModules.environment
         # self.nixosModules.develop
-        # self.nixosModules.desktop
+        self.nixosModules.desktop
         self.nixosModules.fighterPhysical
       ];
     };

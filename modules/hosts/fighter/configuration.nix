@@ -20,9 +20,6 @@
       networking.hostName = "v3x-fighter";
       networking.networkmanager.enable = true;
       time.timeZone = "Europe/Amsterdam";
-
-      services.displayManager.sddm.enable = true;
-      services.desktopManager.plasma6.enable = true;
       nixpkgs.config.allowUnfree = true;
       services.xserver = {
       	enable = true;
@@ -63,12 +60,6 @@
           signal-desktop
           opencode
         ];
-      };
-
-      home-manager = {
-        useGlobalPkgs = true;
-        useUserPackages = true;
-        users.luc = import ./home.nix;
       };
 
       environment.systemPackages = with pkgs; [
