@@ -23,7 +23,8 @@
     #   enable32Bit = lib.mkDefault true;
     # };
 
-    # environment.sessionVariables.NIXOS_OZONE_WL = "1";
+    # https://wiki.nixos.org/wiki/Chromium#Enabling_native_Wayland_support
+    environment.sessionVariables.NIXOS_OZONE_WL = "1";
 
     environment.etc."plasma/start-icon.jpg".source = self.startIcon;
 
@@ -166,6 +167,32 @@
             };
             init.defaultBranch = "master";
           };
+        };
+
+        programs.brave = {
+          enable = true;
+          package = pkgs.ungoogled-chromium;
+          extensions = let
+                    createChromiumExtensionFor = browserVersion: { id, sha256, version }:
+                      {
+                        inherit id;
+                        crxPath = builtins.fetchurl {
+                          url = "https://clients2.google.com/service/update2/crx?response=redirect&acceptformat=crx2,crx3&prodversion=${browserVersion}&x=id%3D${id}%26installsource%3Dondemand%26uc";
+                          name = "${id}.crx";
+                          inherit sha256;
+                        };
+                        inherit version;
+                      };
+                    createChromiumExtension = createChromiumExtensionFor (lib.versions.major pkgs.ungoogled-chromium.version);
+                  in
+                  [
+                    (createChromiumExtension {
+                      # ublock origin
+                      id = "cjpalhdlnbpafiamejdnhcphjbkeiagm";
+                      sha256 = "sha256:071w6aivwfdbjgkc40ydm1h6mjwljjdg568d9bcbkvisxjqmz7al";
+                      version = "1.37.2";
+                    })
+                  ];
         };
 
         programs.firefox = {

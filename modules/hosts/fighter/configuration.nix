@@ -53,11 +53,14 @@
         ];
         packages = with pkgs; [
           tree
-          firefox
           fastfetch
           zed-editor
           gitkraken
           opencode
+
+          firefox
+          ungoogled-chromium
+          brave
 
           sops
           age
@@ -72,6 +75,9 @@
             withOpenASAR = true;
             withVencord = true;
           })
+
+          tailscale
+          netbird
 
           thunderbird
           prismlauncher
