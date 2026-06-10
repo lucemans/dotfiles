@@ -1,9 +1,12 @@
-{ self, inputs, ... }:
 {
+  self,
+  inputs,
+  ...
+}: {
   flake.nixosConfigurations = {
     point = inputs.nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
-      specialArgs = { inherit inputs self; };
+      specialArgs = {inherit inputs self;};
       modules = [
         inputs.ethereum-nix.nixosModules.default
         inputs.disko.nixosModules.disko

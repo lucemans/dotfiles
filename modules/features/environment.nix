@@ -71,24 +71,28 @@
     };
   };
 
-  flake.nixosModules.environment =
-    { config, pkgs, self, lib, ... }:
-    let
-      inherit (self.packages.${pkgs.system}) environment terminal;
-      editor = lib.getExe pkgs.neovim;
-    in {
-      environment.systemPackages = [
-        terminal
-        environment
-      ];
+  flake.nixosModules.environment = {
+    config,
+    pkgs,
+    self,
+    lib,
+    ...
+  }: let
+    inherit (self.packages.${pkgs.system}) environment terminal;
+    editor = lib.getExe pkgs.neovim;
+  in {
+    environment.systemPackages = [
+      terminal
+      environment
+    ];
 
-      environment.sessionVariables = {
-        EDITOR = editor;
-        TERMINAL = lib.getExe terminal;
-      };
-
-      users.users.luc = {
-        shell = lib.mkForce "${environment}/bin/zsh";
-      };
+    environment.sessionVariables = {
+      EDITOR = editor;
+      TERMINAL = lib.getExe terminal;
     };
+
+    users.users.luc = {
+      shell = lib.mkForce "${environment}/bin/zsh";
+    };
+  };
 }

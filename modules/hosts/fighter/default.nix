@@ -1,9 +1,12 @@
-{ self, inputs, ... }:
 {
+  self,
+  inputs,
+  ...
+}: {
   flake.nixosConfigurations = {
     fighter = inputs.nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
-      specialArgs = { inherit inputs self; };
+      specialArgs = {inherit inputs self;};
       modules = [
         # inputs.disko.nixosModules.disko
         # inputs.preservation.nixosModules.default
