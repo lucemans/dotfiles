@@ -41,6 +41,7 @@
         ./modules/hosts/fighter/default.nix
         ./modules/hosts/fighter/configuration.nix
         ./modules/hosts/fighter/hardware-configuration.nix
+        ./modules/hosts/fighter/thermal.nix
         # hosts - point
         ./modules/hosts/point/default.nix
         ./modules/hosts/point/configuration.nix

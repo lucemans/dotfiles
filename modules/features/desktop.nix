@@ -169,17 +169,17 @@
           };
         };
 
-        programs.brave = {
+        programs.chromium = {
           enable = true;
           package = pkgs.ungoogled-chromium;
           extensions = let
-                    createChromiumExtensionFor = browserVersion: { id, sha256, version }:
+                    createChromiumExtensionFor = browserVersion: { id, hash, version }:
                       {
                         inherit id;
-                        crxPath = builtins.fetchurl {
+                        crxPath = pkgs.fetchurl {
                           url = "https://clients2.google.com/service/update2/crx?response=redirect&acceptformat=crx2,crx3&prodversion=${browserVersion}&x=id%3D${id}%26installsource%3Dondemand%26uc";
                           name = "${id}.crx";
-                          inherit sha256;
+                          inherit hash;
                         };
                         inherit version;
                       };
@@ -189,8 +189,14 @@
                     (createChromiumExtension {
                       # ublock origin
                       id = "cjpalhdlnbpafiamejdnhcphjbkeiagm";
-                      sha256 = "sha256:071w6aivwfdbjgkc40ydm1h6mjwljjdg568d9bcbkvisxjqmz7al";
-                      version = "1.37.2";
+                      hash = "sha256-VJ1fsew67rnYSg2Z8pqUlMtqYKjNA8Lmk6s5vqMyPBw=";
+                      version = "1.71.0";
+                    })
+                    (createChromiumExtension {
+                      # bitwarden
+                      id = "nngceckbapebfimnlniiiahkandclblb";
+                      hash = "sha256-xRK2iX2ntV6N/PQh/KcK10FoNsKV44B+UtyqvFCvelI=";
+                      version = "2026.5.1";
                     })
                   ];
         };

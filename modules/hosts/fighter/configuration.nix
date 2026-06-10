@@ -24,6 +24,10 @@
       services.xserver = {
       	enable = true;
       	videoDrivers = [ "nvidia" ];
+       xkb = {
+        layout = "us";
+        options = "caps:super";
+       };
       };
       hardware.graphics.enable = true;
       hardware.nvidia = {
@@ -44,6 +48,10 @@
       	pulse.enable = true;
       };
       services.printing.enable = true;
+
+      services.tailscale = {
+        enable = true;
+      };
 
       users.users.luc = {
         isNormalUser = true;

@@ -15,6 +15,7 @@
         self.nixosModules.desktop
         self.nixosModules.gaming
         self.nixosModules.fighterPhysical
+        self.nixosModules.fighterThermal
       ];
     };
   };
