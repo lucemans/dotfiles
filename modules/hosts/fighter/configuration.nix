@@ -61,7 +61,14 @@
           zed-editor
           gitkraken
           signal-desktop
+          opencode
         ];
+      };
+
+      home-manager = {
+        useGlobalPkgs = true;
+        useUserPackages = true;
+        users.luc = import ./home.nix;
       };
 
       environment.systemPackages = with pkgs; [
