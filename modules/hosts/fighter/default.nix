@@ -13,6 +13,7 @@
         # self.nixosModules.environment
         # self.nixosModules.develop
         self.nixosModules.desktop
+        self.nixosModules.gaming
         self.nixosModules.fighterPhysical
       ];
     };
