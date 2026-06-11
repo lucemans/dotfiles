@@ -70,6 +70,7 @@
           age
           jq
           gnupg
+          pinentry-qt
 
           signal-desktop
           telegram-desktop
@@ -136,6 +137,10 @@
             mode = "0600";
           };
         };
+      };
+
+      programs.gpg = {
+        enable = true;
       };
 
       services.gpg-agent = {
@@ -233,6 +238,7 @@
     environment.systemPackages = with pkgs; [
       kdePackages.dolphin
       kdePackages.kate
+      pkgs.pinentry-qt
     ];
   };
 }
