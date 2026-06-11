@@ -23,7 +23,6 @@
       enable = true;
       wayland.enable = true;
     };
-
     # services.xserver.enable = lib.mkDefault true;
 
     # security.polkit.enable = true;
@@ -139,6 +138,11 @@
         };
       };
 
+      services.gpg-agent = {
+        enable = true;
+        pinentry.package = pkgs.pinentry-qt;
+      };
+
       programs.plasma = {
         enable = true;
         overrideConfig = true;
@@ -181,7 +185,7 @@
 
       # home.activation.dolphinDevelop = lib.hm.dag.entryAfter ["writeBoundary"] ''
       #   path="$HOME/.local/share/user-places.xbel"
-      #   url="file:///develop"
+      #   url="file:///home/luc/dev"
       #   title="Development"
       #   icon="folder-development"
 
@@ -201,7 +205,7 @@
       #   BOOKMARK=${
       #     lib.escapeShellArg (
       #       builtins.toJSON {
-      #         "+@href" = "file:///develop";
+      #         "+@href" = "file:///home/luc/dev";
       #         title = "Development";
       #         info.metadata = [
       #           {

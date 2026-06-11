@@ -14,7 +14,7 @@
         inputs.sops-nix.nixosModules.sops
         self.nixosModules.fighter
         # self.nixosModules.environment
-        # self.nixosModules.develop
+        self.nixosModules.develop
         self.nixosModules.desktop
         self.nixosModules.gaming
         self.nixosModules.nix
