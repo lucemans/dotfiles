@@ -64,6 +64,8 @@
           gitkraken
           selfpkgs.agentsview
           selfpkgs.agentsview-desktop
+          selfpkgs.ethereum-price-plasmoid
+          selfpkgs.frame-sh-wayland
           code-cursor
 
           sops
@@ -80,6 +82,8 @@
             withOpenASAR = true;
             withVencord = true;
           })
+
+          kicad
 
           tailscale
           netbird
@@ -148,6 +152,15 @@
         pinentry.package = pkgs.pinentry-qt;
       };
 
+      xdg.portal = {
+        enable = true;
+        extraPortals = [
+          pkgs.kdePackages.xdg-desktop-portal-kde
+        ];
+      };
+
+      xdg.dataFile."plasma/plasmoids/nl.lucemans.ethereum-price".source = "${selfpkgs.ethereum-price-plasmoid}/share/plasma/plasmoids/nl.lucemans.ethereum-price";
+
       programs.plasma = {
         enable = true;
         overrideConfig = true;
@@ -171,19 +184,22 @@
             screen = 2;
             height = 32;
             floating = false;
-            #     widgets = [
-            #       {
-            #         kickoff = {
-            #           icon = "/etc/plasma/start-icon.jpg";
-            #         };
-            #       }
-            #       "org.kde.plasma.pager"
-            #       "org.kde.plasma.icontasks"
-            #       "org.kde.plasma.marginsseparator"
-            #       "org.kde.plasma.systemtray"
-            #       "org.kde.plasma.digitalclock"
-            #       "org.kde.plasma.showdesktop"
-            #     ];
+            widgets = [
+              {
+                kickoff = {
+                  icon = "/etc/plasma/start-icon.jpg";
+                };
+              }
+              "org.kde.plasma.pager"
+              "org.kde.plasma.icontasks"
+              "org.kde.plasma.marginsseparator"
+              "org.kde.plasma.systemtray"
+              {
+                name = "nl.lucemans.ethereum-price";
+              }
+              "org.kde.plasma.digitalclock"
+              # "org.kde.plasma.showdesktop"
+            ];
           }
         ];
       };

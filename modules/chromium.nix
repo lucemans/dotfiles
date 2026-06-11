@@ -37,6 +37,12 @@
           hash = "sha256-xRK2iX2ntV6N/PQh/KcK10FoNsKV44B+UtyqvFCvelI=";
           version = "2026.5.1";
         })
+        (createChromiumExtension {
+          # framesh
+          id = "ldcoohedfbjoobcadoglnnmmfbdlmmhf";
+          hash = "sha256-oUhtmd6MXjOhOwp45c1Jq1j4k0CKgdBdIz/2x6ebzH8=";
+          version = "0.12.1";
+        })
       ];
     };
   };

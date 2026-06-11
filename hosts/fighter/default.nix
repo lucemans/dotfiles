@@ -16,6 +16,7 @@
         # self.nixosModules.environment
         self.nixosModules.develop
         self.nixosModules.desktop
+        # self.nixosModules.fusion360
         self.nixosModules.gaming
         self.nixosModules.nix
         self.nixosModules.fighterPhysical

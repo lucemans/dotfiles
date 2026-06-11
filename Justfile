@@ -11,3 +11,6 @@ switch-point:
 switch-fighter:
   nix flake update
   nixos-rebuild switch --flake /etc/nixos#fighter
+
+murder-plasma:
+  systemctl --user restart plasma-plasmashell.service
