@@ -15,6 +15,7 @@
     imports = [
       inputs.home-manager.nixosModules.home-manager
       self.nixosModules.cursor
+      self.nixosModules.opencode
     ];
 
     services.desktopManager.plasma6.enable = true;
@@ -62,7 +63,8 @@
           fastfetch
           zed-editor
           gitkraken
-          opencode
+          selfpkgs.agentsview
+          selfpkgs.agentsview-desktop
           code-cursor
 
           sops
