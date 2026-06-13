@@ -83,6 +83,8 @@
             withVencord = true;
           })
 
+          spotify
+
           kicad
 
           tailscale
