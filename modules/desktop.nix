@@ -36,6 +36,9 @@
     # https://wiki.nixos.org/wiki/Chromium#Enabling_native_Wayland_support
     environment.sessionVariables.NIXOS_OZONE_WL = "1";
 
+    fonts.packages = with pkgs; [nerd-fonts.hack];
+    fonts.fontconfig.defaultFonts.monospace = ["Hack"];
+
     environment.etc."plasma/start-icon.jpg".source = self.startIcon;
 
     home-manager.useGlobalPkgs = true;
@@ -67,6 +70,10 @@
           selfpkgs.ethereum-price-plasmoid
           selfpkgs.frame-sh-wayland
           code-cursor
+          soapysdr
+          hackrf
+          soapyhackrf
+          gqrx
 
           sops
           age
@@ -85,7 +92,7 @@
 
           spotify
 
-          kicad
+          kicad-unstable
 
           tailscale
           netbird
@@ -93,6 +100,7 @@
           thunderbird
           prismlauncher
           rpi-imager
+          orca-slicer
 
           obs-studio
           vlc
@@ -177,7 +185,7 @@
         hotkeys.commands."launch-konsole" = {
           name = "Launch Konsole";
           key = "Alt+K";
-          command = "konsole";
+          command = "kitty";
         };
 
         panels = [
@@ -204,6 +212,17 @@
             ];
           }
         ];
+      };
+
+      programs.konsole = {
+        enable = true;
+        defaultProfile = "Hack";
+        profiles."Hack" = {
+          font = {
+            name = "Hack";
+            size = 11;
+          };
+        };
       };
 
       # home.activation.dolphinDevelop = lib.hm.dag.entryAfter ["writeBoundary"] ''
@@ -250,6 +269,40 @@
           };
           init.defaultBranch = "master";
         };
+      };
+
+      programs.neovim = {
+        enable = true;
+        extraConfig = ''
+          set number relativenumber
+        '';
+        defaultEditor = true;
+        viAlias = true;
+        vimAlias = true;
+        plugins = [
+          {
+            plugin = pkgs.vimPlugins.nvim-tree-lua;
+            config = ''
+              vim.g.loaded_netrw = 1
+              vim.g.loaded_netrwPlugin = 1
+              vim.opt.termguicolors = true
+              require("nvim-tree").setup{
+                sort = { sorter = "case_sensitive" },
+                view = { width = 30 },
+                renderer = { group_empty = true },
+                filters = { dotfiles = true },
+              }
+              vim.keymap.set('n', '<C-n>', ':NvimTreeToggle<CR>', { silent = true })
+              vim.keymap.set('n', '<leader>e', ':NvimTreeFindFile<CR>', { silent = true })
+              vim.keymap.set('n', '<leader>r', ':NvimTreeRefresh<CR>', { silent = true })
+            '';
+          }
+          pkgs.vimPlugins.nvim-web-devicons
+          {
+            plugin = pkgs.vimPlugins.vim-startify;
+            # config = "let g:startify_change_to_vcs_root = 0";
+          }
+        ];
       };
     };
 

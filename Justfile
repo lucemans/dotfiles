@@ -1,16 +1,7 @@
-vm:
-  nix build .#nixosConfigurations.fighter-vm.config.system.build.vm
-  mkdir -p .vm-state
-  # Keep empty0.qcow2 (preservation backing store) across VM runs.
-  TMPDIR="$(pwd)/.vm-state" USE_TMPDIR=1 GDK_BACKEND=x11 ./result/bin/run-v3x-fighter-vm
-
 switch-point:
   nix flake update
-  nixos-rebuild switch --flake /etc/nixos#point
+  nixos-rebuild switch --flake /etc/nixos#v3x-point
 
 switch-fighter:
   nix flake update
-  nixos-rebuild switch --flake /etc/nixos#fighter
-
-murder-plasma:
-  systemctl --user restart plasma-plasmashell.service
+  nixos-rebuild switch --flake /etc/nixos#v3x-fighter

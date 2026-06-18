@@ -4,7 +4,7 @@
   ...
 }: {
   flake.nixosConfigurations = {
-    point = inputs.nixpkgs.lib.nixosSystem {
+    v3x-point = inputs.nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
       specialArgs = {inherit inputs self;};
       modules = [

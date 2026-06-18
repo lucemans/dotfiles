@@ -5,7 +5,7 @@
         "editor.defaultFormatter": "vscode.typescript-language-features"
     },
     "typescript.updateImportsOnFileMove.enabled": "always",
-    "editor.fontFamily": "'Hack FC Ligatured', 'Fira Code', 'Hack', 'Droid Sans Mono', 'Comic Sans MS', 'monospace', monospace, 'Droid Sans Fallback'",
+    "editor.fontFamily": "'Hack FC Ligatured', 'Hack', 'Fira Code', 'Hack', 'Droid Sans Mono', 'Comic Sans MS', 'monospace', monospace, 'Droid Sans Fallback'",
     "editor.fontLigatures": true,
     "[typescript]": {
         "editor.defaultFormatter": "vscode.typescript-language-features"

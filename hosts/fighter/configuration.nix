@@ -43,13 +43,13 @@
     services.tailscale = {
       enable = true;
     };
-    services.nix-ld.enable = true;
 
     users.users.luc = {
       isNormalUser = true;
       extraGroups = [
         "wheel"
         "networkmanager"
+	"uucp"
       ];
       packages = with pkgs; [];
     };
@@ -62,6 +62,7 @@
       git
       pciutils
       usbutils
+      hackrf
     ];
 
     # services.fstrim.enable = true;

@@ -1,15 +1,15 @@
 {lib, ...}: {
   perSystem = {pkgs, ...}: let
-    version = "0.32.1";
+    version = "0.33.0";
 
     cliSrc = pkgs.fetchurl {
       url = "https://github.com/kenn-io/agentsview/releases/download/v${version}/agentsview_${version}_linux_amd64.tar.gz";
-      sha256 = "fffce56ae2439a920161aef71398445a1215103f9312b80a5da2f0b204aab3b1";
+      sha256 = "4f1b243f3f784fa9b59ff55d89ba5936989acec00e6e5780206e8ac4d7190053";
     };
 
     desktopSrc = pkgs.fetchurl {
       url = "https://github.com/kenn-io/agentsview/releases/download/v${version}/AgentsView_${version}_amd64.AppImage";
-      sha256 = "30126e1db09111f491bf2675d27ac4602902f2cbfd523e78c94fc277975053ab";
+      sha256 = "ce2145e1f4a46a719350182fef9d5cbf1239cf3cdb0fabd2f071fe9be0caef00";
     };
 
     desktopPname = "agentsview-desktop";
