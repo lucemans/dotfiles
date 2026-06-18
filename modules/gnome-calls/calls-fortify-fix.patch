@@ -1,0 +1,20 @@
+--- a/src/calls-network-watch.c
++++ b/src/calls-network-watch.c
+@@ -107,7 +107,7 @@
+   self->req->n.nlmsg_type = RTM_GETROUTE;
+   self->req->r.rtm_family = AF_INET;
+
+-  rta = ((struct rtattr *) (((void *) (&self->req->n)) +
++  rta = ((struct rtattr *) (((void *) (self->req)) +
+                             NLMSG_ALIGN (self->req->n.nlmsg_len)));
+   rta->rta_type = RTA_DST;
+   rta->rta_len = len;
+@@ -136,7 +136,7 @@
+   self->req->n.nlmsg_type = RTM_GETROUTE;
+   self->req->r.rtm_family = AF_INET6;
+
+-  rta = ((struct rtattr *) (((void *) (&self->req->n)) +
++  rta = ((struct rtattr *) (((void *) (self->req)) +
+                             NLMSG_ALIGN (self->req->n.nlmsg_len)));
+   rta->rta_type = RTA_DST;
+   rta->rta_len = len;

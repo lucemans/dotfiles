@@ -6,8 +6,14 @@
     config,
     ...
   }: {
-    boot.loader.systemd-boot.enable = true;
-    boot.loader.efi.canTouchEfiVariables = true;
+    boot.loader = {
+     	efi.canTouchEfiVariables = true;
+    };
+    boot.lanzaboote = {
+      enable = true;
+      pkiBundle = "/var/lib/sbctl";
+    };
+
     networking.hostName = "v3x-fighter";
     networking.networkmanager.enable = true;
     time.timeZone = "Europe/Amsterdam";
@@ -43,6 +49,14 @@
     services.tailscale = {
       enable = true;
     };
+    
+    programs.calls.enable = true;
+    services.gnome.evolution-data-server.enable = true;
+    
+    virtualisation.docker = {
+    	enable = true;
+	storageDriver = "btrfs";
+    };
 
     users.users.luc = {
       isNormalUser = true;
@@ -50,6 +64,7 @@
         "wheel"
         "networkmanager"
 	"uucp"
+	"docker"
       ];
       packages = with pkgs; [];
     };

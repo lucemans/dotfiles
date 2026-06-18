@@ -84,6 +84,7 @@
           signal-desktop
           telegram-desktop
           mattermost-desktop
+	  gajim
 
           (discord.override {
             withOpenASAR = true;
@@ -96,6 +97,7 @@
 
           tailscale
           netbird
+	  lens
 
           thunderbird
           prismlauncher
