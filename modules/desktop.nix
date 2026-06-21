@@ -70,6 +70,7 @@
           selfpkgs.ethereum-price-plasmoid
           selfpkgs.frame-sh-wayland
           code-cursor
+	  pi-coding-agent
           soapysdr
           hackrf
           soapyhackrf
