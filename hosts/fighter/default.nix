@@ -14,6 +14,7 @@
         inputs.sops-nix.nixosModules.sops
         inputs.lanzaboote.nixosModules.lanzaboote
         self.nixosModules.fighter
+        self.nixosModules.audio
         self.nixosModules.environment
         self.nixosModules.develop
         self.nixosModules.desktop

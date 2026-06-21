@@ -36,14 +36,6 @@
       package = config.boot.kernelPackages.nvidiaPackages.latest;
     };
     hardware.enableRedistributableFirmware = true;
-    services.pulseaudio.enable = false;
-    # services.rtkit.enable = true;
-    services.pipewire = {
-      enable = true;
-      alsa.enable = true;
-      alsa.support32Bit = true;
-      pulse.enable = true;
-    };
     services.printing.enable = true;
 
     services.tailscale = {
