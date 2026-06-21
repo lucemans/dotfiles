@@ -70,7 +70,7 @@
           selfpkgs.ethereum-price-plasmoid
           selfpkgs.frame-sh-wayland
           code-cursor
-	  pi-coding-agent
+          pi-coding-agent
           soapysdr
           hackrf
           soapyhackrf
@@ -85,7 +85,7 @@
           signal-desktop
           telegram-desktop
           mattermost-desktop
-	  gajim
+          gajim
 
           (discord.override {
             withOpenASAR = true;
@@ -95,10 +95,11 @@
           spotify
 
           kicad-unstable
+          selfpkgs.kicad-mcp
 
           tailscale
           netbird
-	  lens
+          lens
 
           thunderbird
           prismlauncher
@@ -121,6 +122,8 @@
 
         stateVersion = nixosConfig.system.stateVersion;
       };
+
+      home.file.".pi/agent/extensions/kicad-mcp/index.ts".source = ./pi/kicad-mcp-extension.ts;
 
       sops = {
         age.keyFile = "/home/luc/.config/sops/age/keys.txt";

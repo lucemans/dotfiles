@@ -7,7 +7,7 @@
     ...
   }: {
     boot.loader = {
-     	efi.canTouchEfiVariables = true;
+      efi.canTouchEfiVariables = true;
     };
     boot.lanzaboote = {
       enable = true;
@@ -41,13 +41,13 @@
     services.tailscale = {
       enable = true;
     };
-    
+
     programs.calls.enable = true;
     services.gnome.evolution-data-server.enable = true;
-    
+
     virtualisation.docker = {
-    	enable = true;
-	storageDriver = "btrfs";
+      enable = true;
+      storageDriver = "btrfs";
     };
 
     users.users.luc = {
@@ -55,8 +55,8 @@
       extraGroups = [
         "wheel"
         "networkmanager"
-	"uucp"
-	"docker"
+        "uucp"
+        "docker"
       ];
       packages = with pkgs; [];
     };

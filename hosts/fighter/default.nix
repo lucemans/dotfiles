@@ -22,6 +22,7 @@
         # self.nixosModules.fusion360
         self.nixosModules.gaming
         self.nixosModules.nix
+        self.nixosModules.searxng
         self.nixosModules.fighterPhysical
         self.nixosModules.fighterThermal
       ];
