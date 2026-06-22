@@ -45,6 +45,10 @@
     programs.calls.enable = true;
     services.gnome.evolution-data-server.enable = true;
 
+    services.pcscd = {
+      enable = true;
+    };
+
     virtualisation.docker = {
       enable = true;
       storageDriver = "btrfs";
@@ -58,7 +62,8 @@
         "uucp"
         "docker"
       ];
-      packages = with pkgs; [];
+      packages = with pkgs; [
+      ];
     };
 
     environment.systemPackages = with pkgs; [
@@ -70,7 +75,17 @@
       pciutils
       usbutils
       hackrf
+      pcsclite
+      pcsc-tools
+      yubikey-manager
+      openssl
+      net-tools
     ];
+
+    networking.hosts = {
+      "127.0.0.2" = ["firefly.internal"];
+      "127.0.0.3" = ["firefly-data.internal"];
+    };
 
     # services.fstrim.enable = true;
 

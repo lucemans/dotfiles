@@ -127,7 +127,7 @@
 
       sops = {
         age.keyFile = "/home/luc/.config/sops/age/keys.txt";
-        defaultSopsFile = ../secrets/secrets.yaml;
+        defaultSopsFile = ../secrets/secrets.sops.yaml;
         secrets = {
           ssh-public-key = {
             path = "/home/luc/.ssh/id_ed25519.pub";

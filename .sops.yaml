@@ -1,6 +1,10 @@
 keys:
   - &desktop age138hwuu082j7xx6vy3u88nw8kjmdjky4sz4gxx9jtpe8gsmwjqdcqp3ddw8
+  - &lucpgp 716C1889C8EBE5C434C106C4C3575672485E2CEC
 creation_rules:
-  - path_regex: modules/secrets/[^/]+\.(yaml|json|env|ini)$
+  - path_regex: .+\.sops\.(yaml|json|env|ini|toml)$
     key_groups:
       - age: [*desktop]
+        pgp: [*lucpgp]
+    shamir_threshold: 1 
+
