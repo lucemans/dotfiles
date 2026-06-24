@@ -1,7 +1,7 @@
 # Wallpaper, launcher icon, and base16 palette (kitty and future apps).
 {
   flake.wallpaper = ./bg.png;
-  flake.startIcon = ./vista.jpg;
+  flake.startIcon = ./vista.png;
 
   # Gruvbox dark (hard) — https://github.com/morhetz/gruvbox
   flake.theme = {
