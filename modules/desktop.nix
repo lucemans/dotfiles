@@ -15,6 +15,7 @@
     imports = [
       inputs.home-manager.nixosModules.home-manager
       self.nixosModules.cursor
+      self.nixosModules.vscodium
       self.nixosModules.opencode
     ];
 
@@ -69,7 +70,6 @@
           selfpkgs.agentsview-desktop
           selfpkgs.ethereum-price-plasmoid
           selfpkgs.frame-sh-wayland
-          code-cursor
           pi-coding-agent
           soapysdr
           hackrf
