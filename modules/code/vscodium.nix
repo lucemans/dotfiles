@@ -16,7 +16,7 @@
         yzhang.markdown-all-in-one
         jnoortheen.nix-ide
         kamadorueda.alejandra
-        bungcip.better-toml
+        tamasfe.even-better-toml
         dbaeumer.vscode-eslint
         github.github-vscode-theme
         unifiedjs.vscode-mdx
