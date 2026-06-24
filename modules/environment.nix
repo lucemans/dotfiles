@@ -20,7 +20,7 @@
 
     packages.environment = inputs.wrappers.lib.wrapPackage {
       inherit pkgs;
-      package = self'.packages.bash;
+      package = self'.packages.zsh;
       runtimeInputs = [
         # nix
         pkgs.nil
@@ -78,12 +78,17 @@
     lib,
     ...
   }: let
-    inherit (self.packages.${pkgs.system}) environment terminal;
+    inherit (self.packages.${pkgs.stdenv.hostPlatform.system}) environment terminal;
     editor = lib.getExe pkgs.neovim;
   in {
     environment.systemPackages = [
       terminal
       environment
+      pkgs.bash-completion
+      pkgs.bat
+      pkgs.fzf
+      pkgs.ripgrep
+      pkgs.zoxide
     ];
 
     environment.sessionVariables = {
@@ -91,8 +96,39 @@
       TERMINAL = lib.getExe terminal;
     };
 
+    programs.bash = {
+      enable = true;
+      enableCompletion = true;
+
+      shellAliases = {
+        ".." = "cd ..";
+        "upgrade" = "sudo nixos-rebuild switch --flake /etc/nixos#v3x-fighter";
+      };
+
+      shellInit = ''
+        set -o vi
+        shopt -s histappend
+        shopt -s checkwinsize
+
+        export EDITOR=nvim
+        export VISUAL=nvim
+        export PAGER=less
+      '';
+      promptInit = ''
+        PS1='\n\[\e[1;37m\]\w\[\e[0m\]\n\[\e[1;32m\]λ\[\e[0m\] '
+      '';
+    };
+
+    programs.bat.enable = true;
+
+    programs.zoxide = {
+      enable = true;
+      enableBashIntegration = true;
+      enableZshIntegration = true;
+    };
+
     users.users.luc = {
-      shell = lib.mkForce "${environment}/bin/bash";
+      shell = lib.mkForce "${environment}/bin/zsh";
     };
   };
 }

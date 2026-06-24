@@ -236,7 +236,7 @@
       (with pkgs; [
         grafana-alloy
       ])
-      ++ (with inputs.ethereum-nix.packages.${pkgs.system}; [
+      ++ (with inputs.ethereum-nix.packages.${pkgs.stdenv.hostPlatform.system}; [
         lighthouse
         reth
       ]);

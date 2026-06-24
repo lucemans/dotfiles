@@ -88,6 +88,14 @@
     };
 
     # services.fstrim.enable = true;
+    # services.angrr = {
+    #   enable = true;
+    #   period = "7d";
+    # };
+
+    nix.gc.automatic = true;
+
+    nixpkgs.config.allowUnfree = true;
 
     system.stateVersion = "26.05";
   };

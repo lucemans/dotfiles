@@ -1,3 +1,5 @@
+# extension inspiration:
+# - https://github.com/vimlinuz/nixos/blob/main/homes/santosh/modules/firefox/extension.nix
 {
   flake.homeModules.firefox = {pkgs, ...}: {
     programs.firefox = {
@@ -35,6 +37,8 @@
         DontCheckDefaultBrowser = true;
         OfferToSaveLogins = false;
         DefaultDownloadDirectory = "/home/luc/Downloads";
+
+        # ExtensionSettings = import ./extensions.nix;
       };
       profiles.default.search = {
         force = true;

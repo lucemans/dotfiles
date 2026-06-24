@@ -10,7 +10,7 @@
     ...
   }: let
     nixosConfig = config;
-    selfpkgs = self.packages.${pkgs.system};
+    selfpkgs = self.packages.${pkgs.stdenv.hostPlatform.system};
   in {
     imports = [
       inputs.home-manager.nixosModules.home-manager
@@ -93,6 +93,7 @@
           })
 
           spotify
+          kubectl
 
           kicad-unstable
           selfpkgs.kicad-mcp
@@ -123,7 +124,7 @@
         stateVersion = nixosConfig.system.stateVersion;
       };
 
-      home.file.".pi/agent/extensions/kicad-mcp/index.ts".source = ./pi/kicad-mcp-extension.ts;
+      home.file.".pi/agent/extensions/kicad-mcp/index.ts".source = ./code/pi/kicad-mcp-extension.ts;
 
       sops = {
         age.keyFile = "/home/luc/.config/sops/age/keys.txt";
@@ -173,6 +174,7 @@
         extraPortals = [
           pkgs.kdePackages.xdg-desktop-portal-kde
         ];
+        config.common.default = "*";
       };
 
       xdg.dataFile."plasma/plasmoids/nl.lucemans.ethereum-price".source = "${selfpkgs.ethereum-price-plasmoid}/share/plasma/plasmoids/nl.lucemans.ethereum-price";
