@@ -43,6 +43,18 @@
           hash = "sha256-oUhtmd6MXjOhOwp45c1Jq1j4k0CKgdBdIz/2x6ebzH8=";
           version = "0.12.1";
         })
+        (createChromiumExtension {
+          # sponsorblock
+          id = "mnjggcdmjocbbbhaepdhchncahnbgone";
+          hash = "sha256-nE5FE3Eo1jG8sT1KYjVl8JRbmAiyhN8IZObHsAIb0wY=";
+          version = "6.1.5";
+        })
+        (createChromiumExtension {
+          # istilldontcareaboutcookies
+          id = "edibdbjcniadpccecjdfdjjppcpchdlm";
+          hash = "sha256-RrbNwwND3Sl8bTTZF5xeHMHuQEyOY7FU3vFY4TAQw30=";
+          version = "1.1.9";
+        })
       ];
     };
   };

@@ -98,7 +98,9 @@
 
     programs.bash = {
       enable = true;
-      enableCompletion = true;
+      completion = {
+        enable = true;
+      };
 
       shellAliases = {
         ".." = "cd ..";
