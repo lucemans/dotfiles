@@ -225,7 +225,7 @@
     "workbench.editor.enablePreview": false,
     "update.mode": "silentlyApplyOnQuit",
     "terminal.integrated.automationProfile.linux": {},
-    "terminal.integrated.defaultProfile.linux": "zsh",
+    "terminal.integrated.defaultProfile.linux": "bash",
     "yaml.schemas": {
         "https://json.schemastore.org/traefik-v3.json": [
             "traefik.yaml",

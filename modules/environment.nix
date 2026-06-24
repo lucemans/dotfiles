@@ -20,7 +20,7 @@
 
     packages.environment = inputs.wrappers.lib.wrapPackage {
       inherit pkgs;
-      package = self'.packages.zsh;
+      package = self'.packages.bash;
       runtimeInputs = [
         # nix
         pkgs.nil
@@ -92,7 +92,7 @@
     };
 
     users.users.luc = {
-      shell = lib.mkForce "${environment}/bin/zsh";
+      shell = lib.mkForce "${environment}/bin/bash";
     };
   };
 }
