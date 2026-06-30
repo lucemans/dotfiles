@@ -11,6 +11,8 @@
   }: let
     nixosConfig = config;
     selfpkgs = self.packages.${pkgs.stdenv.hostPlatform.system};
+    rofi-vscode = pkgs.writeShellScriptBin "rofi-vscode" (builtins.readFile ./rofi/vscode.sh);
+    koi = inputs.koi.packages.x86_64-linux.default;
   in {
     imports = [
       inputs.home-manager.nixosModules.home-manager
@@ -56,7 +58,6 @@
     home-manager.users.luc = {
       self,
       pkgs,
-      lib,
       config,
       ...
     }: {
@@ -71,10 +72,13 @@
           selfpkgs.ethereum-price-plasmoid
           selfpkgs.frame-sh-wayland
           pi-coding-agent
+          claude-code
           soapysdr
           hackrf
           soapyhackrf
           gqrx
+
+          koi
 
           sops
           age
@@ -88,7 +92,7 @@
           gajim
 
           (discord.override {
-            withOpenASAR = true;
+            #withOpenASAR = true;
             withVencord = true;
           })
 
@@ -116,6 +120,8 @@
           alejandra
           manix
           nix-inspect
+
+          sqlite
         ];
 
         username = "luc";
@@ -196,6 +202,18 @@
           command = "kitty";
         };
 
+        hotkeys.commands."launch-rofi" = {
+          name = "Launch Rofi";
+          key = "Alt+R";
+          command = "rofi -show combi";
+        };
+
+        hotkeys.commands."launch-rofi-vs" = {
+          name = "Launch Rofi VSCode";
+          key = "Alt+P";
+          command = "rofi -show vs";
+        };
+
         panels = [
           {
             location = "top";
@@ -222,16 +240,45 @@
         ];
       };
 
-      programs.konsole = {
+      programs.direnv = {
         enable = true;
-        defaultProfile = "Hack";
-        profiles."Hack" = {
-          font = {
-            name = "Hack";
-            size = 11;
-          };
+        silent = false;
+        # loadInNixShell = true;
+        # direnvrcExtra = "";
+        nix-direnv = {
+          enable = true;
         };
       };
+
+      programs.rofi = {
+        enable = true;
+        theme = "Adapta-Nokto";
+        modes = [
+          "combi"
+          "drun"
+          "ssh"
+          "vs:${rofi-vscode}/bin/rofi-vscode"
+        ];
+        extraConfig = {
+          show-icons = true;
+          show = "combi";
+          combi-modes = "drun,ssh,vs";
+          combi-hide-mode-prefix = false;
+          click-to-exit = true;
+          sort = true;
+        };
+      };
+
+      # programs.konsole = {
+      #  enable = true;
+      #  defaultProfile = "Hack";
+      #  profiles."Hack" = {
+      #    font = {
+      #      name = "Hack";
+      #      size = 11;
+      #    };
+      #  };
+      #};
 
       # home.activation.dolphinDevelop = lib.hm.dag.entryAfter ["writeBoundary"] ''
       #   path="$HOME/.local/share/user-places.xbel"
