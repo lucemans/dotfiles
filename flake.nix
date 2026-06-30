@@ -36,6 +36,8 @@
       url = "github:nix-community/lanzaboote";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    # koi.url = "github:v3xlabs/koi";
   };
 
   outputs = inputs:

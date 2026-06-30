@@ -12,7 +12,6 @@
       enable = true;
       package = pkgs.vscodium;
       profiles.default.extensions = with pkgs.vscode-extensions; [
-        vscodevim.vim
         yzhang.markdown-all-in-one
         jnoortheen.nix-ide
         kamadorueda.alejandra
