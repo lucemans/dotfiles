@@ -1,9 +1,5 @@
 {
-  flake.nixosModules.vscodium = {
-    config,
-    pkgs,
-    ...
-  }: {
+  flake.nixosModules.vscodium = {pkgs, ...}: {
     environment.systemPackages = with pkgs; [
       vscodium
     ];
@@ -24,7 +20,7 @@
       ];
     };
 
-    home-manager.users.luc.home.file.".config/VSCodium/User/settings.json".source = ./settings.json;
-    home-manager.users.luc.home.file.".config/VSCodium/User/keybindings.json".source = ./keybindings.json;
+    home-manager.users.luc.home.file.".config/VSCodium/User/settings.json".source = ./vscode/settings.json;
+    home-manager.users.luc.home.file.".config/VSCodium/User/keybindings.json".source = ./vscode/keybindings.json;
   };
 }
