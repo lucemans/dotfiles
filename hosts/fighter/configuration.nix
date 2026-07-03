@@ -42,6 +42,10 @@
       enable = true;
     };
 
+    services.avahi = {
+      enable = true;
+    };
+
     programs.calls.enable = true;
     services.gnome.evolution-data-server.enable = true;
 
@@ -61,8 +65,8 @@
         "networkmanager"
         "uucp"
         "docker"
-	"video"
-	"plugdev"
+        "video"
+        "plugdev"
       ];
       packages = with pkgs; [
       ];
@@ -70,15 +74,15 @@
 
     users.groups.plugdev = {};
 
-  services.udev.extraRules = ''
-    # Xbox Kinect / Kinect for Xbox 360
-    SUBSYSTEM=="usb", ATTR{idVendor}=="045e", ATTR{idProduct}=="02ae", MODE="0660", GROUP="plugdev", TAG+="uaccess"
-    SUBSYSTEM=="usb", ATTR{idVendor}=="045e", ATTR{idProduct}=="02ad", MODE="0660", GROUP="plugdev", TAG+="uaccess"
-    SUBSYSTEM=="usb", ATTR{idVendor}=="045e", ATTR{idProduct}=="02b0", MODE="0660", GROUP="plugdev", TAG+="uaccess"
+    services.udev.extraRules = ''
+      # Xbox Kinect / Kinect for Xbox 360
+      SUBSYSTEM=="usb", ATTR{idVendor}=="045e", ATTR{idProduct}=="02ae", MODE="0660", GROUP="plugdev", TAG+="uaccess"
+      SUBSYSTEM=="usb", ATTR{idVendor}=="045e", ATTR{idProduct}=="02ad", MODE="0660", GROUP="plugdev", TAG+="uaccess"
+      SUBSYSTEM=="usb", ATTR{idVendor}=="045e", ATTR{idProduct}=="02b0", MODE="0660", GROUP="plugdev", TAG+="uaccess"
 
-    # Sometimes useful for libfreenect / USB device nodes
-    SUBSYSTEM=="usb_device", ATTR{idVendor}=="045e", MODE="0660", GROUP="plugdev", TAG+="uaccess"
-  '';
+      # Sometimes useful for libfreenect / USB device nodes
+      SUBSYSTEM=="usb_device", ATTR{idVendor}=="045e", MODE="0660", GROUP="plugdev", TAG+="uaccess"
+    '';
 
     environment.systemPackages = with pkgs; [
       vim
