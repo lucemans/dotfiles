@@ -196,6 +196,12 @@
           tooltipDelay = 3;
         };
 
+        kscreenlocker = {
+          appearance = {
+            wallpaper = self.wallpaper;
+          };
+        };
+
         hotkeys.commands."launch-konsole" = {
           name = "Launch Konsole";
           key = "Alt+K";
