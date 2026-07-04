@@ -22,6 +22,7 @@
         self.nixosModules.gaming
         self.nixosModules.nix
         self.nixosModules.searxng
+        self.nixosModules.doubletake
         self.nixosModules.fighterPhysical
         self.nixosModules.fighterThermal
         self.nixosModules.firefly-iii

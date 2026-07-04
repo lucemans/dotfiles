@@ -6,12 +6,10 @@
   flake.nixosModules.desktop = {
     config,
     pkgs,
-    lib,
     ...
   }: let
     nixosConfig = config;
     selfpkgs = self.packages.${pkgs.stdenv.hostPlatform.system};
-    rofi-vscode = pkgs.writeShellScriptBin "rofi-vscode" (builtins.readFile ./rofi/vscode.sh);
     # koi = inputs.koi.packages.x86_64-linux.default;
   in {
     imports = [
@@ -19,6 +17,7 @@
       self.nixosModules.cursor
       self.nixosModules.vscodium
       self.nixosModules.opencode
+      self.nixosModules.rofi
     ];
 
     services.desktopManager.plasma6.enable = true;
@@ -209,18 +208,6 @@
           command = "kitty";
         };
 
-        hotkeys.commands."launch-rofi" = {
-          name = "Launch Rofi";
-          key = "Alt+R";
-          command = "rofi -show combi";
-        };
-
-        hotkeys.commands."launch-rofi-vs" = {
-          name = "Launch Rofi VSCode";
-          key = "Alt+P";
-          command = "rofi -show vs";
-        };
-
         panels = [
           {
             location = "top";
@@ -254,25 +241,6 @@
         # direnvrcExtra = "";
         nix-direnv = {
           enable = true;
-        };
-      };
-
-      programs.rofi = {
-        enable = true;
-        theme = "Adapta-Nokto";
-        modes = [
-          "combi"
-          "drun"
-          "ssh"
-          "vs:${rofi-vscode}/bin/rofi-vscode"
-        ];
-        extraConfig = {
-          show-icons = true;
-          show = "combi";
-          combi-modes = "drun,ssh,vs";
-          combi-hide-mode-prefix = false;
-          click-to-exit = true;
-          sort = true;
         };
       };
 

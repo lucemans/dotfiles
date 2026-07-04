@@ -100,9 +100,27 @@
       net-tools
     ];
 
-    networking.hosts = {
-      "127.0.0.2" = ["firefly.internal"];
-      "127.0.0.3" = ["firefly-data.internal"];
+    networking = {
+      firewall = {
+        enable = true;
+        allowedUDPPortRanges = [
+          {
+            from = 60000;
+            to = 60010;
+          }
+        ];
+        allowedTCPPortRanges = [
+          {
+            from = 60000;
+            to = 60010;
+          }
+        ];
+      };
+
+      hosts = {
+        "127.0.0.2" = ["firefly.internal"];
+        "127.0.0.3" = ["firefly-data.internal"];
+      };
     };
 
     # services.fstrim.enable = true;

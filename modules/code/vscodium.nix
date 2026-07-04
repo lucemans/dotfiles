@@ -17,6 +17,7 @@
         unifiedjs.vscode-mdx
         rust-lang.rust-analyzer
         vscode-icons-team.vscode-icons
+        # remcohaszing.schemastore
       ];
     };
 

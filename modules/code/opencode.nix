@@ -1,15 +1,45 @@
 {
-  flake.nixosModules.opencode = {pkgs, ...}: {
+  flake.nixosModules.opencode = {
+    lib,
+    pkgs,
+    ...
+  }: let
+    chromiumEntry = builtins.head (
+      builtins.filter
+      (name: lib.hasPrefix "chromium-" name)
+      (builtins.attrNames pkgs.playwright-driver.browsers.entries)
+    );
+    chromiumExecutable = "${pkgs.playwright-driver.browsers}/${chromiumEntry}/chrome-linux64/chrome";
+    opencode-playwright-mcp = pkgs.writeShellApplication {
+      name = "opencode-playwright-mcp";
+      runtimeInputs = [pkgs.playwright-mcp];
+      text = ''
+        unset PLAYWRIGHT_BROWSERS_PATH
+        export PLAYWRIGHT_MCP_BROWSER=chrome
+        export PLAYWRIGHT_MCP_EXECUTABLE_PATH=${chromiumExecutable}
+        export PLAYWRIGHT_MCP_USER_DATA_DIR=/home/luc/.cache/ms-playwright/opencode-mcp
+        export PLAYWRIGHT_MCP_OUTPUT_DIR=/home/luc/.cache/opencode/playwright-mcp
+        exec playwright-mcp "$@"
+      '';
+    };
+  in {
     environment.systemPackages = with pkgs; [
       opencode
+      opencode-playwright-mcp
+      playwright-driver
     ];
 
-    # nixpkgs builds opencode with OPENCODE_CHANNEL=stable, and upstream
-    # opencode uses channel-specific DB names by default. AgentsView 0.32.1
-    # only discovers the shared opencode.db path, so keep opencode on that
-    # stable shared filename until AgentsView supports opencode-*.db natively.
-    environment.sessionVariables.OPENCODE_DISABLE_CHANNEL_DB = "1";
+    environment.sessionVariables = {
+      OPENCODE_DISABLE_CHANNEL_DB = "1";
+    };
 
-    home-manager.users.luc.home.sessionVariables.OPENCODE_DISABLE_CHANNEL_DB = "1";
+    home-manager.users.luc.home.sessionVariables = {
+      OPENCODE_DISABLE_CHANNEL_DB = "1";
+    };
+
+    home-manager.users.luc.home.file.".config/opencode/opencode.jsonc" = {
+      source = ./opencode.jsonc;
+      force = true;
+    };
   };
 }
