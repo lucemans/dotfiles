@@ -38,6 +38,8 @@
 
 ## Language Preferences
 
+- Never create `types.ts` or `types.rs`; define every type, struct, and enum in the module where it appropriately belongs. Wanting a generic types file means the design needs more thought.
+
 ### TypeScript and JavaScript
 
 - Treat configured `eslint-plugin-v3xlabs` rules as authoritative. Inspect and follow the project ESLint configuration rather than working around it.
