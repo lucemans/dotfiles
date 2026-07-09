@@ -17,6 +17,7 @@
       settings = {
         enable_audio_bell = "no";
         auto_reload_config = -1;
+        confirm_os_window_close = 0;
 
         font_size = 12;
         font_family = "Hack";
