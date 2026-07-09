@@ -38,7 +38,17 @@
     };
 
     home-manager.users.luc.home.file.".config/opencode/opencode.jsonc" = {
-      source = ./opencode.jsonc;
+      source = ./opencode/opencode.jsonc;
+      force = true;
+    };
+
+    home-manager.users.luc.home.file.".config/opencode/AGENTS.md" = {
+      source = ./opencode/AGENTS.md;
+      force = true;
+    };
+
+    home-manager.users.luc.home.file.".config/opencode/agents/visual-qa.md" = {
+      source = ./opencode/agents/visual-qa.md;
       force = true;
     };
   };
