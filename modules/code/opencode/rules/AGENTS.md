@@ -12,6 +12,10 @@
 - Never read, print, decrypt, source, or otherwise load secret material into agent context. Respect denied secret-file paths.
 - Assume required environment variables and secrets are injected when code runs. Leave secret creation, rotation, and updates to the user.
 
+## Temporary files
+
+- Prefer a local in-project `.tmp` directory opposed to using `/tmp`
+
 ## Decisions and Scope
 
 - When a request requires a material unstated implementation choice, present concise options and wait for the user's decision.

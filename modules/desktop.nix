@@ -17,6 +17,7 @@
       self.nixosModules.cursor
       self.nixosModules.vscodium
       self.nixosModules.opencode
+      self.nixosModules.claude-code
       self.nixosModules.rofi
     ];
 
@@ -72,8 +73,7 @@
           selfpkgs.ethereum-price-plasmoid
           selfpkgs.frame-sh-wayland
           pi-coding-agent
-          claude-code
-          soapysdr
+           soapysdr
           hackrf
           soapyhackrf
           gqrx

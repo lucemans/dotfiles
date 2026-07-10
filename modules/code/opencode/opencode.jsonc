@@ -39,6 +39,10 @@
             "git reflog": "allow",
             "git reflog *": "allow",
 
+            "pnpm build": "allow",
+            "pnpm typecheck": "allow",
+            "pnpm lint": "allow",
+
             "direnv*": "deny",
             "*direnv*": "deny",
             "gpg*": "deny",
@@ -49,7 +53,7 @@
             "*gnupg*": "deny"
         }
     },
-    "instructions": ["AGENTS.md"],
+    "instructions": ["AGENTS.md", "~/.config/opencode/rules/TYPESCRIPT.md"],
     "share": "disabled",
     "autoupdate": "notify",
     "snapshot": true,
