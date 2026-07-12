@@ -73,7 +73,7 @@
           selfpkgs.ethereum-price-plasmoid
           selfpkgs.frame-sh-wayland
           pi-coding-agent
-           soapysdr
+          soapysdr
           hackrf
           soapyhackrf
           gqrx
@@ -104,7 +104,14 @@
 
           tailscale
           netbird
-          lens
+          (lens.overrideAttrs (old: {
+            # Electron GPU rendering produces a blank Lens window on NVIDIA Wayland sessions.
+            postFixup =
+              (old.postFixup or "")
+              + ''
+                wrapProgram $out/bin/lens-desktop --add-flags "--disable-gpu"
+              '';
+          }))
 
           thunderbird
           prismlauncher
