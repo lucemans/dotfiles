@@ -55,9 +55,11 @@
 
       (satisfactorymodmanager.overrideAttrs (old: {
         # WebKitGTK GPU compositing renders SMM black on NVIDIA Wayland sessions.
-        preFixup = (old.preFixup or "") + ''
-          gappsWrapperArgs+=(--set WEBKIT_DISABLE_COMPOSITING_MODE 1)
-        '';
+        preFixup =
+          (old.preFixup or "")
+          + ''
+            gappsWrapperArgs+=(--set WEBKIT_DISABLE_COMPOSITING_MODE 1)
+          '';
       }))
 
       lsfg-vk

@@ -136,13 +136,15 @@
     nixpkgs.overlays = [
       (final: prev: {
         # patool 4.0.5's archive tests fail under Python 3.14 in the Nix sandbox.
-        pythonPackagesExtensions = prev.pythonPackagesExtensions ++ [
-          (pythonPackages: super: {
-            patool = super.patool.overridePythonAttrs (old: {
-              doCheck = false;
-            });
-          })
-        ];
+        pythonPackagesExtensions =
+          prev.pythonPackagesExtensions
+          ++ [
+            (pythonPackages: super: {
+              patool = super.patool.overridePythonAttrs (old: {
+                doCheck = false;
+              });
+            })
+          ];
       })
     ];
 

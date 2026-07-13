@@ -79,6 +79,7 @@
           gqrx
 
           # koi
+          obsidian
 
           sops
           age
@@ -179,7 +180,13 @@
 
       services.gpg-agent = {
         enable = true;
+        # enableSshSupport = true;
         pinentry.package = pkgs.pinentry-qt;
+      };
+
+      services.ssh-agent = {
+        enable = true;
+        # pinentry.package = pkgs.pinentry-qt;
       };
 
       xdg.portal = {
