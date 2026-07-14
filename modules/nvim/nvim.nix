@@ -8,6 +8,7 @@
       defaultEditor = true;
       viAlias = true;
       vimAlias = true;
+      extraPackages = [pkgs.fd];
       plugins = [
         {
           plugin = pkgs.vimPlugins.nvim-tree-lua;
@@ -27,6 +28,13 @@
           '';
         }
         pkgs.vimPlugins.nvim-web-devicons
+        pkgs.vimPlugins.plenary-nvim
+        {
+          plugin = pkgs.vimPlugins.telescope-nvim;
+          config = ''
+            vim.keymap.set('n', '<C-f>', require('telescope.builtin').find_files, { silent = true })
+          '';
+        }
         {
           plugin = pkgs.vimPlugins.vim-startify;
           # config = "let g:startify_change_to_vcs_root = 0";
