@@ -16,7 +16,7 @@
         self.nixosModules.fighter
         self.nixosModules.audio
         self.nixosModules.environment
-        self.nixosModules.develop
+        self.nixosModules.code
         self.nixosModules.desktop
         self.nixosModules.gnome-calls
         self.nixosModules.gaming

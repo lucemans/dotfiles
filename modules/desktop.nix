@@ -14,11 +14,6 @@
   in {
     imports = [
       inputs.home-manager.nixosModules.home-manager
-      self.nixosModules.cursor
-      self.nixosModules.vscodium
-      self.nixosModules.mcp
-      self.nixosModules.opencode
-      self.nixosModules.claude-code
       self.nixosModules.rofi
     ];
 
@@ -67,13 +62,8 @@
         packages = with pkgs; [
           tree
           fastfetch
-          zed-editor
-          gitkraken
-          selfpkgs.agentsview
-          selfpkgs.agentsview-desktop
           selfpkgs.ethereum-price-plasmoid
           selfpkgs.frame-sh-wayland
-          pi-coding-agent
           soapysdr
           hackrf
           soapyhackrf
@@ -99,10 +89,6 @@
           })
 
           spotify
-          kubectl
-
-          kicad-unstable
-          selfpkgs.kicad-mcp
 
           tailscale
           netbird
@@ -122,15 +108,6 @@
 
           obs-studio
           vlc
-
-          nil
-          nixd
-          statix
-          alejandra
-          manix
-          nix-inspect
-
-          sqlite
         ];
 
         username = "luc";
@@ -138,8 +115,6 @@
 
         stateVersion = nixosConfig.system.stateVersion;
       };
-
-      home.file.".pi/agent/extensions/kicad-mcp/index.ts".source = ./code/pi/kicad-mcp-extension.ts;
 
       sops = {
         age.keyFile = "/home/luc/.config/sops/age/keys.txt";
@@ -249,16 +224,6 @@
         ];
       };
 
-      programs.direnv = {
-        enable = true;
-        silent = false;
-        # loadInNixShell = true;
-        # direnvrcExtra = "";
-        nix-direnv = {
-          enable = true;
-        };
-      };
-
       # programs.konsole = {
       #  enable = true;
       #  defaultProfile = "Hack";
@@ -304,17 +269,6 @@
       #     )
       #   } URL="$url" ${pkgs.yq-go}/bin/yq '.xbel.bookmark += env(BOOKMARK)' -i "$path" -p xml -ox
       # '';
-
-      programs.git = {
-        enable = true;
-        settings = {
-          user = {
-            name = "Luc";
-            email = "luc@lucemans.nl";
-          };
-          init.defaultBranch = "master";
-        };
-      };
     };
 
     environment.systemPackages = with pkgs; [
