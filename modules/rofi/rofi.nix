@@ -1,7 +1,16 @@
 {self, ...}: {
   flake.nixosModules.rofi = {pkgs, ...}: let
     selfpkgs = self.packages.${pkgs.stdenv.hostPlatform.system};
-    rofi-vscode = pkgs.writeShellScriptBin "rofi-vscode" (builtins.readFile ./vscode.sh);
+    rofi-vscode = pkgs.writeShellApplication {
+      name = "rofi-vscode";
+      runtimeInputs = [
+        pkgs.coreutils
+        pkgs.jq
+        pkgs.sqlite
+        pkgs.vscodium
+      ];
+      text = builtins.readFile ./vscode.sh;
+    };
     rofi-doubletake = pkgs.writeShellApplication {
       name = "rofi-doubletake";
       runtimeInputs = [

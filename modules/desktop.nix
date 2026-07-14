@@ -94,7 +94,6 @@
           }))
 
           thunderbird
-          prismlauncher
           rpi-imager
           orca-slicer
 

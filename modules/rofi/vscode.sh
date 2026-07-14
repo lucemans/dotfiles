@@ -1,18 +1,17 @@
 #!/usr/bin/env bash
 
-DATABASES=(
+databasePaths=(
   "$HOME/.config/Code/User/globalStorage/state.vscdb"
   "$HOME/.config/VSCodium/User/globalStorage/state.vscdb"
   "$HOME/.config/Cursor/User/globalStorage/state.vscdb"
 )
 
-if [[ -z "$@" ]]; then
-  for db in "${DATABASES[@]}"; do
-    [[ -f "$db" ]] || continue
-    sqlite3 "$db" "SELECT value FROM ItemTable WHERE key='history.recentlyOpenedPathsList'" \
-      | jq -r '.entries[]? | .folderUri // .workspace // empty' \
-      | sed 's|^file://||'
+if (( $# == 0 )); then
+  for databasePath in "${databasePaths[@]}"; do
+    [[ -f "$databasePath" ]] || continue
+    sqlite3 "$databasePath" "SELECT value FROM ItemTable WHERE key='history.recentlyOpenedPathsList'" \
+      | jq -r '.entries[]? | (.folderUri // .workspace // empty) | sub("^file://"; "")'
   done | sort -u
 else
-  codium "$@"
+  exec codium "$@"
 fi

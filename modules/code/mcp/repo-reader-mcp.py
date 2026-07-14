@@ -11,7 +11,7 @@ from mcp.server.fastmcp import FastMCP
 
 
 SERVER_ROOT = Path("/workspace/repositories")
-ALLOWED_HOSTS = frozenset({"github.com", "gitlab.com"})
+ALLOWED_HOSTS = frozenset({"github.com", "gitlab.com", "git.voidarc.co.uk"})
 MAX_FILE_SIZE_BYTES = 1_048_576
 MAX_LISTED_FILES = 1_000
 MAX_SEARCH_RESULTS = 100

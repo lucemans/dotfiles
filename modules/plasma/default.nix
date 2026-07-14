@@ -10,6 +10,7 @@
     services.displayManager.sddm = {
       enable = true;
       wayland.enable = true;
+      autoNumlock = true;
     };
 
     environment.etc."plasma/start-icon.jpg".source = self.startIcon;
@@ -34,6 +35,13 @@
       programs.plasma = {
         enable = true;
         overrideConfig = true;
+
+        input.keyboard = {
+          layouts = [{layout = "us";}];
+          model = "pc104";
+          options = ["caps:super"];
+          numlockOnStartup = "on";
+        };
 
         workspace = {
           wallpaper = "${self.wallpaper}";

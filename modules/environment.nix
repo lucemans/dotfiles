@@ -8,9 +8,7 @@
     pkgs,
     self',
     ...
-  }: let
-    neovim = pkgs.neovim;
-  in {
+  }: {
     packages.terminal =
       (inputs.wrappers.wrapperModules.kitty.apply {
         inherit pkgs;
@@ -54,12 +52,11 @@
         pkgs.ffmpeg-full
         pkgs.yt-dlp
         pkgs.lazygit
-        neovim
         pkgs.git
         self'.packages.nix-check-bin
       ];
       env = {
-        EDITOR = lib.getExe neovim;
+        EDITOR = "nvim";
       };
     };
 
@@ -79,7 +76,7 @@
     ...
   }: let
     inherit (self.packages.${pkgs.stdenv.hostPlatform.system}) environment terminal;
-    editor = lib.getExe pkgs.neovim;
+    editor = "nvim";
   in {
     environment.systemPackages = [
       terminal

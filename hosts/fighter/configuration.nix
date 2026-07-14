@@ -68,8 +68,7 @@
         "video"
         "plugdev"
       ];
-      packages = with pkgs; [
-      ];
+      packages = with pkgs; [];
     };
 
     users.groups.plugdev = {};
