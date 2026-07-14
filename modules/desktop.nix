@@ -16,6 +16,7 @@
       inputs.home-manager.nixosModules.home-manager
       self.nixosModules.cursor
       self.nixosModules.vscodium
+      self.nixosModules.mcp
       self.nixosModules.opencode
       self.nixosModules.claude-code
       self.nixosModules.rofi
@@ -185,7 +186,7 @@
       };
 
       services.ssh-agent = {
-        enable = true;
+        enable = false;
         # pinentry.package = pkgs.pinentry-qt;
       };
 

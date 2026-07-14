@@ -14,5 +14,5 @@ if [[ -z "$@" ]]; then
       | sed 's|^file://||'
   done | sort -u
 else
-  cursor "$@"
+  codium "$@"
 fi

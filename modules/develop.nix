@@ -17,5 +17,9 @@
       ${pkgs.coreutils}/bin/chown luc:users /home/luc/dev/.directory
       ${pkgs.coreutils}/bin/chmod 0644 /home/luc/dev/.directory
     '';
+
+    environment.systemPackages = with pkgs; [
+      android-tools
+    ];
   };
 }

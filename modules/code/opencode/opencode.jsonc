@@ -64,13 +64,6 @@
     "compaction": {
         "tail_turns": 12
     },
-    "mcp": {
-        "playwright": {
-            "type": "local",
-            "command": ["opencode-playwright-mcp"],
-            "enabled": false
-        }
-    },
     "provider": {
         
     }

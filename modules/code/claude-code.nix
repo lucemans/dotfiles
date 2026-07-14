@@ -1,5 +1,9 @@
 {
-  flake.nixosModules.claude-code = {pkgs, ...}: {
+  flake.nixosModules.claude-code = {
+    self,
+    pkgs,
+    ...
+  }: {
     environment.systemPackages = with pkgs; [
       claude-code
     ];
@@ -9,13 +13,7 @@
     # exclusive control over MCP servers: `claude mcp add` is rejected and
     # claude.ai connectors are suppressed unless re-allowed in managed settings.
     environment.etc."claude-code/managed-mcp.json".text = builtins.toJSON {
-      mcpServers = {
-        playwright = {
-          type = "stdio";
-          command = "opencode-playwright-mcp";
-          args = [];
-        };
-      };
+      mcpServers = self.mcp.claude;
     };
 
     environment.etc."claude-code/managed-settings.json".text = builtins.toJSON {
