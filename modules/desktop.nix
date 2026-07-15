@@ -43,7 +43,6 @@
       inputs.sops-nix.homeManagerModules.sops
       self.homeModules.firefox
       self.homeModules.chromium
-      self.homeModules.nvim
     ];
 
     home-manager.users.luc = {

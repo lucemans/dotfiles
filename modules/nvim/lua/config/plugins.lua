@@ -1,0 +1,7 @@
+require("config.plugins.navigation")
+require("config.plugins.ui")
+require("config.plugins.editing")
+require("config.plugins.git")
+require("config.plugins.treesitter")
+require("config.plugins.formatting")
+require("config.plugins.lsp")

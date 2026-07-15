@@ -75,12 +75,13 @@
     lib,
     ...
   }: let
-    inherit (self.packages.${pkgs.stdenv.hostPlatform.system}) environment terminal;
+    inherit (self.packages.${pkgs.stdenv.hostPlatform.system}) environment neovim terminal;
     editor = "nvim";
   in {
     environment.systemPackages = [
       terminal
       environment
+      neovim
       pkgs.bash-completion
       pkgs.bat
       pkgs.fzf
