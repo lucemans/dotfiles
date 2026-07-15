@@ -20,7 +20,9 @@
     ];
 
     home-manager.users.luc = {pkgs, ...}: {
-      home.packages = [selfpkgs.ethereum-price-plasmoid];
+      home.packages = [
+        selfpkgs.ethereum-price-plasmoid
+      ];
 
       xdg.portal = {
         enable = true;
@@ -48,6 +50,25 @@
           colorScheme = "BreezeDark";
           theme = "breeze-dark";
           tooltipDelay = 3;
+        };
+
+        kwin.effects.zoom = {
+          enable = true;
+          zoomFactor = 1.5;
+          mousePointer = "scale";
+        };
+
+        shortcuts.kwin = {
+          view_zoom_in = [
+            "Meta+Z"
+            "Meta++"
+            "Meta+Num++"
+          ];
+          view_zoom_out = [
+            "Meta+-"
+            "Meta+Num+-"
+          ];
+          view_actual_size = "Meta+Shift+Z";
         };
 
         kscreenlocker = {

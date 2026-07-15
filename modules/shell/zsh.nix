@@ -27,6 +27,7 @@
         alias edit='nvim'
 
         alias upgrade='sudo nixos-rebuild switch --flake /etc/nixos#v3x-fighter'
+        alias reload-plasma='busctl --user call org.kde.KWin /KWin org.kde.KWin reconfigure && systemctl --user restart plasma-plasmashell.service'
 
         if command -v zoxide >/dev/null; then
           eval "$(zoxide init zsh)"
