@@ -1,4 +1,4 @@
-{
+{inputs, ...}: {
   flake.nixosModules.opencode = {
     self,
     pkgs,
@@ -10,8 +10,21 @@
       // {
         mcp = self.mcp.opencode;
       };
+    opencode = inputs.wrappers.lib.wrapPackage {
+      inherit pkgs;
+      package = pkgs.opencode;
+      runtimeInputs = with pkgs; [
+        lua-language-server
+        marksman
+        mdx-language-server
+        taplo
+        typescript-language-server
+        vscode-langservers-extracted
+        yaml-language-server
+      ];
+    };
   in {
-    environment.systemPackages = [pkgs.opencode];
+    environment.systemPackages = [opencode];
 
     environment.sessionVariables = {
       OPENCODE_DISABLE_CHANNEL_DB = "1";

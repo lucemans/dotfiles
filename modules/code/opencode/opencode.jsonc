@@ -54,6 +54,39 @@
         }
     },
     "instructions": ["AGENTS.md"],
+    "lsp": {
+        "lua": {
+            "command": ["lua-language-server"],
+            "extensions": [".lua"]
+        },
+        "markdown": {
+            "command": ["marksman", "server"],
+            "extensions": [".md", ".markdown"]
+        },
+        "mdx": {
+            "command": ["mdx-language-server", "--stdio"],
+            "extensions": [".mdx"]
+        },
+        "taplo": {
+            "command": ["taplo", "lsp", "stdio"],
+            "extensions": [".toml"]
+        },
+        "json": {
+            "command": ["vscode-json-language-server", "--stdio"],
+            "extensions": [".json", ".jsonc"]
+        },
+        "html": {
+            "command": ["vscode-html-language-server", "--stdio"],
+            "extensions": [".html", ".htm"]
+        },
+        "css": {
+            "command": ["vscode-css-language-server", "--stdio"],
+            "extensions": [".css", ".scss", ".less"]
+        },
+        "yaml-ls": {
+            "command": ["yaml-language-server", "--stdio"]
+        }
+    },
     "share": "disabled",
     "autoupdate": "notify",
     "snapshot": true,
