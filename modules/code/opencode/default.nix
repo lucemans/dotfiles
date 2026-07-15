@@ -5,7 +5,7 @@
     ...
   }: let
     opencodeConfig =
-      (builtins.fromJSON (builtins.readFile ./opencode/opencode.jsonc))
+      (builtins.fromJSON (builtins.readFile ./opencode.jsonc))
       // {
         mcp = self.mcp.opencode;
       };
@@ -26,17 +26,17 @@
     };
 
     home-manager.users.luc.home.file.".config/opencode/AGENTS.md" = {
-      source = ./opencode/rules/AGENTS.md;
+      source = ../_rules/AGENTS.md;
       force = true;
     };
 
     home-manager.users.luc.home.file.".config/opencode/rules/TYPESCRIPT.md" = {
-      source = ./opencode/rules/TYPESCRIPT.md;
+      source = ../_rules/TYPESCRIPT.md;
       force = true;
     };
 
     home-manager.users.luc.home.file.".config/opencode/agents/visual-qa.md" = {
-      source = ./opencode/agents/visual-qa.md;
+      source = ./agents/visual-qa.md;
       force = true;
     };
   };

@@ -21,7 +21,7 @@
       ];
     };
 
-    home-manager.users.luc.home.file.".config/VSCodium/User/settings.json".source = ./vscode/settings.json;
-    home-manager.users.luc.home.file.".config/VSCodium/User/keybindings.json".source = ./vscode/keybindings.json;
+    home-manager.users.luc.home.file.".config/VSCodium/User/settings.json".source = ./settings.json;
+    home-manager.users.luc.home.file.".config/VSCodium/User/keybindings.json".source = ./keybindings.json;
   };
 }

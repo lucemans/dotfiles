@@ -17,7 +17,7 @@
     };
 
     home-manager.users.luc.home.file.".claude/CLAUDE.md" = {
-      source = ./opencode/rules/AGENTS.md;
+      source = ../_rules/AGENTS.md;
       force = true;
     };
 

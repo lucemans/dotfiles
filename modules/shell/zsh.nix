@@ -19,9 +19,8 @@
         }
 
         setopt prompt_subst
-        PROMPT='%(?.%F{green}✓%f.%F{red}✗%f) %F{blue}%n@%m%f
-        %F{cyan}%~%f''${vcs_info_msg_0_}
-        %# '
+        PROMPT='%F{blue}%n@%m%f %F{cyan}%~%f''${vcs_info_msg_0_} %(?.%F{green}✓%f.%F{red}✗%f)
+        - '
 
         alias ll='eza -l'
         alias la='eza -la'

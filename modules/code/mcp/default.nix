@@ -1,7 +1,7 @@
 {...}: {
   imports = [
-    ./playwright.nix
-    ./repo-reader.nix
+    ./playwright/default.nix
+    ./repo-reader/default.nix
   ];
 
   flake = {
@@ -40,10 +40,10 @@
       ...
     }: {
       environment.systemPackages = [
-        self.packages.${pkgs.system}.playwright-mcp
-        self.packages.${pkgs.system}.playwright-mcp-icon
-        self.packages.${pkgs.system}.playwright-mcp-desktop
-        self.packages.${pkgs.system}.repo-reader-mcp
+        self.packages.${pkgs.stdenv.hostPlatform.system}.playwright-mcp
+        self.packages.${pkgs.stdenv.hostPlatform.system}.playwright-mcp-icon
+        self.packages.${pkgs.stdenv.hostPlatform.system}.playwright-mcp-desktop
+        self.packages.${pkgs.stdenv.hostPlatform.system}.repo-reader-mcp
         pkgs.playwright-driver
       ];
     };
