@@ -2,6 +2,7 @@
   imports = [
     ./playwright/default.nix
     ./repo-reader/default.nix
+    ./eth-data/default.nix
   ];
 
   flake = {
@@ -18,6 +19,12 @@
           enabled = true;
           timeout = 30000;
         };
+        eth_data = {
+          type = "local";
+          command = ["eth-data-mcp"];
+          enabled = true;
+          timeout = 30000;
+        };
       };
 
       claude = {
@@ -29,6 +36,11 @@
         repo_reader = {
           type = "stdio";
           command = "repo-reader-mcp";
+          args = [];
+        };
+        eth_data = {
+          type = "stdio";
+          command = "eth-data-mcp";
           args = [];
         };
       };
@@ -44,6 +56,7 @@
         self.packages.${pkgs.stdenv.hostPlatform.system}.playwright-mcp-icon
         self.packages.${pkgs.stdenv.hostPlatform.system}.playwright-mcp-desktop
         self.packages.${pkgs.stdenv.hostPlatform.system}.repo-reader-mcp
+        self.packages.${pkgs.stdenv.hostPlatform.system}.eth-data-mcp
         pkgs.playwright-driver
       ];
     };
