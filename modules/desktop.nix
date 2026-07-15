@@ -14,6 +14,7 @@
   in {
     imports = [
       inputs.home-manager.nixosModules.home-manager
+      self.nixosModules.discord
       self.nixosModules.plasma
       self.nixosModules.rofi
     ];
@@ -74,11 +75,6 @@
           telegram-desktop
           mattermost-desktop
           gajim
-
-          (discord.override {
-            #withOpenASAR = true;
-            withVencord = true;
-          })
 
           tailscale
           netbird
