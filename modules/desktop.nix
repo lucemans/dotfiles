@@ -80,8 +80,6 @@
             withVencord = true;
           })
 
-          spotify
-
           tailscale
           netbird
           (lens.overrideAttrs (old: {

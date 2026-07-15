@@ -36,20 +36,7 @@
             }
           ];
 
-          "wireplumber.components" = [
-            {
-              name = "spotify-routing.lua";
-              type = "script/lua";
-              provides = "custom.spotify-routing";
-            }
-          ];
-
-          "wireplumber.profiles" = {
-            main."custom.spotify-routing" = "required";
-          };
         };
-
-        extraScripts."spotify-routing.lua" = builtins.readFile ./wireplumber/spotify-routing.lua;
       };
     };
 

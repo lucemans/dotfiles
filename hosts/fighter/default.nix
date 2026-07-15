@@ -15,6 +15,7 @@
         inputs.lanzaboote.nixosModules.lanzaboote
         self.nixosModules.fighter
         self.nixosModules.audio
+        self.nixosModules.spotify
         self.nixosModules.environment
         self.nixosModules.code
         self.nixosModules.desktop
