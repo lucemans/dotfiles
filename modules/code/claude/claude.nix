@@ -3,7 +3,9 @@
     self,
     pkgs,
     ...
-  }: {
+  }: let
+    rules = import ../_rules;
+  in {
     environment.systemPackages = with pkgs; [
       claude-code
     ];
@@ -16,10 +18,14 @@
       mcpServers = self.mcp.claude;
     };
 
-    home-manager.users.luc.home.file.".claude/CLAUDE.md" = {
-      source = ../_rules/AGENTS.md;
-      force = true;
-    };
+    home-manager.users.luc.home.file =
+      (rules.mkSkillFiles ".claude/skills")
+      // {
+        ".claude/CLAUDE.md" = {
+          source = rules.policy;
+          force = true;
+        };
+      };
 
     environment.etc."claude-code/managed-settings.json".text = builtins.toJSON {
       # Load claude.ai connectors (Calendar, Drive, ...) alongside the managed

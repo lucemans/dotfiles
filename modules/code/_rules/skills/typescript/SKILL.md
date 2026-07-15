@@ -1,3 +1,10 @@
+---
+name: typescript
+description: TypeScript and JavaScript implementation conventions. Use when reading, reviewing, or changing TS, TSX, JS, JSX, MTS, CTS, MJS, or CJS files.
+paths:
+  - "**/*.{ts,tsx,js,jsx,mts,cts,mjs,cjs}"
+---
+
 # V3X TypeScript and JavaScript Guidelines
 
 Write strictly typed, function-oriented code with small, cohesive modules, explicit boundaries, and minimal conceptual overhead.

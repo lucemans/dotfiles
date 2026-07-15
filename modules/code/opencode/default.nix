@@ -4,6 +4,7 @@
     pkgs,
     ...
   }: let
+    rules = import ../_rules;
     opencodeConfig =
       (builtins.fromJSON (builtins.readFile ./opencode.jsonc))
       // {
@@ -20,24 +21,23 @@
       OPENCODE_DISABLE_CHANNEL_DB = "1";
     };
 
-    home-manager.users.luc.home.file.".config/opencode/opencode.jsonc" = {
-      text = builtins.toJSON opencodeConfig;
-      force = true;
-    };
+    home-manager.users.luc.home.file =
+      (rules.mkSkillFiles ".config/opencode/skills")
+      // {
+        ".config/opencode/opencode.jsonc" = {
+          text = builtins.toJSON opencodeConfig;
+          force = true;
+        };
 
-    home-manager.users.luc.home.file.".config/opencode/AGENTS.md" = {
-      source = ../_rules/AGENTS.md;
-      force = true;
-    };
+        ".config/opencode/AGENTS.md" = {
+          source = rules.policy;
+          force = true;
+        };
 
-    home-manager.users.luc.home.file.".config/opencode/rules/TYPESCRIPT.md" = {
-      source = ../_rules/TYPESCRIPT.md;
-      force = true;
-    };
-
-    home-manager.users.luc.home.file.".config/opencode/agents/visual-qa.md" = {
-      source = ./agents/visual-qa.md;
-      force = true;
-    };
+        ".config/opencode/agents/visual-qa.md" = {
+          source = ./agents/visual-qa.md;
+          force = true;
+        };
+      };
   };
 }
