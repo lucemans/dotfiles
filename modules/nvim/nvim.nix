@@ -4,6 +4,9 @@
       enable = true;
       extraConfig = ''
         set number relativenumber
+        set undofile
+        let &undodir = stdpath('state') . '/undo'
+        call mkdir(&undodir, 'p')
       '';
       defaultEditor = true;
       viAlias = true;
@@ -14,12 +17,6 @@
         pkgs.lua-language-server
         pkgs.marksman
         pkgs.nixd
-        pkgs.prettier
-        pkgs.pyright
-        pkgs.python3
-        pkgs.ruff
-        pkgs.rust-analyzer
-        pkgs.rustfmt
         pkgs.stylua
         pkgs.taplo
         pkgs.typescript-language-server
@@ -49,12 +46,114 @@
         {
           plugin = pkgs.vimPlugins.telescope-nvim;
           config = ''
+            local telescope = require('telescope')
+            local actions = require('telescope.actions')
+
+            telescope.setup({
+              defaults = {
+                file_ignore_patterns = {
+                  '%.git/',
+                  'node_modules/',
+                  '%.venv/',
+                },
+              },
+              pickers = {
+                find_files = {
+                  hidden = true,
+                  no_ignore = true,
+                },
+                live_grep = {
+                  additional_args = function()
+                    return { '--hidden' }
+                  end,
+                },
+                buffers = {
+                  mappings = {
+                    n = { d = actions.delete_buffer },
+                  },
+                },
+              },
+            })
+            telescope.load_extension('fzf')
+
             vim.keymap.set('n', '<C-f>', require('telescope.builtin').find_files, { silent = true })
+            vim.keymap.set('n', '<leader>ff', require('telescope.builtin').find_files, { silent = true })
+            vim.keymap.set('n', '<leader>fg', require('telescope.builtin').live_grep, { silent = true })
+            vim.keymap.set('n', '<leader>fb', require('telescope.builtin').buffers, { silent = true })
+            vim.keymap.set('n', '<leader>bd', '<cmd>bdelete<CR>', { silent = true })
           '';
         }
         {
+          plugin = pkgs.vimPlugins.telescope-fzf-native-nvim;
+          config = "";
+        }
+        {
           plugin = pkgs.vimPlugins.vim-startify;
-          # config = "let g:startify_change_to_vcs_root = 0";
+          config = ''
+            vim.g.startify_custom_header = {
+              '  Keybindings',
+              '  Files: <C-f>/<Space>ff find | <Space>fg grep | <Space>fb buffers | <Space>e tree',
+              '  Git: ]c/[c hunks | <Space>gb blame | <Space>gp preview',
+              '  LSP: gd definition | gr references | K hover | <Space>ca action | <Space>rn rename',
+              '  Edit: <Space>f format | <Space>oi organize imports | ss jump | S treesitter jump',
+              '  Sessions: <Space>qs save | <Space>qd delete',
+            }
+            vim.g.startify_lists = {
+              { type = 'files', header = { '  Recent files' } },
+            }
+            vim.g.startify_change_to_vcs_root = 0
+          '';
+        }
+        {
+          plugin = pkgs.vimPlugins.flash-nvim;
+          config = ''
+            vim.keymap.set('n', 'ss', function()
+              require('flash').jump()
+            end, { silent = true })
+            vim.keymap.set('n', 'S', function()
+              require('flash').treesitter()
+            end, { silent = true })
+          '';
+        }
+        {
+          plugin = pkgs.vimPlugins.mini-nvim;
+          config = ''
+            require('mini.ai').setup()
+            require('mini.surround').setup()
+            require('mini.indentscope').setup({ symbol = '|' })
+            require('mini.sessions').setup({
+              autoread = true,
+              autowrite = true,
+              file = '.session',
+              force = { read = false, write = true, delete = true },
+            })
+
+            vim.keymap.set('n', '<leader>qs', function()
+              require('mini.sessions').write('.session')
+            end, { silent = true })
+            vim.keymap.set('n', '<leader>qd', function()
+              require('mini.sessions').delete('.session')
+            end, { silent = true })
+          '';
+        }
+        {
+          plugin = pkgs.vimPlugins.lualine-nvim;
+          config = ''
+            require('lualine').setup({
+              options = {
+                theme = 'auto',
+                globalstatus = true,
+              },
+              sections = {
+                lualine_a = { 'mode' },
+                lualine_b = { 'branch', 'diff', 'diagnostics' },
+                lualine_c = { 'filename' },
+                lualine_x = { 'filetype', 'lsp_status' },
+                lualine_y = { 'progress' },
+                lualine_z = { 'location' },
+              },
+            })
+          '';
         }
         pkgs.vimPlugins.cmp-buffer
         pkgs.vimPlugins.cmp-nvim-lsp
@@ -64,16 +163,17 @@
           config = ''
             require('conform').setup({
               format_on_save = function(bufferNumber)
-                if vim.bo[bufferNumber].filetype ~= 'nix' then
+                local filetype = vim.bo[bufferNumber].filetype
+                if filetype ~= 'nix' and filetype ~= 'toml' then
                   return
                 end
 
                 return { timeout_ms = 2000, lsp_format = 'never' }
               end,
               formatters_by_ft = {
-                javascript = { 'prettier' },
-                javascriptreact = { 'prettier' },
-                json = { 'prettier' },
+                javascript = { 'eslint_d', 'prettier', stop_after_first = true },
+                javascriptreact = { 'eslint_d', 'prettier', stop_after_first = true },
+                json = { 'jq' },
                 jsonc = { 'prettier' },
                 lua = { 'stylua' },
                 markdown = { 'prettier' },
@@ -81,9 +181,17 @@
                 python = { 'ruff_format' },
                 rust = { 'rustfmt' },
                 toml = { 'taplo' },
-                typescript = { 'prettier' },
-                typescriptreact = { 'prettier' },
+                typescript = { 'eslint_d', 'prettier', stop_after_first = true },
+                typescriptreact = { 'eslint_d', 'prettier', stop_after_first = true },
                 yaml = { 'prettier' },
+              },
+              formatters = {
+                jq = {
+                  command = "${pkgs.jq}/bin/jq",
+                },
+                taplo = {
+                  command = "${pkgs.taplo}/bin/taplo",
+                },
               },
             })
           '';
@@ -133,6 +241,7 @@
               html
               javascript
               json
+              just
               lua
               markdown
               markdown_inline
@@ -148,13 +257,40 @@
               yaml
             ]);
           config = ''
-            require('nvim-treesitter').setup({})
             vim.api.nvim_create_autocmd('FileType', {
+              pattern = {
+                'bash',
+                'css',
+                'html',
+                'javascript',
+                'javascriptreact',
+                'json',
+                'jsonc',
+                'just',
+                'lua',
+                'markdown',
+                'nix',
+                'python',
+                'rust',
+                'toml',
+                'typescript',
+                'typescriptreact',
+                'vim',
+                'yaml',
+              },
               callback = function()
                 pcall(vim.treesitter.start)
-                vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
               end,
             })
+            require('nvim-treesitter').setup({
+              indent = { enable = true },
+            })
+          '';
+        }
+        {
+          plugin = pkgs.vimPlugins.lazydev-nvim;
+          config = ''
+            require('lazydev').setup()
           '';
         }
         {
@@ -186,22 +322,35 @@
             vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { silent = true })
             vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { silent = true })
 
-            local servers = {
-              jsonls = {},
+            local configure_server = function(serverName, serverConfig)
+              serverConfig.capabilities = capabilities
+              serverConfig.on_attach = on_attach
+              vim.lsp.config(serverName, serverConfig)
+              vim.lsp.enable(serverName)
+            end
+
+            local systemServers = {
+              jsonls = {
+                cmd = {
+                  "${pkgs.vscode-langservers-extracted}/bin/vscode-json-language-server",
+                  '--stdio',
+                },
+              },
               lua_ls = {},
               marksman = {},
               nixd = {},
-              pyright = {},
-              rust_analyzer = {
-                settings = {
-                  ['rust-analyzer'] = {
-                    check = { command = 'clippy' },
-                  },
+              taplo = {
+                cmd = {
+                  "${pkgs.taplo}/bin/taplo",
+                  'lsp',
+                  'stdio',
                 },
               },
-              taplo = {},
-              ts_ls = {},
               yamlls = {
+                cmd = {
+                  "${pkgs.yaml-language-server}/bin/yaml-language-server",
+                  '--stdio',
+                },
                 settings = {
                   yaml = {
                     schemas = {
@@ -220,11 +369,35 @@
               },
             }
 
-            for serverName, serverConfig in pairs(servers) do
-              serverConfig.capabilities = capabilities
-              serverConfig.on_attach = on_attach
-              vim.lsp.config(serverName, serverConfig)
-              vim.lsp.enable(serverName)
+            for serverName, serverConfig in pairs(systemServers) do
+              configure_server(serverName, serverConfig)
+            end
+
+            local projectServers = {
+              pyright = {
+                executable = 'pyright',
+                config = {},
+              },
+              rust_analyzer = {
+                executable = 'rust-analyzer',
+                config = {
+                  settings = {
+                    ['rust-analyzer'] = {
+                      check = { command = 'clippy' },
+                    },
+                  },
+                },
+              },
+              ts_ls = {
+                executable = 'typescript-language-server',
+                config = {},
+              },
+            }
+
+            for serverName, projectServer in pairs(projectServers) do
+              if vim.fn.executable(projectServer.executable) == 1 then
+                configure_server(serverName, projectServer.config)
+              end
             end
           '';
         }

@@ -21,6 +21,7 @@
 - When a request requires a material unstated implementation choice, present concise options and wait for the user's decision.
 - Make the smallest correct change and preserve existing user changes.
 - Do not fix unrelated or adjacent problems. Report them separately, and ask before creating a handoff file or delegating their documentation.
+- If you need a paragraph-long comment to justify why the workaround is OK, the code is wrong fix the code.
 
 ## Verification
 

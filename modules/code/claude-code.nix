@@ -16,6 +16,11 @@
       mcpServers = self.mcp.claude;
     };
 
+    home-manager.users.luc.home.file.".claude/CLAUDE.md" = {
+      source = ./opencode/rules/AGENTS.md;
+      force = true;
+    };
+
     environment.etc."claude-code/managed-settings.json".text = builtins.toJSON {
       # Load claude.ai connectors (Calendar, Drive, ...) alongside the managed
       # set, except Gmail. Denying by name and URL since the display name can
