@@ -34,16 +34,18 @@
 - Ask before adding or upgrading dependencies or development-environment packages. Update lockfiles only after approval.
 - Limit formatting to task-related files. Ask before repository-wide formatting, generators, migrations, codemods, or other broad rewrites.
 
+## Language Preferences
+
+- Never create `types.ts` or `types.rs`; define every type, struct, and enum in the module where it appropriately belongs. Wanting a generic types file means the design needs more thought.
+- Default to writing no comments. Only add one when the WHY is non-obvious: a hidden constraint, invariant, workaround for a specific bug, behaviour that would surprise the reader. If removing the comment wouldn't confuse a future reader, don't write it.
+- Don't explain WHAT the code does, since well-named identifiers and well written code already does that. Don't reference the current task, fix, or request or how it differs from before, since those rot as the codebase evolves.
+
 ## Nix Development Environments
 
 - When a dependency is missing, first inspect `flake.nix`, `flake.lock`, `shell.nix`, and relevant project documentation when present.
 - Consider whether the dependency belongs in the project's development environment before proposing a change. Explain the tradeoff and ask the user before editing development-environment definitions.
 - If the dependency is already available through the development environment, use `nix develop -c <command>` only when that one scoped command is worthwhile.
 - After a development-environment definition changes, prefer asking the user to restart OpenCode from the appropriate environment. Do not require every subsequent tool call to be prefixed with `nix develop`.
-
-## Language Preferences
-
-- Never create `types.ts` or `types.rs`; define every type, struct, and enum in the module where it appropriately belongs. Wanting a generic types file means the design needs more thought.
 
 ### TypeScript and JavaScript
 

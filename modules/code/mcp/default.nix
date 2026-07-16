@@ -22,7 +22,7 @@
         eth_data = {
           type = "local";
           command = ["eth-data-mcp"];
-          enabled = true;
+          enabled = false;
           timeout = 30000;
         };
       };
