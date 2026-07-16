@@ -3,6 +3,7 @@
     ./playwright/default.nix
     ./repo-reader/default.nix
     ./eth-data/default.nix
+    ./nixos/default.nix
   ];
 
   flake = {
@@ -23,6 +24,12 @@
           type = "local";
           command = ["eth-data-mcp"];
           enabled = false;
+          timeout = 30000;
+        };
+        nixos = {
+          type = "local";
+          command = ["mcp-nixos-sandbox"];
+          enabled = true;
           timeout = 30000;
         };
       };
@@ -57,6 +64,7 @@
         self.packages.${pkgs.stdenv.hostPlatform.system}.playwright-mcp-desktop
         self.packages.${pkgs.stdenv.hostPlatform.system}.repo-reader-mcp
         self.packages.${pkgs.stdenv.hostPlatform.system}.eth-data-mcp
+        self.packages.${pkgs.stdenv.hostPlatform.system}.mcp-nixos-sandbox
         pkgs.playwright-driver
       ];
     };

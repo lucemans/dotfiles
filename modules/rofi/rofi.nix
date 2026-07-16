@@ -28,16 +28,14 @@
       programs.plasma.hotkeys.commands = {
         "launch-rofi" = {
           name = "Launch Rofi";
-          key = "Alt+R";
+          key = "Alt+Shift+R";
           command = "rofi -show combi";
         };
-
         "launch-rofi-vs" = {
           name = "Launch Rofi VSCode";
           key = "Alt+P";
           command = "rofi -show vs";
         };
-
         "launch-doubletake" = {
           name = "Launch Doubletake";
           key = "Alt+B";

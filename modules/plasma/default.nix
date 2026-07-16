@@ -96,7 +96,14 @@
                 };
               }
               "org.kde.plasma.pager"
-              "org.kde.plasma.icontasks"
+              {
+                iconTasks.launchers = [
+                  "applications:signal.desktop"
+                  "applications:Mattermost.desktop"
+                  "applications:gitkraken.desktop"
+                  "applications:chromium-browser.desktop"
+                ];
+              }
               "org.kde.plasma.marginsseparator"
               "org.kde.plasma.systemtray"
               {

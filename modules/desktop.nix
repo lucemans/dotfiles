@@ -14,9 +14,11 @@
   in {
     imports = [
       inputs.home-manager.nixosModules.home-manager
+      self.nixosModules.anyrun
       self.nixosModules.discord
       self.nixosModules.plasma
       self.nixosModules.rofi
+      self.nixosModules.television
     ];
 
     # services.xserver.enable = lib.mkDefault true;
