@@ -14,6 +14,12 @@
           command = ["playwright-mcp"];
           enabled = false;
         };
+        dapp_wallet = {
+          type = "local";
+          command = ["dapp-wallet-mcp"];
+          enabled = false;
+          timeout = 30000;
+        };
         repo_reader = {
           type = "local";
           command = ["repo-reader-mcp"];
@@ -40,6 +46,11 @@
           command = "playwright-mcp";
           args = [];
         };
+        dapp_wallet = {
+          type = "stdio";
+          command = "dapp-wallet-mcp";
+          args = [];
+        };
         repo_reader = {
           type = "stdio";
           command = "repo-reader-mcp";
@@ -62,6 +73,7 @@
         self.packages.${pkgs.stdenv.hostPlatform.system}.playwright-mcp
         self.packages.${pkgs.stdenv.hostPlatform.system}.playwright-mcp-icon
         self.packages.${pkgs.stdenv.hostPlatform.system}.playwright-mcp-desktop
+        self.packages.${pkgs.stdenv.hostPlatform.system}.dapp-wallet-mcp
         self.packages.${pkgs.stdenv.hostPlatform.system}.repo-reader-mcp
         self.packages.${pkgs.stdenv.hostPlatform.system}.eth-data-mcp
         self.packages.${pkgs.stdenv.hostPlatform.system}.mcp-nixos-sandbox

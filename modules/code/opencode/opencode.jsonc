@@ -12,8 +12,6 @@
         "external_directory": {
             "/home/luc/.cargo/registry/src/**": "allow"
         },
-        "playwright_*": "deny",
-        "playwright_browser_run_code_unsafe": "deny",
         "bash": {
             "*": "ask",
 

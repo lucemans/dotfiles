@@ -79,14 +79,8 @@
 
           tailscale
           netbird
-          (lens.overrideAttrs (old: {
-            # Electron GPU rendering produces a blank Lens window on NVIDIA Wayland sessions.
-            postFixup =
-              (old.postFixup or "")
-              + ''
-                wrapProgram $out/bin/lens-desktop --add-flags "--disable-gpu"
-              '';
-          }))
+
+          lens
 
           thunderbird
           rpi-imager
