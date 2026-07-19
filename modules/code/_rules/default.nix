@@ -2,6 +2,7 @@ let
   skills = {
     typescript = ./skills/typescript/SKILL.md;
     "solid-js" = ./skills/solid-js/SKILL.md;
+    "web-design" = ./skills/web-design/SKILL.md;
   };
 in {
   policy = ./AGENTS.md;
