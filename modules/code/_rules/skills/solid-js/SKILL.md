@@ -29,6 +29,7 @@ Use this skill only after confirming the project uses Solid. Do not introduce So
 - Put pending UI behind `<Suspense>` and failures behind a nearby `<ErrorBoundary>`. Provide accessible loading, empty, and error states.
 - Preserve native HTML semantics, keyboard behavior, visible focus, labels, and accessible names. Use real buttons for actions and links for navigation.
 - Keep DOM references local. Use callback refs when lifecycle work is required, and clean up listeners, observers, timers, and subscriptions.
+- When `@kobalte/core` is installed, prefer its accessible primitives for dialogs, popovers, menus, tooltips, and other interactive UI over custom implementations.
 
 ## Server State And APIs
 
@@ -47,10 +48,10 @@ Use this skill only after confirming the project uses Solid. Do not introduce So
 
 - Preserve the existing Vite and Solid plugin configuration. Use `import.meta.env` for client environment values, and never expose secrets through Vite-prefixed variables.
 - When Tailwind CSS is configured, use the existing design tokens, responsive variants, and component conventions. Prefer small reusable components over repeated, divergent utility-class blocks.
-- Use the project's existing `clsx` or `classnames` package to compose conditional classes. Do not add both packages or build custom class-concatenation helpers.
+- Use the project's existing `clsx` or `classnames` package to compose conditional classes. Never construct class names with template literals or build custom class-concatenation helpers. If neither package is installed, ask before adding one.
 - Keep presentation state in class names and semantic attributes. Avoid imperative DOM class manipulation except when integrating an external library.
 
 ## Dependencies And Verification
 
-- Prefer the project's installed tooling. Ask before adding or upgrading Solid, Vite, Tailwind CSS, TanStack, OpenAPI, or class-name dependencies.
+- Prefer the project's installed tooling. Ask before adding or upgrading Solid, Vite, Tailwind CSS, Kobalte, TanStack, OpenAPI, or class-name dependencies.
 - Run the focused type check, lint, and relevant tests after changes. For interaction changes, verify loading, error, keyboard, and navigation behavior in the running application when practical.
