@@ -60,3 +60,7 @@
 
 - Follow standard Rust conventions, `rustfmt`, and default Clippy guidance.
 - Format Nix code with Alejandra and follow its output.
+
+## Skill Improvement
+
+- If the user repeatedly asks you to do something or endorses a pattern that is prohibited as per this document or a skill document, propose they update their system wide skill, output a specific line to adjust or update.

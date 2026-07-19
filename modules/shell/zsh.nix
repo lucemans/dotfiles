@@ -25,6 +25,10 @@
         alias ll='eza -l'
         alias la='eza -la'
         alias edit='nvim'
+        alias p='pnpm'
+        alias why='pnpm'
+        alias k='kubectl'
+        alias j='just'
 
         alias upgrade='sudo nixos-rebuild switch --flake /etc/nixos#v3x-fighter'
         alias reload-plasma='systemctl --user restart plasma-plasmashell.service'
