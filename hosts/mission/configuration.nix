@@ -14,6 +14,7 @@
     hardware.facter.reportPath = ./facter.json;
     boot.loader.systemd-boot.enable = true;
     boot.loader.efi.canTouchEfiVariables = true;
+    boot.kernelModules = ["i2c-dev"];
     networking.hostName = "v3x-mission";
     networking.networkmanager.enable = true;
     time.timeZone = "Europe/Amsterdam";
@@ -38,6 +39,20 @@
       wantedBy = ["graphical-session.target"];
       partOf = ["graphical-session.target"];
       serviceConfig.ExecStart = "${pkgs.swaybg}/bin/swaybg -i ${self.wallpaper} -m fill";
+    };
+
+    systemd.services.mission-display-off = {
+      serviceConfig = {
+        Type = "oneshot";
+        ExecStart = "${pkgs.ddcutil}/bin/ddcutil --bus 3 setvcp D6 05";
+      };
+    };
+
+    systemd.services.mission-display-on = {
+      serviceConfig = {
+        Type = "oneshot";
+        ExecStart = "${pkgs.ddcutil}/bin/ddcutil --bus 3 setvcp D6 01";
+      };
     };
 
     users.users.luc = {
