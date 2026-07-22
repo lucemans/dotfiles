@@ -2,18 +2,18 @@
   config,
   lib,
   pkgs,
-  ethereum-nix,
   ...
 }: {
-  flake.nixosModules.point = {
+  flake.nixosModules.mission = {
     self,
     pkgs,
     lib,
     ...
   }: {
+    hardware.facter.reportPath = ./facter.json;
     boot.loader.systemd-boot.enable = true;
     boot.loader.efi.canTouchEfiVariables = true;
-    networking.hostName = "v3x-point";
+    networking.hostName = "v3x-mission";
     networking.networkmanager.enable = true;
     time.timeZone = "Europe/Amsterdam";
     users.users.luc = {
@@ -35,6 +35,7 @@
       ];
     };
 
+    security.sudo.wheelNeedsPassword = false;
     services.openssh = {
       enable = true;
       openFirewall = true;
