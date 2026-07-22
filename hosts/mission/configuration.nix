@@ -55,6 +55,8 @@
       };
     };
 
+    environment.systemPackages = [pkgs.kitty.terminfo];
+
     users.users.luc = {
       isNormalUser = true;
       extraGroups = [
