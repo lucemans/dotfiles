@@ -26,6 +26,10 @@
         command = "${config.programs.niri.package}/bin/niri-session";
         user = "luc";
       };
+      settings.default_session = {
+        command = "${config.programs.niri.package}/bin/niri-session";
+        user = "luc";
+      };
     };
 
     # Let niri-session provide the session PATH to Niri and its user services.
