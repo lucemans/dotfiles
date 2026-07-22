@@ -6,6 +6,7 @@
 }: {
   flake.nixosModules.mission = {
     self,
+    config,
     pkgs,
     lib,
     ...
@@ -16,6 +17,25 @@
     networking.hostName = "v3x-mission";
     networking.networkmanager.enable = true;
     time.timeZone = "Europe/Amsterdam";
+
+    programs.niri.enable = true;
+
+    services.greetd = {
+      enable = true;
+      settings.initial_session = {
+        command = "${config.programs.niri.package}/bin/niri-session";
+        user = "luc";
+      };
+    };
+
+    # Let niri-session provide the session PATH to Niri and its user services.
+    systemd.user.services.niri.enableDefaultPath = false;
+    systemd.user.services.swaybg = {
+      wantedBy = ["graphical-session.target"];
+      partOf = ["graphical-session.target"];
+      serviceConfig.ExecStart = "${pkgs.swaybg}/bin/swaybg -i ${self.wallpaper} -m fill";
+    };
+
     users.users.luc = {
       isNormalUser = true;
       extraGroups = [
