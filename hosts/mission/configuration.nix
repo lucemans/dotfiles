@@ -25,9 +25,6 @@
 
         exit 1
       '';
-    grafanaKioskExtension = pkgs.runCommand "mission-grafana-kiosk-extension" {} ''
-      cp -r ${./grafana-kiosk-extension} "$out"
-    '';
   in {
     imports = [self.nixosModules.missionUptime];
 
@@ -117,7 +114,7 @@
       partOf = ["graphical-session.target"];
       serviceConfig = {
         ExecStartPre = "${pkgs.bash}/bin/bash -c 'until ${pkgs.curl}/bin/curl --fail --silent http://127.0.0.1:3000/api/health >/dev/null; do ${pkgs.coreutils}/bin/sleep 1; done'";
-        ExecStart = "${pkgs.chromium}/bin/chromium --ozone-platform=wayland --kiosk --no-first-run --disable-session-crashed-bubble --disable-extensions-except=${grafanaKioskExtension} --load-extension=${grafanaKioskExtension} http://127.0.0.1:3000/d/mission-overview?orgId=1&kiosk";
+        ExecStart = "${pkgs.chromium}/bin/chromium --ozone-platform=wayland --kiosk --incognito --no-first-run --disable-session-crashed-bubble http://127.0.0.1:3000/d/mission-overview?orgId=1&kiosk";
         Restart = "always";
         RestartSec = 5;
       };
