@@ -107,11 +107,19 @@
             from = 60000;
             to = 60010;
           }
+          {
+            from = 1714;
+            to = 1764;
+          }
         ];
         allowedTCPPortRanges = [
           {
             from = 60000;
             to = 60010;
+          }
+          {
+            from = 1714;
+            to = 1764;
           }
         ];
       };
