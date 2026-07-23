@@ -32,6 +32,34 @@
             conditions = ["[STATUS] < 300"];
           }
           {
+            name = "v3x-mediabus";
+            group = "Local Homelab";
+            url = "icmp://v3x-mediabus";
+            interval = "1m";
+            conditions = ["[CONNECTED] == true"];
+          }
+          {
+            name = "v3x-alternator";
+            group = "Local Homelab";
+            url = "icmp://v3x-alternator";
+            interval = "1m";
+            conditions = ["[CONNECTED] == true"];
+          }
+          {
+            name = "v3x-generator";
+            group = "Local Homelab";
+            url = "icmp://v3x-generator";
+            interval = "1m";
+            conditions = ["[CONNECTED] == true"];
+          }
+          {
+            name = "v3x-watch";
+            group = "Local Homelab";
+            url = "icmp://v3x-watch";
+            interval = "1m";
+            conditions = ["[CONNECTED] == true"];
+          }
+          {
             name = "luc.computer";
             group = "Domains";
             url = "https://luc.computer";
