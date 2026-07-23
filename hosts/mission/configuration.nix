@@ -44,7 +44,7 @@
       enable = true;
       settings = {
         server = {
-          http_addr = "10.90.0.60";
+          http_addr = "0.0.0.0";
           http_port = 3000;
         };
         analytics.reporting_enabled = false;
@@ -117,7 +117,7 @@
       partOf = ["graphical-session.target"];
       serviceConfig = {
         ExecStartPre = "${pkgs.bash}/bin/bash -c 'until ${pkgs.curl}/bin/curl --fail --silent http://127.0.0.1:3000/api/health >/dev/null; do ${pkgs.coreutils}/bin/sleep 1; done'";
-        ExecStart = "${pkgs.chromium}/bin/chromium --ozone-platform=wayland --kiosk --incognito --no-first-run --disable-session-crashed-bubble http://127.0.0.1:3000/d/mission-overview?orgId=1&kiosk";
+        ExecStart = "${pkgs.chromium}/bin/chromium --ozone-platform=wayland --kiosk --incognito --no-first-run --disable-session-crashed-bubble http://127.0.0.1:3000/playlists/play/adqjppm?kiosk";
         Restart = "always";
         RestartSec = 5;
       };
