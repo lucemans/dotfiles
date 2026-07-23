@@ -31,6 +31,66 @@
             interval = "1m";
             conditions = ["[STATUS] < 300"];
           }
+          {
+            name = "luc.computer";
+            group = "Domains";
+            url = "https://luc.computer";
+            interval = "5m";
+            conditions = [
+              "[STATUS] < 400"
+              "[CERTIFICATE_EXPIRATION] > 336h"
+            ];
+          }
+          {
+            name = "v3x.company";
+            group = "Domains";
+            url = "https://v3x.company";
+            interval = "5m";
+            conditions = [
+              "[STATUS] < 400"
+              "[CERTIFICATE_EXPIRATION] > 336h"
+            ];
+          }
+          {
+            name = "wallet.page";
+            group = "Domains";
+            url = "https://wallet.page";
+            interval = "5m";
+            conditions = [
+              "[STATUS] < 400"
+              "[CERTIFICATE_EXPIRATION] > 336h"
+            ];
+          }
+          {
+            name = "ethereum.forum";
+            group = "Domains";
+            url = "https://ethereum.forum";
+            interval = "5m";
+            conditions = [
+              "[STATUS] < 400"
+              "[CERTIFICATE_EXPIRATION] > 336h"
+            ];
+          }
+          {
+            name = "openlv.sh";
+            group = "Domains";
+            url = "https://openlv.sh";
+            interval = "5m";
+            conditions = [
+              "[STATUS] < 400"
+              "[CERTIFICATE_EXPIRATION] > 336h"
+            ];
+          }
+          {
+            name = "enstate.rs";
+            group = "Domains";
+            url = "https://enstate.rs";
+            interval = "5m";
+            conditions = [
+              "[STATUS] < 400"
+              "[CERTIFICATE_EXPIRATION] > 336h"
+            ];
+          }
         ];
       };
     };
