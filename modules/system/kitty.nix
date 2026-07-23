@@ -76,4 +76,30 @@
       };
     };
   };
+
+  flake.nixosModules.kittySsh = {
+    home-manager.users.luc.xdg.configFile = {
+      "kitty/ssh.conf".text = ''
+        hostname mission v3x-mission
+        color_scheme mission.conf
+
+        hostname point v3x-point
+        color_scheme point.conf
+      '';
+
+      "kitty/mission.conf".text = ''
+        background #3b1f47
+        foreground #f8f8f2
+        color4 #ff79c6
+        color12 #ff79c6
+      '';
+
+      "kitty/point.conf".text = ''
+        background #3d3418
+        foreground #f8f8f2
+        color4 #f1fa8c
+        color12 #f1fa8c
+      '';
+    };
+  };
 }

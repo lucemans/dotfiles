@@ -19,6 +19,7 @@
       self.nixosModules.rofi
       self.nixosModules.environment
       self.nixosModules.nix
+      self.nixosModules.kittySsh
     ];
 
     fonts.packages = with pkgs; [nerd-fonts.hack];
