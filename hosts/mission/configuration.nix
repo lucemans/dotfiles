@@ -10,11 +10,27 @@
     pkgs,
     lib,
     ...
-  }: {
+  }: let
+    niriAction = action:
+      pkgs.writeShellScript "mission-${action}" ''
+        runtimeDir="/run/user/$(${pkgs.coreutils}/bin/id -u luc)"
+
+        for socket in "$runtimeDir"/wayland-*; do
+          if [ ! -S "$socket" ]; then
+            continue
+          fi
+
+          if ${pkgs.util-linux}/bin/runuser -u luc -- ${pkgs.coreutils}/bin/env XDG_RUNTIME_DIR="$runtimeDir" WAYLAND_DISPLAY="${"$"}{socket##*/}" ${config.programs.niri.package}/bin/niri msg action ${action}; then
+            exit 0
+          fi
+        done
+
+        exit 1
+      '';
+  in {
     hardware.facter.reportPath = ./facter.json;
     boot.loader.systemd-boot.enable = true;
     boot.loader.efi.canTouchEfiVariables = true;
-    boot.kernelModules = ["i2c-dev"];
     networking.hostName = "v3x-mission";
     networking.networkmanager.enable = true;
     time.timeZone = "Europe/Amsterdam";
@@ -44,14 +60,14 @@
     systemd.services.mission-display-off = {
       serviceConfig = {
         Type = "oneshot";
-        ExecStart = "${pkgs.ddcutil}/bin/ddcutil --bus 3 setvcp D6 05";
+        ExecStart = niriAction "power-off-monitors";
       };
     };
 
     systemd.services.mission-display-on = {
       serviceConfig = {
         Type = "oneshot";
-        ExecStart = "${pkgs.ddcutil}/bin/ddcutil --bus 3 setvcp D6 01";
+        ExecStart = niriAction "power-on-monitors";
       };
     };
 
