@@ -59,8 +59,8 @@
       9200
       8545
     ];
-    networking.firewall.extraInputRules = ''
-      ip saddr 10.90.0.60 tcp dport 9090 accept
+    networking.firewall.extraCommands = ''
+      iptables -A nixos-fw -p tcp -s 10.90.0.60 --dport 9090 -j ACCEPT
     '';
 
     nix.settings.experimental-features = [

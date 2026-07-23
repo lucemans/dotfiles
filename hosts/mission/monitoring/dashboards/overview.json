@@ -13,11 +13,31 @@
         },
         "overrides": []
       },
-      "gridPos": {"h": 12, "w": 24, "x": 0, "y": 0},
+      "gridPos": {"h": 5, "w": 4, "x": 0, "y": 0},
+      "maxPerRow": 6,
+      "options": {"colorMode": "background", "graphMode": "none", "justifyMode": "center", "orientation": "auto", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}, "textMode": "value"},
+      "repeat": "service",
+      "repeatDirection": "h",
+      "targets": [{"expr": "gatus_results_endpoint_success{name=~\"$service\"}", "instant": true, "refId": "A"}],
+      "title": "$service",
+      "type": "stat"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "mission-prometheus"},
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "thresholds"},
+          "custom": {"fillOpacity": 100, "lineWidth": 0},
+          "mappings": [{"type": "value", "options": {"0": {"color": "red", "text": "DOWN"}, "1": {"color": "green", "text": "UP"}}}],
+          "thresholds": {"mode": "absolute", "steps": [{"color": "red", "value": 0}, {"color": "green", "value": 1}]}
+        },
+        "overrides": []
+      },
+      "gridPos": {"h": 12, "w": 24, "x": 0, "y": 5},
       "maxDataPoints": 288,
       "options": {"colWidth": 0.9, "legend": {"displayMode": "list", "placement": "bottom", "showLegend": false}, "rowHeight": 0.9, "showValue": "never", "tooltip": {"mode": "single", "sort": "none"}},
       "targets": [{"expr": "gatus_results_endpoint_success", "legendFormat": "{{group}} / {{name}}", "refId": "A"}],
-      "title": "Service History",
+      "title": "24h Service History",
       "type": "status-history"
     },
     {
@@ -33,7 +53,7 @@
         },
         "overrides": []
       },
-      "gridPos": {"h": 8, "w": 24, "x": 0, "y": 12},
+      "gridPos": {"h": 8, "w": 24, "x": 0, "y": 17},
       "options": {"displayMode": "basic", "namePlacement": "left", "orientation": "horizontal", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}, "showUnfilled": false, "valueMode": "color"},
       "targets": [{"expr": "sum by (name) (increase(gatus_results_total{success=\"true\"}[24h])) / sum by (name) (increase(gatus_results_total[24h])) * 100", "instant": true, "legendFormat": "{{name}}", "refId": "A"}],
       "title": "24h Availability",
@@ -42,7 +62,7 @@
     {
       "datasource": {"type": "prometheus", "uid": "point-prometheus"},
       "fieldConfig": {"defaults": {"mappings": [{"type": "value", "options": {"0": {"color": "red", "text": "DOWN"}, "1": {"color": "green", "text": "UP"}}}]}, "overrides": []},
-      "gridPos": {"h": 5, "w": 6, "x": 0, "y": 20},
+      "gridPos": {"h": 5, "w": 6, "x": 0, "y": 25},
       "options": {"colorMode": "background", "graphMode": "none", "justifyMode": "center", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}, "textMode": "value_and_name"},
       "targets": [{"expr": "up{job=\"reth\"}", "instant": true, "refId": "A"}],
       "title": "Reth",
@@ -51,7 +71,7 @@
     {
       "datasource": {"type": "prometheus", "uid": "point-prometheus"},
       "fieldConfig": {"defaults": {"mappings": [{"type": "value", "options": {"0": {"color": "red", "text": "DOWN"}, "1": {"color": "green", "text": "UP"}}}]}, "overrides": []},
-      "gridPos": {"h": 5, "w": 6, "x": 6, "y": 20},
+      "gridPos": {"h": 5, "w": 6, "x": 6, "y": 25},
       "options": {"colorMode": "background", "graphMode": "none", "justifyMode": "center", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}, "textMode": "value_and_name"},
       "targets": [{"expr": "up{job=\"lighthouse\"}", "instant": true, "refId": "A"}],
       "title": "Lighthouse",
@@ -60,7 +80,7 @@
     {
       "datasource": {"type": "prometheus", "uid": "point-prometheus"},
       "fieldConfig": {"defaults": {"color": {"mode": "thresholds"}, "thresholds": {"mode": "absolute", "steps": [{"color": "red", "value": 0}, {"color": "green", "value": 1}]}}, "overrides": []},
-      "gridPos": {"h": 5, "w": 6, "x": 12, "y": 20},
+      "gridPos": {"h": 5, "w": 6, "x": 12, "y": 25},
       "options": {"colorMode": "value", "graphMode": "area", "justifyMode": "center", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}, "textMode": "value_and_name"},
       "targets": [{"expr": "reth_network_connected_peers{instance=\"v3x-point\"}", "instant": true, "refId": "A"}],
       "title": "Reth Peers",
@@ -69,7 +89,7 @@
     {
       "datasource": {"type": "prometheus", "uid": "point-prometheus"},
       "fieldConfig": {"defaults": {"color": {"mode": "thresholds"}, "decimals": 0, "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": 0}, {"color": "yellow", "value": 2}, {"color": "red", "value": 8}]}}, "overrides": []},
-      "gridPos": {"h": 5, "w": 6, "x": 18, "y": 20},
+      "gridPos": {"h": 5, "w": 6, "x": 18, "y": 25},
       "options": {"colorMode": "value", "graphMode": "area", "justifyMode": "center", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}, "textMode": "value_and_name"},
       "targets": [{"expr": "slotclock_present_slot - beacon_head_state_slot", "instant": true, "refId": "A"}],
       "title": "Beacon Slot Lag",
@@ -77,17 +97,34 @@
     },
     {
       "datasource": {"type": "prometheus", "uid": "mission-prometheus"},
-      "fieldConfig": {"defaults": {"color": {"mode": "palette-classic"}, "custom": {"drawStyle": "line", "fillOpacity": 15, "lineWidth": 2, "showPoints": "never"}, "unit": "s"}, "overrides": []},
-      "gridPos": {"h": 8, "w": 24, "x": 0, "y": 25},
-      "options": {"legend": {"displayMode": "list", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "single", "sort": "none"}},
-      "targets": [{"expr": "gatus_results_duration_seconds", "legendFormat": "{{group}} / {{name}}", "refId": "A"}],
-      "title": "Probe Duration",
-      "type": "timeseries"
+      "fieldConfig": {"defaults": {"color": {"mode": "thresholds"}, "decimals": 3, "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": 0}, {"color": "yellow", "value": 1}, {"color": "red", "value": 3}]}, "unit": "s"}, "overrides": []},
+      "gridPos": {"h": 8, "w": 24, "x": 0, "y": 30},
+      "options": {"displayMode": "basic", "namePlacement": "left", "orientation": "horizontal", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}, "showUnfilled": false, "valueMode": "color"},
+      "targets": [{"expr": "gatus_results_duration_seconds", "instant": true, "legendFormat": "{{group}} / {{name}}", "refId": "A"}],
+      "title": "Latest Probe Duration",
+      "type": "bargauge"
     }
   ],
   "refresh": "30s",
   "schemaVersion": 41,
   "tags": ["mission", "ethereum", "uptime"],
+  "templating": {
+    "list": [
+      {
+        "current": {"selected": true, "text": ["All"], "value": ["$__all"]},
+        "datasource": {"type": "prometheus", "uid": "mission-prometheus"},
+        "definition": "label_values(gatus_results_endpoint_success, name)",
+        "hide": 2,
+        "includeAll": true,
+        "multi": true,
+        "name": "service",
+        "options": [],
+        "query": {"query": "label_values(gatus_results_endpoint_success, name)", "refId": "StandardVariableQuery"},
+        "refresh": 1,
+        "type": "query"
+      }
+    ]
+  },
   "time": {"from": "now-24h", "to": "now"},
   "title": "Mission Overview",
   "uid": "mission-overview",
