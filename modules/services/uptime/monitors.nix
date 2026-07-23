@@ -29,6 +29,13 @@
       conditions = ["[CONNECTED] == true"];
     }
     {
+      name = "v3x-point";
+      group = "Local Homelab";
+      url = "icmp://10.0.0.54";
+      interval = "1m";
+      conditions = ["[CONNECTED] == true"];
+    }
+    {
       name = "Prometheus";
       group = "Ethereum";
       url = "http://10.0.0.54:9090/-/healthy";

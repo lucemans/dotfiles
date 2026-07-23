@@ -11,6 +11,14 @@
     lib,
     ...
   }: let
+    homelabDashboard = pkgs.writeTextDir "homelab.json" (builtins.toJSON (import ./monitoring/homelab-dashboard.nix));
+    missionDashboards = pkgs.symlinkJoin {
+      name = "mission-dashboards";
+      paths = [
+        ./monitoring/dashboards
+        homelabDashboard
+      ];
+    };
     niriAction = action:
       pkgs.writeShellScript "mission-${action}" ''
         for niriSocket in /run/user/1000/niri.*.sock; do
@@ -86,7 +94,7 @@
               type = "file";
               disableDeletion = false;
               editable = false;
-              options.path = ./monitoring/dashboards;
+              options.path = missionDashboards;
             }
           ];
         };
