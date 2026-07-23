@@ -30,7 +30,7 @@
         alias k='kubectl'
         alias j='just'
 
-        alias upgrade='sudo nixos-rebuild switch --flake /etc/nixos#v3x-fighter'
+        alias upgrade='sudo nixos-rebuild switch --flake /etc/nixos#$(hostname)'
         alias reload-plasma='systemctl --user restart plasma-plasmashell.service'
 
         if command -v zoxide >/dev/null; then

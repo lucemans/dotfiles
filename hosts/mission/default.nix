@@ -12,7 +12,7 @@
         self.nixosModules.mission
         self.nixosModules.missionDisko
         self.nixosModules.nix
-        # self.nixosModules.environment
+        self.nixosModules.environment
         # self.nixosModules.missionPhysical
       ];
     };

@@ -102,7 +102,7 @@
 
       shellAliases = {
         ".." = "cd ..";
-        "upgrade" = "sudo nixos-rebuild switch --flake /etc/nixos#v3x-fighter";
+        "upgrade" = "sudo nixos-rebuild switch --flake /etc/nixos#$(hostname)";
       };
 
       shellInit = ''
