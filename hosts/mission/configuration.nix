@@ -13,16 +13,8 @@
   }: let
     niriAction = action:
       pkgs.writeShellScript "mission-${action}" ''
-        for pid in $(${pkgs.procps}/bin/pgrep -u luc -x niri); do
-          niriSocket=""
-
-          while IFS= read -r -d "" variable; do
-            case "$variable" in
-              NIRI_SOCKET=*) niriSocket="${"$"}{variable#NIRI_SOCKET=}" ;;
-            esac
-          done < "/proc/$pid/environ"
-
-          if [ -z "$niriSocket" ]; then
+        for niriSocket in /run/user/1000/niri.*.sock; do
+          if [ ! -S "$niriSocket" ]; then
             continue
           fi
 
