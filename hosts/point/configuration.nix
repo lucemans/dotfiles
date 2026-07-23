@@ -58,6 +58,9 @@
       9200
       8545
     ];
+    networking.firewall.extraInputRules = ''
+      ip saddr 10.90.0.60 tcp dport 9090 accept
+    '';
 
     nix.settings.experimental-features = [
       "nix-command"
