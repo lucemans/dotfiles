@@ -75,6 +75,66 @@
       "targets": [{"expr": "gatus_results_duration_seconds{group=\"Local Homelab\"}", "instant": true, "legendFormat": "{{name}}", "refId": "A"}],
       "title": "Latest ICMP Latency",
       "type": "bargauge"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "mission-prometheus"},
+      "fieldConfig": {"defaults": {"color": {"mode": "thresholds"}, "decimals": 1, "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": 0}, {"color": "yellow", "value": 27}, {"color": "red", "value": 32}]}, "unit": "celsius"}, "overrides": []},
+      "gridPos": {"h": 6, "w": 6, "x": 0, "y": 26},
+      "options": {"colorMode": "background", "graphMode": "none", "justifyMode": "center", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}, "textMode": "value_and_name"},
+      "targets": [{"expr": "rack_top_temperature_celsius{instance=\"10.0.0.145\"}", "refId": "A"}],
+      "title": "Rack Top Temperature",
+      "type": "stat"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "mission-prometheus"},
+      "fieldConfig": {"defaults": {"color": {"mode": "thresholds"}, "decimals": 1, "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": 0}, {"color": "yellow", "value": 27}, {"color": "red", "value": 32}]}, "unit": "celsius"}, "overrides": []},
+      "gridPos": {"h": 6, "w": 6, "x": 6, "y": 26},
+      "options": {"colorMode": "background", "graphMode": "none", "justifyMode": "center", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}, "textMode": "value_and_name"},
+      "targets": [{"expr": "rack_bottom_temperature_celsius{instance=\"10.0.0.145\"}", "refId": "A"}],
+      "title": "Rack Bottom Temperature",
+      "type": "stat"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "mission-prometheus"},
+      "fieldConfig": {"defaults": {"color": {"mode": "thresholds"}, "decimals": 1, "max": 100, "min": 0, "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": 0}, {"color": "yellow", "value": 60}, {"color": "red", "value": 75}]}, "unit": "percent"}, "overrides": []},
+      "gridPos": {"h": 6, "w": 6, "x": 12, "y": 26},
+      "options": {"colorMode": "background", "graphMode": "none", "justifyMode": "center", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}, "textMode": "value_and_name"},
+      "targets": [{"expr": "rack_top_humidity_percent{instance=\"10.0.0.145\"}", "refId": "A"}],
+      "title": "Rack Top Humidity",
+      "type": "stat"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "mission-prometheus"},
+      "fieldConfig": {"defaults": {"color": {"mode": "thresholds"}, "decimals": 1, "max": 100, "min": 0, "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": 0}, {"color": "yellow", "value": 60}, {"color": "red", "value": 75}]}, "unit": "percent"}, "overrides": []},
+      "gridPos": {"h": 6, "w": 6, "x": 18, "y": 26},
+      "options": {"colorMode": "background", "graphMode": "none", "justifyMode": "center", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}, "textMode": "value_and_name"},
+      "targets": [{"expr": "rack_bottom_humidity_percent{instance=\"10.0.0.145\"}", "refId": "A"}],
+      "title": "Rack Bottom Humidity",
+      "type": "stat"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "mission-prometheus"},
+      "fieldConfig": {"defaults": {"custom": {"drawStyle": "line", "lineWidth": 2}, "unit": "celsius"}, "overrides": []},
+      "gridPos": {"h": 10, "w": 12, "x": 0, "y": 32},
+      "options": {"legend": {"displayMode": "list", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "multi", "sort": "none"}},
+      "targets": [
+        {"expr": "rack_top_temperature_celsius{instance=\"10.0.0.145\"}", "legendFormat": "Top", "refId": "A"},
+        {"expr": "rack_bottom_temperature_celsius{instance=\"10.0.0.145\"}", "legendFormat": "Bottom", "refId": "B"}
+      ],
+      "title": "Rack Temperature History",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "mission-prometheus"},
+      "fieldConfig": {"defaults": {"custom": {"drawStyle": "line", "lineWidth": 2}, "max": 100, "min": 0, "unit": "percent"}, "overrides": []},
+      "gridPos": {"h": 10, "w": 12, "x": 12, "y": 32},
+      "options": {"legend": {"displayMode": "list", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "multi", "sort": "none"}},
+      "targets": [
+        {"expr": "rack_top_humidity_percent{instance=\"10.0.0.145\"}", "legendFormat": "Top", "refId": "A"},
+        {"expr": "rack_bottom_humidity_percent{instance=\"10.0.0.145\"}", "legendFormat": "Bottom", "refId": "B"}
+      ],
+      "title": "Rack Humidity History",
+      "type": "timeseries"
     }
   ],
   "refresh": "30s",

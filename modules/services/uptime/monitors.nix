@@ -1,6 +1,34 @@
 {
   missionUptimeMonitors = [
     {
+      name = "v3x-alternator";
+      group = "Local Homelab";
+      url = "icmp://10.90.0.10";
+      interval = "1m";
+      conditions = ["[CONNECTED] == true"];
+    }
+    {
+      name = "v3x-mediabus";
+      group = "Local Homelab";
+      url = "icmp://10.90.0.11";
+      interval = "1m";
+      conditions = ["[CONNECTED] == true"];
+    }
+    {
+      name = "v3x-generator";
+      group = "Local Homelab";
+      url = "icmp://10.90.0.12";
+      interval = "1m";
+      conditions = ["[CONNECTED] == true"];
+    }
+    {
+      name = "v3x-watch";
+      group = "Local Homelab";
+      url = "icmp://v3x-watch";
+      interval = "1m";
+      conditions = ["[CONNECTED] == true"];
+    }
+    {
       name = "Prometheus";
       group = "Ethereum";
       url = "http://10.0.0.54:9090/-/healthy";
@@ -20,34 +48,6 @@
       url = "http://10.0.0.54:5052/eth/v1/node/health";
       interval = "1m";
       conditions = ["[STATUS] < 300"];
-    }
-    {
-      name = "v3x-mediabus";
-      group = "Local Homelab";
-      url = "icmp://v3x-mediabus";
-      interval = "1m";
-      conditions = ["[CONNECTED] == true"];
-    }
-    {
-      name = "v3x-alternator";
-      group = "Local Homelab";
-      url = "icmp://v3x-alternator";
-      interval = "1m";
-      conditions = ["[CONNECTED] == true"];
-    }
-    {
-      name = "v3x-generator";
-      group = "Local Homelab";
-      url = "icmp://v3x-generator";
-      interval = "1m";
-      conditions = ["[CONNECTED] == true"];
-    }
-    {
-      name = "v3x-watch";
-      group = "Local Homelab";
-      url = "icmp://v3x-watch";
-      interval = "1m";
-      conditions = ["[CONNECTED] == true"];
     }
     {
       name = "luc.computer";
