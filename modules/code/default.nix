@@ -1,4 +1,13 @@
 {...}: {
+  imports = [
+    ./agentsview.nix
+    ./vscode
+    ./pi
+    ./opencode
+    ./mcp
+    ./claude
+  ];
+
   flake.nixosModules.code = {
     self,
     pkgs,

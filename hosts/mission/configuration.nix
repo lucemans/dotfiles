@@ -26,7 +26,10 @@
         exit 1
       '';
   in {
-    imports = [self.nixosModules.missionUptime];
+    imports = [
+      self.nixosModules.peripheral
+      self.nixosModules.missionUptime
+    ];
 
     hardware.facter.reportPath = ./facter.json;
     boot.loader.systemd-boot.enable = true;
@@ -130,41 +133,7 @@
       ExecStart = niriAction "power-on-monitors";
     };
 
-    environment.systemPackages = [pkgs.kitty.terminfo];
-
-    users.users.luc = {
-      isNormalUser = true;
-      extraGroups = [
-        "wheel"
-        "networkmanager"
-      ];
-      openssh.authorizedKeys.keyFiles = [
-        ../../secrets/ssh.key
-      ];
-      packages = with pkgs; [
-        tree
-        micro
-        git
-        lnav
-        jq
-        tmux
-      ];
-    };
-
-    security.sudo.wheelNeedsPassword = false;
-    services.openssh = {
-      enable = true;
-      openFirewall = true;
-      settings = {
-        PasswordAuthentication = false;
-        PermitRootLogin = "no";
-      };
-    };
-
-    networking.firewall.enable = true;
     networking.firewall.allowedTCPPorts = [
-      22
-      2022
       30303
       9200
       8545
@@ -176,12 +145,7 @@
       8545
     ];
 
-    nix.settings.experimental-features = [
-      "nix-command"
-      "flakes"
-    ];
-
-    services.fstrim.enable = true;
+    environment.systemPackages = [pkgs.kitty.terminfo];
 
     system.stateVersion = "26.05";
   };

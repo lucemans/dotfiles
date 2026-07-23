@@ -3,6 +3,8 @@
   inputs,
   ...
 }: {
+  imports = [./ethereum-price.nix];
+
   flake.nixosModules.plasma = {pkgs, ...}: let
     selfpkgs = self.packages.${pkgs.stdenv.hostPlatform.system};
   in {

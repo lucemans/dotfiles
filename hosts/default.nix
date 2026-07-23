@@ -1,0 +1,7 @@
+{
+  imports = [
+    ./fighter
+    ./mission
+    ./point
+  ];
+}

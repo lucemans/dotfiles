@@ -13,7 +13,7 @@
         "wireplumber.profiles".main."custom.spotify-routing" = "required";
       };
 
-      extraScripts."spotify-routing.lua" = builtins.readFile ./audio/wireplumber/spotify-routing.lua;
+      extraScripts."spotify-routing.lua" = builtins.readFile ../system/audio/wireplumber/spotify-routing.lua;
     };
 
     home-manager.users.luc.home.packages = [pkgs.spotify];

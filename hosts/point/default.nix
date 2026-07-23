@@ -3,6 +3,12 @@
   inputs,
   ...
 }: {
+  imports = [
+    ./configuration.nix
+    ./disko.nix
+    ./hardware-configuration.nix
+  ];
+
   flake.nixosConfigurations = {
     v3x-point = inputs.nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
@@ -12,7 +18,6 @@
         inputs.disko.nixosModules.disko
         self.nixosModules.point
         self.nixosModules.pointDisko
-        self.nixosModules.environment
         self.nixosModules.pointPhysical
         self.nixosModules.ethereumMainnet
       ];

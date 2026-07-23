@@ -6,7 +6,7 @@
     ...
   }: {
     sops.age.keyFile = "/home/luc/.config/sops/age/keys.txt";
-    sops.defaultSopsFile = ../secrets/secrets.sops.yaml;
+    sops.defaultSopsFile = ../../secrets/secrets.sops.yaml;
     sops.secrets."firefly-iii-app-key" = {
       owner = "firefly-iii";
       group = "nginx";

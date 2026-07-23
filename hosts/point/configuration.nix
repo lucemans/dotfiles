@@ -11,43 +11,17 @@
     lib,
     ...
   }: {
+    imports = [
+      self.nixosModules.peripheral
+    ];
+
     boot.loader.systemd-boot.enable = true;
     boot.loader.efi.canTouchEfiVariables = true;
     networking.hostName = "v3x-point";
     networking.networkmanager.enable = true;
     time.timeZone = "Europe/Amsterdam";
-    users.users.luc = {
-      isNormalUser = true;
-      extraGroups = [
-        "wheel"
-        "networkmanager"
-      ];
-      openssh.authorizedKeys.keyFiles = [
-        ../../secrets/ssh.key
-      ];
-      packages = with pkgs; [
-        tree
-        micro
-        git
-        lnav
-        jq
-        tmux
-      ];
-    };
 
-    services.openssh = {
-      enable = true;
-      openFirewall = true;
-      settings = {
-        PasswordAuthentication = false;
-        PermitRootLogin = "no";
-      };
-    };
-
-    networking.firewall.enable = true;
     networking.firewall.allowedTCPPorts = [
-      22
-      2022
       30303
       9200
       8545
@@ -62,13 +36,6 @@
     networking.firewall.extraCommands = ''
       iptables -A nixos-fw -p tcp -s 10.90.0.60 --dport 9090 -j ACCEPT
     '';
-
-    nix.settings.experimental-features = [
-      "nix-command"
-      "flakes"
-    ];
-
-    services.fstrim.enable = true;
 
     system.stateVersion = "26.05";
   };

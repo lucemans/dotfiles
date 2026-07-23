@@ -3,14 +3,13 @@
   inputs,
   ...
 }: {
-  flake.nixosModules.desktop = {
+  flake.nixosModules.workstation = {
     config,
     pkgs,
     ...
   }: let
     nixosConfig = config;
     selfpkgs = self.packages.${pkgs.stdenv.hostPlatform.system};
-    # koi = inputs.koi.packages.x86_64-linux.default;
   in {
     imports = [
       inputs.home-manager.nixosModules.home-manager
@@ -18,21 +17,9 @@
       self.nixosModules.discord
       self.nixosModules.plasma
       self.nixosModules.rofi
-      self.nixosModules.television
+      self.nixosModules.environment
+      self.nixosModules.nix
     ];
-
-    # services.xserver.enable = lib.mkDefault true;
-
-    # security.polkit.enable = true;
-    # services.upower.enable = lib.mkDefault true;
-
-    # hardware.graphics = {
-    #   enable = lib.mkDefault true;
-    #   enable32Bit = lib.mkDefault true;
-    # };
-
-    # https://wiki.nixos.org/wiki/Chromium#Enabling_native_Wayland_support
-    environment.sessionVariables.NIXOS_OZONE_WL = "1";
 
     fonts.packages = with pkgs; [nerd-fonts.hack];
     fonts.fontconfig.defaultFonts.monospace = ["Hack"];
@@ -98,7 +85,7 @@
 
       sops = {
         age.keyFile = "/home/luc/.config/sops/age/keys.txt";
-        defaultSopsFile = ../secrets/secrets.sops.yaml;
+        defaultSopsFile = ../../secrets/secrets.sops.yaml;
         secrets = {
           ssh-public-key = {
             path = "/home/luc/.ssh/id_ed25519.pub";
@@ -136,61 +123,16 @@
 
       services.gpg-agent = {
         enable = true;
-        # enableSshSupport = true;
         pinentry.package = pkgs.pinentry-qt;
       };
 
       services.ssh-agent = {
         enable = false;
-        # pinentry.package = pkgs.pinentry-qt;
       };
-
-      # programs.konsole = {
-      #  enable = true;
-      #  defaultProfile = "Hack";
-      #  profiles."Hack" = {
-      #    font = {
-      #      name = "Hack";
-      #      size = 11;
-      #    };
-      #  };
-      #};
-
-      # home.activation.dolphinDevelop = lib.hm.dag.entryAfter ["writeBoundary"] ''
-      #   path="$HOME/.local/share/user-places.xbel"
-      #   url="file:///home/luc/dev"
-      #   title="Development"
-      #   icon="folder-development"
-
-      #   if [ ! -f "$path" ]; then
-      #     ${pkgs.coreutils}/bin/mkdir -p "$(${pkgs.coreutils}/bin/dirname "$path")"
-      #     printf '%s\n' \
-      #       '<?xml version="1.0" encoding="UTF-8"?>' \
-      #       '<xbel version="1.0" xmlns:bookmark="http://www.freedesktop.org/standards/desktop-bookmarks" xmlns:mime="http://www.freedesktop.org/standards/shared-mime-info" xmlns:rk="http://www.freedesktop.org/standards/desktop-bookmarks">' \
-      #       '</xbel>' \
-      #       > "$path"
-      #   fi
-
-      #   if ${pkgs.yq-go}/bin/yq '.xbel.bookmark.[] | select(."+@href" == env(URL))' "$path" -p xml -e >/dev/null 2>&1; then
-      #     exit 0
-      #   fi
-
-      #   BOOKMARK=${
-      #     lib.escapeShellArg (
-      #       builtins.toJSON {
-      #         "+@href" = "file:///home/luc/dev";
-      #         title = "Development";
-      #         info.metadata = [
-      #           {
-      #             "+@owner" = "http://freedesktop.org";
-      #             bookmark.icon."+@name" = "folder-development";
-      #           }
-      #         ];
-      #       }
-      #     )
-      #   } URL="$url" ${pkgs.yq-go}/bin/yq '.xbel.bookmark += env(BOOKMARK)' -i "$path" -p xml -ox
-      # '';
     };
+
+    # https://wiki.nixos.org/wiki/Chromium#Enabling_native_Wayland_support
+    environment.sessionVariables.NIXOS_OZONE_WL = "1";
 
     environment.systemPackages = with pkgs; [
       kdePackages.dolphin

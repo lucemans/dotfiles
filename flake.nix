@@ -6,8 +6,6 @@
     disko.inputs.nixpkgs.follows = "nixpkgs";
 
     flake-parts.url = "github:hercules-ci/flake-parts";
-    import-tree.url = "github:vic/import-tree";
-
     preservation.url = "github:nix-community/preservation";
 
     home-manager = {
@@ -46,8 +44,8 @@
 
       imports = [
         inputs.home-manager.flakeModules.home-manager
-        (inputs.import-tree ./hosts)
-        (inputs.import-tree ./modules)
+        ./hosts
+        ./modules
       ];
     };
 }

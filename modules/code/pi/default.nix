@@ -1,0 +1,5 @@
+{
+  imports = [
+    ./kicad-mcp.nix
+  ];
+}
