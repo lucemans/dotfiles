@@ -13,14 +13,20 @@
   }: let
     niriAction = action:
       pkgs.writeShellScript "mission-${action}" ''
-        runtimeDir="/run/user/$(${pkgs.coreutils}/bin/id -u luc)"
+        for pid in $(${pkgs.procps}/bin/pgrep -u luc -x niri); do
+          niriSocket=""
 
-        for socket in "$runtimeDir"/wayland-*; do
-          if [ ! -S "$socket" ]; then
+          while IFS= read -r -d "" variable; do
+            case "$variable" in
+              NIRI_SOCKET=*) niriSocket="${"$"}{variable#NIRI_SOCKET=}" ;;
+            esac
+          done < "/proc/$pid/environ"
+
+          if [ -z "$niriSocket" ]; then
             continue
           fi
 
-          if ${pkgs.util-linux}/bin/runuser -u luc -- ${pkgs.coreutils}/bin/env XDG_RUNTIME_DIR="$runtimeDir" WAYLAND_DISPLAY="${"$"}{socket##*/}" ${config.programs.niri.package}/bin/niri msg action ${action}; then
+          if ${pkgs.util-linux}/bin/runuser -u luc -- ${pkgs.coreutils}/bin/env NIRI_SOCKET="$niriSocket" ${config.programs.niri.package}/bin/niri msg action ${action}; then
             exit 0
           fi
         done
