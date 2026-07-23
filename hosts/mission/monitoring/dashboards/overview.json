@@ -14,6 +14,7 @@
         "overrides": []
       },
       "gridPos": {"h": 12, "w": 24, "x": 0, "y": 0},
+      "maxDataPoints": 288,
       "options": {"colWidth": 0.9, "legend": {"displayMode": "list", "placement": "bottom", "showLegend": false}, "rowHeight": 0.9, "showValue": "never", "tooltip": {"mode": "single", "sort": "none"}},
       "targets": [{"expr": "gatus_results_endpoint_success", "legendFormat": "{{group}} / {{name}}", "refId": "A"}],
       "title": "Service History",
