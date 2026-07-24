@@ -1,4 +1,32 @@
-{
+let
+  tokenColors = {
+    AAVE = "#b6509e";
+    ENS = "#627eea";
+    EURC = "#2775ca";
+    USDC = "#2775ca";
+    USDT = "#26a17b";
+    WBTC = "#f09242";
+    WETH = "#8a92b2";
+    XAUt = "#d4af37";
+    kpk_EURC_Yield = "#14b8a6";
+    stETH = "#00a3ff";
+  };
+  tokenColorOverrides = builtins.map (token: {
+    matcher = {
+      id = "byName";
+      options = token;
+    };
+    properties = [
+      {
+        id = "color";
+        value = {
+          fixedColor = tokenColors.${token};
+          mode = "fixed";
+        };
+      }
+    ];
+  }) (builtins.attrNames tokenColors);
+in {
   annotations.list = [];
   editable = false;
   fiscalYearStartMonth = 0;
@@ -29,7 +57,7 @@
           decimals = 2;
           unit = "currencyUSD";
         };
-        overrides = [];
+        overrides = tokenColorOverrides;
       };
       options = {
         colorMode = "background_gradient";
@@ -46,15 +74,14 @@
       targets = [
         {
           expr = ''token_price_usd{job="indexer-price",token=~"$token"}'';
-          instant = true;
-          range = false;
+          legendFormat = "{{token}}";
           refId = "A";
         }
       ];
     }
     {
       id = 2;
-      title = "24h Price History";
+      title = "Price Change Since Range Start";
       type = "timeseries";
       datasource = {
         type = "prometheus";
@@ -71,10 +98,10 @@
           color.mode = "palette-classic";
           custom = {
             axisBorderShow = false;
-            axisCenteredZero = false;
+            axisCenteredZero = true;
             axisColorMode = "text";
             axisGridShow = true;
-            axisLabel = "USD";
+            axisLabel = "Change";
             axisPlacement = "auto";
             drawStyle = "line";
             fillOpacity = 12;
@@ -91,9 +118,9 @@
             thresholdsStyle.mode = "off";
           };
           decimals = 2;
-          unit = "currencyUSD";
+          unit = "percent";
         };
-        overrides = [];
+        overrides = tokenColorOverrides;
       };
       options = {
         legend = {
@@ -109,7 +136,14 @@
       };
       targets = [
         {
-          expr = ''token_price_usd{job="indexer-price"}'';
+          expr = ''
+            100 * (
+              token_price_usd{job="indexer-price"}
+              / on (chain, instance, job, token)
+              first_over_time(token_price_usd{job="indexer-price"}[$__range] @ end())
+              - 1
+            )
+          '';
           legendFormat = "{{token}}";
           refId = "A";
         }
@@ -152,6 +186,6 @@
   timezone = "browser";
   title = "Indexer Prices";
   uid = "indexer-prices";
-  version = 2;
+  version = 3;
   weekStart = "";
 }

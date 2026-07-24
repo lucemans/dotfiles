@@ -32,7 +32,7 @@
       enable = true;
       openFirewall = true;
       settings = {
-        network = "mainnet";
+        execution-endpoint = "http://127.0.0.1:8551";
         execution-jwt = "/var/lib/reth-mainnet/jwt.hex";
         checkpoint-sync-url = "https://checkpointz.pietjepuk.net";
         genesis-state-url = "https://checkpointz.pietjepuk.net";

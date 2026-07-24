@@ -68,6 +68,7 @@ in {
       enable = true;
       listenAddress = "127.0.0.1";
       retentionTime = "30d";
+      extraFlags = ["--enable-feature=promql-experimental-functions"];
       scrapeConfigs = [
         {
           job_name = "gatus";
