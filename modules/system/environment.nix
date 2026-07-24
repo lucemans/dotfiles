@@ -102,7 +102,6 @@
 
       shellAliases = {
         ".." = "cd ..";
-        "upgrade" = "sudo nixos-rebuild switch --flake /etc/nixos#$(hostname)";
       };
 
       shellInit = ''

@@ -68,8 +68,6 @@
         compdef _kubectl k
         alias k='kubectl'
 
-        alias update='cd /etc/nixos && git pull'
-        alias upgrade='sudo nixos-rebuild switch --flake /etc/nixos#$(hostname)'
         alias reload-plasma='systemctl --user restart plasma-plasmashell.service'
 
         ssh() {
