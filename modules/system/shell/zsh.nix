@@ -83,6 +83,7 @@
 
         source ${pkgs.zsh-autosuggestions}/share/zsh-autosuggestions/zsh-autosuggestions.zsh
         bindkey '^F' autosuggest-accept
+        source ${pkgs.zsh-syntax-highlighting}/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
         if command -v zoxide >/dev/null; then
           eval "$(zoxide init zsh)"
