@@ -7,6 +7,19 @@
     zshConfig = pkgs.writeTextFile {
       name = "zsh-config";
       text = ''
+        # Find completions shipped by packages in the system and Home Manager profiles.
+        for p in ''${(z)NIX_PROFILES}; do
+          fpath=(
+            $p/share/zsh/site-functions
+            $p/share/zsh/$ZSH_VERSION/functions
+            $p/share/zsh/vendor-completions
+            $fpath
+          )
+        done
+
+        autoload -Uz compinit
+        compinit
+
         autoload -Uz vcs_info
         zstyle ':vcs_info:*' enable git
         zstyle ':vcs_info:git:*' check-for-changes true
@@ -41,11 +54,19 @@
 
         alias ll='eza -l'
         alias la='eza -la'
+        compdef _nvim edit
         alias edit='nvim'
+        compdef _pnpm p
         alias p='pnpm'
+        compdef _pnpm why
         alias why='pnpm'
-        alias k='kubectl'
+        compdef _pnpm y
+        alias y='pnpm'
+        compdef _just j
         alias j='just'
+
+        compdef _kubectl k
+        alias k='kubectl'
 
         alias update='cd /etc/nixos && git pull'
         alias upgrade='sudo nixos-rebuild switch --flake /etc/nixos#$(hostname)'
