@@ -13,7 +13,7 @@
       enable = true;
       package = pkgs.reth;
       openFirewall = true;
-      args = {
+      settings = {
         full = true;
         chain = "mainnet";
         http = {
