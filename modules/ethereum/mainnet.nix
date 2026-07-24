@@ -23,12 +23,8 @@
           "web3"
           "eth"
         ];
-        authrpc = {
-          jwtsecret = "/var/lib/reth-mainnet/jwt.hex";
-        };
-        metrics = {
-          enable = true;
-        };
+        "authrpc.jwtsecret" = "/var/lib/reth-mainnet/jwt.hex";
+        metrics = "127.0.0.1:6060";
       };
     };
 
@@ -40,9 +36,9 @@
         execution-jwt = "/var/lib/reth-mainnet/jwt.hex";
         checkpoint-sync-url = "https://checkpointz.pietjepuk.net";
         genesis-state-url = "https://checkpointz.pietjepuk.net";
-        metrics = {
-          enable = true;
-        };
+        metrics = true;
+        metrics-address = "127.0.0.1";
+        metrics-port = 5054;
       };
     };
 
