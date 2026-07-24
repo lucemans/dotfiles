@@ -19,6 +19,18 @@
         homelabDashboard
       ];
     };
+    missionNiriConfig =
+      pkgs.runCommand "mission-niri-config.kdl" {
+        nativeBuildInputs = [config.programs.niri.package];
+      } ''
+          install -Dm644 ${config.programs.niri.package.src}/resources/default-config.kdl $out
+          printf '\ncursor {\n    hide-after-inactive-ms 60000\n}\n' >> $out
+        niri validate --config $out
+      '';
+    missionNiriSession = pkgs.writeShellScript "mission-niri-session" ''
+      export NIRI_CONFIG=/etc/niri/config.kdl
+      exec ${config.programs.niri.package}/bin/niri-session
+    '';
     niriAction = action:
       pkgs.writeShellScript "mission-${action}" ''
         for niriSocket in /run/user/1000/niri.*.sock; do
@@ -47,6 +59,7 @@
     time.timeZone = "Europe/Amsterdam";
 
     programs.niri.enable = true;
+    environment.etc."niri/config.kdl".source = missionNiriConfig;
 
     services.grafana = {
       enable = true;
@@ -141,15 +154,10 @@
             ${pkgs.coreutils}/bin/sleep 1
           done
 
-          status="$(${pkgs.curl}/bin/curl --silent --output "$response_file" --write-out '%{http_code}' --user admin:admin "$playlist_url")"
+          status="$(${pkgs.curl}/bin/curl --silent --output "$response_file" --write-out '%{http_code}' --request DELETE --user admin:admin "$playlist_url")"
 
           case "$status" in
-            200)
-              resource_version="$(${pkgs.jq}/bin/jq --raw-output '.metadata.resourceVersion' "$response_file")"
-              payload="$(${pkgs.jq}/bin/jq --compact-output --arg resourceVersion "$resource_version" '.metadata.resourceVersion = $resourceVersion' <<<"$payload")"
-              ${pkgs.curl}/bin/curl --fail --silent --show-error --request PUT --user admin:admin --header 'Content-Type: application/json' --data "$payload" "$playlist_url"
-              ;;
-            404)
+            200 | 404)
               ${pkgs.curl}/bin/curl --fail --silent --show-error --request POST --user admin:admin --header 'Content-Type: application/json' --data "$payload" "$playlist_url"
               ;;
             *)
@@ -164,11 +172,11 @@
     services.greetd = {
       enable = true;
       settings.initial_session = {
-        command = "${config.programs.niri.package}/bin/niri-session";
+        command = missionNiriSession;
         user = "luc";
       };
       settings.default_session = {
-        command = "${config.programs.niri.package}/bin/niri-session";
+        command = missionNiriSession;
         user = "luc";
       };
     };
