@@ -29,6 +29,13 @@
       conditions = ["[CONNECTED] == true"];
     }
     {
+      name = "Indexer Price Metrics";
+      group = "Ethereum";
+      url = "https://price.indexer.rs/metrics";
+      interval = "1m";
+      conditions = ["[STATUS] == 200"];
+    }
+    {
       name = "v3x-point";
       group = "Local Homelab";
       url = "icmp://10.0.0.54";

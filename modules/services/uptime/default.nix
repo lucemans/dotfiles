@@ -78,6 +78,15 @@ in {
           ];
         }
         {
+          job_name = "indexer-price";
+          scheme = "https";
+          static_configs = [
+            {
+              targets = ["price.indexer.rs"];
+            }
+          ];
+        }
+        {
           job_name = "snmp-rack";
           metrics_path = "/snmp";
           params = {
