@@ -3,11 +3,16 @@
   inputs,
   ...
 }: {
-  imports = [./ethereum-price.nix];
+  imports = [
+    ./activation
+    ./ethereum-price.nix
+  ];
 
   flake.nixosModules.plasma = {pkgs, ...}: let
     selfpkgs = self.packages.${pkgs.stdenv.hostPlatform.system};
   in {
+    imports = [self.nixosModules.plasma-activation];
+
     services.desktopManager.plasma6.enable = true;
     services.displayManager.sddm = {
       enable = true;
@@ -104,6 +109,7 @@
                   "applications:Mattermost.desktop"
                   "applications:gitkraken.desktop"
                   "applications:chromium-browser.desktop"
+                  "applications:activate-linux-toggle.desktop"
                 ];
               }
               "org.kde.plasma.marginsseparator"

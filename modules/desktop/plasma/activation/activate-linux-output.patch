@@ -1,0 +1,143 @@
+diff --git a/src/main.rs b/src/main.rs
+--- a/src/main.rs
++++ b/src/main.rs
+@@ -3,6 +3,7 @@ mod x11;
+ fn main() {
+     let mut header: Option<String> = None;
+     let mut caption: Option<String> = None;
++    let mut output: Option<String> = None;
+     let mut args = std::env::args();
+     while let Some(arg) = args.next() {
+         if arg == "--header" || arg == "-H" {
+@@ -12,6 +13,10 @@ fn main() {
+             caption = args.next()
+         }
+ 
++        if arg == "--output" || arg == "-o" {
++            output = args.next()
++        }
++
+         if arg == "--help" || arg == "-h" {
+             println!("Usage: activate-linux [options]");
+             println!(
+@@ -19,6 +24,7 @@ fn main() {
+                 "\t -H '{{}}' or --header '{{}}' to set the header (Default: \"Activate Linux\")"
+             );
+             println!("\t -c '{{}}' or --caption '{{}}' to set the caption (Default: \"Go to Settings to activate Linux.\")");
++            println!("\t -o '{{}}' or --output '{{}}' to select a Wayland output");
+             println!("\t -h or --help to show this message");
+             return;
+         }
+@@ -32,6 +38,6 @@ fn main() {
+     match std::env::var("WAYLAND_DISPLAY") {
+         Ok(_) => {
+-            wayland::wayland_main(header, caption);
++            wayland::wayland_main(header, caption, output);
+         }
+         Err(_) => {
+             x11::x11_main(header, caption).unwrap();
+diff --git a/src/wayland.rs b/src/wayland.rs
+--- a/src/wayland.rs
++++ b/src/wayland.rs
+@@ -31,7 +31,7 @@ struct SimpleLayer {
+     pool: SlotPool,
+     width: u32,
+     height: u32,
+-    layer: LayerSurface,
++    layer: Option<LayerSurface>,
+     font: fontdue::Font,
+     header: Option<String>,
+     caption: Option<String>,
+@@ -151,18 +151,20 @@ impl SimpleLayer {
+             canvas,
+             self.width as usize,
+         );
++
++        let layer = self.layer.as_ref().expect("layer is not initialized");
+ 
+-        self.layer
++        layer
+             .wl_surface()
+             .damage_buffer(0, 0, width as i32, height as i32);
+ 
+-        self.layer
++        layer
+             .wl_surface()
+-            .frame(qh, self.layer.wl_surface().clone());
++            .frame(qh, layer.wl_surface().clone());
+ 
+         buffer
+-            .attach_to(self.layer.wl_surface())
++            .attach_to(layer.wl_surface())
+             .expect("buffer attach");
+-        self.layer.commit();
++        layer.commit();
+     }
+ }
+@@ -173,7 +175,11 @@ impl ProvidesRegistryState for SimpleLayer {
+     registry_handlers![OutputState];
+ }
+ 
+-pub fn wayland_main(header: Option<String>, caption: Option<String>) {
++pub fn wayland_main(
++    header: Option<String>,
++    caption: Option<String>,
++    output_name: Option<String>,
++) {
+     env_logger::init();
+ 
+     let conn = Connection::connect_to_env().unwrap();
+@@ -188,13 +194,7 @@ pub fn wayland_main(header: Option<String>, caption: Option<String>) {
+     region.wl_region().destroy();
+ 
+     let width = 335;
+     let height = 110;
+-
+-    let layer =
+-        layer_shell.create_layer_surface(&qh, surface, Layer::Overlay, None::<String>, None);
+-    layer.set_anchor(Anchor::BOTTOM | Anchor::RIGHT);
+-    layer.set_size(width, height);
+-    layer.commit();
+     let pool = SlotPool::new((width * height * 4) as usize, &shm).expect("Failed to create pool");
+ 
+     let font = fontdue::Font::from_bytes(
+@@ -218,9 +218,37 @@ pub fn wayland_main(header: Option<String>, caption: Option<String>) {
+         pool,
+         width,
+         height,
+-        layer,
++        layer: None,
+         header,
+         caption,
+     };
++    event_queue.roundtrip(&mut simple_layer).unwrap();
++
++    let output = output_name.as_deref().map(|name| {
++        simple_layer
++            .output_state
++            .outputs()
++            .find(|output| {
++                simple_layer
++                    .output_state
++                    .info(output)
++                    .and_then(|info| info.name)
++                    .as_deref()
++                    == Some(name)
++            })
++            .unwrap_or_else(|| panic!("Wayland output '{name}' was not found"))
++    });
++
++    let layer = layer_shell.create_layer_surface(
++        &qh,
++        surface,
++        Layer::Overlay,
++        None::<String>,
++        output.as_ref(),
++    );
++    layer.set_anchor(Anchor::BOTTOM | Anchor::RIGHT);
++    layer.set_size(width, height);
++    layer.commit();
++    simple_layer.layer = Some(layer);
+ 
+     loop {
+         event_queue.blocking_dispatch(&mut simple_layer).unwrap();

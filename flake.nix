@@ -19,6 +19,11 @@
       inputs.home-manager.follows = "home-manager";
     };
 
+    activate-linux = {
+      url = "github:Kaisia-Estrel/activate-linux";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     wrappers.url = "github:Lassulus/wrappers";
     wrapper-modules.url = "github:BirdeeHub/nix-wrapper-modules";
 
