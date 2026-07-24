@@ -80,6 +80,12 @@
           fi
         }
 
+        ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=8'
+        ZSH_AUTOSUGGEST_STRATEGY=(history completion)
+
+        source ${pkgs.zsh-autosuggestions}/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+        bindkey '^F' autosuggest-accept
+
         if command -v zoxide >/dev/null; then
           eval "$(zoxide init zsh)"
         fi

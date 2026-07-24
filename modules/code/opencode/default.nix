@@ -84,7 +84,11 @@
       '';
     };
   in {
-    environment.systemPackages = [opencode opencode2 opencode2Update];
+    environment.systemPackages = [
+      opencode
+      # opencode2
+      # opencode2Update
+    ];
 
     environment.sessionVariables = {
       OPENCODE_DISABLE_CHANNEL_DB = "1";
