@@ -16,15 +16,13 @@
       settings = {
         full = true;
         chain = "mainnet";
-        http = {
-          enable = true;
-          addr = "0.0.0.0";
-          api = [
-            "net"
-            "web3"
-            "eth"
-          ];
-        };
+        http = true;
+        "http.addr" = "0.0.0.0";
+        "http.api" = [
+          "net"
+          "web3"
+          "eth"
+        ];
         authrpc = {
           jwtsecret = "/var/lib/reth-mainnet/jwt.hex";
         };
