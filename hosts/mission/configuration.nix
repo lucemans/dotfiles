@@ -116,23 +116,19 @@
 
     systemd.services.mission-grafana-playlist = let
       playlist = builtins.toJSON {
-        apiVersion = "playlist.grafana.app/v1";
-        kind = "Playlist";
-        metadata.name = "mission-display";
-        spec = {
-          title = "Mission Display";
-          interval = "1m";
-          items = [
-            {
-              type = "dashboard_by_uid";
-              value = "mission-overview";
-            }
-            {
-              type = "dashboard_by_uid";
-              value = "homelab-uptime";
-            }
-          ];
-        };
+        uid = "mission-display";
+        name = "Mission Display";
+        interval = "1m";
+        items = [
+          {
+            type = "dashboard_by_uid";
+            value = "mission-overview";
+          }
+          {
+            type = "dashboard_by_uid";
+            value = "homelab-uptime";
+          }
+        ];
       };
     in {
       description = "Provision the Mission Grafana display playlist";
@@ -146,7 +142,7 @@
           set -euo pipefail
 
           base_url=http://127.0.0.1:3000
-          playlist_url="$base_url/apis/playlist.grafana.app/v1/namespaces/default/playlists/mission-display"
+          playlist_url="$base_url/api/playlists/mission-display"
           response_file=/run/mission-grafana-playlist/response.json
           payload='${playlist}'
 
@@ -154,11 +150,14 @@
             ${pkgs.coreutils}/bin/sleep 1
           done
 
-          status="$(${pkgs.curl}/bin/curl --silent --output "$response_file" --write-out '%{http_code}' --request DELETE --user admin:admin "$playlist_url")"
+          status="$(${pkgs.curl}/bin/curl --silent --output "$response_file" --write-out '%{http_code}' --user admin:admin "$playlist_url")"
 
           case "$status" in
-            200 | 404)
-              ${pkgs.curl}/bin/curl --fail --silent --show-error --request POST --user admin:admin --header 'Content-Type: application/json' --data "$payload" "$playlist_url"
+            200)
+              ${pkgs.curl}/bin/curl --fail --silent --show-error --request PUT --user admin:admin --header 'Content-Type: application/json' --data "$payload" "$playlist_url"
+              ;;
+            404)
+              ${pkgs.curl}/bin/curl --fail --silent --show-error --request POST --user admin:admin --header 'Content-Type: application/json' --data "$payload" "$base_url/api/playlists"
               ;;
             *)
               ${pkgs.coreutils}/bin/cat "$response_file" >&2
@@ -192,7 +191,7 @@
       wantedBy = ["graphical-session.target"];
       partOf = ["graphical-session.target"];
       serviceConfig = {
-        ExecStartPre = "${pkgs.bash}/bin/bash -c 'until ${pkgs.curl}/bin/curl --fail --silent http://127.0.0.1:3000/apis/playlist.grafana.app/v1/namespaces/default/playlists/mission-display >/dev/null; do ${pkgs.coreutils}/bin/sleep 1; done'";
+        ExecStartPre = "${pkgs.bash}/bin/bash -c 'until ${pkgs.curl}/bin/curl --fail --silent http://127.0.0.1:3000/api/playlists/mission-display >/dev/null; do ${pkgs.coreutils}/bin/sleep 1; done'";
         ExecStart = "${pkgs.chromium}/bin/chromium --ozone-platform=wayland --kiosk --incognito --no-first-run --disable-session-crashed-bubble http://127.0.0.1:3000/playlists/play/mission-display?kiosk&autofitpanels";
         Restart = "always";
         RestartSec = 5;
