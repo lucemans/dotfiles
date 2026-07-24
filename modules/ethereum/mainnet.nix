@@ -37,7 +37,7 @@
     services.ethereum.lighthouse-beacon.mainnet = {
       enable = true;
       openFirewall = true;
-      args = {
+      settings = {
         network = "mainnet";
         execution-jwt = "/var/lib/reth-mainnet/jwt.hex";
         checkpoint-sync-url = "https://checkpointz.pietjepuk.net";
