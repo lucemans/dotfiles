@@ -10,10 +10,11 @@
         fi
 
         if [ "$#" -eq 1 ]; then
-          git -C /etc/nixos checkout "$1"
-          git -C /etc/nixos pull origin "$1"
+          git -C /etc/nixos fetch origin "$1"
+          git -C /etc/nixos checkout --force -B "$1" "origin/$1"
         else
-          git -C /etc/nixos pull origin master
+          git -C /etc/nixos fetch origin master
+          git -C /etc/nixos checkout --force -B master origin/master
         fi
       '';
     };

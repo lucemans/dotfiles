@@ -80,6 +80,10 @@
             type = "dashboard_by_uid";
             value = "homelab-uptime";
           }
+          {
+            type = "dashboard_by_uid";
+            value = "indexer-prices";
+          }
         ];
       };
     in {
