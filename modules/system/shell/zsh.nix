@@ -7,6 +7,14 @@
     zshConfig = pkgs.writeTextFile {
       name = "zsh-config";
       text = ''
+        HISTFILE="''${XDG_STATE_HOME:-$HOME/.local/state}/zsh/history"
+        HISTSIZE=10000
+        SAVEHIST=10000
+        mkdir -p -- "''${HISTFILE:h}"
+        setopt SHARE_HISTORY
+        setopt HIST_FCNTL_LOCK
+        setopt HIST_IGNORE_DUPS
+
         # Find completions shipped by packages in the system and Home Manager profiles.
         for p in ''${(z)NIX_PROFILES}; do
           fpath=(
