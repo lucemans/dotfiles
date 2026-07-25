@@ -47,6 +47,10 @@
 - If the dependency is already available through the development environment, use `nix develop -c <command>` only when that one scoped command is worthwhile.
 - After a development-environment definition changes, prefer asking the user to restart OpenCode from the appropriate environment. Do not require every subsequent tool call to be prefixed with `nix develop`.
 
+## Running Task Ownership
+
+- If not explicitly informed, the user may already be running `cargo run` or `pnpm dev` in another terminal ask confirmation before killing processes that werent initiated by this conversation.
+
 ### TypeScript and JavaScript
 
 - Treat configured `eslint-plugin-v3xlabs` rules as authoritative. Inspect and follow the project ESLint configuration rather than working around it.
