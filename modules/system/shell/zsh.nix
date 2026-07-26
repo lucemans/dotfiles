@@ -47,7 +47,7 @@
             host_color=yellow
             ;;
           v3x-teapot)
-            host_color=pink
+            host_color=hotpink
             ;;
           *)
             host_color=blue
