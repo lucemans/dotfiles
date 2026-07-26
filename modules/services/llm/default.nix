@@ -140,14 +140,14 @@
           database_url = "os.environ/DATABASE_URL";
         };
         model_list = [
-          {
-            model_name = "local/qwen3-8b";
-            litellm_params = {
-              model = "openai/qwen3-8b";
-              api_base = "http://127.0.0.1:8081/v1";
-              api_key = "local";
-            };
-          }
+          # {
+          #   model_name = "local/qwen3-8b";
+          #   litellm_params = {
+          #     model = "openai/qwen3-8b";
+          #     api_base = "http://127.0.0.1:8081/v1";
+          #     api_key = "local";
+          #   };
+          # }
           {
             model_name = "*";
             litellm_params.model = "openrouter/*";
