@@ -127,14 +127,14 @@ in {
         User = "hermes";
         Group = "hermes";
         WorkingDirectory = "/var/lib/hermes/workspace";
-        ExecStart = "${pkgs.hermes-agent}/bin/hermes dashboard --skip-build --host 0.0.0.0 --port ${toString dashboardPort} --no-open";
+        ExecStart = "${config.services.hermes-agent.package}/bin/hermes dashboard --skip-build --host 0.0.0.0 --port ${toString dashboardPort} --no-open";
         Restart = "always";
         RestartSec = 10;
         NoNewPrivileges = true;
       };
 
       path = [
-        pkgs.hermes-agent
+        config.services.hermes-agent.package
         pkgs.bash
       ];
     };
