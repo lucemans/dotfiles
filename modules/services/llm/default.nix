@@ -3,10 +3,14 @@
     config,
     lib,
     pkgs,
+    inputs,
     ...
   }: let
     llama-cpp = pkgs.llama-cpp-vulkan;
     llama-server = lib.getExe' llama-cpp "llama-server";
+    # Must match the engines commit baked into the prisma-client-py override
+    # (hosts/teapot/configuration.nix) and the prisma CLI on litellm's PATH.
+    prisma-engines = inputs.prisma-nixpkgs.legacyPackages.${pkgs.stdenv.hostPlatform.system}.prisma-engines;
   in {
     nixpkgs.config.allowUnfree = true;
 
@@ -121,6 +125,10 @@
       environmentFile = config.sops.templates.teapot_litellm_env.path;
       environment = {
         HOME = "/var/lib/litellm";
+        # prisma-client-py cannot download engine binaries on NixOS
+        # (no "linux-nixos" target upstream); point it at ours instead.
+        PRISMA_QUERY_ENGINE_BINARY = lib.getExe' prisma-engines "query-engine";
+        PRISMA_SCHEMA_ENGINE_BINARY = lib.getExe' prisma-engines "schema-engine";
       };
       settings = {
         general_settings = {
@@ -147,6 +155,8 @@
     systemd.services.litellm = {
       requires = ["postgresql.service"];
       after = ["postgresql.service"];
+      # prisma-client-py shells out to `openssl version` during engine setup.
+      path = [pkgs.openssl];
       serviceConfig = {
         TimeoutStartSec = "10min";
       };

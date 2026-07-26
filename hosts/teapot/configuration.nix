@@ -89,6 +89,14 @@
       })
     ];
 
+    programs.git = {
+      enable = true;
+      config = {
+        user.name = "418teapotcat";
+        user.email = "418teapotcat@users.noreply.github.com";
+      };
+    };
+
     boot.loader.systemd-boot.enable = true;
     boot.loader.efi.canTouchEfiVariables = true;
     networking.hostName = "v3x-teapot";
