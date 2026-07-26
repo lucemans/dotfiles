@@ -139,6 +139,7 @@
       sops
       age
       claude-code
+      github-cli
     ];
 
     system.stateVersion = "26.05";

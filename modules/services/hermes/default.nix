@@ -22,6 +22,7 @@ in {
       secrets = {
         teapot_telegram_token = {};
         teapot_telegram_allowed_users = {};
+        teapot_github_pat = {};
       };
       templates."teapot_hermes_env" = {
         owner = "hermes";
@@ -31,6 +32,7 @@ in {
           TELEGRAM_BOT_TOKEN=${config.sops.placeholder.teapot_telegram_token}
           TELEGRAM_ALLOWED_USERS=${config.sops.placeholder.teapot_telegram_allowed_users}
           LITELLM_API_KEY=${config.sops.placeholder.teapot_litellm_master_key}
+          GH_TOKEN=${config.sops.placeholder.teapot_github_pat}
         '';
       };
     };
