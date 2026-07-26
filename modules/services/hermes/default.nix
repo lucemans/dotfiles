@@ -48,7 +48,7 @@ in {
       stateDir = "/var/lib/hermes";
       environmentFiles = [config.sops.templates."teapot_hermes_env".path];
       environment = {
-        API_SERVER_ENABLE = "true";
+        API_SERVER_ENABLED = "true";
         API_SERVER_HOST = "0.0.0.0";
         API_SERVER_PORT = toString apiPort;
       };
@@ -107,6 +107,36 @@ in {
       addToSystemPackages = true;
       restart = "no";
       restartSec = 5;
+    };
+
+    # Dashboard web UI — separate process from the gateway
+    systemd.services.hermes-dashboard = {
+      description = "Hermes Agent Dashboard";
+      wantedBy = ["multi-user.target"];
+      after = ["network-online.target" "hermes-agent.service"];
+      wants = ["network-online.target"];
+      requires = ["hermes-agent.service"];
+
+      environment = {
+        HOME = "/var/lib/hermes";
+        HERMES_HOME = "/var/lib/hermes/.hermes";
+        HERMES_MANAGED = "true";
+      };
+
+      serviceConfig = {
+        User = "hermes";
+        Group = "hermes";
+        WorkingDirectory = "/var/lib/hermes/workspace";
+        ExecStart = "${pkgs.hermes-agent}/bin/hermes dashboard --skip-build --host 0.0.0.0 --port ${toString dashboardPort} --no-open";
+        Restart = "always";
+        RestartSec = 10;
+        NoNewPrivileges = true;
+      };
+
+      path = [
+        pkgs.hermes-agent
+        pkgs.bash
+      ];
     };
 
     # systemd.tmpfiles.rules = [
