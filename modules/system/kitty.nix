@@ -85,6 +85,9 @@
 
         hostname point v3x-point
         color_scheme point.conf
+
+        hostname teapot v3x-teapot
+        color_scheme teapot.conf
       '';
 
       "kitty/mission.conf".text = ''
@@ -100,6 +103,13 @@
         color4 #f1fa8c
         color12 #f1fa8c
       '';
+
+      "kitty/teapot.conf".text = ''
+        background #3d3418
+        foreground #f8f8f2
+        color4 #f1fa8c
+        color12 #f1fa8c
+      ''
     };
   };
 }

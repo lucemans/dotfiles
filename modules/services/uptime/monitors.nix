@@ -22,6 +22,13 @@
       conditions = ["[CONNECTED] == true"];
     }
     {
+      name = "v3x-teapot";
+      group = "Local Homelab";
+      url = "icmp://v3x-teapot";
+      interval = "1m";
+      conditions = ["[CONNECTED] == true"];
+    }
+    {
       name = "v3x-watch";
       group = "Local Homelab";
       url = "icmp://v3x-watch";
