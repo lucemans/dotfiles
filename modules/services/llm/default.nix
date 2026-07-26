@@ -74,49 +74,38 @@
       port = 8081;
 
       settings = {
-        healthCheckTimeout = 120;
+        # Cold load of the 23G MoE GGUF takes a while on first request.
+        healthCheckTimeout = 300;
 
         models = {
-          qwen3-8b = {
+          # MoE: attention/dense layers + KV on the GPU, experts in system RAM
+          # (--n-cpu-moe). The 3080 Ti runs via NVK (nouveau), not the
+          # proprietary driver.
+          "qwen3.6-35b-a3b" = {
             cmd = ''
               ${llama-server} \
                 --port ${"\${PORT}"} \
-                --model /var/lib/llama-models/Qwen3-8B-Q4_K_M.gguf \
-                --alias qwen3-8b \
-                --ctx-size 8192 \
+                --model /var/lib/llama-models/Qwen3.6-35B-A3B-UD-Q4_K_XL.gguf \
+                --alias qwen3.6-35b-a3b \
+                --ctx-size 32768 \
                 --n-gpu-layers 99 \
-                --parallel 1 \
+                --n-cpu-moe 99 \
                 --flash-attn on \
+                --jinja \
+                --temp 1.0 --top-p 0.95 --top-k 20 --min-p 0.0 \
+                --parallel 1 \
                 --no-webui
             '';
             ttl = 900;
             concurrencyLimit = 1;
           };
-
-          # Add a second model here. It will replace qwen3-8b, not run beside it.
-          # "qwen3-14b" = {
-          #   cmd = ''
-          #     ${llama-server} \
-          #       --port ${"\${PORT}"} \
-          #       --model /var/lib/llama-models/Qwen3-14B-Q4_K_M.gguf \
-          #       --alias qwen3-14b \
-          #       --ctx-size 4096 \
-          #       --n-gpu-layers 99 \
-          #       --parallel 1 \
-          #       --flash-attn on \
-          #       --no-webui
-          #   '';
-          #   ttl = 900;
-          #   concurrencyLimit = 1;
-          # };
         };
 
         groups.local-gpu = {
           swap = true;
           exclusive = true;
           members = [
-            "qwen3-8b"
-            # "qwen3-14b"
+            "qwen3.6-35b-a3b"
           ];
         };
       };
@@ -140,14 +129,14 @@
           database_url = "os.environ/DATABASE_URL";
         };
         model_list = [
-          # {
-          #   model_name = "local/qwen3-8b";
-          #   litellm_params = {
-          #     model = "openai/qwen3-8b";
-          #     api_base = "http://127.0.0.1:8081/v1";
-          #     api_key = "local";
-          #   };
-          # }
+          {
+            model_name = "local/qwen3.6-35b-a3b";
+            litellm_params = {
+              model = "openai/qwen3.6-35b-a3b";
+              api_base = "http://127.0.0.1:8081/v1";
+              api_key = "local";
+            };
+          }
           {
             model_name = "*";
             litellm_params.model = "openrouter/*";
