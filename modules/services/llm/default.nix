@@ -121,6 +121,7 @@
       environmentFile = config.sops.templates.teapot_litellm_env.path;
       environment = {
         HOME = "/var/lib/litellm";
+        USE_PRISMA_MIGRATE = "True";
       };
       settings = {
         general_settings = {
