@@ -1,64 +1,100 @@
 # Operating Policy
 
-## Shell and Git
+## Environment
 
-- Prefer dedicated file, search, and editing tools. Use the shell only for project tooling or necessary system inspection.
-- Use Git only to inspect the working tree and history. Never stage, commit, amend, restore, reset, switch, check out, merge, rebase, cherry-pick, fetch, pull, push, change remotes, create worktrees, or otherwise mutate Git state.
-- When a Git mutation would help, explain the exact command and ask the user to run it.
+### Git
 
-## Secrets and Environment Tools
+- Use the file, search, and editing tools for file operations.
+- Use the shell only for project tooling or to inspect the system.
+- Use Git only to look at the working tree and history.
+- Do not stage, commit, amend, restore, reset, switch, check out, merge, rebase, cherry-pick, fetch, pull, push, change remotes, create worktrees, or mutate Git state.
+- If a Git mutation is necessary, explain the exact command and ask the user to run it.
 
-- Never invoke `direnv`, `gpg`, `gpg2`, `pgp`, or `gnupg`, directly or indirectly through a shell, script, alias, package hook, or other command.
-- Never read, print, decrypt, source, or otherwise load secret material into agent context. Respect denied secret-file paths.
-- Assume required environment variables and secrets are injected when code runs. Leave secret creation, rotation, and updates to the user.
+### Secrets
 
-## Temporary files
+- Do not invoke `direnv`, `gpg`, `gpg2`, `pgp`, or `gnupg`.
+- This applies to direct use and to use through shells, scripts, aliases, package hooks, or other commands.
+- Do not read, print, decrypt, source, or load secret material into agent context.
+- Respect paths that the system marks as denied for secrets.
+- Assume that environment variables and secrets are already available when code runs.
+- Leave secret creation, rotation, and updates to the user.
 
-- Prefer a local in-project `.tmp` directory opposed to using `/tmp`
+### Files
+
+- Use a `.tmp` directory inside the project instead of `/tmp`.
+- Do not access the users home folder, dotfiles are declarative and live in nixos config.
+
+### Nix Development Environments
+
+- If a dependency is missing, first look at `flake.nix`, `flake.lock`, `shell.nix`, and related project documentation.
+- Before you propose a change, think about whether the dependency belongs in the project development environment.
+- Explain the tradeoff and ask the user before you edit development-environment definitions.
+- If the dependency is already available in the development environment, use `nix develop -c <command>` only when that one command is worth it.
+- After a development-environment definition changes, ask the user to restart OpenCode from the correct environment.
+- Do not require every subsequent tool call to start with `nix develop`.
+
+### Running Task Ownership
+
+- If you are not told otherwise, the user can already run `cargo run` or `pnpm dev` in another terminal.
+- Ask for confirmation before you kill processes that this conversation did not start.
+
+### Verification
+
+- Run tests and checks that focus on behavior.
+- Use observable behavior. Do not use implementation details or too much mocking.
+- Fast test suites can run without special consideration.
+- For networked or expensive checks, use your judgment.
+- Do not use privileged operations for verification.
+- If the user must run a command, state it clearly.
 
 ## Decisions and Scope
 
-- When a request requires a material unstated implementation choice, present concise options and wait for the user's decision.
-- Make the smallest correct change and preserve existing user changes.
-- Do not fix unrelated or adjacent problems. Report them separately, and ask before creating a handoff file or delegating their documentation.
-- If you need a paragraph-long comment to justify why the workaround is OK, the code is wrong fix the code.
+- If a request needs a material choice that is not stated, show concise options. Wait for the user to decide.
+- Make the smallest correct change.
+- Keep existing user changes as they are.
+- Do not fix unrelated problems.
+- If you find an unrelated problem, report it separately. Ask before you create a handoff file or delegate its documentation.
+- If you need a long comment to explain why the workaround is correct, the code is wrong. Fix the code.
 
-## Verification
+### Dependencies and Broad Changes
 
-- Run relevant behavior-focused tests and checks. Prefer observable behavior over implementation details and excessive mocking.
-- Run fast suites normally; use judgment with networked or unusually expensive checks. Never use privileged operations for verification.
-- State clearly when a required command or action must be performed by the user.
-
-## Dependencies and Broad Changes
-
-- Ask before adding or upgrading dependencies or development-environment packages. Update lockfiles only after approval.
-- Limit formatting to task-related files. Ask before repository-wide formatting, generators, migrations, codemods, or other broad rewrites.
+- Ask before you add or upgrade dependencies or development-environment packages.
+- Update lockfiles only after you get approval.
+- Limit formatting changes to task-related files.
+- Ask before you format the whole repository, run generators, migrations, codemods, or make broad rewrites.
 
 ## Language Preferences
 
-- Never create `types.ts` or `types.rs`; define every type, struct, and enum in the module where it appropriately belongs. Wanting a generic types file means the design needs more thought.
-- Default to writing no comments. Only add one when the WHY is non-obvious: a hidden constraint, invariant, workaround for a specific bug, behaviour that would surprise the reader. If removing the comment wouldn't confuse a future reader, don't write it.
-- Don't explain WHAT the code does, since well-named identifiers and well written code already does that. Don't reference the current task, fix, or request or how it differs from before, since those rot as the codebase evolves.
+### Communication Style
 
-## Nix Development Environments
+- Speak and think with ADS-STE100 Simplified Technical English.
+- Avoid synonym rotation, ensure there are singular robust defintions chosen for concepts
 
-- When a dependency is missing, first inspect `flake.nix`, `flake.lock`, `shell.nix`, and relevant project documentation when present.
-- Consider whether the dependency belongs in the project's development environment before proposing a change. Explain the tradeoff and ask the user before editing development-environment definitions.
-- If the dependency is already available through the development environment, use `nix develop -c <command>` only when that one scoped command is worthwhile.
-- After a development-environment definition changes, prefer asking the user to restart OpenCode from the appropriate environment. Do not require every subsequent tool call to be prefixed with `nix develop`.
+### General
 
-## Running Task Ownership
-
-- If not explicitly informed, the user may already be running `cargo run` or `pnpm dev` in another terminal ask confirmation before killing processes that werent initiated by this conversation.
+- Do not create `types.ts` or `types.rs`.
+- Define every type, struct, and enum in the module where it belongs.
+- If you need a generic types file, the design needs more thought.
+- Do not write comments unless the WHY is not obvious.
+- Add a comment only for a hidden constraint, an invariant, a workaround for a specific bug, or behavior that would surprise the reader.
+- If you can remove a comment and not confuse a future reader, do not write it.
+- Do not explain WHAT the code does.
+- Well-named identifiers and well-written code already show what the code does.
+- Do not reference the current task, fix, or request.
+- Do not explain how the code differs from the previous version. Such comments become incorrect as the codebase changes.
 
 ### TypeScript and JavaScript
 
-- Treat configured `eslint-plugin-v3xlabs` rules as authoritative. Inspect and follow the project ESLint configuration rather than working around it.
-- Prefer functions and data composition. Introduce classes only for custom error types, and prefer `type` over `interface`.
-- Prefer discriminated unions and Result-style types for expected failures. Reserve thrown exceptions for exceptional or framework-required paths.
-- Never use `any`, type assertions, non-null assertions, `@ts-ignore`, or equivalent type-system escape hatches.
+- Treat the configured `eslint-plugin-v3xlabs` rules as authoritative.
+- Look at and follow the project ESLint configuration. Do not work around it.
+- Use functions and data composition.
+- Use classes only for custom error types.
+- Use `type` instead of `interface`.
+- Use discriminated unions and Result-style types for expected failures.
+- Throw exceptions only for exceptional or framework-required paths.
+- Do not use `any`, type assertions, non-null assertions, `@ts-ignore`, or other type-system escape hatches.
 - Make invalid states unrepresentable where practical.
-- Do not add `eslint-plugin-v3xlabs` where absent without dependency approval.
+- Do not add `eslint-plugin-v3xlabs` where it is absent without dependency approval.
 
 ### Rust and Nix
 
@@ -67,4 +103,4 @@
 
 ## Skill Improvement
 
-- If the user repeatedly asks you to do something or endorses a pattern that is prohibited as per this document or a skill document, propose they update their system wide skill, output a specific line to adjust or update.
+- If the user asks you many times to do something or approves a pattern that this document or a skill document prohibits, ask them to update their system-wide skill. Output a specific line for them to adjust or update.
