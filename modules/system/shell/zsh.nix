@@ -79,6 +79,8 @@
         compdef _kubectl k
         alias k='kubectl'
 
+        alias code='codium'
+
         alias reload-plasma='systemctl --user restart plasma-plasmashell.service'
 
         ssh() {

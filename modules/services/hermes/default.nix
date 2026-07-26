@@ -8,31 +8,14 @@ in {
     ...
   }: {
     systemd.services.hermes-agent = {
-      requires = ["litellm.service" "hermes-ssh-agent.service"];
-      after = ["litellm.service" "hermes-ssh-agent.service"];
+      requires = ["litellm.service"];
+      after = ["litellm.service"];
       path = [
         pkgs.docker
         pkgs.gh
         pkgs.claude-code
         pkgs.openssh
       ];
-    };
-
-    # SSH agent for the hermes user — enables SSH + git signing
-    systemd.services.hermes-ssh-agent = {
-      description = "SSH agent for the hermes user";
-      wantedBy = ["multi-user.target"];
-      after = ["network-online.target"];
-      wants = ["network-online.target"];
-      requires = ["sops-secrets-teapot_ssh_ed25519_key.service"];
-      serviceConfig = {
-        User = "hermes";
-        Group = "hermes";
-        ExecStart = "${pkgs.openssh}/bin/ssh-agent -a ${config.services.hermes-agent.stateDir}/.ssh-agent.sock";
-        ExecStartPost = "${pkgs.openssh}/bin/ssh-add ${config.sops.secrets.teapot_ssh_ed25519_key.path}";
-        Restart = "always";
-        RestartSec = 5;
-      };
     };
 
     users.users.hermes = {
@@ -43,8 +26,9 @@ in {
       age.keyFile = "/home/luc/.config/sops/age/keys.txt";
       # defaultSopsFile = ../../secrets/418.sops.yaml;
       secrets = {
-        teapot_telegram_token = {};
-        teapot_telegram_allowed_users = {};
+        teapot_mattermost_url = {};
+        teapot_mattermost_token = {};
+        teapot_mattermost_allowed_users = {};
         teapot_github_pat = {};
         teapot_ssh_ed25519_key = {
           path = "${config.services.hermes-agent.stateDir}/.ssh/id_ed25519";
@@ -61,8 +45,9 @@ in {
         group = "hermes";
         mode = "0400";
         content = ''
-          TELEGRAM_BOT_TOKEN=${config.sops.placeholder.teapot_telegram_token}
-          TELEGRAM_ALLOWED_USERS=${config.sops.placeholder.teapot_telegram_allowed_users}
+          MATTERMOST_URL=${config.sops.placeholder.teapot_mattermost_url}
+          MATTERMOST_TOKEN=${config.sops.placeholder.teapot_mattermost_token}
+          MATTERMOST_ALLOWED_USERS=${config.sops.placeholder.teapot_mattermost_allowed_users}
           LITELLM_API_KEY=${config.sops.placeholder.teapot_litellm_master_key}
           GH_TOKEN=${config.sops.placeholder.teapot_github_pat}
         '';
@@ -145,16 +130,11 @@ in {
       settings = {
         model = {
           provider = "custom";
-          # litellm falls back to v3x-t/... automatically if mediabus is down
-          # (router_settings.fallbacks in modules/services/llm).
-          default = "v3x-m/qwen3.6-35b-a3b";
+          default = "v3x-m/qwen3-coder-30b-a3b";
           base_url = "http://127.0.0.1:4000/v1";
           api_mode = "chat_completions";
           api_key = "\${LITELLM_API_KEY}";
-          # Must match llama-server --ctx-size (modules/services/llm).
-          # Without this hermes falls back to probing/registry lookups and
-          # assumes ~256k, then blows past what llama-server actually serves.
-          context_length = 131072;
+          context_length = 393216;
         };
         toolsets = ["all"];
         max_turns = 100;
@@ -166,8 +146,8 @@ in {
         };
         compression = {
           enabled = true;
-          threshold = 0.5;
-          summary_model = "v3x-m/qwen3.6-35b-a3b";
+          threshold = 0.8;
+          summary_model = "v3x-m/gpt-oss-20b";
         };
         memory = {
           memory_enabled = true;
@@ -188,23 +168,22 @@ in {
         #   openai.api_key = "\${}";
         # };
       };
-      # mcpServers.github = {
-      #   command = "npx";
-      #   args = [
-      #     "-y"
-      #     "@modelcontextprotocol/server-github"
-      #   ];
-      #   env = {
-      #     GITHUB_PERSONAL_ACCESS_TOKEN = "\${GITHUB_PERSONAL_ACCESS_TOKEN}";
-      #   };
-      # };
+      mcpServers.github = {
+        command = "npx";
+        args = [
+          "-y"
+          "@modelcontextprotocol/server-github"
+        ];
+        env = {
+          GITHUB_PERSONAL_ACCESS_TOKEN = "\${GH_TOKEN}";
+        };
+      };
 
       addToSystemPackages = true;
       restart = "no";
       restartSec = 5;
     };
 
-    # Dashboard web UI — separate process from the gateway
     systemd.services.hermes-dashboard = {
       description = "Hermes Agent Dashboard";
       wantedBy = ["multi-user.target"];

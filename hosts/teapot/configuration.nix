@@ -19,6 +19,7 @@
       self.nixosModules.peripheral
       self.nixosModules.teapotLlm
       self.nixosModules.teapotHermes
+      self.nixosModules.teapotMattermost
       # self.nixosModules.mcp
       # self.nixosModules.opencode
       # self.nixosModules.claude-code
@@ -108,14 +109,6 @@
       age.keyFile = "/home/luc/.config/sops/age/keys.txt";
       defaultSopsFile = ../../secrets/418.sops.yaml;
       secrets = {
-        teapot_ssh_ed25519_public_key = {
-          path = "/home/luc/.ssh/id_ed25519.pub";
-          mode = "0644";
-        };
-        teapot_ssh_ed25519_key = {
-          path = "/home/luc/.ssh/id_ed25519";
-          mode = "0600";
-        };
         teapot_github_pat = {};
       };
       templates = {
@@ -140,6 +133,7 @@
       age
       claude-code
       github-cli
+      net-tools
     ];
 
     system.stateVersion = "26.05";
