@@ -19,6 +19,9 @@
       self.nixosModules.peripheral
       self.nixosModules.teapotLlm
       self.nixosModules.teapotHermes
+      self.nixosModules.mcp
+      self.nixosModules.opencode
+      self.nixosModules.claude-code
     ];
 
     nixpkgs.overlays = [
