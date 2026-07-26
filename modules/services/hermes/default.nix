@@ -56,7 +56,7 @@ in {
       settings = {
         model = {
           provider = "custom";
-          default = "local/qwen3-8b";
+          default = "deepseek/deepseek-v4-pro";
           base_url = "http://127.0.0.1:4000/v1";
           api_mode = "chat_completions";
           api_key = "\${LITELLM_API_KEY}";
@@ -72,7 +72,7 @@ in {
         compression = {
           enabled = true;
           threshold = 0.5;
-          summary_model = "local/qwen3-8b";
+          summary_model = "deepseek/deepseek-v4-pro";
         };
         memory = {
           memory_enabled = true;
