@@ -109,7 +109,7 @@
         foreground #f8f8f2
         color4 #f1fa8c
         color12 #f1fa8c
-      ''
+      '';
     };
   };
 }
