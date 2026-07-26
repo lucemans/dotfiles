@@ -54,12 +54,16 @@
     sops.secrets.teapot_litellm_salt_key = {
       mode = "0400";
     };
+    sops.secrets.teapot_litellm_openrouter_key = {
+      mode = "0400";
+    };
 
     sops.templates.teapot_litellm_env = {
       mode = "0400";
       content = ''
         LITELLM_MASTER_KEY=${config.sops.placeholder.teapot_litellm_master_key}
         LITELLM_SALT_KEY=${config.sops.placeholder.teapot_litellm_salt_key}
+        OPENROUTER_API_KEY=${config.sops.placeholder.teapot_litellm_openrouter_key}
         DATABASE_URL=postgresql://litellm@127.0.0.1/litellm
       '';
     };
@@ -143,6 +147,10 @@
               api_base = "http://127.0.0.1:8081/v1";
               api_key = "local";
             };
+          }
+          {
+            model_name = "*";
+            litellm_params.model = "openrouter/*";
           }
         ];
         router_settings = {
