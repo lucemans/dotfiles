@@ -19,9 +19,9 @@
       self.nixosModules.peripheral
       self.nixosModules.teapotLlm
       self.nixosModules.teapotHermes
-      self.nixosModules.mcp
-      self.nixosModules.opencode
-      self.nixosModules.claude-code
+      # self.nixosModules.mcp
+      # self.nixosModules.opencode
+      # self.nixosModules.claude-code
     ];
 
     nixpkgs.overlays = [
@@ -130,6 +130,7 @@
     environment.systemPackages = with pkgs; [
       sops
       age
+      claude-code
     ];
 
     system.stateVersion = "26.05";
