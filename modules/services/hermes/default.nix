@@ -10,7 +10,12 @@ in {
     systemd.services.hermes-agent = {
       requires = ["litellm.service"];
       after = ["litellm.service"];
-      path = [pkgs.docker];
+      path = [
+        pkgs.docker
+        pkgs.gh
+        pkgs.claude-code
+        pkgs.openssh
+      ];
     };
     users.users.hermes = {
       extraGroups = ["docker"];
