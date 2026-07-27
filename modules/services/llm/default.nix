@@ -6,7 +6,9 @@
     inputs,
     ...
   }: let
-    llama-cpp = pkgs.llama-cpp-vulkan;
+    # CUDA build: proprietary nvidia driver loads since 2026-07-27 (after
+    # reboot); CUDA prefill is much faster than the old Vulkan/NVK path.
+    llama-cpp = pkgs.llama-cpp.override { cudaSupport = true; };
     llama-server = lib.getExe' llama-cpp "llama-server";
     # Must match the engines commit baked into the prisma-client-py override
     # (hosts/teapot/configuration.nix) and the prisma CLI on litellm's PATH.
@@ -78,26 +80,34 @@
         healthCheckTimeout = 300;
 
         models = {
-          # MoE: attention/dense layers + KV on the GPU, experts in system RAM
-          # (--n-cpu-moe). The 3080 Ti runs via NVK (nouveau), not the
-          # proprietary driver.
+          # MoE: attention/dense layers + KV on the GPU, experts mostly in
+          # system RAM. --n-cpu-moe tuned via llama-fit-params: 13 of 41
+          # expert layers fit in VRAM at 128k ctx with q8_0 KV cache.
+          # Generation stays RAM-bandwidth-bound (~55 GB/s).
+          # Served ctx (131072) must match hermes settings.model.context_length.
           "qwen3.6-35b-a3b" = {
             cmd = ''
               ${llama-server} \
                 --port ${"\${PORT}"} \
                 --model /var/lib/llama-models/Qwen3.6-35B-A3B-UD-Q4_K_XL.gguf \
                 --alias qwen3.6-35b-a3b \
-                --ctx-size 32768 \
+                --ctx-size 131072 \
                 --n-gpu-layers 99 \
-                --n-cpu-moe 99 \
+                --n-cpu-moe 28 \
                 --flash-attn on \
+                --cache-type-k q8_0 \
+                --cache-type-v q8_0 \
                 --jinja \
                 --temp 1.0 --top-p 0.95 --top-k 20 --min-p 0.0 \
                 --parallel 1 \
                 --no-webui
             '';
             ttl = 900;
-            concurrencyLimit = 1;
+            # llama-server has one slot (--parallel 1) but queues excess
+            # requests itself. A limit of 1 here made llama-swap 429 the
+            # second concurrent request (hermes turn + compression call),
+            # which surfaced in hermes as a bogus "rate limited" error.
+            concurrencyLimit = 10;
           };
         };
 
@@ -129,11 +139,26 @@
           database_url = "os.environ/DATABASE_URL";
         };
         model_list = [
+          # "openai/" below is litellm's provider prefix for any
+          # OpenAI-compatible endpoint (both are llama-swap), not OpenAI
+          # itself. Clients only ever see the model_name.
           {
-            model_name = "local/qwen3.6-35b-a3b";
+            model_name = "v3x-t/qwen3.6-35b-a3b";
             litellm_params = {
               model = "openai/qwen3.6-35b-a3b";
               api_base = "http://127.0.0.1:8081/v1";
+              api_key = "local";
+            };
+          }
+          {
+            model_name = "v3x-m/qwen3.6-35b-a3b";
+            litellm_params = {
+              # Direct LAN route to mediabus llama-swap (2x RTX A4000).
+              # Deliberately NOT https://ollama.v3x.sh: that hop goes through
+              # Cloudflare, which kills idle connections at ~100s (cold model
+              # loads + long non-streamed completions would time out).
+              api_base = "http://v3x-mediabus:11434/v1";
+              model = "openai/qwen3.6-35b-a3b";
               api_key = "local";
             };
           }
@@ -145,6 +170,12 @@
         router_settings = {
           routing_strategy = "simple-shuffle";
           num_retries = 1;
+          # Prefer mediabus (2x A4000, ~2x faster); fall back to the local
+          # model if it's unreachable. Note teapot's model unloads after 15
+          # min idle, so a failover request may eat a ~30s cold load.
+          fallbacks = [
+            {"v3x-m/qwen3.6-35b-a3b" = ["v3x-t/qwen3.6-35b-a3b"];}
+          ];
         };
       };
     };

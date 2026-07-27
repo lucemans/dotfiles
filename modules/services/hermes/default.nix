@@ -63,10 +63,16 @@ in {
       settings = {
         model = {
           provider = "custom";
-          default = "local/qwen3.6-35b-a3b";
+          # litellm falls back to v3x-t/... automatically if mediabus is down
+          # (router_settings.fallbacks in modules/services/llm).
+          default = "v3x-m/qwen3.6-35b-a3b";
           base_url = "http://127.0.0.1:4000/v1";
           api_mode = "chat_completions";
           api_key = "\${LITELLM_API_KEY}";
+          # Must match llama-server --ctx-size (modules/services/llm).
+          # Without this hermes falls back to probing/registry lookups and
+          # assumes ~256k, then blows past what llama-server actually serves.
+          context_length = 131072;
         };
         toolsets = ["all"];
         max_turns = 100;
@@ -79,7 +85,7 @@ in {
         compression = {
           enabled = true;
           threshold = 0.5;
-          summary_model = "local/qwen3.6-35b-a3b";
+          summary_model = "v3x-m/qwen3.6-35b-a3b";
         };
         memory = {
           memory_enabled = true;
