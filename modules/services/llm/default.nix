@@ -27,6 +27,12 @@
       4000
     ];
 
+    # Split-horizon override: public DNS points ollama.v3x.sh at Cloudflare,
+    # whose route doesn't reach mediabus from here (and CF kills idle
+    # connections at ~100s anyway). Pin it to mediabus's LAN IP so litellm
+    # talks straight to its Traefik (valid TLS cert, same hostname).
+    networking.hosts."10.90.0.11" = ["ollama.v3x.sh"];
+
     # Model files are mutable runtime data, never Nix store paths.
     systemd.tmpfiles.rules = [
       "d /var/lib/llama-models 0755 root root -"
@@ -153,11 +159,11 @@
           {
             model_name = "v3x-m/qwen3.6-35b-a3b";
             litellm_params = {
-              # Direct LAN route to mediabus llama-swap (2x RTX A4000).
-              # Deliberately NOT https://ollama.v3x.sh: that hop goes through
-              # Cloudflare, which kills idle connections at ~100s (cold model
-              # loads + long non-streamed completions would time out).
-              api_base = "http://v3x-mediabus:11434/v1";
+              # mediabus llama-swap (2x RTX A4000) behind its Traefik.
+              # ollama.v3x.sh is pinned to the LAN IP via networking.hosts
+              # above — do NOT remove that pin, or this route goes through
+              # Cloudflare and breaks.
+              api_base = "https://ollama.v3x.sh/v1";
               model = "openai/qwen3.6-35b-a3b";
               api_key = "local";
             };
