@@ -8,8 +8,8 @@ in {
     ...
   }: {
     systemd.services.hermes-agent = {
-      requires = ["litellm.service"];
-      after = ["litellm.service"];
+      requires = ["litellm.service" "hermes-ssh-agent.service"];
+      after = ["litellm.service" "hermes-ssh-agent.service"];
       path = [
         pkgs.docker
         pkgs.gh
@@ -17,6 +17,24 @@ in {
         pkgs.openssh
       ];
     };
+
+    # SSH agent for the hermes user — enables SSH + git signing
+    systemd.services.hermes-ssh-agent = {
+      description = "SSH agent for the hermes user";
+      wantedBy = ["multi-user.target"];
+      after = ["network-online.target"];
+      wants = ["network-online.target"];
+      requires = ["sops-secrets-teapot_ssh_ed25519_key.service"];
+      serviceConfig = {
+        User = "hermes";
+        Group = "hermes";
+        ExecStart = "${pkgs.openssh}/bin/ssh-agent -a ${config.services.hermes-agent.stateDir}/.ssh-agent.sock";
+        ExecStartPost = "${pkgs.openssh}/bin/ssh-add ${config.sops.secrets.teapot_ssh_ed25519_key.path}";
+        Restart = "always";
+        RestartSec = 5;
+      };
+    };
+
     users.users.hermes = {
       extraGroups = ["docker"];
     };
@@ -28,7 +46,16 @@ in {
         teapot_telegram_token = {};
         teapot_telegram_allowed_users = {};
         teapot_github_pat = {};
+        teapot_ssh_ed25519_key = {
+          path = "${config.services.hermes-agent.stateDir}/.ssh/id_ed25519";
+          mode = "0600";
+        };
+        teapot_ssh_ed25519_public_key = {
+          path = "${config.services.hermes-agent.stateDir}/.ssh/id_ed25519.pub";
+          mode = "0644";
+        };
       };
+
       templates."teapot_hermes_env" = {
         owner = "hermes";
         group = "hermes";
@@ -39,6 +66,57 @@ in {
           LITELLM_API_KEY=${config.sops.placeholder.teapot_litellm_master_key}
           GH_TOKEN=${config.sops.placeholder.teapot_github_pat}
         '';
+      };
+
+      # SSH config for the hermes user
+      templates."hermes_ssh_config" = {
+        owner = "hermes";
+        group = "hermes";
+        mode = "0600";
+        path = "${config.services.hermes-agent.stateDir}/.ssh/config";
+        content = ''
+          Host github.com
+            IdentityFile ${config.sops.secrets.teapot_ssh_ed25519_key.path}
+            IdentitiesOnly yes
+            AddKeysToAgent yes
+        '';
+      };
+
+      # Git signing key for the hermes user
+      templates."hermes_git_signingkey" = {
+        owner = "hermes";
+        group = "hermes";
+        mode = "0444";
+        path = "${config.services.hermes-agent.stateDir}/.git-signingkey";
+        content = "${config.sops.secrets.teapot_ssh_ed25519_key.path}";
+      };
+
+      # Git config for the hermes user — SSH signing enabled
+      templates."hermes_gitconfig" = {
+        owner = "hermes";
+        group = "hermes";
+        mode = "0600";
+        path = "${config.services.hermes-agent.stateDir}/.gitconfig";
+        content = ''
+          [user]
+            name = 418teapotcat
+            email = 418teapotcat@users.noreply.github.com
+          [commit]
+            gpgFormat = ssh
+          [gpg "ssh"]
+            allowedSignersFile = ${config.sops.templates."hermes_git_allowed_signers".path}
+          [gpg]
+            format = ssh
+        '';
+      };
+
+      # Allowed signers file for SSH signing
+      templates."hermes_git_allowed_signers" = {
+        owner = "hermes";
+        group = "hermes";
+        mode = "0644";
+        path = "${config.services.hermes-agent.stateDir}/.ssh/allowed_signers";
+        content = "* ${config.sops.secrets.teapot_ssh_ed25519_public_key.path}";
       };
     };
 
@@ -58,6 +136,10 @@ in {
         API_SERVER_ENABLED = "true";
         API_SERVER_HOST = "0.0.0.0";
         API_SERVER_PORT = toString apiPort;
+        # Wire SSH agent socket so git/gh CLI can use SSH auth
+        SSH_AUTH_SOCK = "${config.services.hermes-agent.stateDir}/.ssh-agent.sock";
+        # Wire SSH config for git over SSH
+        GIT_SSH_COMMAND = "ssh -F ${config.sops.templates."hermes_ssh_config".path}";
       };
       extraDependencyGroups = ["messaging"];
       settings = {
