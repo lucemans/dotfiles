@@ -208,7 +208,7 @@
     "terminal.integrated.windowsEnableConpty": false,
     "terminal.integrated.gpuAcceleration": "off",
     "dev.containers.gpuAvailability": "none",
-    "extensions.autoUpdate": false,
+    "extensions.autoUpdate": "off",
     "git.blame.editorDecoration.enabled": true,
     "files.associations": {
         "*.yaml": "yaml"

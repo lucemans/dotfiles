@@ -17,6 +17,11 @@
         unifiedjs.vscode-mdx
         rust-lang.rust-analyzer
         vscode-icons-team.vscode-icons
+        continue.continue
+        mkhl.direnv
+        juanblanco.solidity
+        nefrob.vscode-just-syntax
+        redhat.vscode-yaml
         # remcohaszing.schemastore
       ];
     };
