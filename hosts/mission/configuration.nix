@@ -95,7 +95,10 @@
       8545
     ];
 
-    environment.systemPackages = [pkgs.kitty.terminfo];
+    environment.systemPackages = [
+      pkgs.kitty.terminfo
+      pkgs.net-tools
+    ];
 
     system.stateVersion = "26.05";
   };
