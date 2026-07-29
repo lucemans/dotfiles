@@ -17,16 +17,16 @@
         unifiedjs.vscode-mdx
         rust-lang.rust-analyzer
         vscode-icons-team.vscode-icons
-        continue.continue
-        mkhl.direnv
-        juanblanco.solidity
+        # juanblanco.solidity
         nefrob.vscode-just-syntax
         redhat.vscode-yaml
-        # remcohaszing.schemastore
+        mkhl.direnv
       ];
     };
 
-    home-manager.users.luc.home.file.".config/VSCodium/User/settings.json".source = ./settings.json;
+    home-manager.users.luc.home.file.".config/VSCodium/User/settings.json" = {
+      source = ./settings.json;
+    };
     home-manager.users.luc.home.file.".config/VSCodium/User/keybindings.json".source = ./keybindings.json;
   };
 }

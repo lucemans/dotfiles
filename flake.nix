@@ -46,6 +46,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    launchpi = {
+      url = "github:v3xlabs/launchpi";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     # koi.url = "github:v3xlabs/koi";
   };
 
