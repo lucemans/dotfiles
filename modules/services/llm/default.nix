@@ -141,6 +141,14 @@
             };
           }
           {
+            model_name = "v3x-m/qwen3.6-35b-a3b";
+            litellm_params = {
+              api_base = "https://ollama.v3x.sh/v1";
+              model = "openai/gpt-oss-20b";
+              api_key = "local";
+            };
+          }
+          {
             model_name = "*";
             litellm_params.model = "openrouter/*";
           }
