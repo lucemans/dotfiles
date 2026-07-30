@@ -26,6 +26,8 @@ in {
       age.keyFile = "/home/luc/.config/sops/age/keys.txt";
       # defaultSopsFile = ../../secrets/418.sops.yaml;
       secrets = {
+        teapot_mattermost_url = {};
+        teapot_mattermost_token = {};
         teapot_telegram_token = {};
         teapot_telegram_allowed_users = {};
         teapot_github_pat = {};
@@ -44,6 +46,8 @@ in {
         group = "hermes";
         mode = "0400";
         content = ''
+          MATTERMOST_URL=${config.sops.placeholder.teapot_mattermost_url}
+          MATTERMOST_TOKEN=${config.sops.placeholder.teapot_mattermost_token}
           TELEGRAM_BOT_TOKEN=${config.sops.placeholder.teapot_telegram_token}
           TELEGRAM_ALLOWED_USERS=${config.sops.placeholder.teapot_telegram_allowed_users}
           LITELLM_API_KEY=${config.sops.placeholder.teapot_litellm_master_key}
