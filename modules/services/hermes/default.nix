@@ -28,6 +28,7 @@ in {
       secrets = {
         teapot_mattermost_url = {};
         teapot_mattermost_token = {};
+        teapot_mattermost_allowed_users = {};
         teapot_github_pat = {};
         teapot_ssh_ed25519_key = {
           path = "${config.services.hermes-agent.stateDir}/.ssh/id_ed25519";
@@ -46,6 +47,7 @@ in {
         content = ''
           MATTERMOST_URL=${config.sops.placeholder.teapot_mattermost_url}
           MATTERMOST_TOKEN=${config.sops.placeholder.teapot_mattermost_token}
+          MATTERMOST_ALLOWED_USERS=${config.sops.placeholder.teapot_mattermost_allowed_users}
           LITELLM_API_KEY=${config.sops.placeholder.teapot_litellm_master_key}
           GH_TOKEN=${config.sops.placeholder.teapot_github_pat}
         '';
