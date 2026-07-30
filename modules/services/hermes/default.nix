@@ -28,8 +28,6 @@ in {
       secrets = {
         teapot_mattermost_url = {};
         teapot_mattermost_token = {};
-        teapot_telegram_token = {};
-        teapot_telegram_allowed_users = {};
         teapot_github_pat = {};
         teapot_ssh_ed25519_key = {
           path = "${config.services.hermes-agent.stateDir}/.ssh/id_ed25519";
@@ -48,8 +46,6 @@ in {
         content = ''
           MATTERMOST_URL=${config.sops.placeholder.teapot_mattermost_url}
           MATTERMOST_TOKEN=${config.sops.placeholder.teapot_mattermost_token}
-          TELEGRAM_BOT_TOKEN=${config.sops.placeholder.teapot_telegram_token}
-          TELEGRAM_ALLOWED_USERS=${config.sops.placeholder.teapot_telegram_allowed_users}
           LITELLM_API_KEY=${config.sops.placeholder.teapot_litellm_master_key}
           GH_TOKEN=${config.sops.placeholder.teapot_github_pat}
         '';
@@ -132,7 +128,7 @@ in {
       settings = {
         model = {
           provider = "custom";
-          default = "v3x-m/gpt-oss-20b";
+          default = "v3x-m/qwen3-coder-30b-a3b";
           base_url = "http://127.0.0.1:4000/v1";
           api_mode = "chat_completions";
           api_key = "\${LITELLM_API_KEY}";
