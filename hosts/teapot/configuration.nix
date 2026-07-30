@@ -109,14 +109,14 @@
       age.keyFile = "/home/luc/.config/sops/age/keys.txt";
       defaultSopsFile = ../../secrets/418.sops.yaml;
       secrets = {
-        teapot_ssh_ed25519_public_key = {
-          path = "/home/luc/.ssh/id_ed25519.pub";
-          mode = "0644";
-        };
-        teapot_ssh_ed25519_key = {
-          path = "/home/luc/.ssh/id_ed25519";
-          mode = "0600";
-        };
+        # teapot_ssh_ed25519_public_key = {
+        #   path = "/home/luc/.ssh/id_ed25519.pub";
+        #   mode = "0644";
+        # };
+        # teapot_ssh_ed25519_key = {
+        #   path = "/home/luc/.ssh/id_ed25519";
+        #   mode = "0600";
+        # };
         teapot_github_pat = {};
       };
       templates = {
