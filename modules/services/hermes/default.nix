@@ -132,7 +132,7 @@ in {
           base_url = "http://127.0.0.1:4000/v1";
           api_mode = "chat_completions";
           api_key = "\${LITELLM_API_KEY}";
-          context_length = 131000;
+          context_length = 393216;
         };
         toolsets = ["all"];
         max_turns = 100;
@@ -144,7 +144,7 @@ in {
         };
         compression = {
           enabled = true;
-          threshold = 0.5;
+          threshold = 0.8;
           summary_model = "v3x-m/gpt-oss-20b";
         };
         memory = {
