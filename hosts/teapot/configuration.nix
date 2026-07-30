@@ -133,6 +133,7 @@
       age
       claude-code
       github-cli
+      net-tools
     ];
 
     system.stateVersion = "26.05";

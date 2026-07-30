@@ -19,6 +19,8 @@
     services.mattermost = {
       enable = true;
       siteUrl = "https://mm.v3x.sh";
+      host = "0.0.0.0";
+      port = 8065;
     };
   };
 }
