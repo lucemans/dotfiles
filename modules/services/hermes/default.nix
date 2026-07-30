@@ -8,31 +8,14 @@ in {
     ...
   }: {
     systemd.services.hermes-agent = {
-      requires = ["litellm.service" "hermes-ssh-agent.service"];
-      after = ["litellm.service" "hermes-ssh-agent.service"];
+      requires = ["litellm.service"];
+      after = ["litellm.service"];
       path = [
         pkgs.docker
         pkgs.gh
         pkgs.claude-code
         pkgs.openssh
       ];
-    };
-
-    # SSH agent for the hermes user — enables SSH + git signing
-    systemd.services.hermes-ssh-agent = {
-      description = "SSH agent for the hermes user";
-      wantedBy = ["multi-user.target"];
-      after = ["network-online.target"];
-      wants = ["network-online.target"];
-      # requires = ["sops-secrets-teapot_ssh_ed25519_key.service"];
-      serviceConfig = {
-        User = "hermes";
-        Group = "hermes";
-        ExecStart = "${pkgs.openssh}/bin/ssh-agent -a ${config.services.hermes-agent.stateDir}/.ssh-agent.sock";
-        ExecStartPost = "${pkgs.openssh}/bin/ssh-add ${config.sops.secrets.teapot_ssh_ed25519_key.path}";
-        Restart = "always";
-        RestartSec = 5;
-      };
     };
 
     users.users.hermes = {
