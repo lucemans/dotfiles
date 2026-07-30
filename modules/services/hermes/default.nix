@@ -24,7 +24,7 @@ in {
       wantedBy = ["multi-user.target"];
       after = ["network-online.target"];
       wants = ["network-online.target"];
-      requires = ["sops-secrets-teapot_ssh_ed25519_key.service"];
+      # requires = ["sops-secrets-teapot_ssh_ed25519_key.service"];
       serviceConfig = {
         User = "hermes";
         Group = "hermes";
