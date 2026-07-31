@@ -26,6 +26,8 @@ in {
       age.keyFile = "/home/luc/.config/sops/age/keys.txt";
       # defaultSopsFile = ../../secrets/418.sops.yaml;
       secrets = {
+        teapot_telegram_token = {};
+        teapot_telegram_allowed_users = {};
         teapot_mattermost_url = {};
         teapot_mattermost_token = {};
         teapot_mattermost_allowed_users = {};
@@ -45,6 +47,8 @@ in {
         group = "hermes";
         mode = "0400";
         content = ''
+          TELEGRAM_TOKEN=${config.sops.placeholder.teapot_telegram_token}
+          TELEGRAM_ALLOWED_USERS=${config.sops.placeholder.teapot_telegram_allowed_users}
           MATTERMOST_URL=${config.sops.placeholder.teapot_mattermost_url}
           MATTERMOST_TOKEN=${config.sops.placeholder.teapot_mattermost_token}
           MATTERMOST_ALLOWED_USERS=${config.sops.placeholder.teapot_mattermost_allowed_users}
@@ -130,7 +134,7 @@ in {
       settings = {
         model = {
           provider = "custom";
-          default = "v3x-m/qwen3-coder-30b-a3b";
+          default = "v3x-m/gpt-oss-20b";
           base_url = "http://127.0.0.1:4000/v1";
           api_mode = "chat_completions";
           api_key = "\${LITELLM_API_KEY}";
