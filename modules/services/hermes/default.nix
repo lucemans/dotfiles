@@ -35,10 +35,14 @@ in {
         teapot_ssh_ed25519_key = {
           path = "${config.services.hermes-agent.stateDir}/.ssh/id_ed25519";
           mode = "0600";
+          owner = "hermes";
+          group = "hermes";
         };
         teapot_ssh_ed25519_public_key = {
           path = "${config.services.hermes-agent.stateDir}/.ssh/id_ed25519.pub";
           mode = "0644";
+          owner = "hermes";
+          group = "hermes";
         };
       };
 
@@ -47,65 +51,15 @@ in {
         group = "hermes";
         mode = "0400";
         content = ''
-          TELEGRAM_TOKEN=${config.sops.placeholder.teapot_telegram_token}
+          TELEGRAM_BOT_TOKEN=${config.sops.placeholder.teapot_telegram_token}
           TELEGRAM_ALLOWED_USERS=${config.sops.placeholder.teapot_telegram_allowed_users}
           MATTERMOST_URL=${config.sops.placeholder.teapot_mattermost_url}
           MATTERMOST_TOKEN=${config.sops.placeholder.teapot_mattermost_token}
           MATTERMOST_ALLOWED_USERS=${config.sops.placeholder.teapot_mattermost_allowed_users}
           LITELLM_API_KEY=${config.sops.placeholder.teapot_litellm_master_key}
           GH_TOKEN=${config.sops.placeholder.teapot_github_pat}
+          GITHUB_TOKEN=${config.sops.placeholder.teapot_github_pat}
         '';
-      };
-
-      # SSH config for the hermes user
-      templates."hermes_ssh_config" = {
-        owner = "hermes";
-        group = "hermes";
-        mode = "0600";
-        path = "${config.services.hermes-agent.stateDir}/.ssh/config";
-        content = ''
-          Host github.com
-            IdentityFile ${config.sops.secrets.teapot_ssh_ed25519_key.path}
-            IdentitiesOnly yes
-            AddKeysToAgent yes
-        '';
-      };
-
-      # Git signing key for the hermes user
-      templates."hermes_git_signingkey" = {
-        owner = "hermes";
-        group = "hermes";
-        mode = "0444";
-        path = "${config.services.hermes-agent.stateDir}/.git-signingkey";
-        content = "${config.sops.secrets.teapot_ssh_ed25519_key.path}";
-      };
-
-      # Git config for the hermes user — SSH signing enabled
-      templates."hermes_gitconfig" = {
-        owner = "hermes";
-        group = "hermes";
-        mode = "0600";
-        path = "${config.services.hermes-agent.stateDir}/.gitconfig";
-        content = ''
-          [user]
-            name = 418teapotcat
-            email = 418teapotcat@users.noreply.github.com
-          [commit]
-            gpgFormat = ssh
-          [gpg "ssh"]
-            allowedSignersFile = ${config.sops.templates."hermes_git_allowed_signers".path}
-          [gpg]
-            format = ssh
-        '';
-      };
-
-      # Allowed signers file for SSH signing
-      templates."hermes_git_allowed_signers" = {
-        owner = "hermes";
-        group = "hermes";
-        mode = "0644";
-        path = "${config.services.hermes-agent.stateDir}/.ssh/allowed_signers";
-        content = "* ${config.sops.secrets.teapot_ssh_ed25519_public_key.path}";
       };
     };
 
@@ -120,25 +74,22 @@ in {
       group = "hermes";
       createUser = true;
       stateDir = "/var/lib/hermes";
+      container.enable = false;
       environmentFiles = [config.sops.templates."teapot_hermes_env".path];
       environment = {
         API_SERVER_ENABLED = "true";
         API_SERVER_HOST = "0.0.0.0";
         API_SERVER_PORT = toString apiPort;
-        # Wire SSH agent socket so git/gh CLI can use SSH auth
-        SSH_AUTH_SOCK = "${config.services.hermes-agent.stateDir}/.ssh-agent.sock";
-        # Wire SSH config for git over SSH
-        GIT_SSH_COMMAND = "ssh -F ${config.sops.templates."hermes_ssh_config".path}";
       };
       extraDependencyGroups = ["messaging"];
       settings = {
         model = {
           provider = "custom";
-          default = "v3x-m/gpt-oss-20b";
+          default = "v3x-m/qwen3.6-35b-a3b";
           base_url = "http://127.0.0.1:4000/v1";
           api_mode = "chat_completions";
           api_key = "\${LITELLM_API_KEY}";
-          context_length = 393216;
+          context_length = 98304;
         };
         toolsets = ["all"];
         max_turns = 100;
@@ -151,7 +102,7 @@ in {
         compression = {
           enabled = true;
           threshold = 0.8;
-          summary_model = "v3x-m/gpt-oss-20b";
+          summary_model = "v3x-m/qwen3.6-35b-a3b";
         };
         memory = {
           memory_enabled = true;
@@ -165,12 +116,28 @@ in {
           max_turns = 150;
           verbose = false;
         };
+        plugins.enabled = ["hermes-lcm" "rtk-rewrite" "web-ddgs"];
         # stt = {
         #   provider = "openai";
         #   openai.model = "mistralai/Voxtral-Mini-4B-Realtime-2602";
         #   openai.base_url = "https://...";
         #   openai.api_key = "\${}";
         # };
+        gateway = {
+          platforms = {
+            telegram = {
+              enable = true;
+              extra = {
+                status_indicator = true;
+                status_online = "🟢 Online";
+                status_offline = "🔴 Offline";
+              };
+            };
+            mattermost = {
+              enable = true;
+            };
+          };
+        };
       };
       mcpServers.github = {
         command = "npx";
@@ -182,6 +149,28 @@ in {
           GITHUB_PERSONAL_ACCESS_TOKEN = "\${GH_TOKEN}";
         };
       };
+      extraPlugins = [
+        (pkgs.fetchFromGitHub {
+          owner = "stephenschoettler";
+          repo = "hermes-lcm";
+          rev = "v0.20.0";
+          hash = "sha256-yJ1Nn+su7YbKd+cgVOizXChzLbKHqTprSprF1p9/HYk=";
+        })
+      ];
+      extraPythonPackages = [
+        (pkgs.python312Packages.buildPythonPackage {
+          pname = "rtk-hermes";
+          version = "1.2.3";
+          src = pkgs.fetchFromGitHub {
+            owner = "ogallotti";
+            repo = "rtk-hermes";
+            rev = "v1.2.3";
+            hash = "sha256-7YRW6PODrCapfYLFn3DvgHAEME//RGC48GQt+s9ot0s=";
+          };
+          format = "pyproject";
+          build-system = [pkgs.python312Packages.setuptools];
+        })
+      ];
 
       addToSystemPackages = true;
       restart = "no";

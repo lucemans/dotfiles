@@ -134,6 +134,7 @@
       claude-code
       github-cli
       net-tools
+      rtk
     ];
 
     system.stateVersion = "26.05";

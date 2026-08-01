@@ -6,5 +6,6 @@
     ./mattermost
     ./firefly-iii.nix
     ./searxng.nix
+    ./launchpi.nix
   ];
 }

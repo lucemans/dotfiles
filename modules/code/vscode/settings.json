@@ -283,5 +283,7 @@
     "llama-vscode.max_parallel_completions": 1,
     "llama-vscode.n_predict": 64,
     "llama-vscode.t_max_prompt_ms": 1000,
-    "llama-vscode.t_max_predict_ms": 1000
+    "llama-vscode.t_max_predict_ms": 1000,
+    "nix.enableLanguageServer": true,
+    "nix.serverPath": "nil"
 }
