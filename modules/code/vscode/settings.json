@@ -285,5 +285,22 @@
     "llama-vscode.t_max_prompt_ms": 1000,
     "llama-vscode.t_max_predict_ms": 1000,
     "nix.enableLanguageServer": true,
-    "nix.serverPath": "nil"
+    "nix.serverPath": "nixd",
+    "nix.serverSettings": {
+        "nixd": {
+            "formatting": {
+                "command": [
+                    "nixfmt"
+                ]
+            },
+            "nixpkgs": {
+                "expr": "import (builtins.getFlake \"/etc/nixos\").inputs.nixpkgs { system = builtins.currentSystem; }"
+            },
+            "options": {
+                "nixos": {
+                    "expr": "(builtins.getFlake \"/etc/nixos\").nixosConfigurations.v3x-fighter.options"
+                }
+            }
+        }
+    }
 }
