@@ -1,0 +1,377 @@
+version = 5
+
+[[panels]]
+panel_id = "studio-panel-5"
+name = "TestSubpanel"
+dials = []
+
+[panels.layout]
+columns = 3
+rows = 2
+
+[panels.capabilities]
+supports_color = true
+supports_images = true
+supports_text = true
+supports_brightness = true
+supports_haptics = false
+
+[[panels.controls]]
+control_id = "control-1785014722098"
+name = "Member 1"
+action_bindings = []
+
+[panels.controls.position]
+column = 0
+row = 0
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 30
+green = 41
+blue = 59
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "image"
+image = "$(discord.default:channel_members_0_avatar)"
+fit = "cover"
+anchor = "center"
+scale_percent = 100
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 0
+green = 0
+blue = 0
+alpha = 140
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "$(discord.default:channel_members_0)"
+anchor = "bottom_start"
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "image"
+image = "$(discord.default:channel_members_0_status_icon)"
+fit = "contain"
+anchor = "bottom_end"
+scale_percent = 32
+
+[[panels.controls.default_state.layers]]
+kind = "border"
+color = "$(discord.default:channel_members_0_status_color)"
+width = 5
+
+[[panels.controls]]
+control_id = "control-1785014728151"
+name = "Member 2"
+action_bindings = []
+
+[panels.controls.position]
+column = 1
+row = 0
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 30
+green = 41
+blue = 59
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "image"
+image = "$(discord.default:channel_members_1_avatar)"
+fit = "cover"
+anchor = "center"
+scale_percent = 100
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 0
+green = 0
+blue = 0
+alpha = 140
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "$(discord.default:channel_members_1)"
+anchor = "bottom_start"
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "image"
+image = "$(discord.default:channel_members_1_status_icon)"
+fit = "contain"
+anchor = "bottom_end"
+scale_percent = 32
+
+[[panels.controls.default_state.layers]]
+kind = "border"
+color = "$(discord.default:channel_members_1_status_color)"
+width = 5
+
+[[panels.controls]]
+control_id = "control-1785014732193"
+name = "Member 3"
+action_bindings = []
+
+[panels.controls.position]
+column = 2
+row = 0
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 30
+green = 41
+blue = 59
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "image"
+image = "$(discord.default:channel_members_2_avatar)"
+fit = "cover"
+anchor = "center"
+scale_percent = 100
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 0
+green = 0
+blue = 0
+alpha = 140
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "$(discord.default:channel_members_2)"
+anchor = "bottom_start"
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "image"
+image = "$(discord.default:channel_members_2_status_icon)"
+fit = "contain"
+anchor = "bottom_end"
+scale_percent = 32
+
+[[panels.controls.default_state.layers]]
+kind = "border"
+color = "$(discord.default:channel_members_2_status_color)"
+width = 5
+
+[[panels.controls]]
+control_id = "control-1785014737564"
+name = "Member 4"
+action_bindings = []
+
+[panels.controls.position]
+column = 0
+row = 1
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 30
+green = 41
+blue = 59
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "image"
+image = "$(discord.default:channel_members_3_avatar)"
+fit = "cover"
+anchor = "center"
+scale_percent = 100
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 0
+green = 0
+blue = 0
+alpha = 140
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "$(discord.default:channel_members_3)"
+anchor = "bottom_start"
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "image"
+image = "$(discord.default:channel_members_3_status_icon)"
+fit = "contain"
+anchor = "bottom_end"
+scale_percent = 32
+
+[[panels.controls.default_state.layers]]
+kind = "border"
+color = "$(discord.default:channel_members_3_status_color)"
+width = 5
+
+[[panels.controls]]
+control_id = "control-1785014742409"
+name = "Member 5"
+action_bindings = []
+
+[panels.controls.position]
+column = 1
+row = 1
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 30
+green = 41
+blue = 59
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "image"
+image = "$(discord.default:channel_members_4_avatar)"
+fit = "cover"
+anchor = "center"
+scale_percent = 100
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 0
+green = 0
+blue = 0
+alpha = 140
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "$(discord.default:channel_members_4)"
+anchor = "bottom_start"
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "image"
+image = "$(discord.default:channel_members_4_status_icon)"
+fit = "contain"
+anchor = "bottom_end"
+scale_percent = 32
+
+[[panels.controls.default_state.layers]]
+kind = "border"
+color = "$(discord.default:channel_members_4_status_color)"
+width = 5
+
+[[panels.controls]]
+control_id = "control-1785014747847"
+name = "Member 6"
+action_bindings = []
+
+[panels.controls.position]
+column = 2
+row = 1
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 30
+green = 41
+blue = 59
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "image"
+image = "$(discord.default:channel_members_5_avatar)"
+fit = "cover"
+anchor = "center"
+scale_percent = 100
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 0
+green = 0
+blue = 0
+alpha = 140
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "$(discord.default:channel_members_5)"
+anchor = "bottom_start"
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "image"
+image = "$(discord.default:channel_members_5_status_icon)"
+fit = "contain"
+anchor = "bottom_end"
+scale_percent = 32
+
+[[panels.controls.default_state.layers]]
+kind = "border"
+color = "$(discord.default:channel_members_5_status_color)"
+width = 5

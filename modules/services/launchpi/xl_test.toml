@@ -1,0 +1,1421 @@
+version = 5
+
+[[panels]]
+panel_id = "studio-panel-2"
+name = "Auto 8x4"
+dials = []
+
+[panels.layout]
+columns = 8
+rows = 4
+
+[panels.capabilities]
+supports_color = true
+supports_images = true
+supports_text = true
+supports_brightness = true
+supports_haptics = false
+
+[[panels.controls]]
+control_id = "auto-0-0"
+name = "Key 0"
+action_bindings = []
+
+[panels.controls.position]
+column = 0
+row = 0
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+color = "$(mpris.default:art_url)"
+
+[panels.controls.pressed_state]
+is_pressed = true
+
+[[panels.controls.pressed_state.layers]]
+kind = "fill"
+
+[panels.controls.pressed_state.layers.color]
+red = 30
+green = 41
+blue = 59
+alpha = 255
+
+[[panels.controls]]
+control_id = "auto-0-1"
+name = "Key 1"
+
+[panels.controls.position]
+column = 1
+row = 0
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+color = "$(mpris.default:art_url)"
+
+[[panels.controls.default_state.layers]]
+kind = "image"
+image = "$(mpris.default:art_url)"
+fit = "cover"
+anchor = "center"
+scale_percent = 100
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 0
+green = 0
+blue = 0
+alpha = 140
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "$(mpris.default:title)"
+color = "$(mpris.default:art_url)"
+anchor = "bottom_center"
+
+[panels.controls.pressed_state]
+is_pressed = true
+
+[[panels.controls.pressed_state.layers]]
+kind = "fill"
+color = "$(mpris.default:art_url)"
+
+[[panels.controls.action_bindings]]
+gesture = "press"
+
+[[panels.controls.action_bindings.actions]]
+type = "invoke_integration"
+integration_id = "mpris.default"
+action_name = "play_pause"
+
+[panels.controls.action_bindings.actions.parameters]
+
+[[panels.controls]]
+control_id = "auto-0-2"
+name = "Key 2"
+
+[panels.controls.position]
+column = 2
+row = 0
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+color = "$(hass.default:light.dining_light_1_light.color)"
+
+[panels.controls.pressed_state]
+is_pressed = true
+
+[[panels.controls.pressed_state.layers]]
+kind = "fill"
+
+[panels.controls.pressed_state.layers.color]
+red = 30
+green = 41
+blue = 59
+alpha = 255
+
+[[panels.controls.action_bindings]]
+gesture = "press"
+
+[[panels.controls.action_bindings.actions]]
+type = "invoke_integration"
+integration_id = "hass.default"
+action_name = "light.toggle"
+
+[panels.controls.action_bindings.actions.parameters]
+entity_id = "light.dining_light_1_light"
+
+[[panels.controls]]
+control_id = "auto-0-5"
+name = "Key 5"
+
+[panels.controls.position]
+column = 5
+row = 0
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 30
+green = 41
+blue = 59
+alpha = 255
+
+[[panels.controls.action_bindings]]
+gesture = "press"
+
+[[panels.controls.action_bindings.actions]]
+type = "open_subpanel"
+panel_id = "studio-panel-5"
+placement = "bottom_end"
+offset_columns = 0
+offset_rows = 0
+
+[[panels.controls]]
+control_id = "auto-0-6"
+name = "Key 6"
+action_bindings = []
+
+[panels.controls.position]
+column = 6
+row = 0
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 30
+green = 41
+blue = 59
+alpha = 255
+
+[[panels.controls]]
+control_id = "auto-0-7"
+name = "Key 7"
+
+[panels.controls.position]
+column = 7
+row = 0
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 95
+green = 151
+blue = 242
+alpha = 255
+
+[[panels.controls.action_bindings]]
+gesture = "press"
+
+[[panels.controls.action_bindings.actions]]
+type = "change_panel"
+panel_id = "studio-panel-6"
+
+[[panels.controls]]
+control_id = "auto-1-1"
+name = "Dining Light 1 Light"
+
+[panels.controls.position]
+column = 1
+row = 1
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 30
+green = 41
+blue = 59
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "image"
+image = "mdi:ceiling-light"
+fit = "contain"
+anchor = "top_center"
+scale_percent = 50
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = """
+Dining Light 1 Light
+$(hass.default:light.dining_light_1_light.state)"""
+anchor = "bottom_center"
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "border"
+color = "$(hass.default:light.dining_light_1_light.color)"
+width = 5
+
+[[panels.controls.action_bindings]]
+gesture = "press"
+
+[[panels.controls.action_bindings.actions]]
+type = "invoke_integration"
+integration_id = "hass.default"
+action_name = "light.toggle"
+
+[panels.controls.action_bindings.actions.parameters]
+entity_id = "light.dining_light_1_light"
+
+[[panels.controls]]
+control_id = "auto-1-2"
+name = "Dining Light 2 Light"
+
+[panels.controls.position]
+column = 2
+row = 1
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 30
+green = 41
+blue = 59
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "image"
+image = "mdi:ceiling-light"
+fit = "contain"
+anchor = "top_center"
+scale_percent = 50
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = """
+Dining Light 2 Light
+$(hass.default:light.dining_light_2_light_2.state)"""
+anchor = "bottom_center"
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "border"
+color = "$(hass.default:light.dining_light_2_light_2.color)"
+width = 5
+
+[[panels.controls.action_bindings]]
+gesture = "press"
+
+[[panels.controls.action_bindings.actions]]
+type = "invoke_integration"
+integration_id = "hass.default"
+action_name = "light.toggle"
+
+[panels.controls.action_bindings.actions.parameters]
+entity_id = "light.dining_light_2_light_2"
+
+[[panels.controls]]
+control_id = "auto-1-5"
+name = "ATEM Mini Pro"
+
+[panels.controls.position]
+column = 5
+row = 1
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 30
+green = 41
+blue = 59
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "image"
+image = "mdi:theater"
+fit = "contain"
+anchor = "top_center"
+scale_percent = 50
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = """
+ATEM Mini Pro
+$(hass.default:switch.living_front_speaker_right_switch.state)"""
+anchor = "bottom_center"
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls.action_bindings]]
+gesture = "press"
+
+[[panels.controls.action_bindings.actions]]
+type = "invoke_integration"
+integration_id = "hass.default"
+action_name = "call_service"
+
+[panels.controls.action_bindings.actions.parameters]
+domain = "switch"
+entity_id = "switch.living_front_speaker_right_switch"
+service = "toggle"
+
+[[panels.controls]]
+control_id = "auto-1-6"
+name = "Living Front Speakers"
+
+[panels.controls.position]
+column = 6
+row = 1
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 48
+green = 115
+blue = 223
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = """
+Living Front Speakers
+$(hass.default:switch.living_front_speaker_left_switch.state)"""
+anchor = "center"
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls.action_bindings]]
+gesture = "press"
+
+[[panels.controls.action_bindings.actions]]
+type = "invoke_integration"
+integration_id = "hass.default"
+action_name = "call_service"
+
+[panels.controls.action_bindings.actions.parameters]
+domain = "switch"
+entity_id = "switch.living_front_speaker_left_switch"
+service = "toggle"
+
+[[panels.controls]]
+control_id = "auto-1-7"
+name = "Dining Light 2 Light"
+
+[panels.controls.position]
+column = 7
+row = 1
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 30
+green = 41
+blue = 59
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = """
+Dining Light 2 Light
+$(hass.default:light.dining_light_2_light_2.state)"""
+anchor = "bottom_center"
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "border"
+color = "$(hass.default:light.dining_light_2_light_2.color)"
+width = 5
+
+[[panels.controls.default_state.layers]]
+kind = "image"
+image = "mdi:lightbulb"
+fit = "contain"
+anchor = "center"
+scale_percent = 50
+
+[[panels.controls.action_bindings]]
+gesture = "press"
+
+[[panels.controls.action_bindings.actions]]
+type = "invoke_integration"
+integration_id = "hass.default"
+action_name = "light.toggle"
+
+[panels.controls.action_bindings.actions.parameters]
+entity_id = "light.dining_light_2_light_2"
+
+[[panels.controls]]
+control_id = "auto-2-0"
+name = "Key 16"
+action_bindings = []
+
+[panels.controls.position]
+column = 0
+row = 2
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 30
+green = 41
+blue = 59
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "16"
+anchor = "center"
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls]]
+control_id = "auto-2-1"
+name = "Key 17"
+action_bindings = []
+
+[panels.controls.position]
+column = 1
+row = 2
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 30
+green = 41
+blue = 59
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "17"
+anchor = "center"
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls]]
+control_id = "auto-2-2"
+name = "Key 18"
+action_bindings = []
+
+[panels.controls.position]
+column = 2
+row = 2
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 30
+green = 41
+blue = 59
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "18"
+anchor = "center"
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls]]
+control_id = "auto-2-3"
+name = "Key 19"
+
+[panels.controls.position]
+column = 3
+row = 2
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+color = "$(hass.default:light.dining_light_1_light.color)"
+
+[[panels.controls.action_bindings]]
+gesture = "press"
+
+[[panels.controls.action_bindings.actions]]
+type = "invoke_integration"
+integration_id = "hass.default"
+action_name = "light.toggle"
+
+[panels.controls.action_bindings.actions.parameters]
+entity_id = "light.dining_light_1_light"
+
+[[panels.controls]]
+control_id = "auto-2-5"
+name = "Livingroom Plain"
+
+[panels.controls.position]
+column = 5
+row = 2
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 30
+green = 41
+blue = 59
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "image"
+image = "mdi:home-account"
+fit = "contain"
+anchor = "top_center"
+scale_percent = 50
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "Livingroom Plain"
+anchor = "bottom_center"
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls.action_bindings]]
+gesture = "press"
+
+[[panels.controls.action_bindings.actions]]
+type = "invoke_integration"
+integration_id = "hass.default"
+action_name = "call_service"
+
+[panels.controls.action_bindings.actions.parameters]
+domain = "scene"
+entity_id = "scene.livingroom_plain"
+service = "turn_on"
+
+[[panels.controls]]
+control_id = "auto-2-6"
+name = "Key 22"
+action_bindings = []
+
+[panels.controls.position]
+column = 6
+row = 2
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 30
+green = 41
+blue = 59
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "22"
+anchor = "center"
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls]]
+control_id = "auto-2-7"
+name = "Key 23"
+
+[panels.controls.position]
+column = 7
+row = 2
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 30
+green = 41
+blue = 59
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "23"
+anchor = "center"
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls.action_bindings]]
+gesture = "press"
+
+[[panels.controls.action_bindings.actions]]
+type = "invoke_integration"
+integration_id = "hass.default"
+action_name = "light.toggle"
+
+[panels.controls.action_bindings.actions.parameters]
+entity_id = "light.kitchen_strip_light"
+
+[[panels.controls]]
+control_id = "auto-3-0"
+name = "Channel name"
+action_bindings = []
+
+[panels.controls.position]
+column = 0
+row = 3
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 30
+green = 41
+blue = 59
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "$(discord.default:channel_name)"
+anchor = "center"
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls]]
+control_id = "auto-3-1"
+name = "Member 1"
+action_bindings = []
+
+[panels.controls.position]
+column = 1
+row = 3
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 30
+green = 41
+blue = 59
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "image"
+image = "$(discord.default:channel_members_0_avatar)"
+fit = "cover"
+anchor = "center"
+scale_percent = 100
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 0
+green = 0
+blue = 0
+alpha = 140
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "$(discord.default:channel_members_0)"
+anchor = "bottom_start"
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "image"
+image = "$(discord.default:channel_members_0_status_icon)"
+fit = "contain"
+anchor = "bottom_end"
+scale_percent = 32
+
+[[panels.controls.default_state.layers]]
+kind = "border"
+color = "$(discord.default:channel_members_0_status_color)"
+width = 5
+
+[[panels.controls]]
+control_id = "auto-3-2"
+name = "Member 2"
+action_bindings = []
+
+[panels.controls.position]
+column = 2
+row = 3
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 30
+green = 41
+blue = 59
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "image"
+image = "$(discord.default:channel_members_1_avatar)"
+fit = "cover"
+anchor = "center"
+scale_percent = 100
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 0
+green = 0
+blue = 0
+alpha = 140
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "$(discord.default:channel_members_1)"
+anchor = "bottom_start"
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "image"
+image = "$(discord.default:channel_members_1_status_icon)"
+fit = "contain"
+anchor = "bottom_end"
+scale_percent = 32
+
+[[panels.controls.default_state.layers]]
+kind = "border"
+color = "$(discord.default:channel_members_1_status_color)"
+width = 5
+
+[[panels.controls]]
+control_id = "auto-3-3"
+name = "Member 3"
+action_bindings = []
+
+[panels.controls.position]
+column = 3
+row = 3
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 30
+green = 41
+blue = 59
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "image"
+image = "$(discord.default:channel_members_2_avatar)"
+fit = "cover"
+anchor = "center"
+scale_percent = 100
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 0
+green = 0
+blue = 0
+alpha = 140
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "$(discord.default:channel_members_2)"
+anchor = "bottom_start"
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "image"
+image = "$(discord.default:channel_members_2_status_icon)"
+fit = "contain"
+anchor = "bottom_end"
+scale_percent = 32
+
+[[panels.controls.default_state.layers]]
+kind = "border"
+color = "$(discord.default:channel_members_2_status_color)"
+width = 5
+
+[[panels.controls]]
+control_id = "auto-3-4"
+name = "Member 4"
+action_bindings = []
+
+[panels.controls.position]
+column = 4
+row = 3
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 30
+green = 41
+blue = 59
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "image"
+image = "$(discord.default:channel_members_3_avatar)"
+fit = "cover"
+anchor = "center"
+scale_percent = 100
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 0
+green = 0
+blue = 0
+alpha = 140
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "$(discord.default:channel_members_3)"
+anchor = "bottom_start"
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "image"
+image = "$(discord.default:channel_members_3_status_icon)"
+fit = "contain"
+anchor = "bottom_end"
+scale_percent = 32
+
+[[panels.controls.default_state.layers]]
+kind = "border"
+color = "$(discord.default:channel_members_3_status_color)"
+width = 5
+
+[[panels.controls]]
+control_id = "auto-3-5"
+name = "Member 5"
+action_bindings = []
+
+[panels.controls.position]
+column = 5
+row = 3
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 30
+green = 41
+blue = 59
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "image"
+image = "$(discord.default:channel_members_4_avatar)"
+fit = "cover"
+anchor = "center"
+scale_percent = 100
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 0
+green = 0
+blue = 0
+alpha = 140
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "$(discord.default:channel_members_4)"
+anchor = "bottom_start"
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "image"
+image = "$(discord.default:channel_members_4_status_icon)"
+fit = "contain"
+anchor = "bottom_end"
+scale_percent = 32
+
+[[panels.controls.default_state.layers]]
+kind = "border"
+color = "$(discord.default:channel_members_4_status_color)"
+width = 5
+
+[[panels.controls]]
+control_id = "auto-3-6"
+name = "Member 6"
+action_bindings = []
+
+[panels.controls.position]
+column = 6
+row = 3
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 30
+green = 41
+blue = 59
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "image"
+image = "$(discord.default:channel_members_5_avatar)"
+fit = "cover"
+anchor = "center"
+scale_percent = 100
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 0
+green = 0
+blue = 0
+alpha = 140
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "$(discord.default:channel_members_5)"
+anchor = "bottom_start"
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "image"
+image = "$(discord.default:channel_members_5_status_icon)"
+fit = "contain"
+anchor = "bottom_end"
+scale_percent = 32
+
+[[panels.controls.default_state.layers]]
+kind = "border"
+color = "$(discord.default:channel_members_5_status_color)"
+width = 5
+
+[[panels.controls]]
+control_id = "auto-3-7"
+name = "Members in channel"
+action_bindings = []
+
+[panels.controls.position]
+column = 7
+row = 3
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 30
+green = 41
+blue = 59
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "$(discord.default:member_count)"
+anchor = "center"
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls]]
+control_id = "control-1785013342639"
+name = "Key 2"
+action_bindings = []
+
+[panels.controls.position]
+column = 4
+row = 0
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 30
+green = 41
+blue = 59
+alpha = 255
+
+[panels.controls.pressed_state]
+is_pressed = true
+
+[[panels.controls.pressed_state.layers]]
+kind = "fill"
+
+[panels.controls.pressed_state.layers.color]
+red = 43
+green = 227
+blue = 74
+alpha = 255
+
+[[panels.controls]]
+control_id = "control-1785017969865"
+name = "Key 19"
+
+[panels.controls.position]
+column = 4
+row = 2
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+color = "$(hass.default:light.dining_light_2_light.color)"
+
+[[panels.controls.action_bindings]]
+gesture = "press"
+
+[[panels.controls.action_bindings.actions]]
+type = "invoke_integration"
+integration_id = "hass.default"
+action_name = "light.toggle"
+
+[panels.controls.action_bindings.actions.parameters]
+entity_id = "light.dining_light_2_light_2"
+
+[[panels.controls]]
+control_id = "control-1785018320335"
+name = "Shower Light"
+
+[panels.controls.position]
+column = 0
+row = 1
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 30
+green = 41
+blue = 59
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "image"
+image = "mdi:lightbulb"
+fit = "contain"
+anchor = "top_center"
+scale_percent = 50
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = """
+Shower Light
+$(hass.default:light.shower_light_light.state)"""
+anchor = "bottom_center"
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "border"
+color = "$(hass.default:light.shower_light_light.color)"
+width = 5
+
+[[panels.controls.action_bindings]]
+gesture = "press"
+
+[[panels.controls.action_bindings.actions]]
+type = "invoke_integration"
+integration_id = "hass.default"
+action_name = "light.toggle"
+
+[panels.controls.action_bindings.actions.parameters]
+entity_id = "light.shower_light_light"
+
+[[panels.controls]]
+control_id = "control-1785066848931"
+name = "Control 32"
+action_bindings = []
+
+[panels.controls.position]
+column = 3
+row = 0
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = ""
+anchor = "center"
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 30
+green = 41
+blue = 59
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 184
+green = 235
+blue = 0
+alpha = 255
+
+[[panels.controls]]
+control_id = "control-1785072081091"
+name = "Skadis LED Strip A Light"
+
+[panels.controls.position]
+column = 3
+row = 1
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 30
+green = 41
+blue = 59
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "image"
+image = "mdi:led-strip-variant"
+fit = "contain"
+anchor = "center"
+scale_percent = 50
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = """
+Skadis LED Strip A Light
+$(hass.default:light.skadis_led_strip_a_light.state)"""
+anchor = "bottom_center"
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "border"
+color = "$(hass.default:light.skadis_led_strip_a_light.color)"
+width = 5
+
+[[panels.controls.action_bindings]]
+gesture = "press"
+
+[[panels.controls.action_bindings.actions]]
+type = "invoke_integration"
+integration_id = "hass.default"
+action_name = "light.toggle"
+
+[panels.controls.action_bindings.actions.parameters]
+entity_id = "light.skadis_led_strip_a_light"
+
+[[panels.controls]]
+control_id = "control-1785072090909"
+name = "Skadis LED Strip B Light"
+
+[panels.controls.position]
+column = 4
+row = 1
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 30
+green = 41
+blue = 59
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "image"
+image = "mdi:led-strip-variant"
+fit = "contain"
+anchor = "center"
+scale_percent = 50
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = """
+Skadis LED Strip B Light
+$(hass.default:light.skadis_led_strip_b_light_2.state)"""
+anchor = "bottom_center"
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "border"
+color = "$(hass.default:light.skadis_led_strip_b_light_2.color)"
+width = 5
+
+[[panels.controls.action_bindings]]
+gesture = "press"
+
+[[panels.controls.action_bindings.actions]]
+type = "invoke_integration"
+integration_id = "hass.default"
+action_name = "light.toggle"
+
+[panels.controls.action_bindings.actions.parameters]
+entity_id = "light.skadis_led_strip_b_light_2"

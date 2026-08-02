@@ -1,0 +1,1433 @@
+version = 5
+
+[[panels]]
+panel_id = "studio-panel-6"
+name = "Main"
+dials = []
+
+[panels.layout]
+columns = 8
+rows = 4
+
+[panels.capabilities]
+supports_color = true
+supports_images = true
+supports_text = true
+supports_brightness = true
+supports_haptics = false
+
+[[panels.controls]]
+control_id = "control-1785502847590"
+name = "Camera Privacy"
+
+[panels.controls.position]
+column = 6
+row = 0
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "image"
+image = "mdi:cctv"
+fit = "contain"
+anchor = "top_center"
+scale_percent = 50
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "Privacy"
+anchor = "bottom_center"
+font_size = 21
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls.action_bindings]]
+gesture = "press"
+
+[[panels.controls.action_bindings.actions]]
+type = "invoke_integration"
+integration_id = "hass.default"
+action_name = "call_service"
+
+[panels.controls.action_bindings.actions.parameters]
+domain = "input_boolean"
+entity_id = "input_boolean.camera_privacy"
+service = "toggle"
+
+[[panels.controls]]
+control_id = "control-1785502927513"
+name = "Dining Light 1 Light"
+
+[panels.controls.position]
+column = 5
+row = 2
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "image"
+image = "mdi:ceiling-light"
+fit = "contain"
+anchor = "top_center"
+scale_percent = 50
+
+[[panels.controls.default_state.layers]]
+kind = "border"
+color = "$(hass.default:light.dining_light_1_light.color)"
+width = 8
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "Dining 2"
+anchor = "bottom_center"
+font_size = 21
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls.action_bindings]]
+gesture = "press"
+
+[[panels.controls.action_bindings.actions]]
+type = "invoke_integration"
+integration_id = "hass.default"
+action_name = "light.toggle"
+
+[panels.controls.action_bindings.actions.parameters]
+entity_id = "light.dining_light_1_light"
+
+[[panels.controls]]
+control_id = "control-1785502933888"
+name = "Dining 2"
+
+[panels.controls.position]
+column = 6
+row = 2
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "image"
+image = "mdi:ceiling-light"
+fit = "contain"
+anchor = "top_center"
+scale_percent = 50
+
+[[panels.controls.default_state.layers]]
+kind = "border"
+color = "$(hass.default:light.dining_light_2_light_2.color)"
+width = 8
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "Dining 2"
+anchor = "bottom_center"
+font_size = 21
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls.action_bindings]]
+gesture = "press"
+
+[[panels.controls.action_bindings.actions]]
+type = "invoke_integration"
+integration_id = "hass.default"
+action_name = "light.toggle"
+
+[panels.controls.action_bindings.actions.parameters]
+entity_id = "light.dining_light_2_light_2"
+
+[[panels.controls]]
+control_id = "control-1785502974315"
+name = "East"
+
+[panels.controls.position]
+column = 4
+row = 2
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "image"
+image = "mdi:led-strip-variant"
+fit = "contain"
+anchor = "top_center"
+scale_percent = 50
+
+[[panels.controls.default_state.layers]]
+kind = "border"
+color = "$(hass.default:light.living_east_strip.color)"
+width = 8
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "East"
+anchor = "bottom_center"
+font_size = 21
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls.action_bindings]]
+gesture = "press"
+
+[[panels.controls.action_bindings.actions]]
+type = "invoke_integration"
+integration_id = "hass.default"
+action_name = "light.toggle"
+
+[panels.controls.action_bindings.actions.parameters]
+entity_id = "light.living_east_strip"
+
+[[panels.controls]]
+control_id = "control-1785503020839"
+name = "Christmas Tree Lights (ENSP7) Switch"
+
+[panels.controls.position]
+column = 1
+row = 2
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "image"
+image = "mdi:pine-tree"
+fit = "contain"
+anchor = "top_center"
+scale_percent = 50
+
+[panels.controls.default_state.layers.tint]
+red = 34
+green = 109
+blue = 24
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "Tree"
+anchor = "bottom_center"
+font_size = 21
+
+[panels.controls.default_state.layers.color]
+red = 34
+green = 109
+blue = 24
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "border"
+color = "$(hass.default:switch.christmas_tree_lights_ensp7_switch_3.color)"
+width = 5
+
+[[panels.controls.action_bindings]]
+gesture = "press"
+
+[[panels.controls.action_bindings.actions]]
+type = "invoke_integration"
+integration_id = "hass.default"
+action_name = "call_service"
+
+[panels.controls.action_bindings.actions.parameters]
+domain = "switch"
+entity_id = "switch.christmas_tree_lights_ensp7_switch_3"
+service = "toggle"
+
+[[panels.controls]]
+control_id = "control-1785503021146"
+name = "Skadis LED Strip A Light"
+
+[panels.controls.position]
+column = 2
+row = 2
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "image"
+image = "mdi:led-strip-variant"
+fit = "contain"
+anchor = "top_center"
+scale_percent = 50
+
+[[panels.controls.default_state.layers]]
+kind = "border"
+color = "$(hass.default:light.skadis_led_strip_a_light.color)"
+width = 8
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "Skadis A"
+anchor = "bottom_center"
+font_size = 21
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls.action_bindings]]
+gesture = "press"
+
+[[panels.controls.action_bindings.actions]]
+type = "invoke_integration"
+integration_id = "hass.default"
+action_name = "light.toggle"
+
+[panels.controls.action_bindings.actions.parameters]
+entity_id = "light.skadis_led_strip_a_light"
+
+[[panels.controls]]
+control_id = "control-1785503021499"
+name = "Skadis LED Strip B Light"
+
+[panels.controls.position]
+column = 3
+row = 2
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "image"
+image = "mdi:led-strip-variant"
+fit = "contain"
+anchor = "top_center"
+scale_percent = 50
+
+[[panels.controls.default_state.layers]]
+kind = "border"
+color = "$(hass.default:light.skadis_led_strip_b_light_2.color)"
+width = 8
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "Skadis B"
+anchor = "bottom_center"
+font_size = 21
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls.action_bindings]]
+gesture = "press"
+
+[[panels.controls.action_bindings.actions]]
+type = "invoke_integration"
+integration_id = "hass.default"
+action_name = "light.toggle"
+
+[panels.controls.action_bindings.actions.parameters]
+entity_id = "light.skadis_led_strip_b_light_2"
+
+[[panels.controls]]
+control_id = "control-1785503021829"
+name = "Night"
+
+[panels.controls.position]
+column = 3
+row = 3
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "image"
+image = "mdi:lightbulb-night"
+fit = "contain"
+anchor = "top_center"
+scale_percent = 50
+
+[panels.controls.default_state.layers.tint]
+red = 60
+green = 34
+blue = 191
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "Night"
+anchor = "bottom_center"
+font_size = 21
+
+[panels.controls.default_state.layers.color]
+red = 60
+green = 34
+blue = 191
+alpha = 255
+
+[[panels.controls.action_bindings]]
+gesture = "press"
+
+[[panels.controls.action_bindings.actions]]
+type = "invoke_integration"
+integration_id = "hass.default"
+action_name = "call_service"
+
+[panels.controls.action_bindings.actions.parameters]
+domain = "scene"
+entity_id = "scene.livingroom_dark_night"
+service = "turn_on"
+
+[[panels.controls]]
+control_id = "control-1785503022114"
+name = "Flash"
+
+[panels.controls.position]
+column = 2
+row = 3
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "image"
+image = "mdi:sun-wireless"
+fit = "contain"
+anchor = "top_center"
+scale_percent = 50
+
+[panels.controls.default_state.layers.tint]
+red = 255
+green = 226
+blue = 36
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "Flash"
+anchor = "bottom_center"
+font_size = 21
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 226
+blue = 36
+alpha = 255
+
+[[panels.controls.action_bindings]]
+gesture = "press"
+
+[[panels.controls.action_bindings.actions]]
+type = "invoke_integration"
+integration_id = "hass.default"
+action_name = "call_service"
+
+[panels.controls.action_bindings.actions.parameters]
+domain = "scene"
+entity_id = "scene.living_room_flash"
+service = "turn_on"
+
+[[panels.controls]]
+control_id = "control-1785503022414"
+name = "Plain"
+
+[panels.controls.position]
+column = 1
+row = 3
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "image"
+image = "mdi:home-account"
+fit = "contain"
+anchor = "top_center"
+scale_percent = 50
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "Plain"
+anchor = "bottom_center"
+font_size = 21
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls.action_bindings]]
+gesture = "press"
+
+[[panels.controls.action_bindings.actions]]
+type = "invoke_integration"
+integration_id = "hass.default"
+action_name = "call_service"
+
+[panels.controls.action_bindings.actions.parameters]
+domain = "scene"
+entity_id = "scene.livingroom_plain"
+service = "turn_on"
+
+[[panels.controls]]
+control_id = "control-1785503023127"
+name = "All Lights Off Kill"
+
+[panels.controls.position]
+column = 4
+row = 3
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "image"
+image = "mdi:flashlight-off"
+fit = "contain"
+anchor = "top_center"
+scale_percent = 50
+
+[panels.controls.default_state.layers.tint]
+red = 98
+green = 34
+blue = 34
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "All Off"
+anchor = "bottom_center"
+font_size = 21
+
+[panels.controls.default_state.layers.color]
+red = 98
+green = 34
+blue = 34
+alpha = 255
+
+[[panels.controls.action_bindings]]
+gesture = "press"
+
+[[panels.controls.action_bindings.actions]]
+type = "invoke_integration"
+integration_id = "hass.default"
+action_name = "call_service"
+
+[panels.controls.action_bindings.actions.parameters]
+domain = "script"
+entity_id = "script.all_lights_off_kill"
+service = "turn_on"
+
+[[panels.controls]]
+control_id = "control-1785503023427"
+name = "Kitchen Strip Light"
+
+[panels.controls.position]
+column = 5
+row = 3
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "image"
+image = "mdi:led-strip-variant"
+fit = "contain"
+anchor = "top_center"
+scale_percent = 50
+
+[[panels.controls.default_state.layers]]
+kind = "border"
+color = "$(hass.default:light.kitchen_strip_light.color)"
+width = 8
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "Kitchen"
+anchor = "bottom_center"
+font_size = 21
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls.action_bindings]]
+gesture = "press"
+
+[[panels.controls.action_bindings.actions]]
+type = "invoke_integration"
+integration_id = "hass.default"
+action_name = "light.toggle"
+
+[panels.controls.action_bindings.actions.parameters]
+entity_id = "light.kitchen_strip_light"
+
+[[panels.controls]]
+control_id = "control-1785503024161"
+name = "Hallway Light"
+
+[panels.controls.position]
+column = 6
+row = 3
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "image"
+image = "mdi:lightbulb"
+fit = "contain"
+anchor = "top_center"
+scale_percent = 50
+
+[[panels.controls.default_state.layers]]
+kind = "border"
+color = "$(hass.default:light.ikea_of_sweden_tradfribulbe27wwclear250lm_light.color)"
+width = 8
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "Hallway"
+anchor = "bottom_center"
+font_size = 21
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls.action_bindings]]
+gesture = "press"
+
+[[panels.controls.action_bindings.actions]]
+type = "invoke_integration"
+integration_id = "hass.default"
+action_name = "light.toggle"
+
+[panels.controls.action_bindings.actions.parameters]
+entity_id = "light.ikea_of_sweden_tradfribulbe27wwclear250lm_light"
+
+[[panels.controls]]
+control_id = "control-1785506555916"
+name = "Living Front Speakers"
+
+[panels.controls.position]
+column = 5
+row = 1
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 0
+green = 0
+blue = 0
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "image"
+image = "mdi:speaker-multiple"
+fit = "contain"
+anchor = "top_center"
+scale_percent = 40
+
+[[panels.controls.default_state.layers]]
+kind = "border"
+color = "$(hass.default:switch.living_front_speaker_left_switch.color)"
+width = 8
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "Speakers"
+anchor = "bottom_center"
+font_size = 19
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls.action_bindings]]
+gesture = "press"
+
+[[panels.controls.action_bindings.actions]]
+type = "invoke_integration"
+integration_id = "hass.default"
+action_name = "call_service"
+
+[panels.controls.action_bindings.actions.parameters]
+domain = "switch"
+entity_id = "switch.living_front_speaker_left_switch"
+service = "toggle"
+
+[[panels.controls]]
+control_id = "control-1785506572100"
+name = "ATEM Mini Pro"
+
+[panels.controls.position]
+column = 6
+row = 1
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "image"
+image = "mdi:theater"
+fit = "contain"
+anchor = "top_center"
+scale_percent = 50
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "ATEM"
+anchor = "bottom_center"
+font_size = 21
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "border"
+color = "$(hass.default:switch.living_front_speaker_right_switch.color)"
+width = 5
+
+[[panels.controls.action_bindings]]
+gesture = "press"
+
+[[panels.controls.action_bindings.actions]]
+type = "invoke_integration"
+integration_id = "hass.default"
+action_name = "call_service"
+
+[panels.controls.action_bindings.actions.parameters]
+domain = "switch"
+entity_id = "switch.living_front_speaker_right_switch"
+service = "toggle"
+
+[[panels.controls]]
+control_id = "control-1785507214418"
+name = "Open Front Door"
+
+[panels.controls.position]
+column = 7
+row = 3
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "image"
+image = "mdi:door-closed-lock"
+fit = "contain"
+anchor = "top_center"
+scale_percent = 50
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "Front Door"
+anchor = "bottom_center"
+font_size = 16
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls.action_bindings]]
+gesture = "press"
+
+[[panels.controls.action_bindings.actions]]
+type = "invoke_integration"
+integration_id = "hass.default"
+action_name = "call_service"
+
+[panels.controls.action_bindings.actions.parameters]
+domain = "script"
+entity_id = "script.open_front_door"
+service = "turn_on"
+
+[[panels.controls]]
+control_id = "control-1785507222465"
+name = "Members in channel"
+
+[panels.controls.position]
+column = 0
+row = 3
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "$(discord.default:member_count)"
+anchor = "center"
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls.action_bindings]]
+gesture = "press"
+
+[[panels.controls.action_bindings.actions]]
+type = "open_subpanel"
+panel_id = "studio-panel-5"
+placement = "bottom_end"
+offset_columns = 0
+offset_rows = 0
+
+[[panels.controls]]
+control_id = "control-1785507224003"
+name = "Channel name"
+action_bindings = []
+
+[panels.controls.position]
+column = 0
+row = 2
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "$(discord.default:channel_name)"
+anchor = "center"
+font_size = 24
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls]]
+control_id = "control-1785507225270"
+name = "Control 19"
+action_bindings = []
+
+[panels.controls.position]
+column = 0
+row = 1
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 0
+green = 0
+blue = 0
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = ""
+anchor = "center"
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls]]
+control_id = "control-1785507225578"
+name = "LEDBOARD"
+
+[panels.controls.position]
+column = 1
+row = 1
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 0
+green = 0
+blue = 0
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "image"
+image = "mdi:lightbulb"
+fit = "contain"
+anchor = "top_center"
+scale_percent = 50
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "LEDBOARD"
+anchor = "bottom_center"
+font_size = 16
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "border"
+color = "$(hass.default:light.wled_2.color)"
+width = 5
+
+[[panels.controls.action_bindings]]
+gesture = "press"
+
+[[panels.controls.action_bindings.actions]]
+type = "invoke_integration"
+integration_id = "hass.default"
+action_name = "light.toggle"
+
+[panels.controls.action_bindings.actions.parameters]
+entity_id = "light.wled_2"
+
+[[panels.controls]]
+control_id = "control-1785507225900"
+name = "CPU usage"
+action_bindings = []
+
+[panels.controls.position]
+column = 2
+row = 1
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 0
+green = 0
+blue = 0
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "image"
+image = "mdi:cpu-64-bit"
+fit = "contain"
+anchor = "top_center"
+scale_percent = 50
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "$(system.default:cpu_usage_pct)%"
+anchor = "bottom_center"
+font_size = 21
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls]]
+control_id = "control-1785507226238"
+name = "Disk free"
+action_bindings = []
+
+[panels.controls.position]
+column = 4
+row = 1
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 0
+green = 0
+blue = 0
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "image"
+image = "mdi:harddisk"
+fit = "contain"
+anchor = "top_center"
+scale_percent = 40
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "$(system.default:disk_free)$(system.default:disk_usage_pct)%"
+anchor = "bottom_center"
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "bar"
+value = "$(system.default:disk_usage_pct)"
+maximum = 100
+edge = "bottom"
+thickness = 5
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls]]
+control_id = "control-1785507226785"
+name = "Load average"
+action_bindings = []
+
+[panels.controls.position]
+column = 3
+row = 1
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 0
+green = 0
+blue = 0
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "image"
+image = "mdi:chart-line"
+fit = "contain"
+anchor = "top_center"
+scale_percent = 40
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "$(system.default:load_average_1m)"
+anchor = "bottom_center"
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls]]
+control_id = "control-1785507227850"
+name = "5 minute timer"
+
+[panels.controls.position]
+column = 1
+row = 0
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 0
+green = 0
+blue = 0
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "image"
+image = "mdi:timer-sand"
+fit = "contain"
+anchor = "top_center"
+scale_percent = 50
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "$(system.default:timer)"
+anchor = "bottom_center"
+font_size = 21
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls.action_bindings]]
+gesture = "press"
+
+[[panels.controls.action_bindings.actions]]
+type = "invoke_integration"
+integration_id = "system.default"
+action_name = "start_timer"
+
+[panels.controls.action_bindings.actions.parameters]
+duration_seconds = 300
+
+[[panels.controls]]
+control_id = "control-1785507228210"
+name = "10 minute timer"
+
+[panels.controls.position]
+column = 2
+row = 0
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 0
+green = 0
+blue = 0
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "image"
+image = "mdi:timer-sand"
+fit = "contain"
+anchor = "top_center"
+scale_percent = 50
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "$(system.default:timer)"
+anchor = "bottom_center"
+font_size = 21
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls.action_bindings]]
+gesture = "press"
+
+[[panels.controls.action_bindings.actions]]
+type = "invoke_integration"
+integration_id = "system.default"
+action_name = "start_timer"
+
+[panels.controls.action_bindings.actions.parameters]
+duration_seconds = 600
+
+[[panels.controls]]
+control_id = "control-1785507228540"
+name = "Control 26"
+action_bindings = []
+
+[panels.controls.position]
+column = 4
+row = 0
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 0
+green = 0
+blue = 0
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = ""
+anchor = "center"
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls]]
+control_id = "control-1785507228915"
+name = "15 minute timer"
+
+[panels.controls.position]
+column = 3
+row = 0
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 0
+green = 0
+blue = 0
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "image"
+image = "mdi:timer-sand"
+fit = "contain"
+anchor = "top_center"
+scale_percent = 50
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "$(system.default:timer)"
+anchor = "bottom_center"
+font_size = 21
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls.action_bindings]]
+gesture = "press"
+
+[[panels.controls.action_bindings.actions]]
+type = "invoke_integration"
+integration_id = "system.default"
+action_name = "start_timer"
+
+[panels.controls.action_bindings.actions.parameters]
+duration_seconds = 900
+
+[[panels.controls]]
+control_id = "control-1785507230610"
+name = "Weekday"
+action_bindings = []
+
+[panels.controls.position]
+column = 7
+row = 0
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 0
+green = 0
+blue = 0
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "$(system.default:weekday)"
+anchor = "center_start"
+font_size = 23
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "$(system.default:date)"
+anchor = "bottom_start"
+font_size = 23
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls]]
+control_id = "control-1785507231015"
+name = "Control 30"
+action_bindings = []
+
+[panels.controls.position]
+column = 7
+row = 1
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 0
+green = 0
+blue = 0
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = ""
+anchor = "center"
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls]]
+control_id = "control-1785507231383"
+name = "Control 31"
+action_bindings = []
+
+[panels.controls.position]
+column = 7
+row = 2
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 0
+green = 0
+blue = 0
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = ""
+anchor = "center"
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls]]
+control_id = "control-1785507236655"
+name = "Clock"
+action_bindings = []
+
+[panels.controls.position]
+column = 0
+row = 0
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 0
+green = 0
+blue = 0
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "image"
+image = "mdi:clock-outline"
+fit = "contain"
+anchor = "top_center"
+scale_percent = 45
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "$(system.default:clock)"
+anchor = "bottom_center"
+font_size = 21
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls]]
+control_id = "control-1785513840443"
+name = "Key 1"
+
+[panels.controls.position]
+column = 5
+row = 0
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+color = "$(mpris.default:art_url)"
+
+[[panels.controls.default_state.layers]]
+kind = "image"
+image = "$(mpris.default:art_url)"
+fit = "cover"
+anchor = "center"
+scale_percent = 100
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 0
+green = 0
+blue = 0
+alpha = 140
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "$(mpris.default:title)"
+color = "$(mpris.default:art_url)"
+anchor = "bottom_center"
+
+[panels.controls.pressed_state]
+is_pressed = true
+
+[[panels.controls.pressed_state.layers]]
+kind = "fill"
+color = "$(mpris.default:art_url)"
+
+[[panels.controls.action_bindings]]
+gesture = "press"
+
+[[panels.controls.action_bindings.actions]]
+type = "invoke_integration"
+integration_id = "mpris.default"
+action_name = "play_pause"
+
+[panels.controls.action_bindings.actions.parameters]

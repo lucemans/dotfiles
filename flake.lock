@@ -272,11 +272,11 @@
         "rust-overlay": "rust-overlay_2"
       },
       "locked": {
-        "lastModified": 1785596721,
-        "narHash": "sha256-5wJgvc1UJJuAI/L4qkagseTT+63lcPty0kNvNK9ZDO4=",
+        "lastModified": 1785676219,
+        "narHash": "sha256-ocqlW+2D+xyGYGtb9Jjac/S+lTwOkpjulWLaDMMzLmg=",
         "owner": "v3xlabs",
         "repo": "launchpi",
-        "rev": "17a149013f212e684fa6874398e0ceb6659637db",
+        "rev": "8425cd20b867f19dfb333995d8abff03cb6d51bf",
         "type": "github"
       },
       "original": {

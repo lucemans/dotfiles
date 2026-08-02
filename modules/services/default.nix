@@ -3,9 +3,9 @@
     ./uptime
     ./hermes
     ./llm
+    ./launchpi
     ./mattermost
-    ./firefly-iii.nix
     ./searxng.nix
-    ./launchpi.nix
+    ./firefly-iii.nix
   ];
 }

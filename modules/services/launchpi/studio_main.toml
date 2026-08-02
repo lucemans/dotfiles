@@ -1,0 +1,1581 @@
+version = 5
+
+[[panels]]
+panel_id = "studio-panel-1"
+name = "Hello"
+
+[panels.layout]
+columns = 16
+rows = 2
+
+[panels.capabilities]
+supports_color = true
+supports_images = true
+supports_text = true
+supports_brightness = true
+supports_haptics = false
+
+[[panels.controls]]
+control_id = "control-1784934562931"
+name = "Hello"
+action_bindings = []
+
+[panels.controls.position]
+column = 3
+row = 0
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 89
+green = 89
+blue = 89
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "Test"
+anchor = "center"
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[panels.controls.pressed_state]
+is_pressed = true
+
+[[panels.controls.pressed_state.layers]]
+kind = "fill"
+
+[panels.controls.pressed_state.layers.color]
+red = 66
+green = 255
+blue = 139
+alpha = 255
+
+[[panels.controls.pressed_state.layers]]
+kind = "text"
+text = "fds"
+anchor = "center"
+
+[panels.controls.pressed_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls]]
+control_id = "control-1784934563860"
+name = "Hello"
+action_bindings = []
+
+[panels.controls.position]
+column = 4
+row = 0
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 89
+green = 89
+blue = 89
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "Test"
+anchor = "center"
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[panels.controls.pressed_state]
+is_pressed = true
+
+[[panels.controls.pressed_state.layers]]
+kind = "fill"
+
+[panels.controls.pressed_state.layers.color]
+red = 66
+green = 255
+blue = 139
+alpha = 255
+
+[[panels.controls.pressed_state.layers]]
+kind = "text"
+text = "fds"
+anchor = "center"
+
+[panels.controls.pressed_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls]]
+control_id = "control-1784934564378"
+name = "Hello"
+action_bindings = []
+
+[panels.controls.position]
+column = 5
+row = 0
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 89
+green = 89
+blue = 89
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "Test"
+anchor = "center"
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[panels.controls.pressed_state]
+is_pressed = true
+
+[[panels.controls.pressed_state.layers]]
+kind = "fill"
+
+[panels.controls.pressed_state.layers.color]
+red = 66
+green = 255
+blue = 139
+alpha = 255
+
+[[panels.controls.pressed_state.layers]]
+kind = "text"
+text = "fds"
+anchor = "center"
+
+[panels.controls.pressed_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls]]
+control_id = "control-1784934564761"
+name = "Hello"
+action_bindings = []
+
+[panels.controls.position]
+column = 6
+row = 0
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 89
+green = 89
+blue = 89
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "Test"
+anchor = "center"
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[panels.controls.pressed_state]
+is_pressed = true
+
+[[panels.controls.pressed_state.layers]]
+kind = "fill"
+
+[panels.controls.pressed_state.layers.color]
+red = 66
+green = 255
+blue = 139
+alpha = 255
+
+[[panels.controls.pressed_state.layers]]
+kind = "text"
+text = "fds"
+anchor = "center"
+
+[panels.controls.pressed_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls]]
+control_id = "control-1784934565015"
+name = "Hello"
+action_bindings = []
+
+[panels.controls.position]
+column = 6
+row = 1
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 89
+green = 89
+blue = 89
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "Test"
+anchor = "center"
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[panels.controls.pressed_state]
+is_pressed = true
+
+[[panels.controls.pressed_state.layers]]
+kind = "fill"
+
+[panels.controls.pressed_state.layers.color]
+red = 66
+green = 255
+blue = 139
+alpha = 255
+
+[[panels.controls.pressed_state.layers]]
+kind = "text"
+text = "fds"
+anchor = "center"
+
+[panels.controls.pressed_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls]]
+control_id = "control-1784934565323"
+name = "Hello"
+action_bindings = []
+
+[panels.controls.position]
+column = 7
+row = 1
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 89
+green = 89
+blue = 89
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "Test"
+anchor = "center"
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[panels.controls.pressed_state]
+is_pressed = true
+
+[[panels.controls.pressed_state.layers]]
+kind = "fill"
+
+[panels.controls.pressed_state.layers.color]
+red = 66
+green = 255
+blue = 139
+alpha = 255
+
+[[panels.controls.pressed_state.layers]]
+kind = "text"
+text = "fds"
+anchor = "center"
+
+[panels.controls.pressed_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls]]
+control_id = "control-1784934565616"
+name = "Hello"
+action_bindings = []
+
+[panels.controls.position]
+column = 7
+row = 0
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 89
+green = 89
+blue = 89
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "Test"
+anchor = "center"
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[panels.controls.pressed_state]
+is_pressed = true
+
+[[panels.controls.pressed_state.layers]]
+kind = "fill"
+
+[panels.controls.pressed_state.layers.color]
+red = 66
+green = 255
+blue = 139
+alpha = 255
+
+[[panels.controls.pressed_state.layers]]
+kind = "text"
+text = "fds"
+anchor = "center"
+
+[panels.controls.pressed_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls]]
+control_id = "control-1784934565991"
+name = "Hello"
+action_bindings = []
+
+[panels.controls.position]
+column = 8
+row = 0
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 89
+green = 89
+blue = 89
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "Test"
+anchor = "center"
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[panels.controls.pressed_state]
+is_pressed = true
+
+[[panels.controls.pressed_state.layers]]
+kind = "fill"
+
+[panels.controls.pressed_state.layers.color]
+red = 66
+green = 255
+blue = 139
+alpha = 255
+
+[[panels.controls.pressed_state.layers]]
+kind = "text"
+text = "fds"
+anchor = "center"
+
+[panels.controls.pressed_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls]]
+control_id = "control-1784934566343"
+name = "Hello"
+action_bindings = []
+
+[panels.controls.position]
+column = 8
+row = 1
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 89
+green = 89
+blue = 89
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "Test"
+anchor = "center"
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[panels.controls.pressed_state]
+is_pressed = true
+
+[[panels.controls.pressed_state.layers]]
+kind = "fill"
+
+[panels.controls.pressed_state.layers.color]
+red = 66
+green = 255
+blue = 139
+alpha = 255
+
+[[panels.controls.pressed_state.layers]]
+kind = "text"
+text = "fds"
+anchor = "center"
+
+[panels.controls.pressed_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls]]
+control_id = "control-1784934566996"
+name = "Hello"
+action_bindings = []
+
+[panels.controls.position]
+column = 9
+row = 1
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 89
+green = 89
+blue = 89
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "Test"
+anchor = "center"
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[panels.controls.pressed_state]
+is_pressed = true
+
+[[panels.controls.pressed_state.layers]]
+kind = "fill"
+
+[panels.controls.pressed_state.layers.color]
+red = 66
+green = 255
+blue = 139
+alpha = 255
+
+[[panels.controls.pressed_state.layers]]
+kind = "text"
+text = "fds"
+anchor = "center"
+
+[panels.controls.pressed_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls]]
+control_id = "control-1784934567273"
+name = "Hello"
+action_bindings = []
+
+[panels.controls.position]
+column = 9
+row = 0
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 89
+green = 89
+blue = 89
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "Test"
+anchor = "center"
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[panels.controls.pressed_state]
+is_pressed = true
+
+[[panels.controls.pressed_state.layers]]
+kind = "fill"
+
+[panels.controls.pressed_state.layers.color]
+red = 66
+green = 255
+blue = 139
+alpha = 255
+
+[[panels.controls.pressed_state.layers]]
+kind = "text"
+text = "fds"
+anchor = "center"
+
+[panels.controls.pressed_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls]]
+control_id = "control-1784934568744"
+name = "Hello"
+action_bindings = []
+
+[panels.controls.position]
+column = 15
+row = 1
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 89
+green = 89
+blue = 89
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "Test"
+anchor = "center"
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[panels.controls.pressed_state]
+is_pressed = true
+
+[[panels.controls.pressed_state.layers]]
+kind = "fill"
+
+[panels.controls.pressed_state.layers.color]
+red = 66
+green = 255
+blue = 139
+alpha = 255
+
+[[panels.controls.pressed_state.layers]]
+kind = "text"
+text = "fds"
+anchor = "center"
+
+[panels.controls.pressed_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls]]
+control_id = "control-1784934569006"
+name = "Hello"
+action_bindings = []
+
+[panels.controls.position]
+column = 10
+row = 0
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 89
+green = 89
+blue = 89
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "Test"
+anchor = "center"
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[panels.controls.pressed_state]
+is_pressed = true
+
+[[panels.controls.pressed_state.layers]]
+kind = "fill"
+
+[panels.controls.pressed_state.layers.color]
+red = 66
+green = 255
+blue = 139
+alpha = 255
+
+[[panels.controls.pressed_state.layers]]
+kind = "text"
+text = "fds"
+anchor = "center"
+
+[panels.controls.pressed_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls]]
+control_id = "control-1784934569539"
+name = "Hello"
+action_bindings = []
+
+[panels.controls.position]
+column = 10
+row = 1
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 89
+green = 89
+blue = 89
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "Test"
+anchor = "center"
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[panels.controls.pressed_state]
+is_pressed = true
+
+[[panels.controls.pressed_state.layers]]
+kind = "fill"
+
+[panels.controls.pressed_state.layers.color]
+red = 66
+green = 255
+blue = 139
+alpha = 255
+
+[[panels.controls.pressed_state.layers]]
+kind = "text"
+text = "fds"
+anchor = "center"
+
+[panels.controls.pressed_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls]]
+control_id = "control-1784934571106"
+name = "Hello"
+action_bindings = []
+
+[panels.controls.position]
+column = 14
+row = 1
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 89
+green = 89
+blue = 89
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "Test"
+anchor = "center"
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[panels.controls.pressed_state]
+is_pressed = true
+
+[[panels.controls.pressed_state.layers]]
+kind = "fill"
+
+[panels.controls.pressed_state.layers.color]
+red = 66
+green = 255
+blue = 139
+alpha = 255
+
+[[panels.controls.pressed_state.layers]]
+kind = "text"
+text = "fds"
+anchor = "center"
+
+[panels.controls.pressed_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls]]
+control_id = "control-1784934573049"
+name = "Hello"
+
+[panels.controls.position]
+column = 15
+row = 0
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 89
+green = 89
+blue = 89
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "Test"
+anchor = "center"
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[panels.controls.pressed_state]
+is_pressed = true
+
+[[panels.controls.pressed_state.layers]]
+kind = "fill"
+
+[panels.controls.pressed_state.layers.color]
+red = 66
+green = 255
+blue = 139
+alpha = 255
+
+[[panels.controls.pressed_state.layers]]
+kind = "text"
+text = "fds"
+anchor = "center"
+
+[panels.controls.pressed_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls.action_bindings]]
+gesture = "press"
+
+[[panels.controls.action_bindings.actions]]
+type = "open_subpanel"
+panel_id = "studio-panel-5"
+placement = "bottom_start"
+offset_columns = 1
+offset_rows = 1
+
+[[panels.controls]]
+control_id = "control-1784934574789"
+name = "Hello"
+action_bindings = []
+
+[panels.controls.position]
+column = 13
+row = 0
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 89
+green = 89
+blue = 89
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "Test"
+anchor = "center"
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[panels.controls.pressed_state]
+is_pressed = true
+
+[[panels.controls.pressed_state.layers]]
+kind = "fill"
+
+[panels.controls.pressed_state.layers.color]
+red = 66
+green = 255
+blue = 139
+alpha = 255
+
+[[panels.controls.pressed_state.layers]]
+kind = "text"
+text = "fds"
+anchor = "center"
+
+[panels.controls.pressed_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls]]
+control_id = "control-1784934576499"
+name = "Hello"
+action_bindings = []
+
+[panels.controls.position]
+column = 12
+row = 1
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 89
+green = 89
+blue = 89
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "Test"
+anchor = "center"
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[panels.controls.pressed_state]
+is_pressed = true
+
+[[panels.controls.pressed_state.layers]]
+kind = "fill"
+
+[panels.controls.pressed_state.layers.color]
+red = 66
+green = 255
+blue = 139
+alpha = 255
+
+[[panels.controls.pressed_state.layers]]
+kind = "text"
+text = "fds"
+anchor = "center"
+
+[panels.controls.pressed_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls]]
+control_id = "control-1784934578591"
+name = "Hello"
+action_bindings = []
+
+[panels.controls.position]
+column = 11
+row = 1
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 89
+green = 89
+blue = 89
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "Test"
+anchor = "center"
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[panels.controls.pressed_state]
+is_pressed = true
+
+[[panels.controls.pressed_state.layers]]
+kind = "fill"
+
+[panels.controls.pressed_state.layers.color]
+red = 66
+green = 255
+blue = 139
+alpha = 255
+
+[[panels.controls.pressed_state.layers]]
+kind = "text"
+text = "fds"
+anchor = "center"
+
+[panels.controls.pressed_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls]]
+control_id = "control-1784934580196"
+name = "Hello"
+action_bindings = []
+
+[panels.controls.position]
+column = 11
+row = 0
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 89
+green = 89
+blue = 89
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "Test"
+anchor = "center"
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[panels.controls.pressed_state]
+is_pressed = true
+
+[[panels.controls.pressed_state.layers]]
+kind = "fill"
+
+[panels.controls.pressed_state.layers.color]
+red = 66
+green = 255
+blue = 139
+alpha = 255
+
+[[panels.controls.pressed_state.layers]]
+kind = "text"
+text = "fds"
+anchor = "center"
+
+[panels.controls.pressed_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls]]
+control_id = "control-1784934581711"
+name = "Hello"
+action_bindings = []
+
+[panels.controls.position]
+column = 12
+row = 0
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 89
+green = 89
+blue = 89
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "Test"
+anchor = "center"
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[panels.controls.pressed_state]
+is_pressed = true
+
+[[panels.controls.pressed_state.layers]]
+kind = "fill"
+
+[panels.controls.pressed_state.layers.color]
+red = 66
+green = 255
+blue = 139
+alpha = 255
+
+[[panels.controls.pressed_state.layers]]
+kind = "text"
+text = "fds"
+anchor = "center"
+
+[panels.controls.pressed_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls]]
+control_id = "control-1784934584321"
+name = "Hello"
+action_bindings = []
+
+[panels.controls.position]
+column = 13
+row = 1
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 89
+green = 89
+blue = 89
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "Test"
+anchor = "center"
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[panels.controls.pressed_state]
+is_pressed = true
+
+[[panels.controls.pressed_state.layers]]
+kind = "fill"
+
+[panels.controls.pressed_state.layers.color]
+red = 66
+green = 255
+blue = 139
+alpha = 255
+
+[[panels.controls.pressed_state.layers]]
+kind = "text"
+text = "fds"
+anchor = "center"
+
+[panels.controls.pressed_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls]]
+control_id = "control-1784934585859"
+name = "Hello"
+action_bindings = []
+
+[panels.controls.position]
+column = 14
+row = 0
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 89
+green = 89
+blue = 89
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "Test"
+anchor = "center"
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[panels.controls.pressed_state]
+is_pressed = true
+
+[[panels.controls.pressed_state.layers]]
+kind = "fill"
+
+[panels.controls.pressed_state.layers.color]
+red = 66
+green = 255
+blue = 139
+alpha = 255
+
+[[panels.controls.pressed_state.layers]]
+kind = "text"
+text = "fds"
+anchor = "center"
+
+[panels.controls.pressed_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls]]
+control_id = "control-1785010644368"
+name = "Key 25"
+action_bindings = []
+
+[panels.controls.position]
+column = 0
+row = 1
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 0
+green = 0
+blue = 0
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "image"
+image = "$(discord.default:channel_members_0_avatar)"
+fit = "cover"
+anchor = "center"
+scale_percent = 100
+
+[[panels.controls]]
+control_id = "control-1785010667558"
+name = "Key 27"
+action_bindings = []
+
+[panels.controls.position]
+column = 2
+row = 1
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 0
+green = 0
+blue = 0
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "image"
+image = "$(discord.default:channel_members_2_avatar)"
+fit = "cover"
+anchor = "center"
+scale_percent = 100
+
+[[panels.controls]]
+control_id = "control-1785010674308"
+name = "Key 26"
+action_bindings = []
+
+[panels.controls.position]
+column = 1
+row = 1
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 0
+green = 0
+blue = 0
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "image"
+image = "$(discord.default:channel_members_1_avatar)"
+fit = "cover"
+anchor = "center"
+scale_percent = 100
+
+[[panels.controls]]
+control_id = "control-1785012043590"
+name = "Key 28"
+action_bindings = []
+
+[panels.controls.position]
+column = 3
+row = 1
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 0
+green = 0
+blue = 0
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "image"
+image = "$(discord.default:channel_members_3_avatar)"
+fit = "cover"
+anchor = "center"
+scale_percent = 100
+
+[[panels.controls]]
+control_id = "control-1785012059392"
+name = "Key 29"
+action_bindings = []
+
+[panels.controls.position]
+column = 4
+row = 1
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 0
+green = 0
+blue = 0
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "image"
+image = "$(discord.default:channel_members_4_avatar)"
+fit = "cover"
+anchor = "center"
+scale_percent = 100
+
+[[panels.controls]]
+control_id = "control-1785012070373"
+name = "Key 30"
+action_bindings = []
+
+[panels.controls.position]
+column = 5
+row = 1
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 0
+green = 0
+blue = 0
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "image"
+image = "$(discord.default:channel_members_5_avatar)"
+fit = "cover"
+anchor = "center"
+scale_percent = 100
+
+[[panels.controls]]
+control_id = "control-1785672233709"
+name = "Clock"
+action_bindings = []
+
+[panels.controls.position]
+column = 0
+row = 0
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 0
+green = 0
+blue = 0
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "image"
+image = "mdi:clock-outline"
+fit = "contain"
+anchor = "top_center"
+scale_percent = 40
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "$(system.default:clock)"
+anchor = "bottom_center"
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls]]
+control_id = "control-1785672243947"
+name = "Channel name"
+action_bindings = []
+
+[panels.controls.position]
+column = 1
+row = 0
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 0
+green = 0
+blue = 0
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "$(discord.default:channel_name)"
+anchor = "center"
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls]]
+control_id = "control-1785672248544"
+name = "Members in channel"
+action_bindings = []
+
+[panels.controls.position]
+column = 2
+row = 0
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 0
+green = 0
+blue = 0
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "$(discord.default:member_count)"
+anchor = "center"
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.dials]]
+index = 0
+level = 90
+
+[panels.dials.color]
+red = 174
+green = 255
+blue = 0
+alpha = 255
+
+[[panels.dials]]
+index = 1
+level = 93
+
+[panels.dials.color]
+red = 243
+green = 22
+blue = 22
+alpha = 255
