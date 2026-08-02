@@ -3,6 +3,7 @@
     ./uptime
     ./hermes
     ./llm
+    ./keyhold
     ./launchpi
     ./mattermost
     ./searxng.nix

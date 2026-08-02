@@ -51,7 +51,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # koi.url = "github:v3xlabs/koi";
+    koi.url = "github:v3xlabs/koi";
   };
 
   outputs = inputs:

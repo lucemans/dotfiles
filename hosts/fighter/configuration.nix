@@ -16,6 +16,7 @@
       self.nixosModules.nix
       self.nixosModules.doubletake
       self.nixosModules.launchpi
+      self.nixosModules.keyhold
     ];
 
     boot.loader = {

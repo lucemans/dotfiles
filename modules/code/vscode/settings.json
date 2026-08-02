@@ -294,11 +294,11 @@
                 ]
             },
             "nixpkgs": {
-                "expr": "import (builtins.getFlake \"/etc/nixos\").inputs.nixpkgs { system = builtins.currentSystem; }"
+                "expr": "import (builtins.getFlake (builtins.toString /etc/nixos)).inputs.nixpkgs { }"
             },
             "options": {
                 "nixos": {
-                    "expr": "(builtins.getFlake \"/etc/nixos\").nixosConfigurations.v3x-fighter.options"
+                    "expr": "(builtins.getFlake (builtins.toString /etc/nixos)).nixosConfigurations.v3x-fighter.options"
                 }
             }
         }

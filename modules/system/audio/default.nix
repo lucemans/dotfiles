@@ -35,7 +35,6 @@
               actions.update-props."node.name" = "scarlett-5+6";
             }
           ];
-
         };
       };
     };
