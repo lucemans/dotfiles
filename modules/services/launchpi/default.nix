@@ -55,11 +55,6 @@
         ];
 
         plugins = {
-          "mpris.default" = {
-            enabled = true;
-            display_name = "Local media";
-            config.preferred_player = "spotify";
-          };
           "discord.default" = {
             enabled = true;
             display_name = "V3X Discord";
