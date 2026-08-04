@@ -6,6 +6,7 @@
     ./keyhold
     ./launchpi
     ./mattermost
+    ./mission
     ./searxng.nix
     ./firefly-iii.nix
   ];

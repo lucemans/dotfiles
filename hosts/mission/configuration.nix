@@ -42,6 +42,7 @@
       self.nixosModules.peripheral
       self.nixosModules.missionUptime
       self.nixosModules.missionGrafana
+      self.nixosModules.launchpi
     ];
 
     hardware.facter.reportPath = ./facter.json;

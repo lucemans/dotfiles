@@ -6,7 +6,7 @@
 
     sops = {
       age.keyFile = "/home/luc/.config/sops/age/keys.txt";
-      defaultSopsFile = ../../../secrets/secrets.sops.yaml;
+      defaultSopsFile = ../../../secrets/mission.sops.yaml;
       secrets = {
         launchpi_discord_token = {
           owner = "launchpi";

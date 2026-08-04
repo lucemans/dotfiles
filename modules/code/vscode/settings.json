@@ -259,7 +259,7 @@
         }
     ],
     "llama-vscode.env_start_last_used": true,
-    "llama-vscode.env_start_last_used_confirm": true,
+    "llama-vscode.env_start_last_used_confirm": false,
     "llama-vscode.envs_list": [
         {
             "name": "mediabus",

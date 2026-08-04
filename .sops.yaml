@@ -2,10 +2,16 @@ keys:
   - &desktop age138hwuu082j7xx6vy3u88nw8kjmdjky4sz4gxx9jtpe8gsmwjqdcqp3ddw8
   - &lucpgp 716C1889C8EBE5C434C106C4C3575672485E2CEC
   - &teapot age17w63cmtlu9jvh7sr3ru6stn2mkjgcjfksnxcnsxj47akdc88gq6qytsv86
+  - &mission age1qsfltp6cflrem8mzjfkavd3kadz822wcehzpsusky65zmzmcxvvsu94j7r
 creation_rules:
   - path_regex: 418.sops.yaml
     key_groups:
       - age: [*desktop, *teapot]
+        pgp: [*lucpgp]
+    shamir_threshold: 1
+  - path_regex: mission.sops.yaml
+    key_groups:
+      - age: [*desktop, *mission]
         pgp: [*lucpgp]
     shamir_threshold: 1
   - path_regex: .+\.sops\.(yaml|json|env|ini|toml)$
