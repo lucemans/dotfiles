@@ -13,6 +13,7 @@
       system = "x86_64-linux";
       specialArgs = {inherit inputs self;};
       modules = [
+        inputs.sops-nix.nixosModules.sops
         inputs.disko.nixosModules.disko
         self.nixosModules.mission
         self.nixosModules.missionDisko

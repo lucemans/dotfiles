@@ -99,6 +99,8 @@
     environment.systemPackages = [
       pkgs.kitty.terminfo
       pkgs.net-tools
+      pkgs.sops
+      pkgs.age
     ];
 
     system.stateVersion = "26.05";
