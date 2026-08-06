@@ -23,10 +23,11 @@
 
     services.launchpi = {
       enable = true;
-      host = "127.0.0.1";
+      # host = "127.0.0.1";
+      host = "0.0.0.0";
       port = 7778;
-      # openFirewall = false;
-      discovery = true;
+      openFirewall = true;
+      discovery = false;
       settings = {
         devices = [
           {
