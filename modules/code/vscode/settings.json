@@ -253,7 +253,7 @@
         {
             "name": "Custom: qwen2.5-coder-7b-fim",
             "localStartCommand": "",
-            "endpoint": "https://ollama.v3x.sh/upstream/sweep-next-edit-1.5b/",
+            "endpoint": "https://ollama.v3x.sh/upstream/sweep-next-edit-v2-7b/",
             "aiModel": "",
             "isKeyRequired": false
         }
@@ -265,9 +265,9 @@
             "name": "mediabus",
             "description": "mediabus coder qwen2.5",
             "completion": {
-                "name": "Custom: sweep-next-edit-1.5b",
+                "name": "Custom: sweep-next-edit-v2-7b",
                 "localStartCommand": "",
-                "endpoint": "https://ollama.v3x.sh/upstream/sweep-next-edit-1.5b/",
+                "endpoint": "https://ollama.v3x.sh/upstream/sweep-next-edit-v2-7b/",
                 "aiModel": "",
                 "isKeyRequired": false
             },
@@ -276,8 +276,8 @@
             "complEnabled": true
         }
     ],
-    "llama-vscode.endpoint": "https://ollama.v3x.sh/upstream/sweep-next-edit-1.5b/",
-    "llama-vscode.ai_model": "sweep-next-edit-1.5b",
+    "llama-vscode.endpoint": "https://ollama.v3x.sh/upstream/sweep-next-edit-v2-7b/",
+    "llama-vscode.ai_model": "sweep-next-edit-v2-7b",
     "llama-vscode.rag_enabled": true,
     "llama-vscode.enabled": true,
     "llama-vscode.max_parallel_completions": 1,

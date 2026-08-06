@@ -84,7 +84,7 @@ width = 8
 
 [[panels.controls.default_state.layers]]
 kind = "text"
-text = "Dining 2"
+text = "Dining 1"
 anchor = "bottom_center"
 font_size = 21
 
