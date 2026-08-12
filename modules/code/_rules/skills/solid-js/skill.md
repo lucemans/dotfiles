@@ -1,10 +1,6 @@
 ---
 name: solid-js
 description: SolidJS application conventions. Use only when the project uses solid-js, solid-start, or @tanstack/solid-router; apply when reading, reviewing, or changing Solid TSX/JSX, routes, queries, or Vite configuration.
-paths:
-  - "**/*.{tsx,jsx}"
-  - "**/vite.config.{ts,js,mts,mjs}"
-  - "**/routes/**/*"
 ---
 
 # SolidJS Guidelines

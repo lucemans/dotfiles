@@ -1,5 +1,5 @@
 ---
-name: update-eslint-v3xlabs
+name: update-eslint
 description: Use when updating eslint-plugin-v3xlabs and eslint to latest versions. Checks pnpm, installs, runs autofix, reviews diff, and corrects problematic auto-fix output.
 ---
 

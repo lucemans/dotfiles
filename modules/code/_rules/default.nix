@@ -4,6 +4,7 @@ let
     update-eslint = ./skills/typescript/update-eslint.md;
     "solid-js" = ./skills/solid-js/skill.md;
     "web-design" = ./skills/web-design/skill.md;
+    "html-communication" = ./skills/html-communication/skill.md;
   };
 in {
   policy = ./AGENTS.md;

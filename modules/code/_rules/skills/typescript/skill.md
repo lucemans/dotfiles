@@ -1,8 +1,6 @@
 ---
 name: typescript
 description: TypeScript and JavaScript implementation conventions. Use when reading, reviewing, or changing TS, TSX, JS, JSX, MTS, CTS, MJS, or CJS files.
-paths:
-  - "**/*.{ts,tsx,js,jsx,mts,cts,mjs,cjs}"
 ---
 
 # V3X TypeScript and JavaScript Guidelines
@@ -28,6 +26,9 @@ Do not copy weak typing, old suppressions, or obsolete patterns from older files
 - Do not refactor, reformat, rename, or fix unrelated code.
 - Ask before you add dependencies, update lockfiles, change development environments, run migrations, or make broad changes.
 - For material choices that are not stated, give concise options. Show which option is most consistent with these preferences.
+- Do not add an abstraction until a second real call site exists.
+- Do not add a configuration option that nothing sets.
+- Do not add a compatibility path for a consumer that does not exist yet.
 
 ## Architecture
 
@@ -83,6 +84,20 @@ const createConnection = (): Connection => {
 - Do not use non-null assertions.
 - Use `@ts-expect-error` only in type tests that are supposed to fail.
 - Do not use `@ts-ignore` or double assertions.
+
+## Write TypeScript as TypeScript
+
+- Trust the compiler. Do not add a runtime check for a condition that the type system already proves.
+- Validate untrusted input one time at the boundary. Do not re-validate the same value in inner functions.
+- Do not write a one-line wrapper or a pass-through helper. Call the original function.
+- Do not write a function whose only work is a cast, a rename, or a re-shape. Use the value.
+- Do not write a manual type-guard function if a discriminated union, `in`, or `typeof` already narrows the type.
+- Use the language and the standard library. Do not re-implement `map`, `filter`, `Object.entries`, optional chaining, or nullish coalescing.
+- Do not use a `Record<string, unknown>` bag where a named type belongs.
+- Do not write `getX` and `setX` accessor pairs around a plain property.
+- Iterate over values. Use `for...of` and array methods instead of an index counter.
+- Do not catch an exception to control expected flow. Return a Result.
+- Do not create a `utils.ts` or `helpers.ts` grab bag.
 
 ## Errors
 
