@@ -80,12 +80,13 @@ If the reader's job is to choose, the document must make the choices countable a
 - **One radius system.** Choose one corner radius and use it for every panel, chip, code block, and table. Do not mix sharp and round.
 - **One type scale.** Choose the sizes one time and reuse them. Do not size a heading by eye.
 - **Light and dark.** Define both with `prefers-color-scheme`. Do not ship a page that is unreadable in one of them.
-- **One file.** No external stylesheet, script, font, or image. Inline the CSS. Embed an image as a data URI or leave it out.
+- **One file, pinned imports.** No external stylesheet or font. Inline the CSS. Embed an image as a data URI or leave it out. A document with interactive data may import scripts from `https://esm.sh/` with exact pinned versions; the rules are in Interactive Content.
 
 ## Typography
 
 - Set the body text between 16px and 18px with a line height of at least 1.6.
-- Hold the reading measure near 80 characters. Never exceed 90. Below 65 the page feels cramped and the side margins start to dominate, which readers notice and dislike.
+- Hold the prose measure between 85 and 100 characters. Never exceed 110. Below 70 the page feels cramped and the side margins start to dominate, which readers notice and dislike.
+- The measure constrains paragraphs, not the page. Give tables, charts, code blocks, and diffs a wider breakout column: center the prose column and let wide elements span `width: min(1100px, 100%)` of the viewport, each scrolling inside its own container when narrower than its content.
 - Use charcoal on off-white. Do not use pure black on pure white.
 - Use a system font stack for body text. If you choose a specific face, choose it with purpose. Do not choose Inter, Roboto, or Open Sans by default.
 - Use one monospace face for code, paths, identifiers, and commands.
@@ -153,11 +154,51 @@ The tag is part of the meaning. Reach for the specific element before reaching f
 - Give the complete content. Do not write "and so on", "for brevity", or `// ...` in place of the material.
 - State what is not done, not verified, or not applied. Put it in the document, not only in the chat message.
 
+## Interactive Content
+
+The document is served in a sandbox with an opaque origin: scripts run, but
+cookies and credentialed requests do not exist. Within that, interactivity is
+welcome when it serves the reading, never as decoration.
+
+- Small inline vanilla JavaScript is fine: sorting a table, filtering a list,
+  toggling between two views of the same data. No frameworks; Solid and React
+  need a build step and do not belong in a document.
+- Charts use TanStack Charts through esm.sh with an exact pinned version and
+  its framework-free host. The pattern:
+
+```
+<div id="chart"><p>Interactive chart. The data is in the table below.</p></div>
+<script type="module">
+import { defineChart, lineY, barY, mountChart }
+  from "https://esm.sh/@tanstack/charts@0.11.2";
+import { scaleLinear } from "https://esm.sh/@tanstack/charts@0.11.2/scales/linear";
+import { scaleBand } from "https://esm.sh/@tanstack/charts@0.11.2/scales/band";
+
+const element = document.querySelector("#chart");
+element.replaceChildren();
+mountChart(element, { definition, height: 300, ariaLabel: "..." });
+</script>
+```
+
+- Pick the chart series color per theme with `matchMedia("(prefers-color-scheme: dark)")`
+  and keep it clearly readable against both surfaces; one hue for one series,
+  a fixed assignment per series for more, never a rainbow.
+- Every chart also ships its data as a table in the document. The page must
+  stay fully readable when esm.sh is unreachable or scripts are disabled: the
+  chart container keeps fallback text until the mount succeeds.
+- Icons are inlined at write time, not loaded at runtime: fetch the SVG from
+  `https://unpkg.com/lucide-static@1.31.0/icons/<name>.svg`, paste it inline,
+  size it to the text beside it (`width="1em" height="1em"`), and let it
+  inherit color through `currentColor`. Use them sparingly: a label beats an
+  icon that needs explaining.
+- Pin every imported version exactly. Revisions are permanent; an unpinned
+  import changes how old revisions render later and is a bug.
+
 ## Motion and Images
 
 - Prefer no motion. A document does not need a scroll animation.
 - If motion earns its place, animate `transform` and `opacity` only, keep it under 200ms, and respect `prefers-reduced-motion`.
-- Do not hand-roll an SVG icon. Do not add an icon library. A well-set heading does the work.
+- Do not hand-roll SVG path data and do not load an icon library at runtime. When an icon earns its place, inline one from Lucide as described in Interactive Content; a well-set heading often does the work instead.
 - Do not draw a fake screenshot with `div` elements.
 
 ## Not For Documents
@@ -175,8 +216,9 @@ These belong to landing-page and poster work. They cost legibility here.
 - [ ] No em-dash anywhere in the file
 - [ ] One accent color, at most one semantic pair, one radius, one type scale
 - [ ] Light and dark both defined and both readable
-- [ ] Single file, no external request
-- [ ] Reading measure near 80 characters, never above 90
+- [ ] Single file; the only external requests are pinned esm.sh imports for interactive data
+- [ ] Every chart has its data in a table as well, and survives scripts failing to load
+- [ ] Prose measure between 85 and 100 characters, never above 110; wide elements break out to their own wider column
 - [ ] Chips are square, with equal width and height
 - [ ] Every item has an `id`, and `:target` is styled
 - [ ] An index names every item, its kind, and its size
