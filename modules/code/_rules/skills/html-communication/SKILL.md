@@ -1,17 +1,19 @@
 ---
 name: html-communication
-description: Produce a readable HTML document for a human to open outside the terminal on `plan.env.md`. Use for a plan, spec, write-up, findings, summary, report, review, or comparison. Do not use for product UI or design mockups.
+description: Produce a self-contained HTML page for a human to open outside the terminal on `plan.env.md`. Use for a plan, spec, write-up, findings, summary, report, review, or comparison, and also for a UI mockup, design variation, or sketch made to explore an idea.
 ---
 
 # HTML Communication
 
-Communication with the user can involve an HTML document. Write one self-contained file, then upload it to plan.env.md and give the user the URL from the response.
+Communication with the user can involve an HTML page: a document about work, or a mockup exploring a design. Write one self-contained file, then upload it to plan.env.md and give the user the URL from the response.
 
 ## Scope
 
-- This skill is for documents about work. It is not for the product being built.
-- Do not apply it to product UI, design mockups, or shipped pages. Those follow repository-local design rules and the `web-design` skill.
-- Prefer terminal output for a short answer. Produce a document when the content is long, structured, or read more than one time.
+- This skill covers two kinds of page, delivered the same way.
+- A document communicates about work: a plan, spec, write-up, findings, summary, report, review, or comparison. Every section of this skill applies to it.
+- A mockup explores product UI: a design variation, a page or component sketch, a brainstorm made to be looked at. The Mockups section says which rules bind it; the document design rules do not.
+- Neither kind is shipped code. Product code in a repository follows the repository's design rules and the `web-design` skill.
+- Prefer terminal output for a short answer. Produce a page when the content is long, structured, visual, or read more than one time.
 
 ## Upload to plan.env.md
 
@@ -58,6 +60,18 @@ curl -sS "https://plan.env.md/api/docs/<slug>/revisions/<n>/raw" \
 
 - The revision index (numbers, sizes, dates) is at
   `https://plan.env.md/api/docs/<slug>`.
+
+## Mockups
+
+A mockup is a sketch, not a specification and not the implementation. Optimize for how fast the idea becomes visible.
+
+- The delivery rules still bind: one self-contained file, inline CSS, external requests only as pinned esm.sh imports, under 512KB, a project-prefixed slug, the URL given to the user.
+- The document design rules do not bind. A mockup may use gradients, display type, a hero, marketing voice, motion, several accents, or a single theme: whatever the design it explores calls for. The list in Not For Documents is available here.
+- Follow the `web-design` skill's conventions where they help. Break them deliberately when the exploration is about breaking them.
+- State the intent in an HTML comment at the top of the file: the variation's name and one line on what it tries. Do not render this into the design.
+- Iterate at one slug; the revisions are the history of the exploration. Simultaneous variations get their own slugs, `myproject-home-v1`, `myproject-home-v2`, so each can be revised independently.
+- Use the product's real copy when it exists. Invented copy and data are fine in a sketch; keep them plausible rather than `lorem ipsum`, so the design is judged with honest content.
+- When a direction wins, write the product code fresh in the repository under its rules. Do not paste the mockup in as the implementation.
 
 ## Before You Write
 
@@ -129,11 +143,13 @@ The tag is part of the meaning. Reach for the specific element before reaching f
 
 ## Structure
 
-- Add a contents list when the document is longer than two screens. Link each entry. Past roughly eight items, make it a sidebar: sticky beside the prose on wide screens, grouped by what the reader must do, each entry showing the item ID and a short name.
-- Give every item the reader acts on a short stable ID shown in a chip: `D1`, `P2`, `N1`. Prefix by kind: D for a decision, P for a proposal to accept or reject, N for no action, R for reference, F for a fix, C for a conflict. Use the ID as the anchor id and in every cross-reference, and keep it stable across revisions, so the user can name an item in conversation.
-- Open a document that asks for decisions with a counts strip: one number per kind, the kinds that demand action first.
+- Add a contents list when the document is longer than two screens. Link each entry. Past roughly eight items, make it a sidebar: sticky beside the prose on wide screens, sectioned to match the document's own order, each entry showing the item ID and a short name.
+- Give every item the reader acts on a short stable ID shown in a chip, one letter per kind plus a number: `D1`, `P2`, `S3`. Derive the letters from the kinds this document actually has, and name each kind where it first appears. A plan might use D for a decision, P for a proposal, N for no action. A review might use S for a strength, R for a regression, F for a finding to fix. A status report might use W for what advanced, B for what is blocked. These are examples, not the list.
+- Use the ID as the anchor id and in every cross-reference, and keep it stable across revisions, so the user can name an item in conversation.
+- Order and group items the way the document reads best. Group by kind when the reader triages an unordered set. Keep related items together when they explain each other, and use chronological or execution order when the content has one. The chip already names each item's kind, so the grouping is free to serve the reading.
+- Open with a counts strip when the totals answer the reader's first question: one number per kind, the kinds that demand attention first.
 - When a document holds many items, open with an index that names every item, its kind, and its size. The reader must be able to answer "what is all this and where do I start" without scrolling through the detail.
-- Classify every item by what the reader must do with it, not by which file it touches. An error to fix, a contradiction to resolve, a proposal to accept or reject, and an observation needing no action are four different jobs, and the reader cannot triage until they are told which is which.
+- Classify every item by what the reader must do with it, not by which file it touches. An error to fix, a contradiction to resolve, a proposal to accept or reject, and an observation needing no action are four different jobs, and the reader cannot triage until they are told which is which. The set of jobs follows from the document: a plan carries proposals to accept, a review carries strengths to keep and regressions to fix, a status report carries progress to confirm and blockers to clear.
 - Link between items that depend on each other. If one item requires another, say so and link it.
 - Use a panel to mark a discrete unit, such as one proposal the reader accepts or rejects. Do not put every paragraph in a panel. A page of cards has no hierarchy.
 - Do not nest a panel inside a panel.
@@ -249,6 +265,8 @@ These belong to landing-page and poster work. They cost legibility here.
 
 ## Before You Deliver
 
+This checklist is for documents. A mockup checks only the delivery rules in Mockups: single file, pinned imports only, project-prefixed slug, intent comment at the top, and the user has the URL.
+
 - [ ] No em-dash anywhere in the file
 - [ ] One accent color, at most one semantic pair, one radius, one type scale
 - [ ] Light and dark both defined and both readable
@@ -264,7 +282,8 @@ These belong to landing-page and poster work. They cost legibility here.
 - [ ] Every code snippet sits in the snippet layout with its source named in the header
 - [ ] reference/code.css and reference/code.js are inlined verbatim, not paraphrased
 - [ ] Snippet variation uses only the notation markers listed in Code Snippets
-- [ ] Items carry stable kind-prefixed IDs, and past eight items the contents list is a grouped sidebar
+- [ ] Items carry stable kind-prefixed IDs, with the kinds derived from this document and named where they first appear
+- [ ] Past eight items the contents list is a sidebar whose sections match the document's own order
 - [ ] Every file claim cites `path:line`
 - [ ] No emoji, no marketing voice, no invented metric
 - [ ] Nothing truncated, hidden, or replaced with a placeholder

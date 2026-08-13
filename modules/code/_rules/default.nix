@@ -12,6 +12,7 @@ in {
         name = "${skillDirectory}/${skillName}";
         value = {
           source = ./skills + "/${skillName}";
+          recursive = true;
           force = true;
         };
       })
