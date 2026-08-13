@@ -1,21 +1,19 @@
 let
-  skills = {
-    typescript = ./skills/typescript/skill.md;
-    update-eslint = ./skills/typescript/update-eslint.md;
-    "solid-js" = ./skills/solid-js/skill.md;
-    "web-design" = ./skills/web-design/skill.md;
-    "html-communication" = ./skills/html-communication/skill.md;
-  };
+  skillEntries = builtins.readDir ./skills;
+  skillNames =
+    builtins.filter
+    (name: skillEntries.${name} == "directory")
+    (builtins.attrNames skillEntries);
 in {
   policy = ./AGENTS.md;
-  inherit skills;
 
   mkSkillFiles = skillDirectory:
     builtins.listToAttrs (builtins.map (skillName: {
-      name = "${skillDirectory}/${skillName}/SKILL.md";
-      value = {
-        source = skills.${skillName};
-        force = true;
-      };
-    }) (builtins.attrNames skills));
+        name = "${skillDirectory}/${skillName}";
+        value = {
+          source = ./skills + "/${skillName}";
+          force = true;
+        };
+      })
+      skillNames);
 }

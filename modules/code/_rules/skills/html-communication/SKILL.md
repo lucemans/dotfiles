@@ -76,11 +76,11 @@ If the reader's job is to choose, the document must make the choices countable a
 ## Hard Rules
 
 - **No em-dash.** Do not use an em-dash or `&mdash;` anywhere: headings, body, tables, code, or the title. Use a comma, a colon, a full stop, or a rewritten sentence. This is the clearest sign that a machine wrote the page.
-- **One accent color** for interaction and structure, plus at most one semantic pair where the difference carries meaning. Diff additions and removals are that pair. Do not add a third pair.
+- **One accent color** for interaction and structure, plus at most one semantic pair where the difference carries meaning. Diff additions and removals are that pair. Do not add a third pair. Syntax token colors inside a code snippet come from the pinned Shiki themes in Code Snippets and sit outside this rule.
 - **One radius system.** Choose one corner radius and use it for every panel, chip, code block, and table. Do not mix sharp and round.
 - **One type scale.** Choose the sizes one time and reuse them. Do not size a heading by eye.
 - **Light and dark.** Define both with `prefers-color-scheme`. Do not ship a page that is unreadable in one of them.
-- **One file, pinned imports.** No external stylesheet or font. Inline the CSS. Embed an image as a data URI or leave it out. A document with interactive data may import scripts from `https://esm.sh/` with exact pinned versions; the rules are in Interactive Content.
+- **One file, pinned imports.** No external stylesheet or font. Inline the CSS. Embed an image as a data URI or leave it out. A document with interactive data or highlighted code may import scripts from `https://esm.sh/` with exact pinned versions; the rules are in Interactive Content and Code Snippets.
 
 ## Typography
 
@@ -129,7 +129,9 @@ The tag is part of the meaning. Reach for the specific element before reaching f
 
 ## Structure
 
-- Add a contents list when the document is longer than two screens. Link each entry.
+- Add a contents list when the document is longer than two screens. Link each entry. Past roughly eight items, make it a sidebar: sticky beside the prose on wide screens, grouped by what the reader must do, each entry showing the item ID and a short name.
+- Give every item the reader acts on a short stable ID shown in a chip: `D1`, `P2`, `N1`. Prefix by kind: D for a decision, P for a proposal to accept or reject, N for no action, R for reference, F for a fix, C for a conflict. Use the ID as the anchor id and in every cross-reference, and keep it stable across revisions, so the user can name an item in conversation.
+- Open a document that asks for decisions with a counts strip: one number per kind, the kinds that demand action first.
 - When a document holds many items, open with an index that names every item, its kind, and its size. The reader must be able to answer "what is all this and where do I start" without scrolling through the detail.
 - Classify every item by what the reader must do with it, not by which file it touches. An error to fix, a contradiction to resolve, a proposal to accept or reject, and an observation needing no action are four different jobs, and the reader cannot triage until they are told which is which.
 - Link between items that depend on each other. If one item requires another, say so and link it.
@@ -146,6 +148,40 @@ The tag is part of the meaning. Reach for the specific element before reaching f
 - Quote the removed lines exactly from the current file. If you have not read the current file, say so rather than reconstructing it from memory.
 - Head each diff with the file path and the line range, and say whether it adds, replaces, or deletes.
 - Show one or two unchanged lines around the change when they tell the reader where the edit lands.
+
+## Code Snippets
+
+Every code block longer than one line sits in one snippet layout. Do not write snippet styles or a highlight runtime per document: inline `reference/code.css` into the stylesheet and `reference/code.js` as the last module script, both verbatim. They assume the document defines the standard tokens (`--panel`, `--code-bg`, `--rule`, `--radius`, `--mono`, `--ink-soft`, `--ink-faint`, `--accent`, `--accent-soft`, `--pos`, `--pos-soft`, `--neg`, `--neg-soft`).
+
+- Wrap the block in a `figure` with class `snippet`: a `figcaption` header row, then the `pre`.
+- The header names the source. Quoted code gets the file path and line range. New or illustrative code gets a short title. The language tag sits at the right end. The field order never changes.
+- Content Fidelity applies inside a snippet: quote exactly, escape exactly, elide nothing.
+
+```
+<figure class="snippet">
+  <figcaption><code>src/server.ts:12-24</code><span class="lang">typescript</span></figcaption>
+  <pre><code class="language-typescript">...</code></pre>
+</figure>
+```
+
+- Highlighting runs at read time with Shiki, pinned inside `reference/code.js`. Supported languages: `typescript`, `javascript`, `rust`, `nix`, `bash`, `json`, `css`, `solidity`, and `ansi`. Any other language renders plain; do not add grammars per document.
+- The page must read fully with scripts disabled. Highlighting decorates text that is already present; never build a snippet whose content arrives by script.
+
+Vary a snippet only through these markers, written as a comment in the language's own comment syntax on the affected line. The runtime strips the marker and applies the effect. With scripts disabled the marker text stays visible, which is acceptable; an invented marker is not.
+
+| Effect | Marker |
+| --- | --- |
+| Emphasize a line | `// [!code highlight]` |
+| Dim everything except the marked lines | `// [!code focus]` |
+| Added and removed lines in illustrative code | `// [!code ++]` and `// [!code --]` |
+| Emphasize one word | `// [!code word:port]` |
+| Mark the failing or suspect line | `// [!code error]`, `// [!code warning]` |
+
+- Line numbers: add class `numbered` to the figure, only when prose refers to line positions.
+- Program output with color: `language-ansi`, preserving the raw escape codes.
+- A terminal exchange: class `is-terminal` on the figure. Commands are `code` lines inside one `pre` with class `cmds`; output follows as its own `pre` holding `samp` or `language-ansi` content. The `$` prompt comes from CSS and is never part of the text, so copied commands stay runnable.
+- Alternatives shown once (package managers, platforms): class `is-group` on the figure, hidden radio inputs first, then the `figcaption` with one `label` per alternative in its `.tabs` span, then one `section` per alternative in the same order. The tabs are CSS-only and work without scripts. Up to four alternatives.
+- A proposed change to a real file keeps the diff block from Proposed File Changes. Notation diff is for illustration, not for edits the reader applies.
 
 ## Content Fidelity
 
@@ -216,7 +252,7 @@ These belong to landing-page and poster work. They cost legibility here.
 - [ ] No em-dash anywhere in the file
 - [ ] One accent color, at most one semantic pair, one radius, one type scale
 - [ ] Light and dark both defined and both readable
-- [ ] Single file; the only external requests are pinned esm.sh imports for interactive data
+- [ ] Single file; the only external requests are pinned esm.sh imports for interactive data and code highlighting
 - [ ] Every chart has its data in a table as well, and survives scripts failing to load
 - [ ] Prose measure between 85 and 100 characters, never above 110; wide elements break out to their own wider column
 - [ ] Chips are square, with equal width and height
@@ -225,6 +261,10 @@ These belong to landing-page and poster work. They cost legibility here.
 - [ ] Tables and wide code blocks scroll inside their own container
 - [ ] The body scrolls in one direction only, at narrow width as well
 - [ ] Proposed file changes are shown as diffs with exact removed lines
+- [ ] Every code snippet sits in the snippet layout with its source named in the header
+- [ ] reference/code.css and reference/code.js are inlined verbatim, not paraphrased
+- [ ] Snippet variation uses only the notation markers listed in Code Snippets
+- [ ] Items carry stable kind-prefixed IDs, and past eight items the contents list is a grouped sidebar
 - [ ] Every file claim cites `path:line`
 - [ ] No emoji, no marketing voice, no invented metric
 - [ ] Nothing truncated, hidden, or replaced with a placeholder
