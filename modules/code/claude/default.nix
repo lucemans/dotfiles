@@ -20,6 +20,7 @@
 
     home-manager.users.luc.home.file =
       (rules.mkSkillFiles ".claude/skills")
+      // (rules.mkAgentFiles "claude" ".claude/agents")
       // {
         ".claude/CLAUDE.md" = {
           source = rules.policy;

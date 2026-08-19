@@ -100,6 +100,7 @@
 
     home-manager.users.luc.home.file =
       (rules.mkSkillFiles ".config/opencode/skills")
+      // (rules.mkAgentFiles "opencode" ".config/opencode/agents")
       // {
         ".config/opencode/opencode.jsonc" = {
           text = builtins.toJSON opencodeConfig;
@@ -108,11 +109,6 @@
 
         ".config/opencode/AGENTS.md" = {
           source = rules.policy;
-          force = true;
-        };
-
-        ".config/opencode/agents/visual-qa.md" = {
-          source = ./agents/visual-qa.md;
           force = true;
         };
       };
