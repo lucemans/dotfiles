@@ -1,4 +1,4 @@
-// html-communication highlight runtime.
+// plan-env highlight runtime.
 // Inline verbatim as the last module script in the document body.
 import { createHighlighterCore } from "https://esm.sh/@shikijs/core@4.4.3";
 import { createJavaScriptRegexEngine } from "https://esm.sh/@shikijs/engine-javascript@4.4.3";

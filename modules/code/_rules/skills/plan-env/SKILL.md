@@ -1,11 +1,11 @@
 ---
-name: html-communication
-description: Produce a self-contained HTML page for a human to open outside the terminal on `plan.env.md`. Use for a plan, spec, write-up, findings, summary, report, review, or comparison, and also for a UI mockup, design variation, or sketch made to explore an idea.
+name: plan-env
+description: Produce a self-contained HTML page for a human to open on `plan.env.md`. Use for a plan, spec, write-up, findings, summary, report, review, comparison, mockup, or design sketch.
 ---
 
-# HTML Communication
+# Plan Env
 
-Communication with the user can involve an HTML page: a document about work, or a mockup exploring a design. Write one self-contained file, then upload it to plan.env.md and give the user the URL from the response.
+Communication with the user can involve an HTML page: a document about work, or a mockup exploring a design. Use the available plan-env MCP tools to upload and read it.
 
 ## Scope
 
@@ -17,49 +17,19 @@ Communication with the user can involve an HTML page: a document about work, or 
 
 ## Upload to plan.env.md
 
-After you write the file, upload it:
-
-```
-curl -sS -X PUT "https://plan.env.md/api/docs/<slug>" \
-  -H "Authorization: Bearer $(cat ~/.config/plan-env-md/config)" \
-  -H "Content-Type: text/html" \
-  --data-binary @<file>
-```
-
-- Choose the slug from the document's subject: `[a-z0-9-]{1,64}`.
-- Prefix the slug with the project: `myproject-auth-refactor`, not
-  `auth-refactor`. Slugs share one namespace across all your documents.
-- Stay under 512KB; larger uploads are rejected with a 413. An embedded
-  image as a data URI is the usual cause.
-- Use the config file only through the substitution shown above. Do not
-  read, print, or open it; it is on the secrets policy's allowlist for
-  exactly this use.
-- Reuse the same slug when you update the document. Each upload adds a
-  revision at the same URL.
-- Give the user the `url` from the response next to the local file path.
-- The document is private until the user publishes it in the web UI. Do not
-  try to publish it.
+Use `plan_env_plan_push` to upload complete self-contained HTML. Choose a
+project-prefixed subject slug: `[a-z0-9-]{1,64}`, such as
+`myproject-auth-refactor`, not `auth-refactor`. Slugs share one namespace.
+Keep the HTML under 512 KB. Reuse the slug to add a revision. Give the user the
+returned URL. Do not try to publish the document.
 
 ## Read a Plan Link
 
-When the user links a plan such as `https://plan.env.md/<id>/<slug>`, take
-the slug from the last path segment and read the raw HTML directly:
-
-```
-curl -sS "https://plan.env.md/api/docs/<slug>/raw" \
-  -H "Authorization: Bearer $(cat ~/.config/plan-env-md/config)"
-```
-
-- A link ending in `/rev/<n>`, or a question about an earlier state of the
-  plan, reads a pinned revision instead:
-
-```
-curl -sS "https://plan.env.md/api/docs/<slug>/revisions/<n>/raw" \
-  -H "Authorization: Bearer $(cat ~/.config/plan-env-md/config)"
-```
-
-- The revision index (numbers, sizes, dates) is at
-  `https://plan.env.md/api/docs/<slug>`.
+Use `plan_env_plan_read` for a document URL or slug, for example
+`https://plan.env.md/<id>/<slug>`. A revision URL ends with `/rev/<n>`, for
+example `https://plan.env.md/<id>/<slug>/rev/2`; pass it to
+`plan_env_plan_read` to read that pinned revision. Use `plan_env_plan_info` for
+the document metadata and revision index.
 
 ## Mockups
 
