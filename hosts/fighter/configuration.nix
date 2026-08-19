@@ -11,7 +11,6 @@
       self.nixosModules.spotify
       self.nixosModules.code
       self.nixosModules.workstation
-      self.nixosModules.gnome-calls
       self.nixosModules.gaming
       self.nixosModules.nix
       self.nixosModules.doubletake

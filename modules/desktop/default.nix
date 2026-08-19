@@ -2,7 +2,6 @@
   imports = [
     ./anyrun
     ./browsers
-    ./gnome-calls
     ./plasma
     ./rofi
     ./discord.nix
