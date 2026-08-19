@@ -68,7 +68,7 @@
           tailscale
           netbird
 
-          lens
+          freelens-bin
 
           thunderbird
           rpi-imager
