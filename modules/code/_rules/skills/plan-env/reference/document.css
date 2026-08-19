@@ -1,0 +1,132 @@
+/* plan-env document component stylesheet. Inline verbatim into the page.
+   Pair it with code.css when the page carries code snippets; code.css needs
+   the tokens defined here. Full width by design: nothing centers, nothing
+   caps, and .rail is the only fixed measurement on the page. */
+
+:root {
+  color-scheme: light dark;
+  --bg: light-dark(#fbfaf8, #14151a);
+  --panel: light-dark(#ffffff, #1b1d24);
+  --code-bg: light-dark(#f4f3f0, #1f2129);
+  --rule: light-dark(#e3e1dc, #2c2f38);
+  --ink: light-dark(#1f2024, #e6e6e4);
+  --ink-soft: light-dark(#5a5c63, #a2a5ad);
+  --ink-faint: light-dark(#8b8d94, #71747d);
+  --accent: light-dark(#2f5fd0, #86a8f7);
+  --accent-soft: light-dark(#2f5fd014, #86a8f722);
+  --pos: light-dark(#1f7a45, #5fbf87);
+  --pos-soft: light-dark(#1f7a4514, #5fbf8722);
+  --neg: light-dark(#b3261e, #f2867d);
+  --neg-soft: light-dark(#b3261e14, #f2867d22);
+  --radius: 6px;
+  --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  --pad: clamp(1rem, 2.5vw, 3rem);
+  --rail: 13rem;
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-size: 17px; line-height: 1.65; overflow-x: hidden;
+}
+
+/* Layout. One column narrow, rail plus content wide, full width at both. */
+.page { display: grid; grid-template-columns: 1fr; gap: 2rem; padding: 2rem var(--pad) 5rem; }
+@media (min-width: 64rem) {
+  /* minmax(0, 1fr), not 1fr: a min-content floor would let a wide table push
+     the column past the viewport instead of scrolling inside .tablewrap. */
+  .page { grid-template-columns: var(--rail) minmax(0, 1fr); gap: 3rem; padding-top: 3rem; }
+}
+main { min-width: 0; }
+section { margin: 0 0 2.8rem; }
+
+h1 { font-size: 1.9rem; line-height: 1.2; margin: 0 0 .6rem; letter-spacing: -.015em; }
+h2 { font-size: 1.15rem; margin: 0 0 .9rem; padding-bottom: .4rem; border-bottom: 1px solid var(--rule); }
+h3 { font-size: 1rem; margin: 0; }
+p { margin: 0 0 .75rem; }
+ul, ol { margin: 0 0 .75rem; padding-left: 1.2rem; }
+li { margin: .2rem 0; }
+li::marker { color: var(--ink-faint); }
+a { color: var(--accent); text-underline-offset: 2px; }
+hr { border: 0; border-top: 1px solid var(--rule); margin: 2rem 0 1rem; }
+code { font-family: var(--mono); font-size: .84em; background: var(--code-bg); padding: .08em .32em; border-radius: var(--radius); }
+
+.lede { font-size: 1.05rem; color: var(--ink-soft); }
+.soft { color: var(--ink-soft); }
+.ok { color: var(--pos); font-weight: 600; }
+.bad { color: var(--neg); font-weight: 600; }
+.meta, .where {
+  font-family: var(--mono); font-size: .7rem; letter-spacing: .07em;
+  text-transform: uppercase; color: var(--ink-faint);
+}
+.where { text-transform: none; letter-spacing: 0; word-break: break-word; }
+
+/* Contents rail. Sticky beside the content, inline above it when narrow. */
+nav.toc { font-size: .85rem; }
+@media (min-width: 64rem) {
+  nav.toc { position: sticky; top: 2rem; align-self: start; max-height: calc(100vh - 4rem); overflow-y: auto; }
+}
+nav.toc div { margin-bottom: .8rem; }
+nav.toc strong { display: block; font-weight: 500; color: var(--ink); margin-bottom: .2rem; }
+nav.toc ol { list-style: none; margin: 0; padding: 0; }
+nav.toc li { margin: 0; }
+nav.toc a { display: flex; gap: .5rem; color: var(--ink-soft); text-decoration: none; line-height: 1.3; padding: .1rem 0; }
+nav.toc a:hover { color: var(--accent); }
+nav.toc em { font-family: var(--mono); font-size: .69rem; font-style: normal; color: var(--ink-faint); }
+
+/* Counts strip. One number per kind, hairlines from the gap. */
+.counts {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 1px; background: var(--rule); border: 1px solid var(--rule);
+  border-radius: var(--radius); overflow: hidden; margin: 1.6rem 0 2.6rem;
+}
+.counts div { background: var(--panel); padding: .55rem .8rem; }
+.counts b { display: block; font-size: 1.5rem; font-weight: 500; line-height: 1.2; font-variant-numeric: tabular-nums; }
+.counts span { font-family: var(--mono); text-transform: uppercase; font-size: .63rem; letter-spacing: .08em; color: var(--ink-faint); }
+
+/* Square ID chip. Equal width and height, never sized by its grid column. */
+.chip {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 1.9rem; height: 1.9rem; flex: 0 0 auto;
+  font-family: var(--mono); font-size: .72rem; color: var(--accent);
+  border: 1px solid var(--rule); border-radius: var(--radius); background: var(--panel);
+}
+
+/* Tables. The wrapper carries the border so the scroll edge lines up with it. */
+.tablewrap { overflow-x: auto; border: 1px solid var(--rule); border-radius: var(--radius); background: var(--panel); margin: 0 0 1rem; }
+table { border-collapse: collapse; width: 100%; font-size: .85rem; }
+th, td { text-align: left; padding: .4rem .7rem; border-bottom: 1px solid var(--rule); vertical-align: top; }
+th { font-family: var(--mono); text-transform: uppercase; font-size: .63rem; letter-spacing: .08em; color: var(--ink-faint); font-weight: 400; }
+tbody tr:last-child td { border-bottom: 0; }
+td.id { font-family: var(--mono); font-size: .76rem; white-space: nowrap; }
+td.id a { color: var(--accent); text-decoration: none; }
+td.sz { font-family: var(--mono); font-size: .72rem; color: var(--ink-faint); white-space: nowrap; }
+tr:target { background: var(--accent-soft); }
+
+/* Item list. Hairlines from the grid gap, not a border on every child. */
+.list { display: grid; gap: 1px; background: var(--rule); border: 1px solid var(--rule); border-radius: var(--radius); overflow: hidden; }
+.list > article { background: var(--panel); padding: .8rem .9rem; scroll-margin-top: 1.5rem; }
+.list > article:target { background: var(--accent-soft); }
+.list header { display: flex; gap: .7rem; align-items: center; margin-bottom: .35rem; }
+.list p { margin: 0 0 .4rem; }
+.list p:last-of-type { margin-bottom: .35rem; }
+
+/* Panel. One discrete unit the reader acts on. Never nested. */
+.panel { border: 1px solid var(--rule); border-radius: var(--radius); background: var(--panel); padding: 1.1rem 1.2rem .9rem; margin: 0 0 1rem; scroll-margin-top: 1.5rem; }
+.panel:target { border-color: var(--accent); }
+.panel > header { display: flex; gap: .7rem; align-items: center; margin-bottom: .35rem; }
+
+/* Two things compared side by side inside one panel. */
+.split { display: grid; grid-template-columns: 1fr; gap: 0 2rem; margin: .6rem 0 .9rem; }
+@media (min-width: 56rem) { .split { grid-template-columns: 1fr 1fr; } }
+.split h4 { font-family: var(--mono); text-transform: uppercase; font-size: .63rem; letter-spacing: .08em; color: var(--ink-faint); font-weight: 400; margin: 0 0 .3rem; }
+.split section { margin: 0 0 .8rem; }
+
+/* Hand-written diff for a proposed file change. Shiki does not touch these. */
+.diff pre { margin: 0; background: var(--code-bg); overflow-x: auto; font-family: var(--mono); font-size: .76rem; line-height: 1.55; padding: .6rem 0; }
+.diff pre > * { display: block; padding: 0 .75rem; white-space: pre; }
+.diff ins { text-decoration: none; background: var(--pos-soft); box-shadow: inset 2px 0 var(--pos); }
+.diff del { text-decoration: none; background: var(--neg-soft); box-shadow: inset 2px 0 var(--neg); }
+.diff pre > span { color: var(--ink-soft); }

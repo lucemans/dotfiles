@@ -60,54 +60,42 @@ that adds them anyway invents items to justify them.
 6. **Order for reading.** Execution order when the work is sequenced, worst-first when the reader triages, the system's own structure for an explainer. Group by kind only when the reader faces an unordered pile.
 7. **Link items that depend on each other.** If one requires another, say so and link it.
 
-## 3. Base stylesheet
+## 3. Stylesheet and components
 
-Start from this. `color-scheme` is not optional: without it the page ships light
-scrollbars, light form controls, and a light `light-dark()` fallback on a dark page.
+Inline `reference/document.css` verbatim. It carries the tokens, the full-width
+layout, and every component below. Do not retype it, do not trim it, and do not
+invent a parallel set of class names. Add page-specific rules after it.
 
-```css
-:root {
-  color-scheme: light dark;
-  --bg: light-dark(#fbfaf8, #14151a);
-  --panel: light-dark(#ffffff, #1b1d24);
-  --code-bg: light-dark(#f4f3f0, #1f2129);
-  --rule: light-dark(#e3e1dc, #2c2f38);
-  --ink: light-dark(#1f2024, #e6e6e4);
-  --ink-soft: light-dark(#5a5c63, #a2a5ad);
-  --ink-faint: light-dark(#8b8d94, #71747d);
-  --accent: light-dark(#2f5fd0, #86a8f7);
-  --accent-soft: light-dark(#2f5fd014, #86a8f722);
-  --pos: light-dark(#1f7a45, #5fbf87);
-  --pos-soft: light-dark(#1f7a4514, #5fbf8722);
-  --neg: light-dark(#b3261e, #f2867d);
-  --neg-soft: light-dark(#b3261e14, #f2867d22);
-  --radius: 6px;
-  --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
-  --pad: clamp(1rem, 2.5vw, 3rem);
-  --rail: 15rem;
-}
+The page skeleton it expects:
+
+```html
+<body>
+  <div class="page">
+    <nav class="toc">...</nav>   <!-- omit below 8 items; see section 2 -->
+    <main>...</main>
+  </div>
+</body>
 ```
 
-The page fills the window. There is no centered column and no per-element width class.
+| Class | Use |
+| --- | --- |
+| `.page` | The grid. Rail plus content above 64rem, one column below, full width at both |
+| `nav.toc` | Contents rail. `div` per group, `strong` for the group name, `em` for an ID |
+| `.counts` | Counts strip. One `div` per kind, `b` for the number, `span` for the label |
+| `.chip` | Square ID chip, `P1` or `F3`, in a `header` beside the item title |
+| `.tablewrap` > `table` | Any table. The wrapper owns the border and the scroll |
+| `td.id`, `td.sz`, `tr:target` | Index table: ID column, size column, jumped-to row |
+| `.list` > `article` | Many items, hairline separated, each with an `id` and a `:target` state |
+| `.panel` | One discrete unit the reader accepts or rejects. Never nested |
+| `.split` | Two things compared side by side inside one panel |
+| `.diff` with `<ins>` and `<del>` | A proposed change to a real file |
+| `.lede`, `.meta`, `.where`, `.soft`, `.ok`, `.bad` | Standfirst, uppercase metadata, a `path:line`, muted prose, pass, fail |
 
-```css
-body { padding: 2rem var(--pad); }
-
-/* Contents rail, once the document has one. The rail is the only fixed width. */
-.layout { display: grid; gap: 2.5rem; align-items: start; }
-@media (min-width: 64rem) {
-  /* minmax(0, 1fr), not 1fr: a min-content floor lets a wide table push the
-     column past the viewport instead of scrolling inside its own container. */
-  .layout { grid-template-columns: var(--rail) minmax(0, 1fr); }
-  .layout > nav { position: sticky; top: 2rem; max-height: calc(100vh - 4rem); overflow-y: auto; }
-}
-```
-
-8. **Full width, always.** No `max-width` on the body, no `margin-inline: auto`, no centered column. Content runs from `--pad` on the left to `--pad` on the right, whatever the window is.
+8. **Full width, always.** No `max-width`, no `margin-inline: auto`, no centered column. Content runs from `--pad` on the left to `--pad` on the right, whatever the window is. `--rail` is the only fixed measurement on the page.
 9. **One left edge, one right edge.** Prose, tables, diagrams, and code blocks all begin and end at the same two positions. Varying the width per element is what makes a page look assembled out of parts.
 10. **Keep paragraphs short instead of narrow.** Three or four lines, then a heading, a table, or a list. A long line is only hard to read when the block under it is also tall.
-11. **`overflow-x: auto` is a fallback, not a layout.** A 9-column table fits at 1600px, so give it the room. Keep the container so a 900px window degrades instead of breaking, and the body never scrolls sideways.
-12. **Contents go in the sticky rail, not a centered nav.** Past 8 items, wrap the page in `.layout` and put `nav` first. Below 64rem the rail collapses and the contents list runs inline at the top.
+11. **`overflow-x: auto` is a fallback, not a layout.** A 9-column table fits at 1600px, so give it the room. `.tablewrap` keeps the container so a 900px window degrades instead of breaking, and the body never scrolls sideways.
+12. **Use the components, or the page comes out flat.** A page with no `nav.toc`, no `.chip`, no `.panel`, and an unbordered table is a wall of text with a stylesheet attached. Reach for the class before writing a `div`.
 
 ## 4. Color
 
@@ -126,13 +114,13 @@ Applies to plan, review, status, explainer, and comparison. Not to a mockup.
 20. **Never invent a metric, score, percentage, progress bar, or badge the work did not produce.** A made-up 87% is worse than no number.
 21. **Charcoal on off-white, not black on white.** System stack, 16px to 18px, line height 1.6 or more. Not Inter, Roboto, or Open Sans by default.
 22. **Every path, symbol, flag, and command in `code`.** `requireSession()`, `src/auth/session.ts:41`, `--dry-run`. The reader scans a technical page for exactly these.
-23. **Metadata is not prose.** Labels, table headers, chips, and counters go monospace, uppercase, 10px to 14px, letter-spacing 0.05em to 0.1em. One uppercase micro-label per screen, or none of them signal anything.
-24. **Size a chip with equal `width` and `height`.** Width from a grid column plus height from padding is never square, and it reads as an accident.
+23. **Metadata is not prose.** `.meta` for a standfirst line, `.where` for a `path:line`, `th` for a column head. Ration the uppercase: one micro-label per screen, or none of them signal anything.
+24. **A chip is square.** `.chip` fixes `width` and `height` at 1.9rem. Width from a grid column plus height from padding is never square, and it reads as an accident.
 25. **Alternate density on purpose.** Tables and indexes go dense: small type, tight rows, hairline rules. Prose breathes. Table density applied to paragraphs is what makes a page a wall.
-26. **Draw hairlines with `display: grid; gap: 1px` over a background color**, not a border on every child.
-27. **Panel a unit the reader acts on**, such as one proposal to accept or reject. Not every paragraph. A page of cards has no hierarchy, and a panel never nests in a panel.
-28. **Table for repeated fields, prose for everything else.** A one-column table is a list.
-29. **One large numeral only when it answers a question the reader already has**, such as 12 open items. Never for rhythm.
+26. **Hairlines come from `gap: 1px` over a background color**, which is what `.counts` and `.list` do. Never a border on every child.
+27. **`.panel` marks a unit the reader accepts or rejects.** Not every paragraph. A page of cards has no hierarchy, and a panel never nests in a panel. Many small items go in `.list` instead.
+28. **Table for repeated fields, prose for everything else.** A one-column table is a list. Every table sits in `.tablewrap`.
+29. **One large numeral only when it answers a question the reader already has.** That is what `.counts` is for. Never enlarge a number for rhythm.
 30. **Specific element before `div`.** `<del>` and `<ins>` for diff lines, `<samp>` for output, `<kbd>` for keys, `<code>` for source and paths, `<dl>` for label and value pairs, `<time>` for dates, `<article>` for an item the reader acts on, `<nav>` for the contents list.
 31. **Style `:target`.** The item the reader jumped to must be marked when they land on it.
 32. **Heading levels in order.** Never skip a level to get a size.
@@ -190,9 +178,10 @@ Do not paste the mockup in as the implementation.
 
 ## 8. Reference files
 
-Read these when the page needs them. Do not reinvent their contents per document.
+Do not reinvent their contents per document.
 
-- **Code blocks, diffs, terminals, tabbed alternatives:** `reference/snippets.md`, which inlines `reference/code.css` and `reference/code.js` verbatim.
+- **Always:** `reference/document.css`, inlined verbatim. Tokens, layout, and every component in section 3.
+- **Code blocks, diffs, terminals, tabbed alternatives:** `reference/snippets.md`, which inlines `reference/code.css` and `reference/code.js` verbatim. `code.css` reads the tokens from `document.css`, so it goes second.
 - **Charts, icons, inline scripts, pinned imports:** `reference/interactive.md`.
 
 One file, no external stylesheet, no web font. Inline the CSS, embed images as data URIs
@@ -203,6 +192,9 @@ is a bug: it changes how an old revision renders later.
 ## Before you deliver
 
 - [ ] Shape named, and the spine matches it
+- [ ] `reference/document.css` inlined verbatim, and the page uses its classes rather than new ones
+- [ ] Past 8 items: `nav.toc` present in `.page`, sticky, sectioned in document order
+- [ ] Items carry a `.chip`, an `id`, and a visible `:target` state
 - [ ] No em-dash anywhere in the file
 - [ ] `color-scheme: light dark` present; both themes checked and readable
 - [ ] Every hue means one thing, and the meaning is named
