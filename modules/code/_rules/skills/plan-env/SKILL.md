@@ -1,260 +1,221 @@
 ---
 name: plan-env
-description: Produce a self-contained HTML page for a human to open on `plan.env.md`. Use for a plan, spec, write-up, findings, summary, report, review, comparison, mockup, or design sketch.
+description: Build a self-contained HTML page and host it on `plan.env.md` for a human to open. Use for a plan, spec, review, status update, findings, explainer, architecture or feature overview, comparison, research write-up, or UI mockup. Also use to read a plan.env.md link the user pastes.
 ---
 
 # Plan Env
 
-Communication with the user can involve an HTML page: a document about work, or a mockup exploring a design. Use the available plan-env MCP tools to upload and read it.
+You write one HTML file, push it, and give the user the URL. The page is read by a
+human in a browser, not shipped as product code.
 
-## Scope
+**Push.** `plan_env_plan_push` with complete self-contained HTML, under 512 KB, and a
+project-prefixed slug matching `[a-z0-9-]{1,64}`: `myproject-auth-refactor`, not
+`auth-refactor`. Slugs share one global namespace. Reuse a slug to add a revision.
+Give the user the returned URL. Never try to publish beyond this.
 
-- This skill covers two kinds of page, delivered the same way.
-- A document communicates about work: a plan, spec, write-up, findings, summary, report, review, or comparison. Every section of this skill applies to it.
-- A mockup explores product UI: a design variation, a page or component sketch, a brainstorm made to be looked at. The Mockups section says which rules bind it; the document design rules do not.
-- Neither kind is shipped code. Product code in a repository follows the repository's design rules and the `web-design` skill.
-- Prefer terminal output for a short answer. Produce a page when the content is long, structured, visual, or read more than one time.
+**Read.** `plan_env_plan_read` takes a URL or slug. `.../rev/2` reads that pinned
+revision. `plan_env_plan_info` returns metadata and the revision index.
 
-## Upload to plan.env.md
+**When not to.** A short answer belongs in the terminal. Build a page when the content
+is long, structured, visual, or read more than once.
 
-Use `plan_env_plan_push` to upload complete self-contained HTML. Choose a
-project-prefixed subject slug: `[a-z0-9-]{1,64}`, such as
-`myproject-auth-refactor`, not `auth-refactor`. Slugs share one namespace.
-Keep the HTML under 512 KB. Reuse the slug to add a revision. Give the user the
-returned URL. Do not try to publish the document.
+## 1. Pick the shape first
 
-## Read a Plan Link
+Name the shape before you write markup. The shape decides the spine, and a wrong shape
+is why a page fights its own content.
 
-Use `plan_env_plan_read` for a document URL or slug, for example
-`https://plan.env.md/<id>/<slug>`. A revision URL ends with `/rev/<n>`, for
-example `https://plan.env.md/<id>/<slug>/rev/2`; pass it to
-`plan_env_plan_read` to read that pinned revision. Use `plan_env_plan_info` for
-the document metadata and revision index.
+| The ask sounds like | Shape | Reader's job | Spine | Skip |
+| --- | --- | --- | --- | --- |
+| "plan this", "spec this", "how should we build X" | **plan** | accept, reject, sequence | proposals in execution order | fake findings |
+| "review this PR", "what's wrong with X", "audit this" | **review** | fix or dismiss each finding | findings, worst first | proposals it did not ask for |
+| "where is the branch", "what next", "catch me up" | **status** | know where things stand, pick the next move | timeline or state, then next actions | item IDs, index, counts strip |
+| "explain X", "visual overview of feature X", "how does X work" | **explainer** | build a mental model | the system's own structure | anything that reads as a task list |
+| "A or B", "which approach" | **comparison** | choose one | one wide table, then the recommendation | separate sections per option |
+| "sketch this UI", "mock this screen" | **mockup** | look at it and react | the design itself | every design rule in section 5 |
 
-## Mockups
+Two rules that survive every shape:
 
-A mockup is a sketch, not a specification and not the implementation. Optimize for how fast the idea becomes visible.
+1. **Write the reader's job in one sentence to yourself before any markup.** "Decide which of these twenty proposals to accept." "Understand why the build broke." Every layout choice then answers to that sentence.
+2. **If the job is to choose, the choice is countable on the first screen.** A page that buries the decision under its own reasoning failed, however good the reasoning is.
 
-- The delivery rules still bind: one self-contained file, inline CSS, external requests only as pinned esm.sh imports, under 512KB, a project-prefixed slug, the URL given to the user.
-- The document design rules do not bind. A mockup may use gradients, display type, a hero, marketing voice, motion, several accents, or a single theme: whatever the design it explores calls for. The list in Not For Documents is available here.
-- Follow the `web-design` skill's conventions where they help. Break them deliberately when the exploration is about breaking them.
-- State the intent in an HTML comment at the top of the file: the variation's name and one line on what it tries. Do not render this into the design.
-- Iterate at one slug; the revisions are the history of the exploration. Simultaneous variations get their own slugs, `myproject-home-v1`, `myproject-home-v2`, so each can be revised independently.
-- Use the product's real copy when it exists. Invented copy and data are fine in a sketch; keep them plausible rather than `lorem ipsum`, so the design is judged with honest content.
-- When a direction wins, write the product code fresh in the repository under its rules. Do not paste the mockup in as the implementation.
+Mixed asks happen. "Review this PR and tell me what to do next" is a review whose last
+section is a status. Pick the dominant shape, do not run both spines.
 
-## Before You Write
+## 2. Scale the machinery to the content
 
-State the reader's job in one sentence, to yourself, before you write any markup. "Decide which of these twenty proposals to accept." "Understand why the build broke." Every layout decision then serves that job.
+Turn features on at these thresholds. Below a threshold they are noise, and a model
+that adds them anyway invents items to justify them.
 
-If the reader's job is to choose, the document must make the choices countable and comparable on the first screen. A document that buries the decision under its own reasoning has failed, however well written the reasoning is.
-
-## A Document Is Not a Landing Page
-
-- Do not write a hero, a call to action, a feature grid, or a pricing block.
-- Do not write marketing voice. Do not use words such as "seamless", "powerful", "unleash", "effortless", or "game-changing".
-- Do not use emoji.
-- Do not invent a metric, a score, a progress bar, or a status badge that the work did not produce.
-- The reader wants the content. The design serves the reading, not the impression.
-
-## Hard Rules
-
-- **No em-dash.** Do not use an em-dash or `&mdash;` anywhere: headings, body, tables, code, or the title. Use a comma, a colon, a full stop, or a rewritten sentence. This is the clearest sign that a machine wrote the page.
-- **One accent color** for interaction and structure, plus at most one semantic pair where the difference carries meaning. Diff additions and removals are that pair. Do not add a third pair. Syntax token colors inside a code snippet come from the pinned Shiki themes in Code Snippets and sit outside this rule.
-- **One radius system.** Choose one corner radius and use it for every panel, chip, code block, and table. Do not mix sharp and round.
-- **One type scale.** Choose the sizes one time and reuse them. Do not size a heading by eye.
-- **Light and dark.** Define both with `prefers-color-scheme`. Do not ship a page that is unreadable in one of them.
-- **One file, pinned imports.** No external stylesheet or font. Inline the CSS. Embed an image as a data URI or leave it out. A document with interactive data or highlighted code may import scripts from `https://esm.sh/` with exact pinned versions; the rules are in Interactive Content and Code Snippets.
-
-## Typography
-
-- Set the body text between 16px and 18px with a line height of at least 1.6.
-- Hold the prose measure between 85 and 100 characters. Never exceed 110. Below 70 the page feels cramped and the side margins start to dominate, which readers notice and dislike.
-- The measure constrains paragraphs, not the page. Give tables, charts, code blocks, and diffs a wider breakout column: center the prose column and let wide elements span `width: min(1100px, 100%)` of the viewport, each scrolling inside its own container when narrower than its content.
-- Use charcoal on off-white. Do not use pure black on pure white.
-- Use a system font stack for body text. If you choose a specific face, choose it with purpose. Do not choose Inter, Roboto, or Open Sans by default.
-- Use one monospace face for code, paths, identifiers, and commands.
-- Set every file path, symbol, flag, and command in `code`. The reader scans a technical document for these.
-
-## Micro-Typography
-
-Metadata is not prose and should not look like prose.
-
-- Set labels, table headers, chips, and counters in the monospace face, uppercase, between 10px and 14px, with letter-spacing between 0.05em and 0.1em.
-- Ration them. No more than one uppercase micro-label per screen of content. If every block has one, none of them read as a signal.
-- Size a chip by setting equal `width` and `height`. A chip whose width comes from a grid column and whose height comes from padding is never square, and it looks like an accident.
-
-## Color and Surface
-
-- Use flat surfaces. One page background, one panel background, one 1px border color.
-- Do not use a gradient, glassmorphism, a heavy shadow, a glow, or a neon color.
-- Use color to carry meaning only. If two elements have different colors, the difference must mean something.
-- Keep text contrast at WCAG AA or better in both themes. Do not put low-contrast gray on a colored panel.
-
-## Density and Texture
-
-Alternate density on purpose. This is the one thing that stops a document reading as an undifferentiated wall.
-
-- A reference table, an index, or a status list should be dense: small type, tight rows, hairline rules.
-- Prose should breathe. Do not apply table density to paragraphs.
-- Draw hairline dividers with `display: grid; gap: 1px` over a background color, rather than putting a border on every child.
-- Use a full-width `<hr>` only to separate genuine units of work, never as decoration.
-- Use one large numeral only where it answers a question the reader already has, such as a count of open items. Do not enlarge a number for rhythm.
-
-## Semantic HTML
-
-The tag is part of the meaning. Reach for the specific element before reaching for a `div` and a class.
-
-- `<del>` and `<ins>` for removed and added lines in a diff.
-- `<samp>` for program output, `<kbd>` for keys the user presses, `<code>` for source and paths.
-- `<dl>` for label and value pairs. `<time>` for dates. `<data>` for a value with a machine-readable form.
-- `<article>` for a self-contained item the reader acts on. `<nav>` for the contents list.
-- Give every item an `id`, and style `:target` so the item the reader jumped to is visibly marked when they arrive.
-
-## Structure
-
-- Add a contents list when the document is longer than two screens. Link each entry. Past roughly eight items, make it a sidebar: sticky beside the prose on wide screens, sectioned to match the document's own order, each entry showing the item ID and a short name.
-- Give every item the reader acts on a short stable ID shown in a chip, one letter per kind plus a number: `D1`, `P2`, `S3`. Derive the letters from the kinds this document actually has, and name each kind where it first appears. A plan might use D for a decision, P for a proposal, N for no action. A review might use S for a strength, R for a regression, F for a finding to fix. A status report might use W for what advanced, B for what is blocked. These are examples, not the list.
-- Use the ID as the anchor id and in every cross-reference, and keep it stable across revisions, so the user can name an item in conversation.
-- Order and group items the way the document reads best. Group by kind when the reader triages an unordered set. Keep related items together when they explain each other, and use chronological or execution order when the content has one. The chip already names each item's kind, so the grouping is free to serve the reading.
-- Open with a counts strip when the totals answer the reader's first question: one number per kind, the kinds that demand attention first.
-- When a document holds many items, open with an index that names every item, its kind, and its size. The reader must be able to answer "what is all this and where do I start" without scrolling through the detail.
-- Classify every item by what the reader must do with it, not by which file it touches. An error to fix, a contradiction to resolve, a proposal to accept or reject, and an observation needing no action are four different jobs, and the reader cannot triage until they are told which is which. The set of jobs follows from the document: a plan carries proposals to accept, a review carries strengths to keep and regressions to fix, a status report carries progress to confirm and blockers to clear.
-- Link between items that depend on each other. If one item requires another, say so and link it.
-- Use a panel to mark a discrete unit, such as one proposal the reader accepts or rejects. Do not put every paragraph in a panel. A page of cards has no hierarchy.
-- Do not nest a panel inside a panel.
-- Use a table when the content has repeated fields. Use prose when it does not. Do not build a table with one column.
-- Put a table, a wide code block, and a diagram in a container with `overflow-x: auto`. The page body must never scroll sideways.
-- Keep the heading levels in order. Do not skip a level to get a different size.
-- Do not hide content behind a collapsible unless the reader has asked for a shorter page. Default to everything visible.
-
-## Proposed File Changes
-
-- Show a proposed change to a file as a diff, with removed and added lines marked, not as a block of new text that leaves the reader to work out what it replaces.
-- Quote the removed lines exactly from the current file. If you have not read the current file, say so rather than reconstructing it from memory.
-- Head each diff with the file path and the line range, and say whether it adds, replaces, or deletes.
-- Show one or two unchanged lines around the change when they tell the reader where the edit lands.
-
-## Code Snippets
-
-Every code block longer than one line sits in one snippet layout. Do not write snippet styles or a highlight runtime per document: inline `reference/code.css` into the stylesheet and `reference/code.js` as the last module script, both verbatim. They assume the document defines the standard tokens (`--panel`, `--code-bg`, `--rule`, `--radius`, `--mono`, `--ink-soft`, `--ink-faint`, `--accent`, `--accent-soft`, `--pos`, `--pos-soft`, `--neg`, `--neg-soft`).
-
-- Wrap the block in a `figure` with class `snippet`: a `figcaption` header row, then the `pre`.
-- The header names the source. Quoted code gets the file path and line range. New or illustrative code gets a short title. The language tag sits at the right end. The field order never changes.
-- Content Fidelity applies inside a snippet: quote exactly, escape exactly, elide nothing.
-
-```
-<figure class="snippet">
-  <figcaption><code>src/server.ts:12-24</code><span class="lang">typescript</span></figcaption>
-  <pre><code class="language-typescript">...</code></pre>
-</figure>
-```
-
-- Highlighting runs at read time with Shiki, pinned inside `reference/code.js`. Supported languages: `typescript`, `javascript`, `rust`, `nix`, `bash`, `json`, `css`, `solidity`, and `ansi`. Any other language renders plain; do not add grammars per document.
-- The page must read fully with scripts disabled. Highlighting decorates text that is already present; never build a snippet whose content arrives by script.
-
-Vary a snippet only through these markers, written as a comment in the language's own comment syntax on the affected line. The runtime strips the marker and applies the effect. With scripts disabled the marker text stays visible, which is acceptable; an invented marker is not.
-
-| Effect | Marker |
+| Content size | Turn on |
 | --- | --- |
-| Emphasize a line | `// [!code highlight]` |
-| Dim everything except the marked lines | `// [!code focus]` |
-| Added and removed lines in illustrative code | `// [!code ++]` and `// [!code --]` |
-| Emphasize one word | `// [!code word:port]` |
-| Mark the failing or suspect line | `// [!code error]`, `// [!code warning]` |
+| under ~6 items, under 2 screens | headings and prose only. No IDs, no index, no contents list |
+| 6 or more items | a short ID per item, used as the anchor `id` and in every cross-reference |
+| 8 or more items | contents list, sticky sidebar on wide screens, sections in document order |
+| 12 or more items | an index table at the top: ID, kind, one line each |
+| counts answer the reader's first question | a counts strip, one number per kind, the kind that demands attention first |
 
-- Line numbers: add class `numbered` to the figure, only when prose refers to line positions.
-- Program output with color: `language-ansi`, preserving the raw escape codes.
-- A terminal exchange: class `is-terminal` on the figure. Commands are `code` lines inside one `pre` with class `cmds`; output follows as its own `pre` holding `samp` or `language-ansi` content. The `$` prompt comes from CSS and is never part of the text, so copied commands stay runnable.
-- Alternatives shown once (package managers, platforms): class `is-group` on the figure, hidden radio inputs first, then the `figcaption` with one `label` per alternative in its `.tabs` span, then one `section` per alternative in the same order. The tabs are CSS-only and work without scripts. Up to four alternatives.
-- A proposed change to a real file keeps the diff block from Proposed File Changes. Notation diff is for illustration, not for edits the reader applies.
+3. **IDs are free-form and derived from the page.** One letter per kind plus a number. A plan might use `P1` proposal, `D2` decision, `N3` no action. A review might use `F1` finding, `R2` regression. Name each kind where it first appears. Do not force a page into a vocabulary it does not have, and do not invent a kind to fill a column.
+4. **Keep an ID stable across revisions** so the user can say "reject P4" in chat.
+5. **Classify an item by what the reader must do with it**, not by which file it touches. An error to fix, a contradiction to resolve, and an observation needing no action are three different jobs, and the reader cannot triage until told which is which. An explainer has no jobs, so it has no kinds. Do not manufacture them.
+6. **Order for reading.** Execution order when the work is sequenced, worst-first when the reader triages, the system's own structure for an explainer. Group by kind only when the reader faces an unordered pile.
+7. **Link items that depend on each other.** If one requires another, say so and link it.
 
-## Content Fidelity
+## 3. Base stylesheet
 
-- Quote the source exactly. Do not paraphrase a line and present it as a quotation.
-- Cite `path:line` for every claim about a file.
-- Give the complete content. Do not write "and so on", "for brevity", or `// ...` in place of the material.
-- State what is not done, not verified, or not applied. Put it in the document, not only in the chat message.
+Start from this. `color-scheme` is not optional: without it the page ships light
+scrollbars, light form controls, and a light `light-dark()` fallback on a dark page.
 
-## Interactive Content
-
-The document is served in a sandbox with an opaque origin: scripts run, but
-cookies and credentialed requests do not exist. Within that, interactivity is
-welcome when it serves the reading, never as decoration.
-
-- Small inline vanilla JavaScript is fine: sorting a table, filtering a list,
-  toggling between two views of the same data. No frameworks; Solid and React
-  need a build step and do not belong in a document.
-- Charts use TanStack Charts through esm.sh with an exact pinned version and
-  its framework-free host. The pattern:
-
-```
-<div id="chart"><p>Interactive chart. The data is in the table below.</p></div>
-<script type="module">
-import { defineChart, lineY, barY, mountChart }
-  from "https://esm.sh/@tanstack/charts@0.11.2";
-import { scaleLinear } from "https://esm.sh/@tanstack/charts@0.11.2/scales/linear";
-import { scaleBand } from "https://esm.sh/@tanstack/charts@0.11.2/scales/band";
-
-const element = document.querySelector("#chart");
-element.replaceChildren();
-mountChart(element, { definition, height: 300, ariaLabel: "..." });
-</script>
+```css
+:root {
+  color-scheme: light dark;
+  --bg: light-dark(#fbfaf8, #14151a);
+  --panel: light-dark(#ffffff, #1b1d24);
+  --code-bg: light-dark(#f4f3f0, #1f2129);
+  --rule: light-dark(#e3e1dc, #2c2f38);
+  --ink: light-dark(#1f2024, #e6e6e4);
+  --ink-soft: light-dark(#5a5c63, #a2a5ad);
+  --ink-faint: light-dark(#8b8d94, #71747d);
+  --accent: light-dark(#2f5fd0, #86a8f7);
+  --accent-soft: light-dark(#2f5fd014, #86a8f722);
+  --pos: light-dark(#1f7a45, #5fbf87);
+  --pos-soft: light-dark(#1f7a4514, #5fbf8722);
+  --neg: light-dark(#b3261e, #f2867d);
+  --neg-soft: light-dark(#b3261e14, #f2867d22);
+  --radius: 6px;
+  --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+  --measure: 78ch;
+  --wide: 1400px;
+}
 ```
 
-- Pick the chart series color per theme with `matchMedia("(prefers-color-scheme: dark)")`
-  and keep it clearly readable against both surfaces; one hue for one series,
-  a fixed assignment per series for more, never a rainbow.
-- Every chart also ships its data as a table in the document. The page must
-  stay fully readable when esm.sh is unreachable or scripts are disabled: the
-  chart container keeps fallback text until the mount succeeds.
-- Icons are inlined at write time, not loaded at runtime: fetch the SVG from
-  `https://unpkg.com/lucide-static@1.31.0/icons/<name>.svg`, paste it inline,
-  size it to the text beside it (`width="1em" height="1em"`), and let it
-  inherit color through `currentColor`. Use them sparingly: a label beats an
-  icon that needs explaining.
-- Pin every imported version exactly. Revisions are permanent; an unpinned
-  import changes how old revisions render later and is a bug.
+Three column widths, one grid. Body content sits in the prose column; anything wide
+opts out by class, up to the full viewport.
 
-## Motion and Images
+```css
+body {
+  display: grid;
+  grid-template-columns:
+    [full-start] minmax(1rem, 1fr)
+    [wide-start] minmax(0, calc((var(--wide) - var(--measure)) / 2))
+    [text-start] min(var(--measure), 100%) [text-end]
+    minmax(0, calc((var(--wide) - var(--measure)) / 2)) [wide-end]
+    minmax(1rem, 1fr) [full-end];
+}
+body > * { grid-column: text; }
+.wide { grid-column: wide; }
+.full { grid-column: full; }
+```
 
-- Prefer no motion. A document does not need a scroll animation.
-- If motion earns its place, animate `transform` and `opacity` only, keep it under 200ms, and respect `prefers-reduced-motion`.
-- Do not hand-roll SVG path data and do not load an icon library at runtime. When an icon earns its place, inline one from Lucide as described in Interactive Content; a well-set heading often does the work instead.
-- Do not draw a fake screenshot with `div` elements.
+8. **Prose stays between 70 and 100 characters.** Below 70 the margins dominate and readers dislike it. Above 100 the eye loses the line start.
+9. **Everything else is free to be wide.** A comparison table, an architecture diagram, a dense reference grid, a wide diff, and a dashboard-style overview all belong in `.wide` or `.full`. The measure constrains paragraphs, not the page.
+10. **A full-width page is correct when the content is not prose.** An explainer that is mostly diagram, or a comparison that is one large table, may drop the prose column entirely.
+11. **Every table, wide code block, and diagram scrolls inside its own `overflow-x: auto` container.** The body scrolls one direction only, at narrow width too.
 
-## Not For Documents
+## 4. Color
 
-These belong to landing-page and poster work. They cost legibility here.
+12. **Every hue binds to one stated meaning, and that meaning keeps that hue everywhere on the page.** Severity levels, categories in an overview, services in an architecture map, and series in a chart are all legitimate reasons to carry five hues. Two colors that mean nothing different are a bug.
+13. **Name the binding where the reader first meets it.** A legend, a chip, or a sentence. An unexplained color is decoration.
+14. **Both themes readable, AA or better.** Check the dark side before delivering. Do not put low-contrast gray on a colored panel.
+15. **No gradient, glassmorphism, glow, or neon in a document.** They separate nothing and cost legibility. Flat surfaces: one page background, one panel background, one 1px rule.
+16. **One radius, one type scale.** Pick the corner radius once and use it on every panel, chip, code block, and table. Pick the sizes once. Do not size a heading by eye.
 
-- Scanlines, halftone, dithering, and noise overlays.
-- ASCII framing, directional syntax such as `>>>` or `///`, and invented technical strings such as unit numbers.
-- Zero border-radius as an aesthetic commitment. Square corners are a style choice, not a readability rule.
-- Oversized display type. A document heading is a signpost, not a statement.
-- Deliberate layout variety between sections. A landing page varies its sections to hold attention. A document repeats one structure so the reader learns it once and stops having to look.
+## 5. Document design
 
-## Before You Deliver
+Applies to plan, review, status, explainer, and comparison. Not to a mockup.
 
-This checklist is for documents. A mockup checks only the delivery rules in Mockups: single file, pinned imports only, project-prefixed slug, intent comment at the top, and the user has the URL.
+17. **No em-dash anywhere.** Not in headings, body, tables, code, or the title. Not `&mdash;`. Use a comma, a colon, a full stop, or a rewritten sentence. This is the loudest sign a machine wrote the page.
+18. **Not a landing page.** No hero, no call to action, no feature grid, no pricing block, no marketing voice, no emoji. Do not write "seamless", "powerful", "unleash", "effortless", "game-changing".
+19. **Never invent a metric, score, percentage, progress bar, or status badge the work did not produce.** A confidence number you made up is worse than no number.
+20. **Charcoal on off-white, not black on white.** System font stack for body, 16px to 18px, line height 1.6 or more. If you pick a specific face, pick it for a reason. Not Inter, Roboto, or Open Sans by default.
+21. **Set every path, symbol, flag, and command in `code`.** The reader scans a technical page for exactly these.
+22. **Metadata is not prose.** Labels, table headers, chips, and counters go in the monospace face, uppercase, 10px to 14px, letter-spacing 0.05em to 0.1em. Ration them: more than one uppercase micro-label per screen and none of them signal anything.
+23. **Size a chip with equal `width` and `height`.** A chip whose width comes from a grid column and whose height comes from padding is never square and reads as an accident.
+24. **Alternate density on purpose.** A reference table, an index, or a status list is dense: small type, tight rows, hairline rules. Prose breathes. Applying table density to paragraphs is what makes a page a wall.
+25. **Draw hairlines with `display: grid; gap: 1px` over a background color**, not a border on every child.
+26. **Use a panel for a discrete unit the reader acts on**, such as one proposal to accept. Do not panel every paragraph. A page of cards has no hierarchy. Do not nest a panel in a panel.
+27. **Use a table when the content has repeated fields, prose when it does not.** A one-column table is a list.
+28. **One large numeral only where it answers a question the reader already has.** Do not enlarge a number for rhythm.
+29. **Reach for the specific element before a `div`.** `<del>` and `<ins>` for diff lines, `<samp>` for program output, `<kbd>` for keys, `<code>` for source and paths, `<dl>` for label and value pairs, `<time>` for dates, `<article>` for a self-contained item the reader acts on, `<nav>` for the contents list.
+30. **Style `:target`** so an item the reader jumped to is marked when they arrive.
+31. **Heading levels in order.** Do not skip a level to get a different size.
+32. **Everything visible by default.** No collapsible unless the user asked for a shorter page. A full-width `<hr>` separates real units of work, never decorates.
+33. **Prefer no motion.** If it earns its place: `transform` and `opacity` only, under 200ms, respect `prefers-reduced-motion`.
+34. **Do not draw a fake screenshot out of `div` elements**, and do not hand-roll SVG path data.
 
+Belongs to poster work, costs legibility here: scanlines, halftone, dithering, noise
+overlays, ASCII framing, `>>>` and `///` dividers, invented technical strings, oversized
+display type, and deliberate layout variety between sections. A landing page varies its
+sections to hold attention. A document repeats one structure so the reader learns it
+once and stops looking.
+
+## 6. Content fidelity
+
+35. **Quote the source exactly.** Do not paraphrase a line and present it as a quotation.
+36. **Cite `path:line` for every claim about a file.**
+37. **Give the complete content.** No "and so on", no "for brevity", no `// ...` standing in for the material.
+38. **State what is not done, not verified, or not applied**, in the page, not only in the chat message.
+39. **Show a proposed file change as a diff**, never as a block of new text that leaves the reader to work out what it replaced. Head it with the path, the line range, and whether it adds, replaces, or deletes. Quote removed lines exactly from the current file. If you have not read that file, say so instead of reconstructing it. Include one or two unchanged lines when they locate the edit.
+
+## 7. Per-shape notes
+
+**plan.** Proposals in execution order. Each carries what changes, why, and what it costs.
+Mark what you are not proposing and why, so the reader knows the space was covered.
+Open with the decision the reader owes you.
+
+**review.** Findings worst first, severity bound to a hue per rule 12. Each finding: the
+location as `path:line`, what breaks, and the concrete failure. Separate "must fix" from
+"worth considering" visibly. Say what you did not review.
+
+**status.** Narrative, not a queue. Where the branch is, what landed, what is in flight,
+what blocks. End with next actions as a short ordered list, each one a thing the reader
+can start today. No IDs, no index, no counts strip. If the honest answer is three
+sentences, say so in the terminal and skip the page.
+
+**explainer.** Follow the system's own structure. Lead with the shape of the thing, a
+diagram or a wide table, then the parts. Name every real identifier as `code` so the
+reader can grep. No task language, no recommendations, unless asked. Full-width is
+usually right here.
+
+**comparison.** One wide table with options as columns and criteria as rows, the criteria
+ordered by how much they matter. Fill every cell. Then a short recommendation naming
+which criterion decided it.
+
+**mockup.** A sketch, not a spec and not the implementation. Sections 1, 3 (the
+`color-scheme` line), and the delivery rules bind. Sections 4, 5, and 6 do not: gradients,
+display type, a hero, marketing voice, motion, several accents, and a single theme are
+all available if the design calls for them. State the variation's name and what it tries
+in an HTML comment at the top, never rendered. Use the product's real copy where it
+exists; invented copy is fine if plausible, `lorem ipsum` is not. Iterate at one slug so
+revisions are the history; give simultaneous variations their own slugs
+(`myproject-home-v1`, `myproject-home-v2`). Follow the `web-design` skill where it helps.
+When a direction wins, write the product code fresh in the repository under its rules.
+Do not paste the mockup in as the implementation.
+
+## 8. Reference files
+
+Read these when the page needs them. Do not reinvent their contents per document.
+
+- **Code blocks, diffs, terminals, tabbed alternatives:** `reference/snippets.md`, which inlines `reference/code.css` and `reference/code.js` verbatim.
+- **Charts, icons, inline scripts, pinned imports:** `reference/interactive.md`.
+
+One file, no external stylesheet, no web font. Inline the CSS, embed images as data URIs
+or leave them out. The only permitted external requests are exactly pinned `https://esm.sh/`
+imports as described in those two files. Revisions are permanent, so an unpinned import
+is a bug: it changes how an old revision renders later.
+
+## Before you deliver
+
+- [ ] Shape named, and the spine matches it
 - [ ] No em-dash anywhere in the file
-- [ ] One accent color, at most one semantic pair, one radius, one type scale
-- [ ] Light and dark both defined and both readable
-- [ ] Single file; the only external requests are pinned esm.sh imports for interactive data and code highlighting
-- [ ] Every chart has its data in a table as well, and survives scripts failing to load
-- [ ] Prose measure between 85 and 100 characters, never above 110; wide elements break out to their own wider column
-- [ ] Chips are square, with equal width and height
-- [ ] Every item has an `id`, and `:target` is styled
-- [ ] An index names every item, its kind, and its size
-- [ ] Tables and wide code blocks scroll inside their own container
-- [ ] The body scrolls in one direction only, at narrow width as well
-- [ ] Proposed file changes are shown as diffs with exact removed lines
-- [ ] Every code snippet sits in the snippet layout with its source named in the header
-- [ ] reference/code.css and reference/code.js are inlined verbatim, not paraphrased
-- [ ] Snippet variation uses only the notation markers listed in Code Snippets
-- [ ] Items carry stable kind-prefixed IDs, with the kinds derived from this document and named where they first appear
-- [ ] Past eight items the contents list is a sidebar whose sections match the document's own order
-- [ ] Every file claim cites `path:line`
+- [ ] `color-scheme: light dark` present; both themes checked and readable
+- [ ] Every hue means one thing, and the meaning is named
+- [ ] Prose 70 to 100 characters; wide content in `.wide` or `.full`; body scrolls one direction at every width
+- [ ] Machinery matches the size: no index, IDs, or counts strip below their thresholds
+- [ ] Every file claim cites `path:line`; file changes are diffs with exact removed lines
+- [ ] Nothing truncated, hidden, or placeholdered; what was not done is stated in the page
 - [ ] No emoji, no marketing voice, no invented metric
-- [ ] Nothing truncated, hidden, or replaced with a placeholder
+- [ ] Single file; external requests are pinned esm.sh imports only
 - [ ] The user has the plan.env.md URL
+
+Mockups check only: single file, pinned imports, `color-scheme`, project-prefixed slug,
+intent comment at the top, user has the URL.
