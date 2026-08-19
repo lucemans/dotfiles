@@ -3,7 +3,7 @@
 Every code block longer than one line uses this layout. Do not write snippet styles or a
 highlight runtime per document. Inline `reference/code.css` into the stylesheet and
 `reference/code.js` as the last module script, both verbatim. They need the tokens from
-the base stylesheet in SKILL.md section 3: `--panel`, `--code-bg`, `--rule`, `--radius`,
+`reference/document.css`, so it goes after it: `--panel`, `--code-bg`, `--rule`, `--radius`,
 `--mono`, `--ink-soft`, `--ink-faint`, `--accent`, `--accent-soft`, `--pos`, `--pos-soft`,
 `--neg`, `--neg-soft`.
 
@@ -47,7 +47,7 @@ is not.
 | Mark the failing or suspect line | `// [!code error]`, `// [!code warning]` |
 
 Notation diff is for illustration. A proposed change to a real file uses the diff rules
-in SKILL.md rule 40 instead.
+in SKILL.md rule 41 instead.
 
 ## Variants
 
