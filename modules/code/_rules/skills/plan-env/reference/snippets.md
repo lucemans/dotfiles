@@ -47,7 +47,7 @@ is not.
 | Mark the failing or suspect line | `// [!code error]`, `// [!code warning]` |
 
 Notation diff is for illustration. A proposed change to a real file uses the diff rules
-in SKILL.md rule 39 instead.
+in SKILL.md rule 40 instead.
 
 ## Variants
 

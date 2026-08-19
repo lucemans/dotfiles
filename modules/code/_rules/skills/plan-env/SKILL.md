@@ -50,7 +50,7 @@ that adds them anyway invents items to justify them.
 | --- | --- |
 | under ~6 items, under 2 screens | headings and prose only. No IDs, no index, no contents list |
 | 6 or more items | a short ID per item, used as the anchor `id` and in every cross-reference |
-| 8 or more items | contents list, sticky sidebar on wide screens, sections in document order |
+| 8 or more items | contents list in the sticky rail, sections in document order |
 | 12 or more items | an index table at the top: ID, kind, one line each |
 | counts answer the reader's first question | a counts strip, one number per kind, the kind that demands attention first |
 
@@ -83,64 +83,62 @@ scrollbars, light form controls, and a light `light-dark()` fallback on a dark p
   --neg-soft: light-dark(#b3261e14, #f2867d22);
   --radius: 6px;
   --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
-  --measure: 78ch;
-  --wide: 1400px;
+  --pad: clamp(1rem, 2.5vw, 3rem);
+  --rail: 15rem;
 }
 ```
 
-Three column widths, one grid. Body content sits in the prose column; anything wide
-opts out by class, up to the full viewport.
+The page fills the window. There is no centered column and no per-element width class.
 
 ```css
-body {
-  display: grid;
-  grid-template-columns:
-    [full-start] minmax(1rem, 1fr)
-    [wide-start] minmax(0, calc((var(--wide) - var(--measure)) / 2))
-    [text-start] min(var(--measure), 100%) [text-end]
-    minmax(0, calc((var(--wide) - var(--measure)) / 2)) [wide-end]
-    minmax(1rem, 1fr) [full-end];
+body { padding: 2rem var(--pad); }
+
+/* Contents rail, once the document has one. The rail is the only fixed width. */
+.layout { display: grid; gap: 2.5rem; align-items: start; }
+@media (min-width: 64rem) {
+  /* minmax(0, 1fr), not 1fr: a min-content floor lets a wide table push the
+     column past the viewport instead of scrolling inside its own container. */
+  .layout { grid-template-columns: var(--rail) minmax(0, 1fr); }
+  .layout > nav { position: sticky; top: 2rem; max-height: calc(100vh - 4rem); overflow-y: auto; }
 }
-body > * { grid-column: text; }
-.wide { grid-column: wide; }
-.full { grid-column: full; }
 ```
 
-8. **Prose stays between 70 and 100 characters.** Below 70 the margins dominate and readers dislike it. Above 100 the eye loses the line start.
-9. **Everything else is free to be wide.** A comparison table, an architecture diagram, a dense reference grid, a wide diff, and a dashboard-style overview all belong in `.wide` or `.full`. The measure constrains paragraphs, not the page.
-10. **A full-width page is correct when the content is not prose.** An explainer that is mostly diagram, or a comparison that is one large table, may drop the prose column entirely.
-11. **Every table, wide code block, and diagram scrolls inside its own `overflow-x: auto` container.** The body scrolls one direction only, at narrow width too.
+8. **Full width, always.** No `max-width` on the body, no `margin-inline: auto`, no centered column. Content runs from `--pad` on the left to `--pad` on the right, whatever the window is.
+9. **One left edge, one right edge.** Prose, tables, diagrams, and code blocks all begin and end at the same two positions. Varying the width per element is what makes a page look assembled out of parts.
+10. **Keep paragraphs short instead of narrow.** Three or four lines, then a heading, a table, or a list. A long line is only hard to read when the block under it is also tall.
+11. **`overflow-x: auto` is a fallback, not a layout.** A 9-column table fits at 1600px, so give it the room. Keep the container so a 900px window degrades instead of breaking, and the body never scrolls sideways.
+12. **Contents go in the sticky rail, not a centered nav.** Past 8 items, wrap the page in `.layout` and put `nav` first. Below 64rem the rail collapses and the contents list runs inline at the top.
 
 ## 4. Color
 
-12. **Every hue binds to one stated meaning, and that meaning keeps that hue everywhere on the page.** Severity levels, categories in an overview, services in an architecture map, and series in a chart are all legitimate reasons to carry five hues. Two colors that mean nothing different are a bug.
-13. **Name the binding where the reader first meets it.** A legend, a chip, or a sentence. An unexplained color is decoration.
-14. **Both themes readable, AA or better.** Check the dark side before delivering. Do not put low-contrast gray on a colored panel.
-15. **No gradient, glassmorphism, glow, or neon in a document.** They separate nothing and cost legibility. Flat surfaces: one page background, one panel background, one 1px rule.
-16. **One radius, one type scale.** Pick the corner radius once and use it on every panel, chip, code block, and table. Pick the sizes once. Do not size a heading by eye.
+13. **Every hue means one thing, and keeps it page-wide.** Five hues for five severity levels is fine. Five hues because the page felt flat is not. Two colors that mean nothing different are a bug.
+14. **Name the binding where the reader first meets it.** A legend, a chip, or a sentence. An unexplained color is decoration.
+15. **Both themes AA or better.** Check dark before delivering. No low-contrast gray on a colored panel.
+16. **No gradient, glassmorphism, glow, or neon.** Flat surfaces: one page background, one panel background, one 1px rule.
+17. **One radius, one type scale.** Set `--radius` once and use it on every panel, chip, code block, and table. Never size a heading by eye.
 
 ## 5. Document design
 
 Applies to plan, review, status, explainer, and comparison. Not to a mockup.
 
-17. **No em-dash anywhere.** Not in headings, body, tables, code, or the title. Not `&mdash;`. Use a comma, a colon, a full stop, or a rewritten sentence. This is the loudest sign a machine wrote the page.
-18. **Not a landing page.** No hero, no call to action, no feature grid, no pricing block, no marketing voice, no emoji. Do not write "seamless", "powerful", "unleash", "effortless", "game-changing".
-19. **Never invent a metric, score, percentage, progress bar, or status badge the work did not produce.** A confidence number you made up is worse than no number.
-20. **Charcoal on off-white, not black on white.** System font stack for body, 16px to 18px, line height 1.6 or more. If you pick a specific face, pick it for a reason. Not Inter, Roboto, or Open Sans by default.
-21. **Set every path, symbol, flag, and command in `code`.** The reader scans a technical page for exactly these.
-22. **Metadata is not prose.** Labels, table headers, chips, and counters go in the monospace face, uppercase, 10px to 14px, letter-spacing 0.05em to 0.1em. Ration them: more than one uppercase micro-label per screen and none of them signal anything.
-23. **Size a chip with equal `width` and `height`.** A chip whose width comes from a grid column and whose height comes from padding is never square and reads as an accident.
-24. **Alternate density on purpose.** A reference table, an index, or a status list is dense: small type, tight rows, hairline rules. Prose breathes. Applying table density to paragraphs is what makes a page a wall.
-25. **Draw hairlines with `display: grid; gap: 1px` over a background color**, not a border on every child.
-26. **Use a panel for a discrete unit the reader acts on**, such as one proposal to accept. Do not panel every paragraph. A page of cards has no hierarchy. Do not nest a panel in a panel.
-27. **Use a table when the content has repeated fields, prose when it does not.** A one-column table is a list.
-28. **One large numeral only where it answers a question the reader already has.** Do not enlarge a number for rhythm.
-29. **Reach for the specific element before a `div`.** `<del>` and `<ins>` for diff lines, `<samp>` for program output, `<kbd>` for keys, `<code>` for source and paths, `<dl>` for label and value pairs, `<time>` for dates, `<article>` for a self-contained item the reader acts on, `<nav>` for the contents list.
-30. **Style `:target`** so an item the reader jumped to is marked when they arrive.
-31. **Heading levels in order.** Do not skip a level to get a different size.
-32. **Everything visible by default.** No collapsible unless the user asked for a shorter page. A full-width `<hr>` separates real units of work, never decorates.
-33. **Prefer no motion.** If it earns its place: `transform` and `opacity` only, under 200ms, respect `prefers-reduced-motion`.
-34. **Do not draw a fake screenshot out of `div` elements**, and do not hand-roll SVG path data.
+18. **No em-dash anywhere.** Not in headings, body, tables, code, or the title. Not `&mdash;`. Comma, colon, full stop, or rewrite the sentence. Loudest sign a machine wrote the page.
+19. **Not a landing page.** No hero, call to action, feature grid, pricing block, or emoji. Not "seamless", "powerful", "unleash", "effortless", "game-changing".
+20. **Never invent a metric, score, percentage, progress bar, or badge the work did not produce.** A made-up 87% is worse than no number.
+21. **Charcoal on off-white, not black on white.** System stack, 16px to 18px, line height 1.6 or more. Not Inter, Roboto, or Open Sans by default.
+22. **Every path, symbol, flag, and command in `code`.** `requireSession()`, `src/auth/session.ts:41`, `--dry-run`. The reader scans a technical page for exactly these.
+23. **Metadata is not prose.** Labels, table headers, chips, and counters go monospace, uppercase, 10px to 14px, letter-spacing 0.05em to 0.1em. One uppercase micro-label per screen, or none of them signal anything.
+24. **Size a chip with equal `width` and `height`.** Width from a grid column plus height from padding is never square, and it reads as an accident.
+25. **Alternate density on purpose.** Tables and indexes go dense: small type, tight rows, hairline rules. Prose breathes. Table density applied to paragraphs is what makes a page a wall.
+26. **Draw hairlines with `display: grid; gap: 1px` over a background color**, not a border on every child.
+27. **Panel a unit the reader acts on**, such as one proposal to accept or reject. Not every paragraph. A page of cards has no hierarchy, and a panel never nests in a panel.
+28. **Table for repeated fields, prose for everything else.** A one-column table is a list.
+29. **One large numeral only when it answers a question the reader already has**, such as 12 open items. Never for rhythm.
+30. **Specific element before `div`.** `<del>` and `<ins>` for diff lines, `<samp>` for output, `<kbd>` for keys, `<code>` for source and paths, `<dl>` for label and value pairs, `<time>` for dates, `<article>` for an item the reader acts on, `<nav>` for the contents list.
+31. **Style `:target`.** The item the reader jumped to must be marked when they land on it.
+32. **Heading levels in order.** Never skip a level to get a size.
+33. **Everything visible by default.** No collapsible unless the user asked for a shorter page. A full-width `<hr>` separates real units of work, never decorates.
+34. **Prefer no motion.** If it earns a place: `transform` and `opacity` only, under 200ms, `prefers-reduced-motion` respected.
+35. **No fake screenshot built from `div` elements, and no hand-rolled SVG path data.**
 
 Belongs to poster work, costs legibility here: scanlines, halftone, dithering, noise
 overlays, ASCII framing, `>>>` and `///` dividers, invented technical strings, oversized
@@ -150,11 +148,11 @@ once and stops looking.
 
 ## 6. Content fidelity
 
-35. **Quote the source exactly.** Do not paraphrase a line and present it as a quotation.
-36. **Cite `path:line` for every claim about a file.**
-37. **Give the complete content.** No "and so on", no "for brevity", no `// ...` standing in for the material.
-38. **State what is not done, not verified, or not applied**, in the page, not only in the chat message.
-39. **Show a proposed file change as a diff**, never as a block of new text that leaves the reader to work out what it replaced. Head it with the path, the line range, and whether it adds, replaces, or deletes. Quote removed lines exactly from the current file. If you have not read that file, say so instead of reconstructing it. Include one or two unchanged lines when they locate the edit.
+36. **Quote the source exactly.** Never paraphrase a line and present it as a quotation.
+37. **Cite `path:line`, and name the real symbol.** Not "the auth middleware" but `requireSession()` at `src/auth/session.ts:41`. A page of category nouns cannot be checked.
+38. **Give the complete content.** No "and so on", no "for brevity", no `// ...` standing in for the material.
+39. **State what is not done, not verified, or not applied**, in the page, not only in the chat message.
+40. **Show a proposed file change as a diff**, never as a block of new text that leaves the reader to work out what it replaced. Head it with the path, the line range, and whether it adds, replaces, or deletes. Quote removed lines exactly from the current file. If you have not read that file, say so instead of reconstructing it. Include one or two unchanged lines when they locate the edit.
 
 ## 7. Per-shape notes
 
@@ -162,7 +160,7 @@ once and stops looking.
 Mark what you are not proposing and why, so the reader knows the space was covered.
 Open with the decision the reader owes you.
 
-**review.** Findings worst first, severity bound to a hue per rule 12. Each finding: the
+**review.** Findings worst first, severity bound to a hue per rule 13. Each finding: the
 location as `path:line`, what breaks, and the concrete failure. Separate "must fix" from
 "worth considering" visibly. Say what you did not review.
 
@@ -172,9 +170,8 @@ can start today. No IDs, no index, no counts strip. If the honest answer is thre
 sentences, say so in the terminal and skip the page.
 
 **explainer.** Follow the system's own structure. Lead with the shape of the thing, a
-diagram or a wide table, then the parts. Name every real identifier as `code` so the
-reader can grep. No task language, no recommendations, unless asked. Full-width is
-usually right here.
+diagram or a table, then the parts. Name every real identifier as `code` so the reader
+can grep. No task language, no recommendations, unless asked.
 
 **comparison.** One wide table with options as columns and criteria as rows, the criteria
 ordered by how much they matter. Fill every cell. Then a short recommendation naming
@@ -209,7 +206,7 @@ is a bug: it changes how an old revision renders later.
 - [ ] No em-dash anywhere in the file
 - [ ] `color-scheme: light dark` present; both themes checked and readable
 - [ ] Every hue means one thing, and the meaning is named
-- [ ] Prose 70 to 100 characters; wide content in `.wide` or `.full`; body scrolls one direction at every width
+- [ ] Full width: no `max-width`, no centered column, no gutters; every element shares one left and right edge; body scrolls one direction at every width
 - [ ] Machinery matches the size: no index, IDs, or counts strip below their thresholds
 - [ ] Every file claim cites `path:line`; file changes are diffs with exact removed lines
 - [ ] Nothing truncated, hidden, or placeholdered; what was not done is stated in the page

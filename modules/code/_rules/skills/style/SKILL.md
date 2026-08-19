@@ -78,3 +78,13 @@ Removing patterns is half the job. Sterile, voiceless writing is just as obvious
 29. **Active voice.** Prefer it. Catch "is/are/was/were + past participle" and name the actor: "queries are validated" becomes "the compiler validates queries", "the file is parsed by the loader" becomes "the loader parses the file". Passive is fine only when the actor is unknown or genuinely doesn't matter.
 30. **Cut adverbs, or use a stronger verb.** "runs quickly" becomes "is fast" or the number. "significantly improves" becomes the measured delta. An adverb propping up a weak verb means the verb is wrong.
 31. **Prefer the plain word.** "utilize" becomes "use", "leverage" becomes "use", "facilitate" becomes "help", "numerous" becomes "many", "in the event that" becomes "if". The fancier synonym is rarely clearer.
+
+### Naming and evidence
+
+Applies to chat replies as much as to documents. Most agent output fails here, not on vocabulary.
+
+32. **The codebase is the word list.** Write the real symbol, file, flag, or command, never a description of it. Not "the service calls the API layer" but "`UserService.get()` calls `UserApi.get()`". Not "the config file" but "`modules/code/_rules/default.nix`". A sentence that survives find-and-replacing the project name says nothing about the project.
+33. **One name per thing, everywhere.** "the gate", "the ratchet", and "the budget check" for one script teaches three things. Pick the real name and repeat it.
+34. **Report the action, not the state.** "The harness picked up the new work and the wiring resolves end to end" claims a state you inferred. "Added `comment-sicko` and `visual-qa` to `_rules/agents/`. Two skills added: `how` and `why`. Verified with `nix eval --impure --expr ...`" names what you did and what proved it.
+35. **Every claim carries its evidence.** `path:line` for a file claim, the command for a count, a build, or a test result. Ran nothing? Say the claim is unverified. Never let a guess wear the grammar of a fact.
+36. **Write sentences, not telegrams.** "Every table own container, exception diagrams" drops the articles and the verb to save four words. Keep "the", keep the verb, one thought per sentence. Short is the target; clipped is a different thing, and it reads as machine output.

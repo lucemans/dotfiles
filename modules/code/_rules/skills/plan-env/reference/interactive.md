@@ -39,7 +39,7 @@ mountChart(element, { definition, height: 300, ariaLabel: "..." });
 - Pick series color per theme with `matchMedia("(prefers-color-scheme: dark)")` and keep
   it clearly readable on both surfaces. One hue per series, fixed assignment, never a
   rainbow. This is the color rule from SKILL.md section 4: a hue means one series.
-- A chart goes in `.wide` or `.full`, not the prose column.
+- A chart spans the full content width like everything else. Set `width: 100%` and a fixed `height`, and let it grow with the window.
 
 ## Icons
 
