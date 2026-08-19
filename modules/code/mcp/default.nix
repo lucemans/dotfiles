@@ -1,4 +1,4 @@
-{...}: {
+{inputs, ...}: {
   imports = [
     ./playwright/default.nix
     ./repo-reader/default.nix
@@ -38,6 +38,12 @@
           enabled = true;
           timeout = 30000;
         };
+        plan_env = {
+          type = "local";
+          command = ["plan-env-md-mcp"];
+          enabled = true;
+          timeout = 30000;
+        };
       };
 
       claude = {
@@ -61,6 +67,11 @@
           command = "eth-data-mcp";
           args = [];
         };
+        plan_env = {
+          type = "stdio";
+          command = "plan-env-md-mcp";
+          args = [];
+        };
       };
     };
 
@@ -77,6 +88,7 @@
         self.packages.${pkgs.stdenv.hostPlatform.system}.repo-reader-mcp
         self.packages.${pkgs.stdenv.hostPlatform.system}.eth-data-mcp
         self.packages.${pkgs.stdenv.hostPlatform.system}.mcp-nixos-sandbox
+        inputs.plan-env-md.packages.${pkgs.stdenv.hostPlatform.system}.plan-env-md-mcp
         pkgs.playwright-driver
       ];
     };

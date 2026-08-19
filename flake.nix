@@ -52,6 +52,8 @@
     };
 
     koi.url = "github:v3xlabs/koi";
+
+    plan-env-md.url = "github:v3xlabs/plan-env-md";
   };
 
   outputs = inputs:
