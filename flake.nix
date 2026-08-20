@@ -54,6 +54,7 @@
     koi.url = "github:v3xlabs/koi";
 
     plan-env-md.url = "github:v3xlabs/plan-env-md";
+    eth-data.url = "github:v3xlabs/eth-data";
   };
 
   outputs = inputs:

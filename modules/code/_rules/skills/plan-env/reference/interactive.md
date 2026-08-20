@@ -43,9 +43,4 @@ mountChart(element, { definition, height: 300, ariaLabel: "..." });
 
 ## Icons
 
-Inline at write time, never load an icon library at runtime. Fetch the SVG from
-`https://unpkg.com/lucide-static@1.31.0/icons/<name>.svg`, paste it inline, size it to
-the text beside it with `width="1em" height="1em"`, and let it inherit color through
-`currentColor`.
-
-Use them sparingly. A label beats an icon that needs explaining.
+See `icons.md`. Both the file type sprite and the inline interface glyphs live there.

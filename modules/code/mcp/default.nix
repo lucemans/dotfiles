@@ -2,7 +2,6 @@
   imports = [
     ./playwright/default.nix
     ./repo-reader/default.nix
-    ./eth-data/default.nix
     ./nixos/default.nix
   ];
 
@@ -86,9 +85,9 @@
         self.packages.${pkgs.stdenv.hostPlatform.system}.playwright-mcp-desktop
         self.packages.${pkgs.stdenv.hostPlatform.system}.dapp-wallet-mcp
         self.packages.${pkgs.stdenv.hostPlatform.system}.repo-reader-mcp
-        self.packages.${pkgs.stdenv.hostPlatform.system}.eth-data-mcp
         self.packages.${pkgs.stdenv.hostPlatform.system}.mcp-nixos-sandbox
         inputs.plan-env-md.packages.${pkgs.stdenv.hostPlatform.system}.plan-env-md-mcp
+        inputs.eth-data.packages.${pkgs.stdenv.hostPlatform.system}.eth-data-mcp
         pkgs.playwright-driver
       ];
     };

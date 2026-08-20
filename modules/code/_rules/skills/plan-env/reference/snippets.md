@@ -1,32 +1,39 @@
 # Code snippets
 
-Every code block longer than one line uses this layout. Do not write snippet styles or a
-highlight runtime per document. Inline `reference/code.css` into the stylesheet and
-`reference/code.js` as the last module script, both verbatim. They need the tokens from
-`reference/document.css`, so it goes after it: `--panel`, `--code-bg`, `--rule`, `--radius`,
-`--mono`, `--ink-soft`, `--ink-faint`, `--accent`, `--accent-soft`, `--pos`, `--pos-soft`,
-`--neg`, `--neg-soft`.
+One component covers every code shaped block: a quoted snippet, a terminal exchange, and a
+proposed file change.
+
+Upload `reference/code.css` and `reference/code.js` beside `index.html`, verbatim, and
+link them. `code.css` reads the tokens from `document.css`, so link it second. `code.js`
+is a module, so load it with `<script type="module" src="code.js"></script>`.
 
 ## Layout
 
-A `figure.snippet`, a `figcaption` header row, then the `pre`. The header names the
-source: quoted code gets `path:line-range`, new or illustrative code gets a short title.
-The language tag sits at the right end. The field order never changes.
-
-```
-<figure class="snippet">
-  <figcaption><code>src/server.ts:12-24</code><span class="lang">typescript</span></figcaption>
-  <pre><code class="language-typescript">...</code></pre>
+```html
+<figure class="snippet" data-lang="rust">
+  <figcaption>src/net/retry.rs:41-58</figcaption>
+  <pre><code>...</code></pre>
 </figure>
 ```
 
-Content fidelity applies inside a snippet: quote exactly, escape exactly, elide nothing.
+The language is declared once, in `data-lang` on the figure. The runtime reads it from
+there, and the language tag at the right of the caption is drawn from it by CSS. Do not
+put a `language-*` class on the `code`, and do not write the language a second time as
+text.
+
+The caption names the source. Quoted code gets `path:line-range`. New or illustrative code
+gets a short title. Content fidelity applies inside a snippet: quote exactly, escape
+exactly, elide nothing.
 
 ## Highlighting
 
-Runs at read time with Shiki, pinned inside `reference/code.js`. Supported languages:
-`typescript`, `javascript`, `rust`, `nix`, `bash`, `json`, `css`, `solidity`, `ansi`.
-Any other language renders plain. Do not add grammars per document.
+Runs at read time with Shiki, pinned inside `code.js`. Supported: `typescript`,
+`javascript`, `rust`, `nix`, `bash`, `json`, `css`, `html`, `solidity`, `ansi`. Any other
+value renders plain. Do not add grammars per document.
+
+Syntax colour comes from the language, not from the page. It sits outside the one hue one
+meaning rule in SKILL.md section 4, because a code block is quoted material rather than a
+signal the document is sending.
 
 The page must read fully with scripts disabled. Highlighting decorates text that is
 already in the HTML. Never build a snippet whose content arrives by script.
@@ -35,8 +42,8 @@ already in the HTML. Never build a snippet whose content arrives by script.
 
 Vary a snippet only through these. Write the marker as a comment in the language's own
 comment syntax, on the affected line. The runtime strips it and applies the effect. With
-scripts disabled the marker text stays visible, which is acceptable. An invented marker
-is not.
+scripts disabled the marker text stays visible, which is acceptable but is a reason to use
+them sparingly. An invented marker is not acceptable.
 
 | Effect | Marker |
 | --- | --- |
@@ -46,39 +53,34 @@ is not.
 | Emphasize one word | `// [!code word:port]` |
 | Mark the failing or suspect line | `// [!code error]`, `// [!code warning]` |
 
-Notation diff is for illustration. A proposed change to a real file uses the diff rules
-in SKILL.md rule 41 instead.
+Notation diff is for illustration only. A change to a real file uses `is-diff` below.
 
 ## Variants
 
-**Line numbers.** Add class `numbered` to the figure, only when the prose refers to line
-positions.
+**Proposed file change.** Class `is-diff`. One `ins`, `del`, or `span` per line, written by
+hand and never highlighted. The caption carries the path and the line range. Quote removed
+lines exactly from the current file, and include one or two unchanged lines when they
+locate the edit. If you have not read that file, say so instead of reconstructing it.
 
-**Program output with color.** `language-ansi`, keeping the raw escape codes.
-
-**Terminal exchange.** Class `is-terminal` on the figure. Commands are `code` lines
-inside one `pre` with class `cmds`. Output follows as its own `pre` holding `samp` or
-`language-ansi` content. The `$` prompt comes from CSS and is never part of the text, so
-copied commands stay runnable.
-
-```
-<figure class="snippet is-terminal">
-  <figcaption><code>build</code><span class="lang">bash</span></figcaption>
-  <pre class="cmds"><code>pnpm build</code></pre>
-  <pre><samp>done in 4.2s</samp></pre>
+```html
+<figure class="snippet is-diff" data-lang="css">
+  <figcaption>reference/document.css:118-121, proposed</figcaption>
+  <pre><span>.tree ul ul {</span><del>  margin-left: .6rem;</del><ins>  margin-left: var(--icon-c);</ins><span>}</span></pre>
 </figure>
 ```
 
-**Alternatives shown once** (package managers, platforms). Class `is-group` on the
-figure. Hidden radio inputs first, then the `figcaption` with one `label` per alternative
-inside its `.tabs` span, then one `section` per alternative in the same order. CSS-only,
-works without scripts. Up to four alternatives.
+**Line numbers.** Add class `numbered`, only when the prose refers to line positions.
 
-```
-<figure class="snippet is-group">
-  <input type="radio" name="g1" id="g1a" checked><input type="radio" name="g1" id="g1b">
-  <figcaption><span class="tabs"><label for="g1a">pnpm</label><label for="g1b">npm</label></span><span class="lang">bash</span></figcaption>
-  <section><pre><code class="language-bash">pnpm add solid-js</code></pre></section>
-  <section><pre><code class="language-bash">npm i solid-js</code></pre></section>
+**Program output with colour.** `data-lang="ansi"`, keeping the raw escape codes.
+
+**Terminal exchange.** Class `is-terminal`. Commands are `code` lines inside one `pre` with
+class `cmds`. Output follows as its own `pre` holding `samp` or `ansi` content. The `$`
+prompt comes from CSS and is never part of the text, so copied commands stay runnable.
+
+```html
+<figure class="snippet is-terminal" data-lang="bash">
+  <figcaption>build</figcaption>
+  <pre class="cmds"><code>pnpm build</code></pre>
+  <pre><samp>done in 4.2s</samp></pre>
 </figure>
 ```
