@@ -540,11 +540,11 @@
         "rust-overlay": "rust-overlay_5"
       },
       "locked": {
-        "lastModified": 1787173947,
-        "narHash": "sha256-mN9K9sS9Logds6DBNT1k8QQ1UZhWyf2RjKHSe26umSo=",
+        "lastModified": 1787256144,
+        "narHash": "sha256-do5P0iNk+/aEDsdxLbhm/MuccwfU/DTAx/xirA3c8Aw=",
         "owner": "v3xlabs",
         "repo": "plan-env-md",
-        "rev": "2a3f49ed6316bc9445a2dbd4c86139e55ef7028d",
+        "rev": "d0a5230399d955f6521c62d3aad2365e9df64a78",
         "type": "github"
       },
       "original": {

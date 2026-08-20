@@ -1,4 +1,65 @@
-{inputs, ...}: {
+{
+  inputs,
+  lib,
+  ...
+}: let
+  # One definition per server, in neither tool's vocabulary. `from` is the
+  # flake the package comes from, and the package is always named after the
+  # command, which holds for every server here.
+  defaults = {
+    args = [];
+    enabled = true;
+    timeout = 30000;
+    from = inputs.self;
+  };
+
+  servers = lib.mapAttrs (_: s: defaults // s) {
+    playwright = {
+      command = "playwright-mcp";
+      enabled = false;
+      # A browser launch outruns the shared timeout.
+      timeout = null;
+    };
+    dapp_wallet = {
+      command = "dapp-wallet-mcp";
+      enabled = false;
+    };
+    repo_reader = {
+      command = "repo-reader-mcp";
+    };
+    eth_data = {
+      command = "eth-data-mcp";
+      from = inputs.eth-data;
+      enabled = false;
+    };
+    nixos = {
+      command = "mcp-nixos-sandbox";
+    };
+    plan_env = {
+      command = "plan-env-md-mcp";
+      from = inputs.plan-env-md;
+    };
+  };
+
+  # The adapters are the only place either tool's spelling appears.
+  # `enabled = false` means off by default, toggled on from the OpenCode UI
+  # when a task needs it.
+  toOpenCode = s:
+    {
+      type = "local";
+      command = [s.command] ++ s.args;
+      inherit (s) enabled;
+    }
+    // lib.optionalAttrs (s.timeout != null) {inherit (s) timeout;};
+
+  # No `enabled` and no `timeout`. Claude has neither, and its deferred tool
+  # schemas already keep an unused server out of the context window, which is
+  # what the OpenCode toggle is for.
+  toClaude = s: {
+    type = "stdio";
+    inherit (s) command args;
+  };
+in {
   imports = [
     ./playwright/default.nix
     ./repo-reader/default.nix
@@ -7,89 +68,21 @@
 
   flake = {
     mcp = {
-      opencode = {
-        playwright = {
-          type = "local";
-          command = ["playwright-mcp"];
-          enabled = false;
-        };
-        dapp_wallet = {
-          type = "local";
-          command = ["dapp-wallet-mcp"];
-          enabled = false;
-          timeout = 30000;
-        };
-        repo_reader = {
-          type = "local";
-          command = ["repo-reader-mcp"];
-          enabled = true;
-          timeout = 30000;
-        };
-        eth_data = {
-          type = "local";
-          command = ["eth-data-mcp"];
-          enabled = false;
-          timeout = 30000;
-        };
-        nixos = {
-          type = "local";
-          command = ["mcp-nixos-sandbox"];
-          enabled = true;
-          timeout = 30000;
-        };
-        plan_env = {
-          type = "local";
-          command = ["plan-env-md-mcp"];
-          enabled = true;
-          timeout = 30000;
-        };
-      };
-
-      claude = {
-        playwright = {
-          type = "stdio";
-          command = "playwright-mcp";
-          args = [];
-        };
-        dapp_wallet = {
-          type = "stdio";
-          command = "dapp-wallet-mcp";
-          args = [];
-        };
-        repo_reader = {
-          type = "stdio";
-          command = "repo-reader-mcp";
-          args = [];
-        };
-        eth_data = {
-          type = "stdio";
-          command = "eth-data-mcp";
-          args = [];
-        };
-        plan_env = {
-          type = "stdio";
-          command = "plan-env-md-mcp";
-          args = [];
-        };
-      };
+      opencode = lib.mapAttrs (_: toOpenCode) servers;
+      claude = lib.mapAttrs (_: toClaude) servers;
     };
 
-    nixosModules.mcp = {
-      self,
-      pkgs,
-      ...
-    }: {
-      environment.systemPackages = [
-        self.packages.${pkgs.stdenv.hostPlatform.system}.playwright-mcp
-        self.packages.${pkgs.stdenv.hostPlatform.system}.playwright-mcp-icon
-        self.packages.${pkgs.stdenv.hostPlatform.system}.playwright-mcp-desktop
-        self.packages.${pkgs.stdenv.hostPlatform.system}.dapp-wallet-mcp
-        self.packages.${pkgs.stdenv.hostPlatform.system}.repo-reader-mcp
-        self.packages.${pkgs.stdenv.hostPlatform.system}.mcp-nixos-sandbox
-        inputs.plan-env-md.packages.${pkgs.stdenv.hostPlatform.system}.plan-env-md-mcp
-        inputs.eth-data.packages.${pkgs.stdenv.hostPlatform.system}.eth-data-mcp
-        pkgs.playwright-driver
-      ];
+    nixosModules.mcp = {pkgs, ...}: let
+      system = pkgs.stdenv.hostPlatform.system;
+    in {
+      environment.systemPackages =
+        map (s: s.from.packages.${system}.${s.command}) (lib.attrValues servers)
+        ++ [
+          # Support packages, not servers.
+          inputs.self.packages.${system}.playwright-mcp-icon
+          inputs.self.packages.${system}.playwright-mcp-desktop
+          pkgs.playwright-driver
+        ];
     };
   };
 }
