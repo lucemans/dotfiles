@@ -84,6 +84,19 @@ reader never hunts for the other end of the move:
 
 A renamed directory says so on its own row, and its children carry `move` too.
 
+## Placement
+
+One tree on the page goes near the top, above the items it summarises. It is the highest
+level thing the page carries: which files this touches, at a glance, before the reader
+commits to reading any of them. A tree at the end summarises material the reader has
+already been through, which is the one position where it answers nothing.
+
+One tree per section goes at the top of its own section, for the same reason.
+
+Past that, put it where the reader meets the question it answers. Between two paragraphs
+and beside the change it explains are both fine. Several trees on one page belong at
+their own subjects, never gathered into one block.
+
 ## Ordering
 
 Directories first, then files. Alphabetical inside each group. This is not a preference,

@@ -71,14 +71,18 @@
 }
 
 /* Terminal: class "is-terminal" on the figure. The $ comes from CSS and is
-   never part of the text, so a copied command stays runnable. */
-.snippet.is-terminal .cmds code { display: block; background: none; padding: 0; font-size: 1em; }
+   never part of the text, so a copied command stays runnable. The command and
+   the output carry the gutter themselves. Nothing else supplies it: code.js
+   colours a command where it stands rather than replacing the pre, so no
+   .line arrives, and a samp is not a code element. */
+.snippet.is-terminal .cmds code { display: block; background: none; padding: 0 var(--code-pad); font-size: 1em; }
 .snippet.is-terminal .cmds code::before { content: "$ "; color: var(--ink-faint); }
-.snippet.is-terminal samp { display: block; font-family: var(--mono); }
+.snippet.is-terminal samp { display: block; padding: 0 var(--code-pad); font-family: var(--mono); }
 
-/* Proposed file change: class "is-diff" on the figure. Hand written, never
-   highlighted, one <ins>, <del> or <span> per line. Same header as every
-   other snippet, which is the point of folding it in here. */
+/* Proposed file change: class "is-diff" on the figure. Hand written, one
+   <ins>, <del> or <span> per line. These rules draw it with scripts off; with
+   code.js the lines become .line.diff.add and .line.diff.remove above. Same
+   header as every other snippet, which is the point of folding it in here. */
 .snippet.is-diff pre > * { display: block; padding: 0 var(--code-pad); white-space: pre; }
 .snippet.is-diff ins { text-decoration: none; background: var(--pos-soft); box-shadow: inset 2px 0 var(--pos); }
 .snippet.is-diff del { text-decoration: none; background: var(--neg-soft); box-shadow: inset 2px 0 var(--neg); }

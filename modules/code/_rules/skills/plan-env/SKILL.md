@@ -13,6 +13,12 @@ relative path. Under 512 KB. Use a project-prefixed slug matching `[a-z0-9-]{1,6
 `myproject-auth-refactor`, not `auth-refactor`. Slugs share one global namespace. Reuse a
 slug to add a revision. Give the user the returned URL. Never try to publish beyond this.
 
+**Do not open the page yourself.** No local web server, no headless browser, no
+screenshot. A push that returns a URL succeeded, and that is the whole check. To read
+back what you sent, use `plan_env_plan_read`, which returns `html`, `text`, `outline` or
+`a11y`. The reader opens the page; building a way to look at it first is work nobody
+asked for.
+
 Call `plan_env_plan_projects` first and pass `project`, so the document joins an existing
 project instead of starting a near duplicate. Pass `tags` and a `title` as well. Pass
 `questions` when the reader owes you a decision: each one anchors to an element `id` in
@@ -194,9 +200,15 @@ once and stops looking.
 44. **Give the complete content.** No "and so on", no "for brevity", no `// ...` standing in for the material.
 
     In a `.tree`, untouched siblings are not the material. The material of a change tree is the changed files. Account for the rest with a counted `.row.rest` line, which is a fact rather than an ellipsis.
-45. **State what is not done, not verified, or not applied**, in the page, not only in the chat message.
+45. **State what is not done, not verified, or not applied**, in the page, not only in the chat message. On a page carrying both faults and fixes, every fault says whether it is still true, next to the fault rather than inferable from a fix further down. "is broken" and "was broken" are different claims, and the reader acts on the difference.
 46. **Show a proposed file change as a diff**, never as a block of new text that leaves the reader to work out what it replaced. Use `figure.snippet.is-diff` from `reference/snippets.md`. Head it with the path, the line range, and whether it adds, replaces, or deletes. Quote removed lines exactly from the current file. If you have not read that file, say so instead of reconstructing it. Include one or two unchanged lines when they locate the edit.
-47. **Show which files a change touches as a `.tree`**, once the count passes three. Statuses, ordering, and what to leave out are in `reference/tree.md`. A tree answers the blast radius question that prose about "the auth layer" cannot.
+47. **Show which files a change touches as a `.tree`**, once the count passes three. Statuses, ordering, placement, and what to leave out are in `reference/tree.md`. A tree answers the blast radius question that prose about "the auth layer" cannot, so a page carrying one tree puts it near the top rather than at the end.
+
+48. **Name the thing, do not point at it.** Every paragraph names its own subject, with the `path:line`, even when the heading, the chip, or the `.where` line above already said it. Those are labels, not sentences, and a reader who arrived on an anchor or scanned in from the rail has not read them. "It says the file is inlined" fails. "A comment at `reference/code.js:1-5` still tells the reader to inline the file" works. The same rule kills the vague placement and the paraphrase: write "between `nix` and `bash`", not "beside `nix`", and quote the words you are objecting to, `left as written`, rather than restating them in your own.
+
+49. **A cross reference says what is at the other end.** "which S3 ends" reads only for somebody who has already read S3. Write what the other item does and why it is here: "for `is-diff`, see the change I propose in S3". Mark an aside as an aside, for the same reason: the reader decides what to skip, and only if you tell them they can.
+
+50. **Say what you checked, in your own voice.** "I loaded both grammars in a probe page and checked they render", not "Both grammars load and render". The second states how the world is, which a reader cannot tell apart from an assumption. The first reports work you did, and the work is what they are deciding on. Rule 45 covers what you did not do; this covers what you did.
 
 ## 7. Per-shape notes
 
@@ -206,7 +218,9 @@ Open with the decision the reader owes you.
 
 **review.** Findings worst first, severity bound to a hue per rule 15. Each finding: the
 location as `path:line`, what breaks, and the concrete failure. Separate "must fix" from
-"worth considering" visibly. Say what you did not review.
+"worth considering" visibly. If you fixed any of them, mark each finding fixed or still
+live where it stands, and say so in the section standfirst too. Say what you did not
+review.
 
 **status.** Narrative, not a queue. Where the branch is, what landed, what is in flight,
 what blocks. End with next actions as a short ordered list, each one a thing the reader
@@ -269,6 +283,7 @@ bug: it changes how an old revision renders later.
 - [ ] Every `.tab-link` points at a `.tab` that exists, and the page still reads with no fragment set
 - [ ] Items carry a `.chip`, an `id`, and a visible `:target` state
 - [ ] No em-dash anywhere in the file
+- [ ] No paragraph opens with `It`, `This` or `They` standing in for a subject named only in a heading or a `.where` line
 - [ ] `color-scheme: light dark` present; both themes checked and readable
 - [ ] Every hue you assigned means one thing, and the meaning is named
 - [ ] Nothing signalled twice: no colored edge on an item that already has a colored chip
@@ -285,6 +300,7 @@ bug: it changes how an old revision renders later.
 - [ ] No emoji, no marketing voice, no invented metric
 - [ ] Stylesheets and scripts uploaded as siblings and linked; external requests are pinned esm.sh imports only
 - [ ] `questions` passed for every decision the reader owes you, each anchored to an `id`
+- [ ] No browser, no local server, and no screenshot was used to check this page
 - [ ] The user has the plan.env.md URL
 
 Mockups check only: pinned imports, `color-scheme`, project-prefixed slug, intent comment
