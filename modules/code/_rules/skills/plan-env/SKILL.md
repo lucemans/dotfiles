@@ -25,6 +25,35 @@ project instead of starting a near duplicate. Pass `tags` and a `title` as well.
 the page and is answered in the page, which is faster for the reader than a reply in
 chat.
 
+Anchor a question where its case has been made. A reader decides after your argument, not
+before it, so the usual place is the end of the section that sets the decision up,
+sometimes the middle of one, and rarely the top. Which element is your judgment, and the
+anchor is how you express it. Do not collect every question into one block at the end, and
+do not open a page with a question the reader cannot yet answer.
+
+A question has two attachments in the page, and they do different jobs.
+
+**`anchor`** is an element `id`, and it decides where the answer card is placed: the card
+becomes that element's next sibling. Give the `id` to the last element of the argument,
+usually the closing paragraph, so the card lands under the case rather than inside it.
+
+**A marker** is optional, and it tints the words the question is about. Wrap them in
+`<span data-planenv-q="KEY">`, where `KEY` is that question's `key`. The viewer tints the
+span, numbers it, and makes it jump to the card. Mark the phrase that names the decision,
+never a whole sentence or heading, and mark it at most once per question. A span whose key
+this revision does not ask stays ordinary prose, so an old marker left in the page is
+harmless rather than a link to nothing.
+
+```html
+<p>Both grammars are pinned, and I put them in the
+<span data-planenv-q="S2">supported language map</span> between <code>nix</code> and
+<code>bash</code> rather than at the end.</p>
+<p id="S2-case">Ordering is by priority, read top to bottom.</p>
+```
+
+Write nothing else for either. No class, no superscript, no styling: the viewer draws every
+mark it owns, and only for the reader who can answer. A visitor sees the page you wrote.
+
 **Read.** `plan_env_plan_read` takes a URL or slug. `.../rev/2` reads that pinned
 revision. `plan_env_plan_info` returns metadata and the revision index.
 
@@ -67,7 +96,7 @@ that adds them anyway invents items to justify them.
 | several parallel views of one subject | `.tabs`, with a `.tab-link` per view in the rail |
 | counts answer the reader's first question | a counts strip, one number per kind, the kind that demands attention first |
 | **a change touching more than 3 files, or any question about blast radius** | **a file tree, per `reference/tree.md`** |
-| the reader owes you a decision | `questions` on the push, one per decision, anchored to its `id` |
+| the reader owes you a decision | `questions` on the push, one per decision, anchored to its `id`, optionally marked with `data-planenv-q` |
 
 3. **IDs are free-form and derived from the page.** One letter per kind plus a number. A plan might use `P1` proposal, `D2` decision, `N3` no action. A review might use `F1` finding, `R2` regression. Name each kind where it first appears. Do not force a page into a vocabulary it does not have, and do not invent a kind to fill a column.
 4. **Keep an ID stable across revisions** so the user can say "reject P4" in chat.
@@ -300,6 +329,7 @@ bug: it changes how an old revision renders later.
 - [ ] No emoji, no marketing voice, no invented metric
 - [ ] Stylesheets and scripts uploaded as siblings and linked; external requests are pinned esm.sh imports only
 - [ ] `questions` passed for every decision the reader owes you, each anchored to an `id`
+- [ ] Any marker is a `span` carrying only `data-planenv-q`, around a phrase rather than a sentence
 - [ ] No browser, no local server, and no screenshot was used to check this page
 - [ ] The user has the plan.env.md URL
 
