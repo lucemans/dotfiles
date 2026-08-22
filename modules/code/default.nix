@@ -1,6 +1,8 @@
 {...}: {
   imports = [
     ./agentsview.nix
+    ./gitgui.nix
+    ./auto-commit.nix
     ./vscode
     ./pi
     ./opencode
@@ -21,6 +23,8 @@
       self.nixosModules.mcp
       self.nixosModules.opencode
       self.nixosModules.claude-code
+      self.nixosModules.gitgui
+      self.nixosModules.auto-commit
     ];
 
     systemd.tmpfiles.rules = [
@@ -62,6 +66,12 @@
         enable = true;
         silent = false;
         nix-direnv.enable = true;
+        config.global = {
+          hide_env_diff = false;
+          log_format = "direnv › %s";
+          warn_timeout = "2s";
+          disable_stdin = true;
+        };
       };
 
       programs.git = {

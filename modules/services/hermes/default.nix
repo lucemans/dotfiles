@@ -69,7 +69,7 @@ in {
     ];
     systemd.services.hermes-agent.serviceConfig.TimeoutStopSec = 210;
     services.hermes-agent = {
-      enable = true;
+      enable = false;
       user = "hermes";
       group = "hermes";
       createUser = true;

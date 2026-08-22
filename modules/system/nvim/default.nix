@@ -1,5 +1,10 @@
 {inputs, ...}: {
-  perSystem = {pkgs, ...}: let
+  perSystem = {
+    pkgs,
+    system,
+    ...
+  }: let
+    midjournal = inputs.midjournal.packages.${system};
     treesitter = builtins.removeAttrs (pkgs.vimPlugins.nvim-treesitter.withPlugins (plugins:
       with plugins; [
         bash
@@ -37,6 +42,7 @@
         pkgs.typescript-language-server
         pkgs.vscode-langservers-extracted
         pkgs.yaml-language-server
+        midjournal.midjournal
       ];
 
       env.TAPLO_LSP = "${pkgs.taplo}/bin/taplo";
@@ -67,6 +73,7 @@
           telescope-fzf-native-nvim
           telescope-nvim
           vim-startify
+          midjournal.midjournal-nvim
         ];
       };
     };

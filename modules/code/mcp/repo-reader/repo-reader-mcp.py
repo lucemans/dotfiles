@@ -12,7 +12,14 @@ from mcp.server.fastmcp import FastMCP
 
 
 SERVER_ROOT = Path("/workspace/repositories")
-ALLOWED_HOSTS = frozenset({"github.com", "gitlab.com", "git.voidarc.co.uk"})
+HOST_ALIASES = {
+    "gh": "github.com",
+    "github": "github.com",
+    "gl": "gitlab.com",
+    "gitlab": "gitlab.com",
+    "cb": "codeberg.org",
+    "codeberg": "codeberg.org",
+}
 MAX_FILE_SIZE_BYTES = 1_048_576
 MAX_LISTED_FILES = 1_000
 MAX_SEARCH_RESULTS = 100
@@ -49,10 +56,23 @@ def normalized_path(segments: list[str]) -> str:
     return "/".join(quote(segment, safe="-._~") for segment in segments)
 
 
+def normalize_repository_url(repository: str) -> str:
+    repository = repository.strip()
+    alias, separator, path = repository.partition(":")
+    host = HOST_ALIASES.get(alias.lower())
+    if separator and host is not None:
+        return f"https://{host}/{path}"
+    host, separator, _ = repository.partition("/")
+    if separator and "." in host:
+        return f"https://{repository}"
+    return repository
+
+
 def validate_repository_url(repository: str) -> tuple[str, str | None]:
+    repository = normalize_repository_url(repository)
     parsed = urlparse(repository)
-    if parsed.scheme != "https" or parsed.hostname not in ALLOWED_HOSTS:
-        raise fail("Repository must be an HTTPS URL hosted on an allowed Git host.")
+    if parsed.scheme != "https" or parsed.hostname is None:
+        raise fail("Repository must be an HTTPS URL with a host.")
     if parsed.username or parsed.password or parsed.query or parsed.fragment:
         raise fail("Repository URL must not include credentials, a query, or a fragment.")
 
@@ -172,7 +192,7 @@ def read_file_contents(file_path: Path, line_offset: int = 1, line_limit: int | 
 
 @mcp.tool()
 def checkout_repository(repository: str, revision: str = "HEAD") -> dict[str, str]:
-    """Fetch a public HTTPS repository at a branch, tag, or commit without running its code."""
+    """Fetch a public HTTPS repository without running its code. Accepts host paths such as github.com/owner/repository and aliases such as gh:owner/repository, gl:group/repository, or cb:owner/repository."""
     repository, url_revision = validate_repository_url(repository)
     revision = validate_revision(revision)
     if revision == "HEAD" and url_revision is not None:
