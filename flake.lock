@@ -26,17 +26,17 @@
         "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "lastModified": 1787520232,
-        "narHash": "sha256-p8MQMQIhylfZc4XhiP1++7Sxz/LodFdoyheWrjDoyhU=",
-        "ref": "refs/heads/main",
-        "rev": "5b1d8e92ec7120cee35097b7b7b28a4be93c9fe7",
-        "revCount": 23,
-        "type": "git",
-        "url": "file:///home/luc/dev/local/auto-commit"
+        "lastModified": 1787530417,
+        "narHash": "sha256-XUMrTmcG694C8lBqFk4xGlSq4TuPKZbjMVlnS3NzA94=",
+        "owner": "v3xlabs",
+        "repo": "auto-commit",
+        "rev": "364ab9f8e15391bbc26649ff98fc49c5bb2c19bc",
+        "type": "github"
       },
       "original": {
-        "type": "git",
-        "url": "file:///home/luc/dev/local/auto-commit"
+        "owner": "v3xlabs",
+        "repo": "auto-commit",
+        "type": "github"
       }
     },
     "blueprint": {
@@ -327,17 +327,17 @@
         "nixpkgs": "nixpkgs_3"
       },
       "locked": {
-        "lastModified": 1787520315,
-        "narHash": "sha256-mphvlmr1aR1mz+py9PXk+fsgKh3DvmmYmvYz+u6mXYE=",
-        "ref": "refs/heads/master",
-        "rev": "c59b0292b5ed549a786fe0ed3faec6ffd605b884",
-        "revCount": 17,
-        "type": "git",
-        "url": "file:///home/luc/dev/local/gitgui"
+        "lastModified": 1787569930,
+        "narHash": "sha256-hMWKTnG7QYRecJWjB5kHrD6TQyguZFnkrWQBOOS0yIw=",
+        "owner": "v3xlabs",
+        "repo": "gg",
+        "rev": "fd9fc064b92aa8fbc1869f154a03167cc44fe14f",
+        "type": "github"
       },
       "original": {
-        "type": "git",
-        "url": "file:///home/luc/dev/local/gitgui"
+        "owner": "v3xlabs",
+        "repo": "gg",
+        "type": "github"
       }
     },
     "hermes-agent": {
@@ -477,11 +477,11 @@
         "nixpkgs": "nixpkgs_5"
       },
       "locked": {
-        "lastModified": 1787504580,
-        "narHash": "sha256-iaoQoFkZsEE2efgfQKDiFHdG3UVUoYivFXmV0zKFA0U=",
+        "lastModified": 1787533182,
+        "narHash": "sha256-2A7btZJQBopEAgVMB7Naq3bRqoAwy518XyskdLzkiZA=",
         "ref": "refs/heads/master",
-        "rev": "fd6460725ce1204ef7be01456be6581a91c06675",
-        "revCount": 4,
+        "rev": "dd3c3d7c73e3e02ef977aad6074662a9d4732b1d",
+        "revCount": 5,
         "type": "git",
         "url": "file:///home/luc/dev/local/midjournal"
       },

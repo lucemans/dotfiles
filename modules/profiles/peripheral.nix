@@ -24,7 +24,6 @@
         "networkmanager"
       ];
       openssh.authorizedKeys.keyFiles = [
-        ../../secrets/ssh.key
         ../../secrets/ssh2.key
       ];
       packages = with pkgs; [

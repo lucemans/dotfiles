@@ -40,6 +40,8 @@
         pkgs.fzf
         pkgs.htop
         pkgs.btop
+        pkgs.bat
+        pkgs.jless
         pkgs.eza
         pkgs.fd
         pkgs.zoxide

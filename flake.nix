@@ -55,9 +55,9 @@
 
     plan-env-md.url = "github:v3xlabs/plan-env-md";
     eth-data.url = "github:v3xlabs/eth-data";
+    auto-commit.url = "github:v3xlabs/auto-commit";
+    gitgui.url = "github:v3xlabs/gg";
     midjournal.url = "git+file:///home/luc/dev/local/midjournal";
-    gitgui.url = "git+file:///home/luc/dev/local/gitgui";
-    auto-commit.url = "git+file:///home/luc/dev/local/auto-commit";
   };
 
   outputs = inputs:

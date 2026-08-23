@@ -11,8 +11,12 @@
     hardware.graphics.enable = lib.mkDefault true;
 
     programs = {
-      gamemode.enable = true;
-      gamescope.enable = true;
+      gamescope = {
+        enable = true;
+        capSysNice = true;
+        enableWsi = true;
+      };
+
       steam = {
         # package = pkgs.steam.override {
         #   extraProfile = ''
@@ -39,7 +43,7 @@
       steam-run
       dxvk
 
-      gamescope # todo
+      gamescope
 
       mangohud
 
