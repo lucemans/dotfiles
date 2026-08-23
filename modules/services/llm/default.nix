@@ -165,6 +165,11 @@
             };
           }
           {
+            model_name = "openai/gpt-5.6-luna";
+            litellm_params.model = "openrouter/openai/gpt-5.6-luna";
+            model_info.base_model = "gpt-5.6-luna";
+          }
+          {
             model_name = "*";
             litellm_params.model = "openrouter/*";
           }
