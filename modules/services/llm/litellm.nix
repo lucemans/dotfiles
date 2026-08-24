@@ -34,6 +34,7 @@
         LITELLM_MASTER_KEY=${config.sops.placeholder.teapot_litellm_master_key}
         LITELLM_SALT_KEY=${config.sops.placeholder.teapot_litellm_salt_key}
         OPENROUTER_API_KEY=${config.sops.placeholder.teapot_litellm_openrouter_key}
+        ZEROPARAMS_API_KEY=${config.sops.placeholder.teapot_litellm_zeroparams_key}
         DATABASE_URL=postgresql://litellm@127.0.0.1/litellm
       '';
     };
@@ -92,6 +93,19 @@
               api_base = "https://ollama.v3x.sh/v1";
               model = "openai/qwen3-coder-30b-a3b";
               api_key = "local";
+            };
+          }
+          {
+            model_name = "openai/gpt-5.6-luna";
+            litellm_params.model = "openrouter/openai/gpt-5.6-luna";
+            model_info.base_model = "gpt-5.6-luna";
+          }
+          {
+            model_name = "zeroparams/jonatan";
+            litellm_params = {
+              api_base = "https://zeroparams.itdata.nu/v1";
+              model = "openai/jonatan";
+              api_key = "os.environ/ZEROPARAMS_API_KEY";
             };
           }
           {
