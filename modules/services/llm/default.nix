@@ -56,6 +56,9 @@
     sops.secrets.teapot_litellm_openrouter_key = {
       mode = "0400";
     };
+    sops.secrets.teapot_litellm_zeroparams_key = {
+      mode = "0400";
+    };
 
     sops.templates.teapot_litellm_env = {
       mode = "0400";
@@ -63,6 +66,7 @@
         LITELLM_MASTER_KEY=${config.sops.placeholder.teapot_litellm_master_key}
         LITELLM_SALT_KEY=${config.sops.placeholder.teapot_litellm_salt_key}
         OPENROUTER_API_KEY=${config.sops.placeholder.teapot_litellm_openrouter_key}
+        ZEROPARAMS_API_KEY=${config.sops.placeholder.teapot_litellm_zeroparams_key}
         DATABASE_URL=postgresql://litellm@127.0.0.1/litellm
       '';
     };
@@ -168,6 +172,14 @@
             model_name = "openai/gpt-5.6-luna";
             litellm_params.model = "openrouter/openai/gpt-5.6-luna";
             model_info.base_model = "gpt-5.6-luna";
+          }
+          {
+            model_name = "zeroparams/jonatan";
+            litellm_params = {
+              api_base = "https://zeroparams.itdata.nu/v1";
+              model = "jonatan";
+              api_key = "os.environ/ZEROPARAMS_API_KEY";
+            };
           }
           {
             model_name = "*";
