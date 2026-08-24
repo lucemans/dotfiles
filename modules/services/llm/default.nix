@@ -177,7 +177,7 @@
             model_name = "zeroparams/jonatan";
             litellm_params = {
               api_base = "https://zeroparams.itdata.nu/v1";
-              model = "jonatan";
+              model = "openai/jonatan";
               api_key = "os.environ/ZEROPARAMS_API_KEY";
             };
           }
