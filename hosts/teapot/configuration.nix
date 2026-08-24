@@ -1,17 +1,14 @@
-{
-  pkgs,
-  inputs,
-  ...
-}: let
-  prisma = inputs.prisma-nixpkgs.legacyPackages.${pkgs.stdenv.hostPlatform.system}.prisma;
-in {
+{...}: {
   flake.nixosModules.teapot = {
     self,
     config,
+    inputs,
     pkgs,
     lib,
     ...
-  }: {
+  }: let
+    prisma = inputs.prisma-nixpkgs.legacyPackages.${pkgs.stdenv.hostPlatform.system}.prisma;
+  in {
     imports = [
       self.nixosModules.peripheral
       self.nixosModules.teapotInference
