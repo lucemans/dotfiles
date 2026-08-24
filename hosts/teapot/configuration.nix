@@ -17,7 +17,8 @@
   in {
     imports = [
       self.nixosModules.peripheral
-      self.nixosModules.teapotLlm
+      self.nixosModules.teapotInference
+      self.nixosModules.litellm
       self.nixosModules.teapotHermes
       self.nixosModules.teapotMattermost
       # self.nixosModules.mcp
