@@ -1,7 +1,6 @@
 {
   imports = [
     ./uptime
-    ./hermes
     ./llm
     ./keyhold
     ./launchpi

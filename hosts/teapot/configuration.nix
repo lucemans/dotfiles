@@ -17,8 +17,6 @@
       self.nixosModules.peripheral
       self.nixosModules.teapotInference
       self.nixosModules.litellm
-      self.nixosModules.teapotHermes
-      self.nixosModules.teapotMattermost
       # self.nixosModules.mcp
       # self.nixosModules.opencode
       # self.nixosModules.claude-code

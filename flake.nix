@@ -20,8 +20,6 @@
     ethereum-nix.inputs.nixpkgs.follows = "nixpkgs";
     lanzaboote.url = "github:nix-community/lanzaboote";
     lanzaboote.inputs.nixpkgs.follows = "nixpkgs";
-    hermes-agent.url = "github:NousResearch/hermes-agent";
-    hermes-agent.inputs.nixpkgs.follows = "nixpkgs";
     launchpi.url = "github:v3xlabs/launchpi";
     launchpi.inputs.nixpkgs.follows = "nixpkgs";
     koi.url = "github:v3xlabs/koi";

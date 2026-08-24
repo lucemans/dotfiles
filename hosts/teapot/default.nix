@@ -16,7 +16,6 @@
       modules = [
         inputs.sops-nix.nixosModules.sops
         inputs.disko.nixosModules.disko
-        inputs.hermes-agent.nixosModules.default
         self.nixosModules.teapot
         self.nixosModules.teapotDisko
         self.nixosModules.teapotPhysical
