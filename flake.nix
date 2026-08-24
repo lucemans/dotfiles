@@ -1,63 +1,35 @@
 {
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    prisma-nixpkgs.url = "github:NixOS/nixpkgs/5ed627539ac84809c78b2dd6d26a5cebeb5ae269";
-
-    disko.url = "github:nix-community/disko";
-    disko.inputs.nixpkgs.follows = "nixpkgs";
-
-    flake-parts.url = "github:hercules-ci/flake-parts";
-    preservation.url = "github:nix-community/preservation";
-
-    home-manager = {
-      url = "github:nix-community/home-manager";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    plasma-manager = {
-      url = "github:nix-community/plasma-manager";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.home-manager.follows = "home-manager";
-    };
-
-    activate-linux = {
-      url = "github:Kaisia-Estrel/activate-linux";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    wrappers.url = "github:Lassulus/wrappers";
-    wrapper-modules.url = "github:BirdeeHub/nix-wrapper-modules";
-
-    ethereum-nix = {
-      url = "github:nix-community/ethereum.nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     sops-nix.url = "github:Mic92/sops-nix";
     sops-nix.inputs.nixpkgs.follows = "nixpkgs";
-
-    lanzaboote = {
-      url = "github:nix-community/lanzaboote";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    hermes-agent = {
-      url = "github:NousResearch/hermes-agent";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    launchpi = {
-      url = "github:v3xlabs/launchpi";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
+    flake-parts.url = "github:hercules-ci/flake-parts";
+    preservation.url = "github:nix-community/preservation";
+    disko.url = "github:nix-community/disko";
+    disko.inputs.nixpkgs.follows = "nixpkgs";
+    home-manager.url = "github:nix-community/home-manager";
+    home-manager.inputs.nixpkgs.follows = "nixpkgs";
+    plasma-manager.url = "github:nix-community/plasma-manager";
+    plasma-manager.inputs.nixpkgs.follows = "nixpkgs";
+    plasma-manager.inputs.home-manager.follows = "home-manager";
+    wrappers.url = "github:Lassulus/wrappers";
+    wrapper-modules.url = "github:BirdeeHub/nix-wrapper-modules";
+    activate-linux.url = "github:Kaisia-Estrel/activate-linux";
+    activate-linux.inputs.nixpkgs.follows = "nixpkgs";
+    ethereum-nix.url = "github:nix-community/ethereum.nix";
+    ethereum-nix.inputs.nixpkgs.follows = "nixpkgs";
+    lanzaboote.url = "github:nix-community/lanzaboote";
+    lanzaboote.inputs.nixpkgs.follows = "nixpkgs";
+    hermes-agent.url = "github:NousResearch/hermes-agent";
+    hermes-agent.inputs.nixpkgs.follows = "nixpkgs";
+    launchpi.url = "github:v3xlabs/launchpi";
+    launchpi.inputs.nixpkgs.follows = "nixpkgs";
     koi.url = "github:v3xlabs/koi";
-
     plan-env-md.url = "github:v3xlabs/plan-env-md";
     eth-data.url = "github:v3xlabs/eth-data";
     auto-commit.url = "github:v3xlabs/auto-commit";
     gitgui.url = "github:v3xlabs/gg";
-    midjournal.url = "git+file:///home/luc/dev/local/midjournal";
+    midjournal.url = "github:lucemans/midjournal";
   };
 
   outputs = inputs:
