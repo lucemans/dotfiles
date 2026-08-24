@@ -19,6 +19,7 @@ in {
     };
 
     users.users.hermes = {
+      isNormalUser = true;
       extraGroups = ["docker"];
     };
 
