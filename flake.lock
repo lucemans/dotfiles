@@ -327,11 +327,11 @@
         "nixpkgs": "nixpkgs_3"
       },
       "locked": {
-        "lastModified": 1787569930,
-        "narHash": "sha256-hMWKTnG7QYRecJWjB5kHrD6TQyguZFnkrWQBOOS0yIw=",
+        "lastModified": 1787595447,
+        "narHash": "sha256-zslxUGjSi7j40/BAg+mZTgGksl0B0G9KGVvYp2SlUUM=",
         "owner": "v3xlabs",
         "repo": "gg",
-        "rev": "fd9fc064b92aa8fbc1869f154a03167cc44fe14f",
+        "rev": "00fc1f812dfc1ff0a925b151704bc67433100f0d",
         "type": "github"
       },
       "original": {
@@ -477,17 +477,17 @@
         "nixpkgs": "nixpkgs_5"
       },
       "locked": {
-        "lastModified": 1787533182,
-        "narHash": "sha256-2A7btZJQBopEAgVMB7Naq3bRqoAwy518XyskdLzkiZA=",
-        "ref": "refs/heads/master",
-        "rev": "dd3c3d7c73e3e02ef977aad6074662a9d4732b1d",
-        "revCount": 5,
-        "type": "git",
-        "url": "file:///home/luc/dev/local/midjournal"
+        "lastModified": 1787607605,
+        "narHash": "sha256-3zirkyy6sc5eehlDoFDPgRzLuP3zMmtTLpkR4R28meA=",
+        "owner": "lucemans",
+        "repo": "midjournal",
+        "rev": "073272f5d0118c5740f2d3f1f8a25fea17a2c9d7",
+        "type": "github"
       },
       "original": {
-        "type": "git",
-        "url": "file:///home/luc/dev/local/midjournal"
+        "owner": "lucemans",
+        "repo": "midjournal",
+        "type": "github"
       }
     },
     "nixpkgs": {
@@ -765,22 +765,6 @@
         "type": "github"
       }
     },
-    "prisma-nixpkgs": {
-      "locked": {
-        "lastModified": 1725980463,
-        "narHash": "sha256-3ruEhwpLlccjwYTvLCyFAtPndcRxAs3XazL2lhOXucI=",
-        "owner": "NixOS",
-        "repo": "nixpkgs",
-        "rev": "5ed627539ac84809c78b2dd6d26a5cebeb5ae269",
-        "type": "github"
-      },
-      "original": {
-        "owner": "NixOS",
-        "repo": "nixpkgs",
-        "rev": "5ed627539ac84809c78b2dd6d26a5cebeb5ae269",
-        "type": "github"
-      }
-    },
     "pyproject-build-systems": {
       "inputs": {
         "nixpkgs": [
@@ -850,7 +834,6 @@
         "plan-env-md": "plan-env-md",
         "plasma-manager": "plasma-manager",
         "preservation": "preservation",
-        "prisma-nixpkgs": "prisma-nixpkgs",
         "sops-nix": "sops-nix",
         "wrapper-modules": "wrapper-modules",
         "wrappers": "wrappers"
