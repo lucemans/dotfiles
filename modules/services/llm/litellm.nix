@@ -27,6 +27,9 @@
     sops.secrets.teapot_litellm_openrouter_key = {
       mode = "0400";
     };
+    sops.secrets.teapot_litellm_zeroparams_key = {
+      mode = "0400";
+    };
 
     sops.templates.teapot_litellm_env = {
       mode = "0400";
