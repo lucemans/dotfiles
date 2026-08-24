@@ -1,9 +1,13 @@
 {
   flake.nixosModules.litellm = {
+    inputs,
     config,
     pkgs,
+    lib,
     ...
-  }: {
+  }: let
+    prisma-engines = inputs.prisma-nixpkgs.legacyPackages.${pkgs.stdenv.hostPlatform.system}.prisma-engines;
+  in {
     services.postgresql = {
       enable = true;
       authentication = ''
@@ -49,8 +53,8 @@
       environmentFile = config.sops.templates.teapot_litellm_env.path;
       environment = {
         HOME = "/var/lib/litellm";
-        # PRISMA_QUERY_ENGINE_BINARY = lib.getExe' prisma-engines "query-engine";
-        # PRISMA_SCHEMA_ENGINE_BINARY = lib.getExe' prisma-engines "schema-engine";
+        PRISMA_QUERY_ENGINE_BINARY = lib.getExe' prisma-engines "query-engine";
+        PRISMA_SCHEMA_ENGINE_BINARY = lib.getExe' prisma-engines "schema-engine";
       };
       settings = {
         general_settings = {
