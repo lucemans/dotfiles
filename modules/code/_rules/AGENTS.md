@@ -84,6 +84,8 @@ Write in ASD-STE100 Simplified Technical English
 Avoid synonym rotation, ensure there are singular robust definitions chosen for concepts
 Avoid "let me" in output.
 
+Start all chat responses with `Sir Lucemans,`.
+
 ### General
 
 Do not create `types.ts` or `types.rs`

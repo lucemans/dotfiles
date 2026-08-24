@@ -24,19 +24,19 @@ let
       };
     };
 
-    visual-qa = {
-      description = "Uses Playwright to inspect running frontend features, navigate the browser, capture screenshots, and review visual design quality. Read-only on source code.";
-      claude = {};
-      opencode = {
-        mode = "subagent";
-        model = "openai/gpt-5.6-terra";
-        permission = {
-          edit = "deny";
-          bash = "ask";
-          "playwright_*" = "allow";
-        };
-      };
-    };
+    # visual-qa = {
+    #   description = "Uses Playwright to inspect running frontend features, navigate the browser, capture screenshots, and review visual design quality. Read-only on source code.";
+    #   claude = {};
+    #   opencode = {
+    #     mode = "subagent";
+    #     model = "openai/gpt-5.6-terra";
+    #     permission = {
+    #       edit = "deny";
+    #       bash = "ask";
+    #       "playwright_*" = "allow";
+    #     };
+    #   };
+    # };
   };
 
   # builtins.toJSON renders strings, numbers, booleans, and lists as valid YAML
