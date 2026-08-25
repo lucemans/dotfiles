@@ -24,11 +24,19 @@
     launchpi.url = "github:v3xlabs/launchpi";
     launchpi.inputs.nixpkgs.follows = "nixpkgs";
     koi.url = "github:v3xlabs/koi";
+    koi.inputs.nixpkgs.follows = "nixpkgs";
     plan-env-md.url = "github:v3xlabs/plan-env-md";
+    plan-env-md.inputs.nixpkgs.follows = "nixpkgs";
     eth-data.url = "github:v3xlabs/eth-data";
+    eth-data.inputs.nixpkgs.follows = "nixpkgs";
     auto-commit.url = "github:v3xlabs/auto-commit";
+    auto-commit.inputs.nixpkgs.follows = "nixpkgs";
     gitgui.url = "github:v3xlabs/gg";
+    gitgui.inputs.nixpkgs.follows = "nixpkgs";
+    tablet.url = "github:v3xlabs/tablet";
+    tablet.inputs.nixpkgs.follows = "nixpkgs";
     midjournal.url = "github:lucemans/midjournal";
+    midjournal.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs = inputs:

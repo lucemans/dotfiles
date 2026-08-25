@@ -1,5 +1,11 @@
 {
-  flake.nixosModules.vscodium = {pkgs, ...}: {
+  flake.nixosModules.vscodium = {
+    inputs,
+    pkgs,
+    ...
+  }: let
+    tablet = inputs.tablet.packages.${pkgs.stdenv.hostPlatform.system}.default;
+  in {
     environment.systemPackages = with pkgs; [
       vscodium
     ];
@@ -8,6 +14,8 @@
       enable = true;
       package = pkgs.vscodium;
       profiles.default.extensions = with pkgs.vscode-extensions; [
+        tablet
+
         yzhang.markdown-all-in-one
         jnoortheen.nix-ide
         kamadorueda.alejandra
