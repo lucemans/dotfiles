@@ -37,6 +37,8 @@
     tablet.inputs.nixpkgs.follows = "nixpkgs";
     midjournal.url = "github:lucemans/midjournal";
     midjournal.inputs.nixpkgs.follows = "nixpkgs";
+    missiond.url = "github:v3xlabs/missiond";
+    missiond.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs = inputs:
