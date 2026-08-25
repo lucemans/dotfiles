@@ -134,9 +134,9 @@
       requires = ["postgresql.service"];
       after = ["postgresql.service"];
       path = [pkgs.openssl];
-      serviceConfig = {
-        TimeoutStartSec = "10min";
-      };
+      # serviceConfig = {
+        # TimeoutStartSec = "2min";
+      # };
     };
   };
 }
