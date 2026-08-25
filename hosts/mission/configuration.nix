@@ -15,8 +15,13 @@
       pkgs.runCommand "mission-niri-config.kdl" {
         nativeBuildInputs = [config.programs.niri.package];
       } ''
-          install -Dm644 ${config.programs.niri.package.src}/resources/default-config.kdl $out
-          printf '\ncursor {\n    hide-after-inactive-ms 60000\n}\nhotkey-overlay {\n    skip-at-startup\n}\n' >> $out
+        install -Dm644 ${config.programs.niri.package.src}/resources/default-config.kdl $out
+        sed -i 's|^    // skip-at-startup$|    skip-at-startup|' $out
+        grep -q '^    skip-at-startup$' $out || {
+          echo "niri's default config no longer carries a commented skip-at-startup line" >&2
+          exit 1
+        }
+        printf '\ncursor {\n    hide-after-inactive-ms 60000\n}\n' >> $out
         niri validate --config $out
       '';
     missionNiriSession = pkgs.writeShellScript "mission-niri-session" ''
