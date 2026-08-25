@@ -81,7 +81,7 @@
         engines = lib.mapAttrsToList (name: value: {inherit name;} // value) {
           "duckduckgo".disabled = true;
           "brave".disabled = true;
-          "bing".disabled = false;
+          "bing".disabled = true;
           "mojeek".disabled = true;
           "mwmbl".disabled = false;
           "mwmbl".weight = 0.4;
@@ -104,7 +104,7 @@
           "currency".disabled = true;
           "dictzone".disabled = true;
           "lingva".disabled = true;
-          "bing images".disabled = false;
+          "bing images".disabled = true;
           "brave.images".disabled = true;
           "duckduckgo images".disabled = true;
           "google images".disabled = false;
@@ -124,7 +124,7 @@
           "wallhaven".disabled = false;
           "wikicommons.images".disabled = false;
           "yacy images".disabled = true;
-          "bing videos".disabled = false;
+          "bing videos".disabled = true;
           "brave.videos".disabled = true;
           "duckduckgo videos".disabled = true;
           "google videos".disabled = false;
