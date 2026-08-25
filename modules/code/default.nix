@@ -18,7 +18,7 @@
     selfpkgs = self.packages.${pkgs.stdenv.hostPlatform.system};
   in {
     imports = [
-      self.nixosModules.cursor
+      # self.nixosModules.cursor
       self.nixosModules.vscodium
       self.nixosModules.mcp
       self.nixosModules.opencode
