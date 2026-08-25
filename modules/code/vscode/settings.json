@@ -290,7 +290,7 @@
         "nixd": {
             "formatting": {
                 "command": [
-                    "nixfmt"
+                    "alejandra"
                 ]
             },
             "nixpkgs": {
@@ -298,7 +298,7 @@
             },
             "options": {
                 "nixos": {
-                    "expr": "(builtins.getFlake (builtins.toString /etc/nixos)).nixosConfigurations.v3x-fighter.options"
+                    "expr": "let flake = builtins.getFlake (builtins.toString /etc/nixos); host = builtins.replaceStrings [\"\\n\"] [\"\"] (builtins.readFile /etc/hostname); options = flake.nixosConfigurations.${host}.options; in options // { flake.nixosModules = builtins.mapAttrs (_: _: options) flake.nixosModules; }"
                 }
             }
         }

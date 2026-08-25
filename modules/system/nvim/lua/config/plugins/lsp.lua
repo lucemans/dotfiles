@@ -44,7 +44,12 @@ for name, config in pairs({
           command = { "alejandra" },
         },
         nixpkgs = {
-          expr = "import <nixpkgs> { }",
+          expr = "import (builtins.getFlake (builtins.toString /etc/nixos)).inputs.nixpkgs { }",
+        },
+        options = {
+          nixos = {
+            expr = [[let flake = builtins.getFlake (builtins.toString /etc/nixos); host = builtins.replaceStrings ["\n"] [""] (builtins.readFile /etc/hostname); options = flake.nixosConfigurations.${host}.options; in options // { flake.nixosModules = builtins.mapAttrs (_: _: options) flake.nixosModules; }]],
+          },
         },
       },
     },
