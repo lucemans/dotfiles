@@ -7,7 +7,7 @@
       settings = {
         server = {
           http_addr = "0.0.0.0";
-          http_port = 3000;
+          http_port = 3001;
         };
         analytics.reporting_enabled = false;
         security.secret_key = "$__file{/var/lib/grafana/secret-key}";
