@@ -7,5 +7,6 @@
     ./mattermost
     ./mission
     ./searxng.nix
+    ./attic.nix
   ];
 }

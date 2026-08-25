@@ -10,6 +10,7 @@
       self.nixosModules.teapotInference
       self.nixosModules.litellm
       self.nixosModules.searxng
+      self.nixosModules.attic
     ];
 
     programs.git = {
