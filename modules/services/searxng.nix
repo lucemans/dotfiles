@@ -5,8 +5,8 @@
     lib,
     ...
   }: {
-    sops.age.keyFile = "/home/luc/.config/sops/age/keys.txt";
-    sops.defaultSopsFile = ../../secrets/secrets.sops.yaml;
+    # sops.age.keyFile = "/home/luc/.config/sops/age/keys.txt";
+    # sops.defaultSopsFile = ../../secrets/418.sops.yaml;
     sops.secrets."searxng-secret-key" = {
       owner = "searx";
       group = "searx";
@@ -27,10 +27,7 @@
       package = pkgs.searxng;
       redisCreateLocally = true;
 
-      # Keep the instance private to the machine by default.
-      # If you want LAN access later, change bind_address to "0.0.0.0"
-      # and set openFirewall = true.
-      openFirewall = false;
+      openFirewall = true;
 
       environmentFile = config.sops.templates."searxng.env".path;
 
@@ -61,7 +58,7 @@
         # Outgoing requests
         outgoing = {
           request_timeout = 5.0;
-          max_request_timeout = 15.0;
+          max_request_timeout = 10.0;
           pool_connections = 100;
           pool_maxsize = 15;
           enable_http2 = true;
@@ -77,9 +74,8 @@
           "Tracker URL remover"
         ];
         server = {
-          bind_address = "127.0.0.1";
+          bind_address = "0.0.0.0";
           port = 8888;
-          # inform searxng it should read env var
           secret_key = config.sops.secrets."searxng-secret-key".path;
         };
         engines = lib.mapAttrsToList (name: value: {inherit name;} // value) {

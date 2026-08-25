@@ -7,21 +7,8 @@
     ...
   }: let
     prisma-engines = inputs.prisma-nixpkgs.legacyPackages.${pkgs.stdenv.hostPlatform.system}.prisma-engines;
+    prisma = inputs.prisma-nixpkgs.legacyPackages.${pkgs.stdenv.hostPlatform.system}.prisma;
   in {
-    services.postgresql = {
-      enable = true;
-      authentication = ''
-        host litellm litellm 127.0.0.1/32 trust
-      '';
-      ensureDatabases = ["litellm"];
-      ensureUsers = [
-        {
-          name = "litellm";
-          ensureDBOwnership = true;
-        }
-      ];
-    };
-
     sops.secrets.teapot_litellm_master_key = {
       mode = "0400";
     };
@@ -44,6 +31,20 @@
         ZEROPARAMS_API_KEY=${config.sops.placeholder.teapot_litellm_zeroparams_key}
         DATABASE_URL=postgresql://litellm@127.0.0.1/litellm
       '';
+    };
+
+    services.postgresql = {
+      enable = true;
+      authentication = ''
+        host litellm litellm 127.0.0.1/32 trust
+      '';
+      ensureDatabases = ["litellm"];
+      ensureUsers = [
+        {
+          name = "litellm";
+          ensureDBOwnership = true;
+        }
+      ];
     };
 
     services.litellm = {
@@ -135,8 +136,86 @@
       after = ["postgresql.service"];
       path = [pkgs.openssl];
       # serviceConfig = {
-        # TimeoutStartSec = "2min";
+      # TimeoutStartSec = "2min";
       # };
     };
+
+    nixpkgs.overlays = [
+      (final: prev: {
+        pythonPackagesExtensions =
+          prev.pythonPackagesExtensions
+          ++ [
+            (pythonPackages: super: {
+              langfuse = super.langfuse.overridePythonAttrs (old: {
+                pythonRelaxDeps = (old.pythonRelaxDeps or []) ++ ["wrapt"];
+              });
+              litellm = let
+                expression = pythonPackages.buildPythonPackage rec {
+                  pname = "expression";
+                  version = "5.6.0";
+                  pyproject = true;
+                  src = pythonPackages.fetchPypi {
+                    inherit pname version;
+                    hash = "sha256-RU9v4Tg0cZSkPH+HjZWO/puEucx3DkYgEMelLhgFgGU=";
+                  };
+                  build-system = [pythonPackages.poetry-core];
+                  dependencies = [pythonPackages.typing-extensions];
+                  pythonImportsCheck = ["expression"];
+                };
+                proxyExtras = pythonPackages.buildPythonPackage {
+                  pname = "litellm-proxy-extras";
+                  version = "0.4.84";
+                  pyproject = true;
+                  src = super.litellm.src;
+                  sourceRoot = "source/litellm-proxy-extras";
+                  postPatch = ''
+                    rm -rf dist
+                    substituteInPlace pyproject.toml \
+                      --replace-fail "uv_build==0.11.8" "uv_build"
+                  '';
+                  build-system = [pythonPackages.uv-build];
+                  pythonImportsCheck = ["litellm_proxy_extras"];
+                };
+                prismaPython = super.prisma.overridePythonAttrs (old: {
+                  postPatch =
+                    (old.postPatch or "")
+                    + ''
+                      substituteInPlace src/prisma/_config.py \
+                        --replace-fail "default='5.17.0'" "default='5.18.0'" \
+                        --replace-fail "default='393aa359c9ad4a4bb28630fb5613f9c281cde053'" "default='4c784e32044a8a016d99474bd02a3b6123742169'"
+                    '';
+                  postInstall =
+                    (old.postInstall or "")
+                    + ''
+                      schema="$TMPDIR/litellm-schema.prisma"
+                      substitute ${super.litellm.src}/schema.prisma "$schema" \
+                        --replace-fail '  provider = "prisma-client-py"' "  provider = \"prisma-client-py\"
+                        output = \"$out/${pythonPackages.python.sitePackages}/prisma\""
+
+                      export PYTHONPATH="$out/${pythonPackages.python.sitePackages}:$PYTHONPATH"
+                      PATH="$out/bin:$PATH" ${lib.getExe' prisma "prisma"} generate --schema="$schema"
+                    '';
+                  pythonImportsCheck = (old.pythonImportsCheck or []) ++ ["prisma.client"];
+                });
+              in
+                (super.litellm.override {prisma = prismaPython;}).overridePythonAttrs (old: {
+                  dependencies = (old.dependencies or []) ++ [expression proxyExtras];
+                  makeWrapperArgs =
+                    (old.makeWrapperArgs or [])
+                    ++ [
+                      "--prefix PATH : ${lib.makeBinPath [prisma]}"
+                    ];
+                  pythonImportsCheck =
+                    (old.pythonImportsCheck or [])
+                    ++ [
+                      "litellm_proxy_extras"
+                      "litellm.proxy._experimental.mcp_server.outbound_credentials.types"
+                      "prisma.client"
+                    ];
+                });
+            })
+          ];
+      })
+    ];
   };
 }
