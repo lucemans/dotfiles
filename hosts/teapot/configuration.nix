@@ -25,6 +25,18 @@
                 pythonRelaxDeps = (old.pythonRelaxDeps or []) ++ ["wrapt"];
               });
               litellm = let
+                expression = pythonPackages.buildPythonPackage rec {
+                  pname = "expression";
+                  version = "5.6.0";
+                  pyproject = true;
+                  src = pythonPackages.fetchPypi {
+                    inherit pname version;
+                    hash = "sha256-RU9v4Tg0cZSkPH+HjZWO/puEucx3DkYgEMelLhgFgGU=";
+                  };
+                  build-system = [pythonPackages.poetry-core];
+                  dependencies = [pythonPackages.typing-extensions];
+                  pythonImportsCheck = ["expression"];
+                };
                 proxyExtras = pythonPackages.buildPythonPackage {
                   pname = "litellm-proxy-extras";
                   version = "0.4.84";
@@ -62,7 +74,7 @@
                 });
               in
                 (super.litellm.override {prisma = prismaPython;}).overridePythonAttrs (old: {
-                  dependencies = (old.dependencies or []) ++ [proxyExtras];
+                  dependencies = (old.dependencies or []) ++ [expression proxyExtras];
                   makeWrapperArgs =
                     (old.makeWrapperArgs or [])
                     ++ [
@@ -72,6 +84,7 @@
                     (old.pythonImportsCheck or [])
                     ++ [
                       "litellm_proxy_extras"
+                      "litellm.proxy._experimental.mcp_server.outbound_credentials.types"
                       "prisma.client"
                     ];
                 });
