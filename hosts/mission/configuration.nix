@@ -16,7 +16,7 @@
         nativeBuildInputs = [config.programs.niri.package];
       } ''
           install -Dm644 ${config.programs.niri.package.src}/resources/default-config.kdl $out
-          printf '\ncursor {\n    hide-after-inactive-ms 60000\n}\n' >> $out
+          printf '\ncursor {\n    hide-after-inactive-ms 60000\n}\nhotkey-overlay {\n    skip-at-startup\n}\n' >> $out
         niri validate --config $out
       '';
     missionNiriSession = pkgs.writeShellScript "mission-niri-session" ''
