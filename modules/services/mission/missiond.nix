@@ -33,12 +33,11 @@
 
         display = {
           output = "DP-1";
-          idle_timeout = "20m";
           schedule = [
             {
               days = ["mon" "tue" "wed" "thu" "fri"];
-              from = "07:30";
-              to = "23:00";
+              from = "09:00";
+              to = "04:00";
             }
           ];
         };
