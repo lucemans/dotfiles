@@ -10,7 +10,6 @@
 
     sops.templates.atticd_env = {
       mode = "0400";
-      user = "atticd";
       content = ''
         ATTIC_SERVER_TOKEN_RS256_SECRET=${config.sops.placeholder.atticd_server_token}
       '';
