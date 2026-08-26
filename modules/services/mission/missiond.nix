@@ -11,6 +11,11 @@
       mode = "0400";
     };
 
+    sops.secrets.rtsp_front_door = {
+      owner = "luc";
+      mode = "0400";
+    };
+
     services.missiond = {
       enable = true;
       user = "luc";
@@ -23,10 +28,12 @@
       extraPackages = [
         config.programs.niri.package
         pkgs.ddcutil
+        pkgs.grim
+        pkgs.mpv
       ];
 
       settings = {
-        name = "Mission";
+        # name = "Mission";
         device_id = "v3x-mission";
 
         chromium.binary_path = "${pkgs.chromium}/bin/chromium";
@@ -55,11 +62,16 @@
             name = "Prices";
             url = "http://127.0.0.1:3001/d/indexer-prices/?kiosk&autofitpanels";
           };
+
+          front-door = {
+            rtsp.file = config.sops.secrets.rtsp_front_door.path;
+            stinger = "doorbell";
+          };
         };
 
         notifications.stingers.doorbell = {
           file = "doorbell.webm";
-          max_duration = "1500ms";
+          max_duration = "2500ms";
         };
 
         media = {
