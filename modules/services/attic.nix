@@ -18,7 +18,7 @@
     services.atticd = {
       enable = true;
 
-      environmentFile = config.sops.templates.teapot_litellm_env.path;
+      environmentFile = config.sops.templates.atticd_env.path;
 
       settings = {
         listen = "[::]:8080";
