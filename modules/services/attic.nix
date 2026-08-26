@@ -4,14 +4,14 @@
       inputs.attic.nixosModules.atticd
     ];
 
-    sops.secrets.atticd_server_token = {
+    sops.secrets.attic_server_token = {
       mode = "0400";
     };
 
     sops.templates.atticd_env = {
       mode = "0400";
       content = ''
-        ATTIC_SERVER_TOKEN_RS256_SECRET=${config.sops.placeholder.atticd_server_token}
+        ATTIC_SERVER_TOKEN_RS256_SECRET=${config.sops.placeholder.attic_server_token}
       '';
     };
 
