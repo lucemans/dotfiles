@@ -1,13 +1,25 @@
 {inputs, ...}: {
-  flake.nixosModules.attic = {
+  flake.nixosModules.attic = {config, ...}: {
     imports = [
       inputs.attic.nixosModules.atticd
     ];
 
+    sops.secrets.atticd_server_token = {
+      mode = "0400";
+    };
+
+    sops.templates.atticd_env = {
+      mode = "0400";
+      user = "atticd";
+      content = ''
+        ATTIC_SERVER_TOKEN_RS256_SECRET=${config.sops.placeholder.atticd_server_token}
+      '';
+    };
+
     services.atticd = {
       enable = true;
 
-      environmentFile = "/etc/atticd.env";
+      environmentFile = config.sops.templates.teapot_litellm_env.path;
 
       settings = {
         listen = "[::]:8080";
