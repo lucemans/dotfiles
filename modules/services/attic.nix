@@ -15,13 +15,17 @@
       '';
     };
 
+    networking.firewall.allowedTCPPorts = [
+      8082
+    ];
+
     services.atticd = {
       enable = true;
 
       environmentFile = config.sops.templates.atticd_env.path;
 
       settings = {
-        listen = "0.0.0.0:8080";
+        listen = "0.0.0.0:8082";
         jwt = {};
         chunking = {
           # The minimum NAR size to trigger chunking
