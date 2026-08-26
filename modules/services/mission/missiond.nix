@@ -57,6 +57,15 @@
           };
         };
 
+        notifications.stingers.doorbell = {
+          file = "doorbell.webm";
+          max_duration = "1500ms";
+        };
+
+        media = {
+          "doorbell.webm" = "/home/luc/doorbell.webm";
+        };
+
         playlists.mission-display = {
           name = "Mission Display";
           interval = "1m";
