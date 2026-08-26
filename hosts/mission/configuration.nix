@@ -102,6 +102,15 @@
       8545
     ];
 
+    nix.settings = {
+      substituters = [
+        "http://v3x-teapot:8082/v3x"
+      ];
+      trusted-public-keys = [
+        "v3x:KkXZj5H0cOzciurQuabgGocSsZjXZplwgqVWh8Va5s8="
+      ];
+    };
+
     environment.systemPackages = [
       pkgs.kitty.terminfo
       pkgs.net-tools
