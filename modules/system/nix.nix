@@ -41,13 +41,13 @@
 
     nix.settings = {
       trusted-substituters = [
-        "http://v3x-teapot:8082/v3x"
+        "https://cache.v3x.host/v3x"
       ];
       trusted-public-keys = ["v3x:KkXZj5H0cOzciurQuabgGocSsZjXZplwgqVWh8Va5s8="];
     };
 
     environment.systemPackages = with pkgs; [
-      inputs.attic.packages.${pkgs.stdenv.hostPlatform.system}.attic
+      # inputs.attic.packages.${pkgs.stdenv.hostPlatform.system}.attic
       nil
       nixd
       statix

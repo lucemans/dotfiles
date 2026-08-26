@@ -45,6 +45,8 @@
   in {
     imports = [
       self.nixosModules.peripheral
+      self.nixosModules.wireguard
+      self.nixosModules.dns
       self.nixosModules.missionUptime
       self.nixosModules.missionGrafana
       self.nixosModules.missionDisplay
@@ -104,7 +106,7 @@
 
     nix.settings = {
       substituters = [
-        "http://v3x-teapot:8082/v3x"
+        "https://cache.v3x.host/v3x"
       ];
       trusted-public-keys = [
         "v3x:KkXZj5H0cOzciurQuabgGocSsZjXZplwgqVWh8Va5s8="

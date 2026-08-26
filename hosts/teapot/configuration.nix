@@ -6,6 +6,9 @@
     ...
   }: {
     imports = [
+      self.nixosModules.wireguard
+      self.nixosModules.dns
+      self.nixosModules.proxy
       self.nixosModules.peripheral
       self.nixosModules.teapotInference
       self.nixosModules.litellm

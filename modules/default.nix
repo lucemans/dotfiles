@@ -5,6 +5,7 @@
     ./ethereum
     ./profiles
     ./services
+    ./network
     ./system
   ];
 }

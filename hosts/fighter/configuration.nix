@@ -7,6 +7,8 @@
     ...
   }: {
     imports = [
+      self.nixosModules.wireguard
+      self.nixosModules.dns
       self.nixosModules.audio
       self.nixosModules.spotify
       self.nixosModules.code

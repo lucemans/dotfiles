@@ -15,17 +15,13 @@
       '';
     };
 
-    networking.firewall.allowedTCPPorts = [
-      8082
-    ];
-
     services.atticd = {
       enable = true;
 
       environmentFile = config.sops.templates.atticd_env.path;
 
       settings = {
-        listen = "0.0.0.0:8082";
+        listen = "${config.v3x.address}:8082";
         jwt = {};
         chunking = {
           # The minimum NAR size to trigger chunking
@@ -44,6 +40,12 @@
           max-size = 256 * 1024; # 256 KiB
         };
       };
+    };
+
+    # listen binds a tunnel address that does not exist until wg0 is up.
+    systemd.services.atticd = {
+      after = ["wireguard-wg0.service"];
+      wants = ["wireguard-wg0.service"];
     };
   };
 }

@@ -49,7 +49,7 @@
 
     services.litellm = {
       enable = true;
-      host = "0.0.0.0";
+      host = config.v3x.address;
       port = 4000;
       environmentFile = config.sops.templates.teapot_litellm_env.path;
       environment = {
@@ -70,13 +70,9 @@
               api_base = "http://127.0.0.1:8081/v1";
               api_key = "local";
             };
-          }
-          {
-            model_name = "v3x-m/muse-glimmer-30b";
-            litellm_params = {
-              model = "openai/muse-glimmer-30b";
-              api_base = "http://127.0.0.1:8081/v1";
-              api_key = "local";
+            model_info = {
+              input_cost_per_token = 0.00000020;
+              output_cost_per_token = 0.00000020;
             };
           }
           {
@@ -86,6 +82,10 @@
               model = "openai/qwen3.6-35b-a3b";
               api_key = "local";
             };
+            model_info = {
+              input_cost_per_token = 0.00000020;
+              output_cost_per_token = 0.00000020;
+            };
           }
           {
             model_name = "v3x-m/gpt-oss-20b";
@@ -94,6 +94,10 @@
               model = "openai/gpt-oss-20b";
               api_key = "local";
             };
+            model_info = {
+              input_cost_per_token = 0.00000018;
+              output_cost_per_token = 0.00000020;
+            };
           }
           {
             model_name = "v3x-m/qwen3-coder-30b-a3b";
@@ -101,6 +105,34 @@
               api_base = "https://ollama.v3x.sh/v1";
               model = "openai/qwen3-coder-30b-a3b";
               api_key = "local";
+            };
+            model_info = {
+              input_cost_per_token = 0.00000020;
+              output_cost_per_token = 0.00000020;
+            };
+          }
+          {
+            model_name = "v3x-m/sweep-next-edit-v2-7b";
+            litellm_params = {
+              api_base = "https://ollama.v3x.sh/v1";
+              model = "openai/sweep-next-edit-v2-7b";
+              api_key = "local";
+            };
+            model_info = {
+              input_cost_per_token = 0.00000002;
+              output_cost_per_token = 0.00000002;
+            };
+          }
+          {
+            model_name = "v3x-m/qwen3.8-27b";
+            litellm_params = {
+              api_base = "https://ollama.v3x.sh/v1";
+              model = "openai/qwen3.8-27b";
+              api_key = "local";
+            };
+            model_info = {
+              input_cost_per_token = 0.00000002;
+              output_cost_per_token = 0.00000002;
             };
           }
           {
@@ -133,7 +165,9 @@
 
     systemd.services.litellm = {
       requires = ["postgresql.service"];
-      after = ["postgresql.service"];
+      # host binds a tunnel address that does not exist until wg0 is up.
+      after = ["postgresql.service" "wireguard-wg0.service"];
+      wants = ["wireguard-wg0.service"];
       path = [pkgs.openssl];
       # serviceConfig = {
       # TimeoutStartSec = "2min";

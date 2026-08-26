@@ -139,6 +139,7 @@
       kdePackages.dolphin
       kdePackages.kate
       pkgs.pinentry-qt
+      inputs.attic.packages.${pkgs.stdenv.hostPlatform.system}.attic
     ];
   };
 }

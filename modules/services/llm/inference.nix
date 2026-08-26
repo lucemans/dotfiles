@@ -17,10 +17,6 @@
       package = config.boot.kernelPackages.nvidiaPackages.latest;
     };
 
-    networking.firewall.allowedTCPPorts = [
-      4000
-    ];
-
     networking.hosts."10.90.0.11" = ["ollama.v3x.sh"];
 
     systemd.tmpfiles.rules = [
