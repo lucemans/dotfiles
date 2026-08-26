@@ -15,6 +15,10 @@
       '';
     };
 
+    networking.firewall.allowedTCPPorts = [
+      8082
+    ];
+
     services.atticd = {
       enable = true;
 
