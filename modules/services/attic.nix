@@ -11,7 +11,7 @@
     sops.templates.atticd_env = {
       mode = "0400";
       content = ''
-        ATTIC_SERVER_TOKEN_RS256_SECRET=${config.sops.placeholder.attic_server_token}
+        ATTIC_SERVER_TOKEN_RS256_SECRET_BASE64=${config.sops.placeholder.attic_server_token}
       '';
     };
 
