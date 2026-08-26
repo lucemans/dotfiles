@@ -29,16 +29,25 @@
       '';
     };
   in {
-    # imports = [
-    #   inputs.nix-index-database.nixosModules.nix-index
-    # ];
+    imports = [
+      # inputs.nix-index-database.nixosModules.nix-index
+      # inputs.attic.
+    ];
     # programs.nix-index-database.comma.enable = true;
 
     nix.settings.experimental-features = ["nix-command" "flakes"];
     programs.nix-ld.enable = true;
     nixpkgs.config.allowUnfree = true;
 
+    nix.settings = {
+      trusted-substituters = [
+        "http://v3x-teapot:8082/v3x"
+      ];
+      trusted-public-keys = ["v3x:KkXZj5H0cOzciurQuabgGocSsZjXZplwgqVWh8Va5s8="];
+    };
+
     environment.systemPackages = with pkgs; [
+      inputs.attic.packages.${pkgs.stdenv.hostPlatform.system}.attic
       nil
       nixd
       statix
