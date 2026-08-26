@@ -95,6 +95,7 @@
       9200
       8545
       3000
+      8082
     ];
     networking.firewall.allowedUDPPorts = [
       30303
