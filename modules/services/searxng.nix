@@ -26,8 +26,7 @@
       enable = true;
       package = pkgs.searxng;
       redisCreateLocally = true;
-
-      openFirewall = true;
+      openFirewall = false;
 
       environmentFile = config.sops.templates."searxng.env".path;
 
@@ -74,7 +73,7 @@
           "Tracker URL remover"
         ];
         server = {
-          bind_address = "0.0.0.0";
+          bind_address = config.v3x.address;
           port = 8888;
           secret_key = config.sops.secrets."searxng-secret-key".path;
         };

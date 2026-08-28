@@ -18,6 +18,11 @@ rec {
       upstream = "${hosts.v3x-teapot.address}:8082";
       access = ["f2"];
     };
+    search = {
+      name = "search.${zone}";
+      upstream = "${hosts.v3x-teapot.address}:8888";
+      access = ["f2"];
+    };
     inference = {
       name = "inference.${zone}";
       upstream = "${hosts.v3x-teapot.address}:4000";
