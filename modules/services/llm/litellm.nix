@@ -141,6 +141,20 @@
             model_info.base_model = "gpt-5.6-luna";
           }
           {
+            model_name = "z-ai/glm-5.3-flash";
+            litellm_params = {
+              model = "openrouter/z-ai/glm-5.3-flash";
+              provider = {
+                order = [
+                  "baseten"
+                  "deepinfra"
+                  "z-ai"
+                ];
+                allow_fallbacks = true;
+              };
+            };
+          }
+          {
             model_name = "zeroparams/jonatan";
             litellm_params = {
               api_base = "https://zeroparams.itdata.nu/v1";
