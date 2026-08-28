@@ -86,6 +86,10 @@
           };
         };
 
+        meetings.providers = {
+          "jitsi" = ["eu.meet.ethereum.org"];
+        };
+
         notifications.stingers.doorbell = {
           file = "doorbell.webm";
           max_duration = "2500ms";
