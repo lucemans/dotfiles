@@ -142,6 +142,7 @@
           }
           {
             model_name = "z-ai/glm-5.3-flash";
+            model_info.base_model = "z-ai/glm-5.3-flash";
             litellm_params = {
               model = "openrouter/z-ai/glm-5.3-flash";
               provider = {
