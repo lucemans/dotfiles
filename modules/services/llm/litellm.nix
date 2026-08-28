@@ -148,7 +148,6 @@
               provider = {
                 order = [
                   "baseten"
-                  "deepinfra"
                   "z-ai"
                 ];
                 allow_fallbacks = true;
