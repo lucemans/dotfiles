@@ -1,0 +1,27 @@
+prefer-no-csd
+
+hotkey-overlay {
+    skip-at-startup
+}
+
+cursor {
+    hide-after-inactive-ms 60000
+}
+
+layout {
+    gaps 0
+    focus-ring {
+        off
+    }
+    border {
+        off
+    }
+    default-column-width {}
+}
+
+binds {
+    Mod+Shift+Slash { show-hotkey-overlay; }
+    Mod+Q { close-window; }
+    Mod+Shift+E { quit; }
+    Ctrl+Alt+Delete { quit; }
+}
