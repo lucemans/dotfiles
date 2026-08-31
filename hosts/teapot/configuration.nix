@@ -14,6 +14,7 @@
       self.nixosModules.litellm
       self.nixosModules.searxng
       self.nixosModules.attic
+      self.nixosModules.asterisk
     ];
 
     programs.git = {

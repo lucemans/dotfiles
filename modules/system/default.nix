@@ -4,8 +4,8 @@
     ./nvim
     ./shell
     ./theme
+    ./nix
     ./environment.nix
     ./kitty.nix
-    ./nix.nix
   ];
 }

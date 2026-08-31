@@ -6,6 +6,7 @@
     ./launchpi
     ./mattermost
     ./mission
+    ./asterisk
     ./searxng.nix
     ./attic.nix
   ];
