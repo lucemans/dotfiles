@@ -30,6 +30,7 @@
     };
     deploy = pkgs.writeShellApplication {
       name = "deploy";
+      excludeShellChecks = ["SC2029"];
 
       runtimeInputs = [
         inputs.attic.packages.${pkgs.stdenv.hostPlatform.system}.attic
@@ -46,20 +47,23 @@
         host="$1"
 
         echo "==> Building $host"
-        built="$(
+        out="$(
           nix build \
             "/etc/nixos#nixosConfigurations.$host.config.system.build.toplevel" \
             --no-link \
             --print-out-paths
         )"
 
-        echo "==> Pushing $built to Attic"
-        attic push v3x "\$built"
+        echo "==> Pushing $out to Attic"
+        attic push v3x:v3x "$out"
 
-        echo "==> Activating on $host"
+        echo "==> copying to $host"
+        nix copy --to "ssh://$host" --substitute-on-destination "$out"
+
+        echo "==> Activating"
         ssh "$host" \
-          "sudo nix-store --realise '\$built' &&
-           sudo '\$built/bin/switch-to-configuration' switch"
+          "sudo nix-env -p /nix/var/nix/profiles/system --set '$out' && \
+           sudo '$out/bin/switch-to-configuration' switch"
       '';
     };
   in {

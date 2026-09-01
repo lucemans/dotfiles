@@ -73,6 +73,7 @@
           telescope-fzf-native-nvim
           telescope-nvim
           vim-startify
+          which-key-nvim
           midjournal.midjournal-nvim
         ];
       };

@@ -42,3 +42,14 @@ vim.g.startify_change_to_vcs_root = 0
 vim.g.startify_lists = {
   { header = { "  Recent files" }, type = "files" },
 }
+
+local which_key = require("which-key")
+
+which_key.setup({
+  preset = "helix",
+})
+
+which_key.add({
+  { "<leader>g", group = "Git" },
+  { "<leader>q", group = "Session" },
+})
