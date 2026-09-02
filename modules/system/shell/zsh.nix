@@ -83,14 +83,6 @@
 
         alias reload-plasma='systemctl --user restart plasma-plasmashell.service'
 
-        ssh() {
-          if [[ -t 0 && -t 1 ]] && command -v kitten >/dev/null; then
-            kitten ssh "$@"
-          else
-            command ssh "$@"
-          fi
-        }
-
         ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=8'
         ZSH_AUTOSUGGEST_STRATEGY=(history completion)
 

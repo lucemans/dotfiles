@@ -136,6 +136,10 @@
             to = 1764;
           }
         ];
+        extraCommands = ''
+          iptables -A nixos-fw -s 10.0.0.227 -p udp --sport 10000:20000 -j ACCEPT
+          iptables -A nixos-fw -s 100.127.0.127 -p udp --sport 10000:20000 -j ACCEPT
+        '';
       };
 
       hosts = {

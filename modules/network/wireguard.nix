@@ -63,6 +63,11 @@ in {
           iptables -A v3x-guests -j v3x-guest-allow
           iptables -A v3x-guests -j DROP
           iptables -I nixos-fw 1 -i wg0 -s ${guests} -j v3x-guests
+        ''
+        + lib.optionalString (!isHub) ''
+          # applications that bind to the default route address (sofia-sip) would
+          # otherwise be dropped by the hub, which allows this peer's address only.
+          iptables -t nat -A POSTROUTING -o wg0 ! -s ${me.address} -j SNAT --to-source ${me.address}
         '';
 
       networking.firewall.extraStopCommands =
@@ -79,6 +84,9 @@ in {
           iptables -X v3x-guests 2>/dev/null || true
           iptables -F v3x-guest-allow 2>/dev/null || true
           iptables -X v3x-guest-allow 2>/dev/null || true
+        ''
+        + lib.optionalString (!isHub) ''
+          iptables -t nat -D POSTROUTING -o wg0 ! -s ${me.address} -j SNAT --to-source ${me.address} 2>/dev/null || true
         '';
 
       boot.kernel.sysctl."net.ipv4.ip_forward" = lib.mkIf isHub 1;
