@@ -22,7 +22,12 @@
 
       settings = {
         listen = "${config.v3x.address}:8082";
+        api-endpoint = "https://cache.v3x.host";
         jwt = {};
+        garbage-collection = {
+          interval = "12 hours";
+          default-retention-period = "3 months";
+        };
         chunking = {
           # The minimum NAR size to trigger chunking
           #

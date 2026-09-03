@@ -18,10 +18,13 @@
     nixpkgs.config.allowUnfree = true;
 
     nix.settings = {
-      trusted-substituters = [
+      substituters = [
         "https://cache.v3x.host/v3x"
       ];
       trusted-public-keys = ["v3x:KkXZj5H0cOzciurQuabgGocSsZjXZplwgqVWh8Va5s8="];
+      fallback = true;
+      connect-timeout = 5;
+      download-attempts = 3;
     };
 
     environment.systemPackages = with pkgs; [
