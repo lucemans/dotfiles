@@ -90,6 +90,8 @@
           command = "kitty";
         };
 
+        configFile.baloofilerc."Basic Settings"."Indexing-Enabled" = false;
+
         panels = [
           {
             location = "top";

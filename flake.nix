@@ -41,6 +41,7 @@
     missiond.inputs.nixpkgs.follows = "nixpkgs";
 
     attic.url = "github:zhaofengli/attic";
+    voxtype.url = "github:peteonrails/voxtype";
   };
 
   outputs = inputs:

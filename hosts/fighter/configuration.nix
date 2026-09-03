@@ -18,6 +18,7 @@
       self.nixosModules.doubletake
       self.nixosModules.keyhold
       self.nixosModules.midjournal
+      self.nixosModules.voxtype
     ];
 
     boot.loader = {
