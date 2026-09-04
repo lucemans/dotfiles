@@ -217,7 +217,7 @@
                 };
                 proxyExtras = pythonPackages.buildPythonPackage {
                   pname = "litellm-proxy-extras";
-                  version = "0.4.84";
+                  version = "0.4.86";
                   pyproject = true;
                   src = super.litellm.src;
                   sourceRoot = "source/litellm-proxy-extras";
