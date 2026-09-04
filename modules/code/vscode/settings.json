@@ -1,96 +1,63 @@
 {
-    "window.titleBarStyle": "custom",
-    "[typescriptreact]": {
-        "editor.defaultFormatter": "vscode.typescript-language-features"
-    },
-    "typescript.updateImportsOnFileMove.enabled": "always",
-    "editor.fontFamily": "'Hack FC Ligatured', 'Hack', 'Fira Code', 'Hack', 'Droid Sans Mono', 'Comic Sans MS', 'monospace', monospace, 'Droid Sans Fallback'",
-    "editor.fontLigatures": true,
-    "[typescript]": {
-        "editor.defaultFormatter": "vscode.typescript-language-features"
-    },
-    "editor.snippetSuggestions": "none",
-    "editor.minimap.enabled": false,
-    "breadcrumbs.enabled": true,
-    "editor.renderWhitespace": "none",
-    "editor.renderControlCharacters": false,
-    "git.enableSmartCommit": true,
-    "explorer.confirmDragAndDrop": false,
-    "C_Cpp.updateChannel": "Insiders",
-    "terminal.integrated.shell.linux": "/bin/bash",
-    "[javascript]": {
-        "editor.defaultFormatter": "vscode.typescript-language-features"
-    },
-    "[rust]": {
-        "editor.defaultFormatter": "rust-lang.rust-analyzer"
-    },
-    "[json]": {
-        "editor.defaultFormatter": "vscode.json-language-features"
-    },
-    "[scss]": {
+    "[css]": {
         "editor.defaultFormatter": "sibiraj-s.vscode-scss-formatter"
     },
     "[html]": {
         "editor.defaultFormatter": "vscode.html-language-features"
     },
-    "[jsonc]": {
+    "[javascript]": {
+        "editor.defaultFormatter": "vscode.typescript-language-features"
+    },
+    "[javascriptreact]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[json]": {
         "editor.defaultFormatter": "vscode.json-language-features"
     },
-    "workbench.editorAssociations": {
-        "*.ipynb": "jupyter.notebook.ipynb"
-    },
-    "editor.cursorBlinking": "expand",
-    "liveServer.settings.donotShowInfoMsg": true,
-    "[yaml]": {
-        "editor.defaultFormatter": "redhat.vscode-yaml"
-    },
-    "javascript.updateImportsOnFileMove.enabled": "always",
-    "workbench.settings.enableNaturalLanguageSearch": false,
-    "[css]": {
-        "editor.defaultFormatter": "sibiraj-s.vscode-scss-formatter"
-    },
-    "liveshare.anonymousGuestApproval": "accept",
-    "redhat.telemetry.enabled": false,
-    "warmUp.changeCount": "15",
-    "warmUp.changeTypingMode": "code snippets",
-    "i18n-ally.displayLanguage": "en",
-    "svelte.enable-ts-plugin": true,
-    "liveshare.presence": true,
-    "prettier.tabWidth": 4,
-    "prettier.trailingComma": "all",
-    "bracketPairColorizer.depreciation-notice": false,
-    "[vue]": {
-        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    "[jsonc]": {
+        "editor.defaultFormatter": "vscode.json-language-features"
     },
     "[markdown]": {
         "editor.defaultFormatter": "yzhang.markdown-all-in-one"
     },
-    "editor.linkedEditing": true,
-    "Lua.telemetry.enable": false,
-    "solidity.packageDefaultDependenciesContractsDirectory": "src",
-    "solidity.packageDefaultDependenciesDirectory": "lib",
-    "workbench.startupEditor": "none",
-    "liveshare.languages.allowGuestCommandControl": true,
-    "git.autofetch": true,
-    "liveshare.publishWorkspaceInfo": true,
-    "[xml]": {
-        "editor.defaultFormatter": "redhat.vscode-xml"
+    "[mdx]": {
+        "editor.defaultFormatter": "unifiedjs.vscode-mdx"
     },
-    "hardhat.telemetry": false,
+    "[python]": {
+        "editor.formatOnType": true
+    },
+    "[rust]": {
+        "editor.defaultFormatter": "rust-lang.rust-analyzer"
+    },
+    "[scss]": {
+        "editor.defaultFormatter": "sibiraj-s.vscode-scss-formatter"
+    },
     "[solidity]": {
         "editor.defaultFormatter": "JuanBlanco.solidity"
     },
-    "svelte.plugin.svelte.note-new-transformation": false,
-    "workbench.editor.labelFormat": "short",
-    "editor.inlineSuggest.enabled": true,
-    "github.copilot.enable": {
-        "*": true,
-        "plaintext": false,
-        "markdown": true,
-        "scminput": false,
-        "yaml": true,
-        "typescript": true
+    "[typescript]": {
+        "editor.defaultFormatter": "vscode.typescript-language-features"
     },
+    "[typescriptreact]": {
+        "editor.defaultFormatter": "vscode.typescript-language-features"
+    },
+    "[vue]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[xml]": {
+        "editor.defaultFormatter": "redhat.vscode-xml"
+    },
+    "[yaml]": {
+        "editor.defaultFormatter": "redhat.vscode-yaml"
+    },
+    "animations.Enabled": true,
+    "animations.Install-Method": "Custom UI Style",
+    "bracketPairColorizer.depreciation-notice": false,
+    "breadcrumbs.enabled": true,
+    "C_Cpp.updateChannel": "Insiders",
+    "cSpell.enableFiletypes": [
+        "mdx"
+    ],
     "cSpell.userWords": [
         "abigen",
         "ccip",
@@ -144,33 +111,99 @@
         "XMRP",
         "zcount"
     ],
-    "[javascriptreact]": {
-        "editor.defaultFormatter": "esbenp.prettier-vscode"
-    },
-    "window.dialogStyle": "custom",
-    "[python]": {
-        "editor.formatOnType": true
-    },
-    "solidity.telemetry": false,
+    "dev.containers.gpuAvailability": "none",
+    "editor.cursorBlinking": "expand",
+    "editor.fontFamily": "'Hack FC Ligatured', 'Hack', 'Fira Code', 'Hack', 'Droid Sans Mono', 'Comic Sans MS', 'monospace', monospace, 'Droid Sans Fallback'",
+    "editor.fontLigatures": true,
+    "editor.inlineSuggest.enabled": true,
+    "editor.linkedEditing": true,
+    "editor.minimap.enabled": false,
+    "editor.renderControlCharacters": false,
+    "editor.renderWhitespace": "none",
+    "editor.snippetSuggestions": "none",
     "errorLens.excludeBySource": [
         "ts(2503)"
     ],
-    // "typescript.inlayHints.functionLikeReturnTypes.enabled": true,
-    // "typescript.inlayHints.parameterNames.enabled": "all",
-    // "typescript.inlayHints.variableTypes.enabled": true,
-    // "typescript.inlayHints.propertyDeclarationTypes.enabled": true,
-    // "typescript.inlayHints.parameterTypes.enabled": true,
-    "rust-analyzer.check.command": "clippy",
-    "mdx.experimentalLanguageServer": true,
+    "explorer.confirmDragAndDrop": false,
     "explorer.excludeGitIgnore": true,
-    "window.zoomLevel": 1,
-    "workbench.iconTheme": "vscode-icons",
-    "[mdx]": {
-        "editor.defaultFormatter": "unifiedjs.vscode-mdx"
+    "extensions.autoUpdate": "off",
+    "files.associations": {
+        "*.yaml": "yaml"
     },
-    "cSpell.enableFiletypes": [
-        "mdx"
+    "firedbg.showWelcome": false,
+    "git.autofetch": false,
+    "git.blame.editorDecoration.enabled": true,
+    "git.enableSmartCommit": true,
+    "github.copilot.enable": {
+        "*": true,
+        "markdown": true,
+        "plaintext": false,
+        "scminput": false,
+        "typescript": true,
+        "yaml": true
+    },
+    "hardhat.telemetry": false,
+    "i18n-ally.displayLanguage": "en",
+    "javascript.updateImportsOnFileMove.enabled": "always",
+    "js/ts.implicitProjectConfig.checkJs": true,
+    "liveServer.settings.donotShowInfoMsg": true,
+    "liveshare.anonymousGuestApproval": "accept",
+    "liveshare.presence": true,
+    "llama-vscode.ai_model": "sweep-next-edit-v2-7b",
+    "llama-vscode.ask_install_llamacpp": false,
+    "llama-vscode.completion_models_list": [
+        {
+            "aiModel": "",
+            "endpoint": "https://ollama.v3x.sh/upstream/sweep-next-edit-v2-7b/",
+            "isKeyRequired": false,
+            "localStartCommand": "",
+            "name": "Custom: qwen2.5-coder-7b-fim"
+        }
     ],
+    "llama-vscode.enabled": true,
+    "llama-vscode.endpoint": "https://ollama.v3x.sh/upstream/sweep-next-edit-v2-7b/",
+    "llama-vscode.env_start_last_used": true,
+    "llama-vscode.env_start_last_used_confirm": false,
+    "llama-vscode.envs_list": [
+        {
+            "complEnabled": true,
+            "completion": {
+                "aiModel": "",
+                "endpoint": "https://ollama.v3x.sh/upstream/sweep-next-edit-v2-7b/",
+                "isKeyRequired": false,
+                "localStartCommand": "",
+                "name": "Custom: sweep-next-edit-v2-7b"
+            },
+            "description": "mediabus coder qwen2.5",
+            "envStartLastUsed": true,
+            "name": "mediabus",
+            "ragEnabled": true
+        }
+    ],
+    "llama-vscode.max_parallel_completions": 1,
+    "llama-vscode.n_predict": 64,
+    "llama-vscode.rag_enabled": true,
+    "llama-vscode.t_max_predict_ms": 1000,
+    "llama-vscode.t_max_prompt_ms": 1000,
+    "llama-vscode.tool_ask_user_enabled": false,
+    "llama-vscode.tool_create_agent_enabled": false,
+    "llama-vscode.tool_custom_eval_tool_enabled": false,
+    "llama-vscode.tool_custom_tool_enabled": false,
+    "llama-vscode.tool_delegate_task_enabled": false,
+    "llama-vscode.tool_delete_file_enabled": false,
+    "llama-vscode.tool_edit_file_enabled": false,
+    "llama-vscode.tool_get_diff_enabled": false,
+    "llama-vscode.tool_get_errors_enabled": false,
+    "llama-vscode.tool_list_directory_enabled": false,
+    "llama-vscode.tool_llama_vscode_help_enabled": false,
+    "llama-vscode.tool_read_file_enabled": false,
+    "llama-vscode.tool_regex_search_enabled": false,
+    "llama-vscode.tool_rename_symbol_enabled": false,
+    "llama-vscode.tool_run_terminal_command_enabled": false,
+    "llama-vscode.tool_search_source_enabled": false,
+    "llama-vscode.tool_search_tools_enabled": false,
+    "llama-vscode.tool_update_todo_list_enabled": false,
+    "Lua.telemetry.enable": false,
     "luc-disabled-editor.tokenColorCustomizations": {
         "comments": "#FF9900",
         "functions": "#569AFF",
@@ -179,111 +212,7 @@
         "types": "#E34631",
         "variables": "#FF0099"
     },
-    "cursor.cpp.disabledLanguages": [
-        "plaintext",
-        "scminput"
-    ],
-    "animations.Enabled": true,
-    "vscode_custom_css.imports": [],
-    "animations.Install-Method": "Custom UI Style",
-    "custom-ui-style.external.imports": [
-        "file:///home/luc/.cursor/extensions/brandonkirbyson.vscode-animations-2.0.7/dist/updateHandler.js"
-    ],
-    "js/ts.implicitProjectConfig.checkJs": true,
-    "window.customTitleBarVisibility": "auto",
-    "workbench.panel.defaultLocation": "bottom",
-    "firedbg.showWelcome": false,
-    "update.releaseTrack": "dev",
-    "cursor.composer.shouldAllowCustomModes": true,
-    "terminal.integrated.windowsEnableConpty": false,
-    "terminal.integrated.gpuAcceleration": "off",
-    "dev.containers.gpuAvailability": "none",
-    "extensions.autoUpdate": "off",
-    "git.blame.editorDecoration.enabled": true,
-    "files.associations": {
-        "*.yaml": "yaml"
-    },
-    "cursor.terminal.usePreviewBox": true,
-    "cursor.composer.queueMessageDefaultBehavior": "queue",
-    "workbench.colorTheme": "GitHub Light",
-    "tailwindCSS.classFunctions": [
-        "cva",
-        "clsx",
-        "cn",
-        "tv"
-    ],
-    "workbench.editor.enablePreview": false,
-    "update.mode": "silentlyApplyOnQuit",
-    "terminal.integrated.automationProfile.linux": {},
-    "terminal.integrated.defaultProfile.linux": "bash",
-    "yaml.schemas": {
-        "https://json.schemastore.org/traefik-v3.json": [
-            "traefik.yaml",
-            "traefik.yml",
-            "**/traefik.yaml",
-            "**/traefik.yml",
-        ],
-        "https://www.schemastore.org/traefik-v3-file-provider.json": [
-            "provider-*.yml"
-        ]
-    },
-    "cursor.cpp.enablePartialAccepts": true,
-    "window.autoDetectColorScheme": false,
-    "workbench.agentsWindowButton.enabled": false,
-    "llama-vscode.ask_install_llamacpp": false,
-    "llama-vscode.tool_run_terminal_command_enabled": false,
-    "llama-vscode.tool_search_source_enabled": false,
-    "llama-vscode.tool_read_file_enabled": false,
-    "llama-vscode.tool_list_directory_enabled": false,
-    "llama-vscode.tool_regex_search_enabled": false,
-    "llama-vscode.tool_delete_file_enabled": false,
-    "llama-vscode.tool_get_diff_enabled": false,
-    "llama-vscode.tool_edit_file_enabled": false,
-    "llama-vscode.tool_ask_user_enabled": false,
-    "llama-vscode.tool_custom_tool_enabled": false,
-    "llama-vscode.tool_custom_eval_tool_enabled": false,
-    "llama-vscode.tool_llama_vscode_help_enabled": false,
-    "llama-vscode.tool_update_todo_list_enabled": false,
-    "llama-vscode.tool_delegate_task_enabled": false,
-    "llama-vscode.tool_create_agent_enabled": false,
-    "llama-vscode.tool_get_errors_enabled": false,
-    "llama-vscode.tool_rename_symbol_enabled": false,
-    "llama-vscode.tool_search_tools_enabled": false,
-    "llama-vscode.completion_models_list": [
-        {
-            "name": "Custom: qwen2.5-coder-7b-fim",
-            "localStartCommand": "",
-            "endpoint": "https://ollama.v3x.sh/upstream/sweep-next-edit-v2-7b/",
-            "aiModel": "",
-            "isKeyRequired": false
-        }
-    ],
-    "llama-vscode.env_start_last_used": true,
-    "llama-vscode.env_start_last_used_confirm": false,
-    "llama-vscode.envs_list": [
-        {
-            "name": "mediabus",
-            "description": "mediabus coder qwen2.5",
-            "completion": {
-                "name": "Custom: sweep-next-edit-v2-7b",
-                "localStartCommand": "",
-                "endpoint": "https://ollama.v3x.sh/upstream/sweep-next-edit-v2-7b/",
-                "aiModel": "",
-                "isKeyRequired": false
-            },
-            "ragEnabled": true,
-            "envStartLastUsed": true,
-            "complEnabled": true
-        }
-    ],
-    "llama-vscode.endpoint": "https://ollama.v3x.sh/upstream/sweep-next-edit-v2-7b/",
-    "llama-vscode.ai_model": "sweep-next-edit-v2-7b",
-    "llama-vscode.rag_enabled": true,
-    "llama-vscode.enabled": true,
-    "llama-vscode.max_parallel_completions": 1,
-    "llama-vscode.n_predict": 64,
-    "llama-vscode.t_max_prompt_ms": 1000,
-    "llama-vscode.t_max_predict_ms": 1000,
+    "mdx.experimentalLanguageServer": true,
     "nix.enableLanguageServer": true,
     "nix.serverPath": "nixd",
     "nix.serverSettings": {
@@ -302,5 +231,63 @@
                 }
             }
         }
+    },
+    "prettier.tabWidth": 4,
+    "prettier.trailingComma": "all",
+    "redhat.telemetry.enabled": false,
+    "rust-analyzer.check.command": "clippy",
+    "solidity.packageDefaultDependenciesContractsDirectory": "src",
+    "solidity.packageDefaultDependenciesDirectory": "lib",
+    "solidity.telemetry": false,
+    "svelte.enable-ts-plugin": true,
+    "svelte.plugin.svelte.note-new-transformation": false,
+    "tailwindCSS.classFunctions": [
+        "cva",
+        "clsx",
+        "cn",
+        "tv"
+    ],
+    "terminal.integrated.automationProfile.linux": {},
+    "terminal.integrated.defaultProfile.linux": "bash",
+    "terminal.integrated.gpuAcceleration": "off",
+    "terminal.integrated.shell.linux": "/bin/zsh",
+    "terminal.integrated.windowsEnableConpty": false,
+    // "typescript.inlayHints.functionLikeReturnTypes.enabled": true,
+    // "typescript.inlayHints.parameterNames.enabled": "all",
+    // "typescript.inlayHints.variableTypes.enabled": true,
+    // "typescript.inlayHints.propertyDeclarationTypes.enabled": true,
+    // "typescript.inlayHints.parameterTypes.enabled": true,
+    "typescript.updateImportsOnFileMove.enabled": "always",
+    "update.mode": "silentlyApplyOnQuit",
+    "update.releaseTrack": "dev",
+    "vscode_custom_css.imports": [],
+    "warmUp.changeCount": "15",
+    "warmUp.changeTypingMode": "code snippets",
+    "window.autoDetectColorScheme": false,
+    "window.customTitleBarVisibility": "auto",
+    "window.dialogStyle": "custom",
+    "window.titleBarStyle": "custom",
+    "window.zoomLevel": 1,
+    "workbench.agentsWindowButton.enabled": false,
+    "workbench.colorTheme": "GitHub Light",
+    "workbench.editor.enablePreview": false,
+    "workbench.editor.labelFormat": "short",
+    "workbench.editorAssociations": {
+        "*.ipynb": "jupyter.notebook.ipynb"
+    },
+    "workbench.iconTheme": "vscode-icons",
+    "workbench.panel.defaultLocation": "bottom",
+    "workbench.settings.enableNaturalLanguageSearch": false,
+    "workbench.startupEditor": "none",
+    "yaml.schemas": {
+        "https://json.schemastore.org/traefik-v3.json": [
+            "traefik.yaml",
+            "traefik.yml",
+            "**/traefik.yaml",
+            "**/traefik.yml"
+        ],
+        "https://www.schemastore.org/traefik-v3-file-provider.json": [
+            "provider-*.yml"
+        ]
     }
 }
