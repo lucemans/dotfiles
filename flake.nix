@@ -39,6 +39,8 @@
     midjournal.inputs.nixpkgs.follows = "nixpkgs";
     missiond.url = "github:v3xlabs/missiond";
     missiond.inputs.nixpkgs.follows = "nixpkgs";
+    voice-channel.url = "github:v3xlabs/voice-channel";
+    voice-channel.inputs.nixpkgs.follows = "nixpkgs";
 
     attic.url = "github:zhaofengli/attic";
     voxtype.url = "github:peteonrails/voxtype";

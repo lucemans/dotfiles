@@ -1,6 +1,8 @@
 {...}: {
   imports = [
     ./agentsview.nix
+    ./runtime.nix
+    ./tripwire.nix
     ./gitgui.nix
     ./auto-commit.nix
     ./vscode
@@ -53,6 +55,7 @@
         pkgs.gitkraken
         selfpkgs.agentsview
         selfpkgs.agentsview-desktop
+        selfpkgs.agent
         pkgs.pi-coding-agent
         pkgs.kubectl
         pkgs.kicad-unstable

@@ -150,7 +150,7 @@ in {
       programs.plasma.hotkeys.commands = {
         "launch-voxtype" = {
           name = "Launch Voxtype";
-          key = "Alt+Shift+T";
+          key = "Scroll Lock";
           command = "voxtype record toggle";
         };
       };

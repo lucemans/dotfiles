@@ -54,6 +54,11 @@
     networking.networkmanager.enable = true;
     time.timeZone = "Europe/Amsterdam";
 
+    sops = {
+      age.keyFile = "/home/luc/.config/sops/age/keys.txt";
+      defaultSopsFile = ../../secrets/mission.sops.yaml;
+    };
+
     programs.niri.enable = true;
     environment.etc."niri/config.kdl".source = missionNiriConfig;
 
@@ -97,15 +102,6 @@
       9200
       8545
     ];
-
-    nix.settings = {
-      substituters = [
-        "https://cache.v3x.host/v3x"
-      ];
-      trusted-public-keys = [
-        "v3x:KkXZj5H0cOzciurQuabgGocSsZjXZplwgqVWh8Va5s8="
-      ];
-    };
 
     environment.systemPackages = [
       pkgs.kitty.terminfo

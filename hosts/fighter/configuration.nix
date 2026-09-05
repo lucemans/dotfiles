@@ -73,6 +73,11 @@
       storageDriver = "btrfs";
     };
 
+    sops = {
+      age.keyFile = "/home/luc/.config/sops/age/keys.txt";
+      defaultSopsFile = ../../secrets/secrets.sops.yaml;
+    };
+
     users.users.luc = {
       isNormalUser = true;
       extraGroups = [
@@ -154,8 +159,6 @@
     #   enable = true;
     #   period = "7d";
     # };
-
-    nix.gc.automatic = true;
 
     nixpkgs.config.allowUnfree = true;
 

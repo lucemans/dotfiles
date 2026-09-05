@@ -11,7 +11,8 @@ human in a browser, not shipped as product code.
 **Push.** `plan_env_plan_push` with `files`: `index.html` plus its assets, each at a
 relative path. Under 512 KB. Use a project-prefixed slug matching `[a-z0-9-]{1,64}`:
 `myproject-auth-refactor`, not `auth-refactor`. Slugs share one global namespace. Reuse a
-slug to add a revision. Give the user the returned URL. Never try to publish beyond this.
+slug to add a revision. Build the files under `.tmp/docs/<slug>/` and push them from
+there. Give the user the returned URL. Never try to publish beyond this.
 
 **Do not open the page yourself.** No local web server, no headless browser, no
 screenshot. A push that returns a URL succeeded, and that is the whole check. To read

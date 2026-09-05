@@ -5,8 +5,6 @@
     lib,
     ...
   }: {
-    # sops.age.keyFile = "/home/luc/.config/sops/age/keys.txt";
-    # sops.defaultSopsFile = ../../secrets/418.sops.yaml;
     sops.secrets."searxng-secret-key" = {
       owner = "searx";
       group = "searx";

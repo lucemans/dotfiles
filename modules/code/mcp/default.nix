@@ -66,6 +66,15 @@ in {
     ./nixos/default.nix
   ];
 
+  perSystem = {pkgs, ...}: let
+    system = pkgs.stdenv.hostPlatform.system;
+  in {
+    packages.mcp-servers = pkgs.symlinkJoin {
+      name = "mcp-servers";
+      paths = map (s: s.from.packages.${system}.${s.command}) (lib.attrValues servers);
+    };
+  };
+
   flake = {
     mcp = {
       opencode = lib.mapAttrs (_: toOpenCode) servers;
@@ -75,14 +84,13 @@ in {
     nixosModules.mcp = {pkgs, ...}: let
       system = pkgs.stdenv.hostPlatform.system;
     in {
-      environment.systemPackages =
-        map (s: s.from.packages.${system}.${s.command}) (lib.attrValues servers)
-        ++ [
-          # Support packages, not servers.
-          inputs.self.packages.${system}.playwright-mcp-icon
-          inputs.self.packages.${system}.playwright-mcp-desktop
-          pkgs.playwright-driver
-        ];
+      environment.systemPackages = [
+        inputs.self.packages.${system}.mcp-servers
+        # Support packages, not servers.
+        inputs.self.packages.${system}.playwright-mcp-icon
+        inputs.self.packages.${system}.playwright-mcp-desktop
+        pkgs.playwright-driver
+      ];
     };
   };
 }

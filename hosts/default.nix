@@ -4,5 +4,6 @@
     ./mission
     ./teapot
     ./point
+    ./voice
   ];
 }

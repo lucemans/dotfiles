@@ -57,6 +57,10 @@
           sops
           age
           jq
+          # Plasma keeps the clipboard in Klipper and ships no CLI for it, so
+          # anything reading a selection from a terminal needs this. Claude
+          # Code's image paste is one such reader.
+          wl-clipboard
           gnupg
           pinentry-qt
 
@@ -85,6 +89,8 @@
       };
 
       sops = {
+        # home-manager carries its own sops-nix module and reads none of the
+        # system-level configuration, so the key source is repeated here.
         age.keyFile = "/home/luc/.config/sops/age/keys.txt";
         defaultSopsFile = ../../secrets/secrets.sops.yaml;
         secrets = {

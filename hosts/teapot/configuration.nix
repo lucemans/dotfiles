@@ -38,16 +38,6 @@
       secrets = {
         teapot_github_pat = {};
       };
-      templates = {
-        cargo-credentials = {
-          content = ''
-            [hello]
-            test = "${config.sops.placeholder.teapot_github_pat}"
-          '';
-          path = "/home/luc/testing.toml";
-          mode = "0600";
-        };
-      };
     };
 
     networking.firewall.allowedTCPPorts = [

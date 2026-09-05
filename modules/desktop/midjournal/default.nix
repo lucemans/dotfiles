@@ -5,8 +5,6 @@
     ];
 
     sops = {
-      age.keyFile = "/home/luc/.config/sops/age/keys.txt";
-      defaultSopsFile = ../../../secrets/secrets.sops.yaml;
       secrets = {
         midjournal_github_token = {
           owner = "luc";

@@ -66,7 +66,9 @@
           export PLAYWRIGHT_MCP_EXECUTABLE_PATH=${chromiumExecutable}
           export PLAYWRIGHT_MCP_CONFIG=${playwrightMcpConfig}
           export PLAYWRIGHT_MCP_USER_DATA_DIR=/home/luc/.cache/ms-playwright/playwright-mcp
-          export PLAYWRIGHT_MCP_OUTPUT_DIR=/home/luc/.cache/playwright-mcp
+          # The server starts in the project directory, which is the only
+          # directory the sandbox binds writable.
+          export PLAYWRIGHT_MCP_OUTPUT_DIR="$PWD/.tmp/screenshots"
           exec playwright-mcp "$@"
         '';
       };

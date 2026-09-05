@@ -414,6 +414,24 @@
         "type": "github"
       }
     },
+    "flake-utils_7": {
+      "inputs": {
+        "systems": "systems_8"
+      },
+      "locked": {
+        "lastModified": 1731533236,
+        "narHash": "sha256-l0KFg5HjrsfsO/JpG+r7fRrqm12kzFHyUHqHCVpMMbI=",
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "rev": "11707dc2f618dd54ca8739b309ec4fc024de578b",
+        "type": "github"
+      },
+      "original": {
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "type": "github"
+      }
+    },
     "gitgui": {
       "inputs": {
         "crane": "crane_2",
@@ -833,6 +851,7 @@
         "prisma-nixpkgs": "prisma-nixpkgs",
         "sops-nix": "sops-nix",
         "tablet": "tablet",
+        "voice-channel": "voice-channel",
         "voxtype": "voxtype",
         "wrapper-modules": "wrapper-modules",
         "wrappers": "wrappers"
@@ -1106,6 +1125,21 @@
         "type": "github"
       }
     },
+    "systems_8": {
+      "locked": {
+        "lastModified": 1681028828,
+        "narHash": "sha256-Vy1rq5AaRuLzOxct8nz4T6wlgyUR7zLU309k9mBC768=",
+        "owner": "nix-systems",
+        "repo": "default",
+        "rev": "da67096a3b9bf56a91d16901293e51ba5b49a27e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-systems",
+        "repo": "default",
+        "type": "github"
+      }
+    },
     "tablet": {
       "inputs": {
         "nixpkgs": [
@@ -1147,9 +1181,30 @@
         "type": "github"
       }
     },
-    "voxtype": {
+    "voice-channel": {
       "inputs": {
         "flake-utils": "flake-utils_6",
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1788632755,
+        "narHash": "sha256-RUuiAf51wWwcxpu407t5jm+v2BPsKDBgDeE2EFsv7Q4=",
+        "owner": "v3xlabs",
+        "repo": "voice-channel",
+        "rev": "8a2eb3159be3712db54b16a4848027357bbcbfa6",
+        "type": "github"
+      },
+      "original": {
+        "owner": "v3xlabs",
+        "repo": "voice-channel",
+        "type": "github"
+      }
+    },
+    "voxtype": {
+      "inputs": {
+        "flake-utils": "flake-utils_7",
         "nixpkgs": "nixpkgs_3"
       },
       "locked": {

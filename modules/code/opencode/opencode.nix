@@ -1,4 +1,20 @@
 {inputs, ...}: {
+  perSystem = {pkgs, ...}: {
+    packages.opencode = inputs.wrappers.lib.wrapPackage {
+      inherit pkgs;
+      package = pkgs.opencode;
+      runtimeInputs = with pkgs; [
+        lua-language-server
+        marksman
+        mdx-language-server
+        taplo
+        typescript-language-server
+        vscode-langservers-extracted
+        yaml-language-server
+      ];
+    };
+  };
+
   flake.nixosModules.opencode = {
     self,
     pkgs,
@@ -12,26 +28,13 @@
         mcp = self.mcp.opencode;
         provider = config.inference.providers;
       };
-    opencode = inputs.wrappers.lib.wrapPackage {
-      inherit pkgs;
-      package = pkgs.opencode;
-      runtimeInputs = with pkgs; [
-        lua-language-server
-        marksman
-        mdx-language-server
-        taplo
-        typescript-language-server
-        vscode-langservers-extracted
-        yaml-language-server
-      ];
-    };
   in {
     imports = [
       self.nixosModules.inference
     ];
 
     environment.systemPackages = [
-      opencode
+      self.packages.${pkgs.stdenv.hostPlatform.system}.opencode
       # opencode2
       # opencode2Update
     ];

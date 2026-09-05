@@ -71,6 +71,36 @@ let
 in {
   policy = ./AGENTS.md;
 
+  # The git subcommands AGENTS.md withholds. Read-only git is deliberately
+  # absent. Consumed as permission rules by ./claude and as a pattern by
+  # ../tripwire.nix, so the two can never drift apart.
+  gitMutations = [
+    "add"
+    "am"
+    "apply"
+    "branch"
+    "checkout"
+    "cherry-pick"
+    "clean"
+    "commit"
+    "config"
+    "fetch"
+    "filter-branch"
+    "merge"
+    "pull"
+    "push"
+    "rebase"
+    "remote"
+    "reset"
+    "restore"
+    "revert"
+    "stash"
+    "switch"
+    "tag"
+    "update-ref"
+    "worktree"
+  ];
+
   mkSkillFiles = skillDirectory:
     builtins.listToAttrs (builtins.map (skillName: {
         name = "${skillDirectory}/${skillName}";

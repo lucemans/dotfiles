@@ -1,13 +1,24 @@
-{
+{inputs, ...}: {
   imports = [
     ./deploy.nix
   ];
 
+  perSystem = {system, ...}: {
+    _module.args.pkgs = import inputs.nixpkgs {
+      inherit system;
+      config.allowUnfree = true;
+    };
+  };
+
   flake.nixosModules.nix = {
     self,
+    config,
+    lib,
     pkgs,
     ...
-  }: {
+  }: let
+    onTunnel = config.networking.wireguard.interfaces ? wg0;
+  in {
     imports = [
       self.nixosModules.rollout
     ];
@@ -17,11 +28,12 @@
     programs.nix-ld.enable = true;
     nixpkgs.config.allowUnfree = true;
 
+    nix.gc.automatic = true;
+
+    # cache.v3x.host resolves and routes only over the wg0 tunnel.
     nix.settings = {
-      substituters = [
-        "https://cache.v3x.host/v3x"
-      ];
-      trusted-public-keys = ["v3x:KkXZj5H0cOzciurQuabgGocSsZjXZplwgqVWh8Va5s8="];
+      substituters = lib.mkIf onTunnel ["https://cache.v3x.host/v3x"];
+      trusted-public-keys = lib.mkIf onTunnel ["v3x:KkXZj5H0cOzciurQuabgGocSsZjXZplwgqVWh8Va5s8="];
       fallback = true;
       connect-timeout = 5;
       download-attempts = 3;
