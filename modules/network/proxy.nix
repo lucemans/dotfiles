@@ -1,5 +1,5 @@
 {...}: let
-  inherit (import ./topology.nix) hub zone acmeEmail trusted guests hosts services;
+  inherit (import ./topology.nix) hub zone acmeEmail trusted guests hosts services sections;
 in {
   flake.nixosModules.proxy = {
     config,
@@ -36,19 +36,44 @@ in {
       (_: svc: audience == "trusted" || lib.elem audience svc.access)
       services;
 
-    home = pkgs.linkFarm "v3x-home" (map (audience: {
+    placed = lib.concatMap (section: section.services) sections;
+
+    trailing = lib.filter (key: !lib.elem key placed) (lib.attrNames services);
+
+    laidOut = sections ++ lib.optional (trailing != []) {services = trailing;};
+
+    sectionsFor = audience: let
+      visible = visibleTo audience;
+    in
+      lib.filter (section: section.services != [])
+      (map (section: {
+          title = section.title or null;
+          services =
+            map (key: visible.${key})
+            (lib.filter (key: visible ? ${key}) section.services);
+        })
+        laidOut);
+
+    home = pkgs.linkFarm "v3x-home" ([
+        {
+          name = "icons";
+          path = ./home/icons;
+        }
+      ]
+      ++ map (audience: {
         name = "${audience}.html";
-        path = pkgs.writeText "${audience}.html" (import ./home.nix {
+        path = pkgs.writeText "${audience}.html" (import ./home {
           inherit zone;
-          services = visibleTo audience;
+          sections = sectionsFor audience;
         });
       })
       audiences);
 
+    # Only "/" is rewritten, so that /icons/* still reaches the file server.
     audienceRoute = audience: ''
       @${audience} remote_ip ${lib.concatStringsSep " " (sourcesOf audience)}
       handle @${audience} {
-        rewrite * /${audience}.html
+        rewrite / /${audience}.html
         file_server
       }
     '';
@@ -76,6 +101,16 @@ in {
 
     guestFacing = lib.filterAttrs (_: svc: svc.access != []) services;
   in {
+    # A typo here would silently drop a card instead of failing the build.
+    assertions = [
+      {
+        assertion = lib.all (key: services ? ${key}) placed;
+        message = "topology sections name services that do not exist: ${
+          lib.concatStringsSep ", " (lib.filter (key: !(services ? ${key})) placed)
+        }";
+      }
+    ];
+
     sops.secrets.acme_cloudflare_token = lib.mkIf isHub {};
 
     security.acme = lib.mkIf isHub {

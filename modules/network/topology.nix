@@ -17,40 +17,72 @@ rec {
     cache = {
       name = "cache.${zone}";
       title = "Nix Cache";
+      icon = "attic-assets";
       upstream = "${hosts.v3x-teapot.address}:8082";
       access = ["f2"];
     };
     search = {
       name = "search.${zone}";
       title = "Search";
+      icon = "searxng";
       upstream = "${hosts.v3x-teapot.address}:8888";
       access = ["f0" "f1" "f2"];
     };
     inference = {
       name = "inference.${zone}";
       title = "Inference";
+      icon = "litellm";
       upstream = "${hosts.v3x-teapot.address}:4000";
       access = ["f0" "f1" "f2"];
     };
     mealie = {
       name = "meals.${zone}";
       title = "Recipes";
+      icon = "mealie";
       upstream = "${hosts.v3x-teapot.address}:9000";
       access = ["f0"];
     };
     media = {
       name = "media.${zone}";
       title = "Media";
+      icon = "jellyfin";
       upstream = "10.90.0.11:8096";
       access = ["f0" "f1" "f2"];
     };
     fmedia = {
       name = "fmedia.${zone}";
       title = "Requests";
+      icon = "jellyseerr";
       upstream = "10.90.0.11:5055";
       access = ["f0" "f1" "f2"];
     };
+    home = {
+      name = "hq53.${zone}";
+      title = "Home Assistant";
+      icon = "home-assistant";
+      upstream = "10.0.0.222:8123";
+      access = ["f0"];
+    };
   };
+
+  sections = [
+    {
+      title = "Home";
+      services = ["home" "mealie"];
+    }
+    {
+      title = "Tools";
+      services = ["search" "inference"];
+    }
+    {
+      title = "Media";
+      services = ["media" "fmedia"];
+    }
+    {
+      title = "Infrastructure";
+      services = ["cache"];
+    }
+  ];
 
   hosts = {
     v3x-teapot = {
