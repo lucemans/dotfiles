@@ -10,36 +10,43 @@ rec {
 
   records = {
     "77.162.232.110" = ["wg.${zone}"];
+    ${hosts.${hub}.address} = [zone];
   };
 
   services = {
     cache = {
       name = "cache.${zone}";
+      title = "Nix Cache";
       upstream = "${hosts.v3x-teapot.address}:8082";
       access = ["f2"];
     };
     search = {
       name = "search.${zone}";
+      title = "Search";
       upstream = "${hosts.v3x-teapot.address}:8888";
       access = ["f0" "f1" "f2"];
     };
     inference = {
       name = "inference.${zone}";
+      title = "Inference";
       upstream = "${hosts.v3x-teapot.address}:4000";
       access = ["f0" "f1" "f2"];
     };
     mealie = {
       name = "meals.${zone}";
+      title = "Recipes";
       upstream = "${hosts.v3x-teapot.address}:9000";
       access = ["f0"];
     };
     media = {
       name = "media.${zone}";
+      title = "Media";
       upstream = "10.90.0.11:8096";
       access = ["f0" "f1" "f2"];
     };
     fmedia = {
       name = "fmedia.${zone}";
+      title = "Requests";
       upstream = "10.90.0.11:5055";
       access = ["f0" "f1" "f2"];
     };

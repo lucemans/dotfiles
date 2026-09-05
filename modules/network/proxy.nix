@@ -4,6 +4,7 @@ in {
   flake.nixosModules.proxy = {
     config,
     lib,
+    pkgs,
     ...
   }: let
     isHub = config.networking.hostName == hub;
@@ -17,6 +18,40 @@ in {
     allowedFrom = svc: [trusted] ++ lib.concatMap addressesOf svc.access;
 
     assets = ./data;
+
+    # The trusted subnet reaches every service, so it is an audience without
+    # being a group.
+    audiences =
+      ["trusted"]
+      ++ lib.unique (lib.filter (g: g != null)
+        (lib.mapAttrsToList (_: host: host.group or null) hosts));
+
+    sourcesOf = audience:
+      if audience == "trusted"
+      then [trusted]
+      else addressesOf audience;
+
+    visibleTo = audience:
+      lib.filterAttrs
+      (_: svc: audience == "trusted" || lib.elem audience svc.access)
+      services;
+
+    home = pkgs.linkFarm "v3x-home" (map (audience: {
+        name = "${audience}.html";
+        path = pkgs.writeText "${audience}.html" (import ./home.nix {
+          inherit zone;
+          services = visibleTo audience;
+        });
+      })
+      audiences);
+
+    audienceRoute = audience: ''
+      @${audience} remote_ip ${lib.concatStringsSep " " (sourcesOf audience)}
+      handle @${audience} {
+        rewrite * /${audience}.html
+        file_server
+      }
+    '';
 
     vhost = _: svc:
       lib.nameValuePair "https://${svc.name}" {
@@ -63,6 +98,18 @@ in {
       virtualHosts =
         lib.mapAttrs' vhost services
         // {
+          "https://${zone}" = {
+            useACMEHost = zone;
+            extraConfig = ''
+              bind ${hubAddress}
+              root * ${home}
+
+              ${lib.concatMapStrings audienceRoute audiences}
+              handle {
+                respond 403
+              }
+            '';
+          };
           "https://*.${zone}" = {
             useACMEHost = zone;
             extraConfig = ''
