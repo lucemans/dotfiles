@@ -20,7 +20,10 @@
       secrets = {
         acme_cloudflare_token = {};
         voice_component = {};
-        voice_turn = {};
+        voice_turn = {
+          owner = "turnserver";
+          mode = "0440";
+        };
       };
     };
 

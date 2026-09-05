@@ -1189,11 +1189,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1788632755,
-        "narHash": "sha256-RUuiAf51wWwcxpu407t5jm+v2BPsKDBgDeE2EFsv7Q4=",
+        "lastModified": 1788645122,
+        "narHash": "sha256-XmZD9mZ2jKt/rl/M6Q0NLQLCRGA0UDQ4miihtO8LKH0=",
         "owner": "v3xlabs",
         "repo": "voice-channel",
-        "rev": "8a2eb3159be3712db54b16a4848027357bbcbfa6",
+        "rev": "f373629ba9b21a4e56de32b313e94682c3aabb1e",
         "type": "github"
       },
       "original": {
