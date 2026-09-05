@@ -8,6 +8,7 @@
     ./mission
     ./asterisk
     ./searxng.nix
+    ./mealie.nix
     ./attic.nix
   ];
 }

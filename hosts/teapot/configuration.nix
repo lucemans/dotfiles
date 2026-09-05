@@ -13,6 +13,7 @@
       self.nixosModules.teapotInference
       self.nixosModules.litellm
       self.nixosModules.searxng
+      self.nixosModules.mealie
       self.nixosModules.attic
       self.nixosModules.asterisk
     ];

@@ -21,22 +21,27 @@ rec {
     search = {
       name = "search.${zone}";
       upstream = "${hosts.v3x-teapot.address}:8888";
-      access = ["f2"];
+      access = ["f0" "f1" "f2"];
     };
     inference = {
       name = "inference.${zone}";
       upstream = "${hosts.v3x-teapot.address}:4000";
-      access = ["f1" "f2"];
+      access = ["f0" "f1" "f2"];
+    };
+    mealie = {
+      name = "meals.${zone}";
+      upstream = "${hosts.v3x-teapot.address}:9000";
+      access = ["f0"];
     };
     media = {
       name = "media.${zone}";
       upstream = "10.90.0.11:8096";
-      access = ["f1" "f2"];
+      access = ["f0" "f1" "f2"];
     };
     fmedia = {
       name = "fmedia.${zone}";
       upstream = "10.90.0.11:5055";
-      access = ["f1" "f2"];
+      access = ["f0" "f1" "f2"];
     };
   };
 
@@ -71,7 +76,7 @@ rec {
     v3x-line = {
       publicKey = "O7FY5DfLXXLqpJqV2M8axT5a8lC6QUaGHP+sH9stWDY=";
       address = "100.127.10.10";
-      group = "f1";
+      group = "f0";
     };
     v3x-tan = {
       publicKey = "j4DzO7Wq7Y9vSY+36FzVr8e2HmVlqZJkDWDUWtAcx0E=";
