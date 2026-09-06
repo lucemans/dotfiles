@@ -12,8 +12,10 @@
       self.nixosModules.peripheral
       self.nixosModules.teapotInference
       self.nixosModules.litellm
+      self.nixosModules.librechat
       self.nixosModules.searxng
       self.nixosModules.mealie
+      self.nixosModules.kanidm
       self.nixosModules.attic
       self.nixosModules.asterisk
     ];

@@ -14,6 +14,14 @@ rec {
   };
 
   services = {
+    auth = {
+      name = "auth.${zone}";
+      title = "Identity";
+      icon = "kanidm";
+      # Kanidm speaks TLS only, and its certificate matches the service name.
+      upstream = "https://auth.${zone}:8443";
+      access = ["f0" "f1" "f2"];
+    };
     cache = {
       name = "cache.${zone}";
       title = "Nix Cache";
@@ -63,6 +71,13 @@ rec {
       upstream = "10.0.0.222:8123";
       access = ["f0"];
     };
+    chat = {
+      name = "chat.${zone}";
+      title = "Chat";
+      icon = "librechat";
+      upstream = "${hosts.v3x-teapot.address}:3080";
+      access = ["f0"];
+    };
   };
 
   sections = [
@@ -72,7 +87,7 @@ rec {
     }
     {
       title = "Tools";
-      services = ["search" "inference"];
+      services = ["chat" "search" "inference"];
     }
     {
       title = "Media";
@@ -80,7 +95,7 @@ rec {
     }
     {
       title = "Infrastructure";
-      services = ["cache"];
+      services = ["auth" "cache"];
     }
   ];
 

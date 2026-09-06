@@ -9,6 +9,7 @@
     ./asterisk
     ./searxng.nix
     ./mealie.nix
+    ./kanidm.nix
     ./attic.nix
   ];
 }
