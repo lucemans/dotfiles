@@ -38,7 +38,7 @@ in {
 
         groups.librechat_users = {};
 
-        provision.persons.luc = {
+        persons.luc = {
           displayName = "Luc";
           mailAddresses = ["luc@v3x.email"];
           groups = ["librechat_users"];
