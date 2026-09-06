@@ -11,6 +11,12 @@ in {
     network = "librechat";
     stateDir = "/var/lib/librechat";
 
+    # Pinned so the firewall rule below can name the bridge and its subnet.
+    bridge = "librechat0";
+    subnet = "172.31.7.0/24";
+
+    inference = "${config.services.litellm.host}:${toString config.services.litellm.port}";
+
     # Pinned so the bind mounted data directories keep one owner across
     # rebuilds. The images expect to run as the directory owner.
     id = 2379;
@@ -45,6 +51,7 @@ in {
       teapot_librechat_meili_key.mode = "0400";
       teapot_librechat_postgres_password.mode = "0400";
       teapot_librechat_openid_session_secret.mode = "0400";
+      teapot_librechat_rag_openai_key.mode = "0400";
     };
 
     sops.templates.teapot_librechat_env = {
@@ -73,6 +80,21 @@ in {
         POSTGRES_PASSWORD=${config.sops.placeholder.teapot_librechat_postgres_password}
       '';
     };
+
+    sops.templates.teapot_librechat_rag_env = {
+      mode = "0400";
+      content = ''
+        RAG_OPENAI_API_KEY=${config.sops.placeholder.teapot_librechat_rag_openai_key}
+      '';
+    };
+
+    # litellm binds the tunnel address, so container traffic to it arrives on
+    # the bridge rather than wg0 and is otherwise refused.
+    networking.firewall.extraCommands = ''
+      iptables -A nixos-fw -i ${bridge} -s ${subnet} \
+        -d ${config.services.litellm.host} \
+        -p tcp --dport ${toString config.services.litellm.port} -j ACCEPT
+    '';
 
     systemd.tmpfiles.rules = [
       "d ${stateDir} 0750 librechat librechat -"
@@ -172,7 +194,11 @@ in {
           image = "registry.librechat.ai/danny-avila/librechat-rag-api-dev-lite:latest";
           dependsOn = ["librechat-vectordb"];
           extraOptions = onNetwork;
-          environmentFiles = [config.sops.templates.teapot_librechat_postgres_env.path];
+
+          environmentFiles = [
+            config.sops.templates.teapot_librechat_postgres_env.path
+            config.sops.templates.teapot_librechat_rag_env.path
+          ];
 
           environment = {
             DB_HOST = "librechat-vectordb";
@@ -180,6 +206,10 @@ in {
             POSTGRES_DB = "librechat";
             POSTGRES_USER = "librechat";
             RAG_PORT = toString ragPort;
+
+            EMBEDDINGS_PROVIDER = "openai";
+            EMBEDDINGS_MODEL = "text-embedding-3-small";
+            RAG_OPENAI_BASEURL = "http://${inference}/v1";
           };
         };
       };
@@ -203,7 +233,10 @@ in {
 
           script = ''
             ${docker} network inspect ${network} > /dev/null 2>&1 \
-              || ${docker} network create ${network}
+              || ${docker} network create \
+                   --subnet ${subnet} \
+                   --opt com.docker.network.bridge.name=${bridge} \
+                   ${network}
           '';
         };
 
