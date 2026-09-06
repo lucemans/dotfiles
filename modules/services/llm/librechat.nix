@@ -67,7 +67,10 @@ in {
 
       webSearch = {
         searchProvider = "searxng";
-        searxngInstanceUrl = "http://${searx}";
+        # Checked against webSearchKeys, which rejects a literal value here and
+        # then leaves the provider unconfigured. The address is passed in as
+        # SEARXNG_INSTANCE_URL below.
+        searxngInstanceUrl = "\${SEARXNG_INSTANCE_URL}";
         searxngSearchOptions.engines = searxEngines;
 
         # Keenable needs no key; every reranker does.
@@ -200,6 +203,7 @@ in {
             DOMAIN_CLIENT = "https://${services.chat.name}";
             DOMAIN_SERVER = "https://${services.chat.name}";
             LIBRECHAT_TEMP_CREDENTIALS_PATH = "/app/data/.env.temp";
+            SEARXNG_INSTANCE_URL = "http://${searx}";
 
             # Discovery appends the well-known path to this base url itself.
             OPENID_ISSUER = "https://${services.auth.name}/oauth2/openid/librechat";
