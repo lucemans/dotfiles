@@ -18,6 +18,17 @@ in {
 
     inference = "${config.services.litellm.host}:${toString config.services.litellm.port}";
 
+    searxServer = config.services.searx.settings.server;
+    searx = "${searxServer.bind_address}:${toString searxServer.port}";
+
+    # Ports on the hub that containers reach: the proxy, and the two services
+    # they talk to directly.
+    hubPorts = [
+      "443"
+      (toString config.services.litellm.port)
+      (toString searxServer.port)
+    ];
+
     # Pinned so the bind mounted data directories keep one owner across
     # rebuilds. The images expect to run as the directory owner.
     id = 2379;
@@ -40,9 +51,33 @@ in {
       lib.filter (name: name != "*")
       (map (model: model.model_name) config.services.litellm.settings.model_list);
 
+    # Our instance disables most of what LibreChat asks for by default, and
+    # SearXNG answers an unknown engine with fewer results rather than an error.
+    searxEngines =
+      lib.filter
+      (engine:
+        !(lib.any
+          (entry: entry.name == engine && entry.disabled or false)
+          config.services.searx.settings.engines))
+      ["google" "startpage" "bing" "duckduckgo" "brave"];
+
     librechatConfig = (pkgs.formats.yaml {}).generate "librechat.yaml" {
       version = "1.3.15";
       cache = true;
+
+      webSearch = {
+        searchProvider = "searxng";
+        searxngInstanceUrl = "http://${searx}";
+        searxngSearchOptions.engines = searxEngines;
+
+        # Keenable needs no key; every reranker does.
+        scraperProvider = "keenable";
+        rerankerType = "none";
+
+        # The guard blocks private destinations at connect time, and our own
+        # instance is one.
+        allowedAddresses = [searx];
+      };
 
       endpoints.custom = [
         {
@@ -118,13 +153,13 @@ in {
     };
 
     # Container traffic to a tunnel address arrives on the bridge rather than
-    # on wg0, so it misses the tunnel accept rule. 4000 reaches litellm
-    # directly; 443 reaches kanidm through the proxy, because kanidm hands out
-    # discovery endpoints on its public origin.
+    # on wg0, so it misses the tunnel accept rule. litellm and searx are
+    # reached directly; 443 reaches kanidm through the proxy, because kanidm
+    # hands out discovery endpoints on its public origin.
     networking.firewall.extraCommands = ''
       iptables -A nixos-fw -i ${bridge} -s ${containers} \
         -d ${config.v3x.address} -p tcp \
-        -m multiport --dports 443,${toString config.services.litellm.port} -j ACCEPT
+        -m multiport --dports ${lib.concatStringsSep "," hubPorts} -j ACCEPT
     '';
 
     systemd.tmpfiles.rules = [
