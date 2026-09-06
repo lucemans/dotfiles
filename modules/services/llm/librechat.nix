@@ -4,6 +4,7 @@ in {
   flake.nixosModules.librechat = {
     config,
     lib,
+    pkgs,
     ...
   }: let
     port = 3080;
@@ -33,6 +34,32 @@ in {
     ];
 
     onNetwork = ["--network=${network}"];
+
+    # The wildcard passthrough is not a model anyone can pick from a list.
+    models =
+      lib.filter (name: name != "*")
+      (map (model: model.model_name) config.services.litellm.settings.model_list);
+
+    librechatConfig = (pkgs.formats.yaml {}).generate "librechat.yaml" {
+      version = "1.3.15";
+      cache = true;
+
+      endpoints.custom = [
+        {
+          name = "v3x";
+          apiKey = "\${LITELLM_KEY}";
+          baseURL = "http://${inference}/v1";
+          modelDisplayLabel = "v3x";
+          titleConvo = true;
+          titleModel = "current_model";
+
+          models = {
+            default = models;
+            fetch = false;
+          };
+        }
+      ];
+    };
   in {
     users.users.librechat = {
       isSystemUser = true;
@@ -52,6 +79,7 @@ in {
       teapot_librechat_postgres_password.mode = "0400";
       teapot_librechat_openid_session_secret.mode = "0400";
       teapot_librechat_rag_openai_key.mode = "0400";
+      teapot_librechat_litellm_key.mode = "0400";
     };
 
     sops.templates.teapot_librechat_env = {
@@ -64,6 +92,7 @@ in {
         MEILI_MASTER_KEY=${config.sops.placeholder.teapot_librechat_meili_key}
         OPENID_CLIENT_SECRET=${config.sops.placeholder.teapot_librechat_oauth2_secret}
         OPENID_SESSION_SECRET=${config.sops.placeholder.teapot_librechat_openid_session_secret}
+        LITELLM_KEY=${config.sops.placeholder.teapot_librechat_litellm_key}
       '';
     };
 
@@ -142,6 +171,9 @@ in {
             OPENID_CLIENT_ID = "librechat";
             OPENID_CALLBACK_URL = "/oauth/openid/callback";
             OPENID_SCOPE = "openid profile email";
+            # Kanidm maps name from displayname and emits no given_name, so
+            # the default chain falls through to the mail address.
+            OPENID_NAME_CLAIM = "name";
             OPENID_BUTTON_LABEL = "Sign in with v3x";
             # Kanidm rejects an authorization code flow without PKCE.
             OPENID_USE_PKCE = "true";
@@ -157,6 +189,7 @@ in {
           };
 
           volumes = [
+            "${librechatConfig}:/app/librechat.yaml:ro"
             "${stateDir}/data:/app/data"
             "${stateDir}/images:/app/client/public/images"
             "${stateDir}/logs:/app/logs"
