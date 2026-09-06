@@ -1,5 +1,5 @@
 {...}: let
-  inherit (import ../../network/topology.nix) services;
+  inherit (import ../../network/topology.nix) services containers;
 in {
   flake.nixosModules.librechat = {
     config,
@@ -11,9 +11,9 @@ in {
     network = "librechat";
     stateDir = "/var/lib/librechat";
 
-    # Pinned so the firewall rule below can name the bridge and its subnet.
+    # Pinned so the firewall rule below can name the bridge, and so the
+    # subnet matches the one the proxy allows.
     bridge = "librechat0";
-    subnet = "172.31.7.0/24";
 
     inference = "${config.services.litellm.host}:${toString config.services.litellm.port}";
 
@@ -24,7 +24,7 @@ in {
 
     docker = lib.getExe config.virtualisation.docker.package;
 
-    containers = [
+    containerNames = [
       "librechat"
       "librechat-mongodb"
       "librechat-meilisearch"
@@ -88,12 +88,14 @@ in {
       '';
     };
 
-    # litellm binds the tunnel address, so container traffic to it arrives on
-    # the bridge rather than wg0 and is otherwise refused.
+    # Container traffic to a tunnel address arrives on the bridge rather than
+    # on wg0, so it misses the tunnel accept rule. 4000 reaches litellm
+    # directly; 443 reaches kanidm through the proxy, because kanidm hands out
+    # discovery endpoints on its public origin.
     networking.firewall.extraCommands = ''
-      iptables -A nixos-fw -i ${bridge} -s ${subnet} \
-        -d ${config.services.litellm.host} \
-        -p tcp --dport ${toString config.services.litellm.port} -j ACCEPT
+      iptables -A nixos-fw -i ${bridge} -s ${containers} \
+        -d ${config.v3x.address} -p tcp \
+        -m multiport --dports 443,${toString config.services.litellm.port} -j ACCEPT
     '';
 
     systemd.tmpfiles.rules = [
@@ -116,7 +118,10 @@ in {
           image = "registry.librechat.ai/danny-avila/librechat-dev:latest";
           user = runAs;
           dependsOn = ["librechat-mongodb" "librechat-rag"];
-          extraOptions = onNetwork;
+
+          # The tunnel names live in the host's /etc/hosts, which a container
+          # does not inherit, and the host does not run the tunnel resolver.
+          extraOptions = onNetwork ++ ["--add-host=${services.auth.name}:${config.v3x.address}"];
           ports = ["${config.v3x.address}:${toString port}:${toString port}"];
           environmentFiles = [config.sops.templates.teapot_librechat_env.path];
 
@@ -140,6 +145,10 @@ in {
             OPENID_BUTTON_LABEL = "Sign in with v3x";
             # Kanidm rejects an authorization code flow without PKCE.
             OPENID_USE_PKCE = "true";
+
+            # Without this the scheduler refuses to arm and schedule writes
+            # answer 503, because it cannot prove it is the only replica.
+            SCHEDULES_SINGLE_PROCESS = "true";
 
             ALLOW_EMAIL_LOGIN = "false";
             ALLOW_REGISTRATION = "false";
@@ -216,7 +225,7 @@ in {
     };
 
     systemd.services =
-      lib.genAttrs (map (name: "docker-${name}") containers) (_: {
+      lib.genAttrs (map (name: "docker-${name}") containerNames) (_: {
         after = ["librechat-network.service"];
         requires = ["librechat-network.service"];
       })
@@ -234,7 +243,7 @@ in {
           script = ''
             ${docker} network inspect ${network} > /dev/null 2>&1 \
               || ${docker} network create \
-                   --subnet ${subnet} \
+                   --subnet ${containers} \
                    --opt com.docker.network.bridge.name=${bridge} \
                    ${network}
           '';

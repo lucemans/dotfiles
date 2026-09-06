@@ -8,6 +8,10 @@ rec {
   trusted = "100.127.0.0/24";
   guests = "100.127.10.0/24";
 
+  # Containers on the hub reach the proxy from their own bridge rather than
+  # from the tunnel, so their source address is never one of the peers.
+  containers = "172.31.7.0/24";
+
   records = {
     "77.162.232.110" = ["wg.${zone}"];
     ${hosts.${hub}.address} = [zone];

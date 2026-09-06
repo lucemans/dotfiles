@@ -1,5 +1,5 @@
 {...}: let
-  inherit (import ./topology.nix) hub zone acmeEmail trusted guests hosts services sections;
+  inherit (import ./topology.nix) hub zone acmeEmail trusted guests containers hosts services sections;
 in {
   flake.nixosModules.proxy = {
     config,
@@ -15,7 +15,7 @@ in {
       lib.mapAttrsToList (_: host: host.address)
       (lib.filterAttrs (_: host: host.group or null == group) hosts);
 
-    allowedFrom = svc: [trusted] ++ lib.concatMap addressesOf svc.access;
+    allowedFrom = svc: [trusted containers] ++ lib.concatMap addressesOf svc.access;
 
     assets = ./data;
 
