@@ -71,8 +71,8 @@
               api_key = "local";
             };
             model_info = {
-              input_cost_per_token = 0.00000010;
-              output_cost_per_token = 0.00000010;
+              input_cost_per_token = 0.00000005;
+              output_cost_per_token = 0.00000005;
             };
           }
           {
@@ -143,8 +143,8 @@
               api_key = "local";
             };
             model_info = {
-              input_cost_per_token = 0.00000002;
-              output_cost_per_token = 0.00000002;
+              input_cost_per_token = 0.00000020;
+              output_cost_per_token = 0.00000020;
             };
           }
           {
