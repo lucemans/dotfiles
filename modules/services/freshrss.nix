@@ -49,9 +49,6 @@ in {
           OIDC_REMOTE_USER_CLAIM = "preferred_username";
           OIDC_X_FORWARDED_HEADERS = "X-Forwarded-Host X-Forwarded-Proto";
 
-          # Applies on the first run only. Every other account arrives through
-          # http_auth_auto_register; default-user is the one administrator slot,
-          # so it has to match the name kanidm sends for the administrator.
           FRESHRSS_INSTALL = lib.concatStringsSep " " [
             "--auth-type http_auth"
             "--base-url https://${services.rss.name}"
@@ -65,7 +62,6 @@ in {
       };
     };
 
-    # LISTEN binds a tunnel address that does not exist until wg0 is up.
     systemd.services.docker-freshrss = {
       after = ["wireguard-wg0.service"];
       wants = ["wireguard-wg0.service"];
