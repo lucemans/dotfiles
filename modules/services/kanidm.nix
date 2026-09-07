@@ -31,17 +31,16 @@ in {
       provision = {
         enable = true;
 
-        # The server binds the tunnel address only, so the localhost default
-        # never connects.
         instanceUrl = "https://${services.auth.name}:8443";
         idmAdminPasswordFile = config.sops.secrets.teapot_kanidm_idm_admin_password.path;
 
         groups.librechat_users = {};
+        groups.freshrss_users = {};
 
         persons.luc = {
           displayName = "Luc";
           mailAddresses = ["luc@v3x.email"];
-          groups = ["librechat_users"];
+          groups = ["librechat_users" "freshrss_users"];
         };
 
         systems.oauth2.librechat = {
@@ -51,6 +50,16 @@ in {
           basicSecretFile = config.sops.secrets.teapot_librechat_oauth2_secret.path;
           preferShortUsername = true;
           scopeMaps.librechat_users = ["openid" "profile" "email"];
+        };
+
+        systems.oauth2.freshrss = {
+          displayName = "FreshRSS";
+          # mod_auth_openidc pins its callback to this path.
+          originUrl = "https://${services.rss.name}/i/oidc/";
+          originLanding = "https://${services.rss.name}";
+          basicSecretFile = config.sops.secrets.teapot_freshrss_oauth2_secret.path;
+          preferShortUsername = true;
+          scopeMaps.freshrss_users = ["openid" "profile" "email"];
         };
       };
     };
@@ -62,6 +71,10 @@ in {
         mode = "0400";
       };
       teapot_librechat_oauth2_secret = {
+        owner = "kanidm";
+        mode = "0400";
+      };
+      teapot_freshrss_oauth2_secret = {
         owner = "kanidm";
         mode = "0400";
       };

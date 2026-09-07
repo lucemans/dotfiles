@@ -15,6 +15,7 @@
       self.nixosModules.librechat
       self.nixosModules.searxng
       self.nixosModules.mealie
+      self.nixosModules.freshrss
       self.nixosModules.kanidm
       self.nixosModules.attic
       self.nixosModules.asterisk

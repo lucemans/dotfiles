@@ -82,6 +82,13 @@ rec {
       upstream = "${hosts.v3x-teapot.address}:3080";
       access = ["f0"];
     };
+    rss = {
+      name = "rss.${zone}";
+      title = "Feeds";
+      icon = "freshrss";
+      upstream = "${hosts.v3x-teapot.address}:8090";
+      access = ["f0"];
+    };
   };
 
   sections = [
@@ -91,7 +98,7 @@ rec {
     }
     {
       title = "Tools";
-      services = ["chat" "search" "inference"];
+      services = ["chat" "search" "inference" "rss"];
     }
     {
       title = "Media";
