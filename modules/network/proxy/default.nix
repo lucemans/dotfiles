@@ -19,7 +19,7 @@ in {
 
     allowedFrom = svc: [trusted containers] ++ lib.concatMap addressesOf svc.access;
 
-    assets = ../data;
+    assets = ./data;
 
     # The trusted subnet reaches every service, so it is an audience without
     # being a group.

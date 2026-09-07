@@ -11,7 +11,6 @@ in {
     isHub = config.networking.hostName == hub;
     hubAddress = hosts.${hub}.address;
 
-    # Service names answer with the hub, because the hub is the proxy.
     allRecords =
       records
       // {
