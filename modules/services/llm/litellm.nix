@@ -100,6 +100,18 @@ in {
             };
           }
           {
+            model_name = "v3x-t/piper";
+            litellm_params = {
+              model = "openai/piper";
+              api_base = "http://127.0.0.1:8083/v1";
+              api_key = "local";
+            };
+            model_info = {
+              mode = "audio_speech";
+              health_check_voice = "glados-original";
+            };
+          }
+          {
             model_name = "v3x-m/qwen3.6-35b-a3b";
             litellm_params = {
               api_base = "https://ollama.v3x.sh/v1";

@@ -6,10 +6,18 @@
   }: let
     replacements = {
       pov = "p o v";
+      omg = "oh my god";
+      ffs = "for fucks sake";
+      im = "i am";
+      lgtm = "looks good to me";
+      idk = "i dont know";
+      idc = "i dont care";
+      idm = "i dont mind";
+      omfg = "oh my fucking god";
     };
 
     voices = {
-      cave-johnson = {
+      cave-low = {
         model = {
           url = "https://huggingface.co/davet2001/cave_johnson1/resolve/main/cave_johnson1.onnx";
           hash = "sha256-LHuP+f/Zw0Gk0waaUd0f9ooeXi0d4Fw0jmBCrfIINj8=";
@@ -17,6 +25,28 @@
         config = {
           url = "https://huggingface.co/davet2001/cave_johnson1/resolve/main/cave_johnson1.onnx.json";
           hash = "sha256-Ezikbm5l4hdOzVK7N1yZARB6E0sAGEHpq/pq55UKjXU=";
+        };
+      };
+
+      cave-medium = {
+        model = {
+          url = "https://huggingface.co/lucemans/cave-johnson/resolve/main/models/en_US-cave_johnson-medium-v1.onnx";
+          hash = "sha256-wZtLtufhM+/M6XRuLnJwuwP5X6pVbKzo3+eyi0sOVBs=";
+        };
+        config = {
+          url = "https://huggingface.co/lucemans/cave-johnson/resolve/main/models/en_US-cave_johnson-medium-v1.onnx.json";
+          hash = "sha256-3Gfl7BnN9Kz4qgzl5c2FmL+JDoxH0Gz3BX8BambSaXE=";
+        };
+      };
+
+      cave-medium2 = {
+        model = {
+          url = "https://huggingface.co/lucemans/cave-johnson/resolve/main/models/en_US-cave_johnson-medium-v2.onnx";
+          hash = "sha256-CO9/f78QXkmWks74S0IOjFdyL4ubXTHmaocgON+BUXs=";
+        };
+        config = {
+          url = "https://huggingface.co/lucemans/cave-johnson/resolve/main/models/en_US-cave_johnson-medium-v2.onnx.json";
+          hash = "sha256-C0hIs37k66xmXdTH9gdXx7p1+U7axeR7l2+mXew6JHA=";
         };
       };
 
@@ -90,19 +120,20 @@
       )
     );
 
-    voicelineAudio = pkgs.runCommand "glados-voicelines" {
-      nativeBuildInputs = [pkgs.curl];
-      SSL_CERT_FILE = "${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt";
-      outputHashMode = "recursive";
-      outputHashAlgo = "sha256";
-      outputHash = "sha256-4HJNXWBB2/pHtHOGFNhZe63FQ7Ph98Jp/Ravrmv9psk=";
-    } ''
-      mkdir -p $out
-      cd $out
-      curl --config ${voicelineFetch} \
-        --parallel --parallel-max 8 \
-        --location --fail --retry 3 --silent --show-error
-    '';
+    voicelineAudio =
+      pkgs.runCommand "glados-voicelines" {
+        nativeBuildInputs = [pkgs.curl];
+        SSL_CERT_FILE = "${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt";
+        outputHashMode = "recursive";
+        outputHashAlgo = "sha256";
+        outputHash = "sha256-4HJNXWBB2/pHtHOGFNhZe63FQ7Ph98Jp/Ravrmv9psk=";
+      } ''
+        mkdir -p $out
+        cd $out
+        curl --config ${voicelineFetch} \
+          --parallel --parallel-max 8 \
+          --location --fail --retry 3 --silent --show-error
+      '';
 
     voicelineMenu = pkgs.writeText "tts-voiceline-menu" (
       lib.concatStringsSep "\n" (map (line: line.text) voicelines)

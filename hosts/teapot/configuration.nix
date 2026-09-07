@@ -11,6 +11,7 @@
       self.nixosModules.proxy
       self.nixosModules.peripheral
       self.nixosModules.teapotInference
+      self.nixosModules.piperSpeech
       self.nixosModules.litellm
       self.nixosModules.librechat
       self.nixosModules.searxng
