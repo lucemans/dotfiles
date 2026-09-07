@@ -80,14 +80,14 @@ rec {
       title = "Chat";
       icon = "librechat";
       upstream = "${hosts.v3x-teapot.address}:3080";
-      access = ["f0"];
+      access = ["f0" "f1" "f2"];
     };
     rss = {
       name = "rss.${zone}";
       title = "Feeds";
       icon = "freshrss";
       upstream = "${hosts.v3x-teapot.address}:8090";
-      access = ["f0"];
+      access = ["f0" "f1" "f2"];
     };
   };
 
