@@ -17,6 +17,7 @@
       self.nixosModules.discord
       self.nixosModules.plasma
       self.nixosModules.rofi
+      self.nixosModules.ttsMic
       self.nixosModules.environment
       self.nixosModules.nix
       self.nixosModules.kittySsh
