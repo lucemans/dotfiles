@@ -38,7 +38,7 @@ in ''
               color: #e6e6ea;
               font: 16px monospace;
           }
-          main { display: grid; gap: 2rem; width: min(40rem, 90vw); }
+          main { display: grid; gap: 2rem; width: min(60rem, 90vw); }
           h1 { margin: 0; font-size: 1rem; font-weight: 500; color: #6f6f7b; }
           section { display: grid; gap: .6rem; }
           h2 {
