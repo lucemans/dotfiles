@@ -1,5 +1,5 @@
 {...}: let
-  inherit (import ../network/topology.nix) services;
+  inherit (import ../network/services.nix) services;
 in {
   flake.nixosModules.freshrss = {
     config,

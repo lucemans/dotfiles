@@ -1,8 +1,8 @@
 {
   imports = [
     ./wireguard.nix
+    ./proxy
     ./dns.nix
-    ./proxy.nix
     ./peer.nix
   ];
 }

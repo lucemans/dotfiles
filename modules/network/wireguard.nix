@@ -1,5 +1,6 @@
 {...}: let
-  inherit (import ./topology.nix) hub hubPort subnet trusted guests resolver hosts;
+  inherit (import ./topology.nix) hub hubPort subnet trusted guests resolver;
+  inherit (import ./hosts.nix) hosts;
 in {
   flake.nixosModules.wireguard = {
     config,

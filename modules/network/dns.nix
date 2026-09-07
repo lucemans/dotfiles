@@ -1,5 +1,7 @@
 {...}: let
-  inherit (import ./topology.nix) hub zone resolver records services hosts;
+  inherit (import ./topology.nix) hub zone resolver;
+  inherit (import ./services.nix) services records;
+  inherit (import ./hosts.nix) hosts;
 in {
   flake.nixosModules.dns = {
     config,

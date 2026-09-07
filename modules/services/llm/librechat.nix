@@ -1,5 +1,6 @@
 {...}: let
-  inherit (import ../../network/topology.nix) services containers;
+  inherit (import ../../network/topology.nix) containers;
+  inherit (import ../../network/services.nix) services;
 in {
   flake.nixosModules.librechat = {
     config,

@@ -1,5 +1,7 @@
 {...}: let
-  inherit (import ./topology.nix) hub zone acmeEmail trusted guests containers hosts services sections;
+  inherit (import ../topology.nix) hub zone acmeEmail trusted containers;
+  inherit (import ../hosts.nix) hosts;
+  inherit (import ../services.nix) services sections;
 in {
   flake.nixosModules.proxy = {
     config,
@@ -17,7 +19,7 @@ in {
 
     allowedFrom = svc: [trusted containers] ++ lib.concatMap addressesOf svc.access;
 
-    assets = ./data;
+    assets = ../data;
 
     # The trusted subnet reaches every service, so it is an audience without
     # being a group.
@@ -57,12 +59,12 @@ in {
     home = pkgs.linkFarm "v3x-home" ([
         {
           name = "icons";
-          path = ./home/icons;
+          path = ./icons;
         }
       ]
       ++ map (audience: {
         name = "${audience}.html";
-        path = pkgs.writeText "${audience}.html" (import ./home {
+        path = pkgs.writeText "${audience}.html" (import ./home.nix {
           inherit zone;
           sections = sectionsFor audience;
         });
@@ -101,7 +103,6 @@ in {
 
     guestFacing = lib.filterAttrs (_: svc: svc.access != []) services;
   in {
-    # A typo here would silently drop a card instead of failing the build.
     assertions = [
       {
         assertion = lib.all (key: services ? ${key}) placed;

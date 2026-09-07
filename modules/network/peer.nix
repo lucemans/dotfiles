@@ -1,5 +1,6 @@
 {...}: let
-  inherit (import ./topology.nix) hub hosts resolver subnet;
+  inherit (import ./topology.nix) hub resolver subnet;
+  inherit (import ./hosts.nix) hosts;
 
   hubPeer = hosts.${hub};
 
