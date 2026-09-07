@@ -1,4 +1,6 @@
-{
+{...}: let
+  inherit (import ../../network/services.nix) services;
+in {
   flake.nixosModules.litellm = {
     inputs,
     config,
@@ -29,6 +31,7 @@
         LITELLM_SALT_KEY=${config.sops.placeholder.teapot_litellm_salt_key}
         OPENROUTER_API_KEY=${config.sops.placeholder.teapot_litellm_openrouter_key}
         ZEROPARAMS_API_KEY=${config.sops.placeholder.teapot_litellm_zeroparams_key}
+        GENERIC_CLIENT_SECRET=${config.sops.placeholder.teapot_litellm_oauth2_secret}
         DATABASE_URL=postgresql://litellm@127.0.0.1/litellm
       '';
     };
@@ -56,6 +59,15 @@
         HOME = "/var/lib/litellm";
         PRISMA_QUERY_ENGINE_BINARY = lib.getExe' prisma-engines "query-engine";
         PRISMA_SCHEMA_ENGINE_BINARY = lib.getExe' prisma-engines "schema-engine";
+        # litellm derives the OAuth redirect uri from the address it is bound
+        # to, which behind the proxy is not the address the browser used.
+        PROXY_BASE_URL = "https://${services.inference.name}";
+        GENERIC_CLIENT_ID = "litellm";
+        GENERIC_AUTHORIZATION_ENDPOINT = "https://${services.auth.name}/ui/oauth2";
+        GENERIC_TOKEN_ENDPOINT = "https://${services.auth.name}/oauth2/token";
+        GENERIC_USERINFO_ENDPOINT = "https://${services.auth.name}/oauth2/openid/litellm/userinfo";
+        # Kanidm rejects an authorization code flow without PKCE.
+        GENERIC_CLIENT_USE_PKCE = "true";
       };
       settings = {
         general_settings = {

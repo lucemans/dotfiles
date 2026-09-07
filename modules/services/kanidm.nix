@@ -55,7 +55,7 @@ in {
 
         systems.oauth2.litellm = {
           displayName = services.inference.title;
-          originUrl = "https://${services.inference.name}/oauth/openid/callback";
+          originUrl = "https://${services.inference.name}/sso/callback";
           originLanding = "https://${services.inference.name}";
           basicSecretFile = config.sops.secrets.teapot_litellm_oauth2_secret.path;
           preferShortUsername = true;
