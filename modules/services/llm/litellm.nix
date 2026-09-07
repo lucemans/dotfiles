@@ -64,6 +64,18 @@
         };
         model_list = [
           {
+            model_name = "v3x-m/qwen3-embedding-0.6b";
+            litellm_params = {
+              model = "openai/qwen3-embedding-0.6b";
+              api_base = "https://ollama.v3x.sh/v1";
+              api_key = "local";
+            };
+            model_info = {
+              input_cost_per_token = 0.00000010;
+              output_cost_per_token = 0.00000010;
+            };
+          }
+          {
             model_name = "v3x-t/qwen3.6-35b-a3b";
             litellm_params = {
               model = "openai/qwen3.6-35b-a3b";
