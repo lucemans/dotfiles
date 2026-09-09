@@ -1,15 +1,14 @@
 {...}: {
   imports = [
-    ./agentsview.nix
-    ./runtime.nix
-    ./tripwire.nix
-    ./gitgui.nix
-    ./auto-commit.nix
-    ./vscode
     ./pi
-    ./opencode
     ./mcp
     ./claude
+    ./runtime
+    ./vscode
+    ./opencode
+    ./agentsview.nix
+    ./gitgui.nix
+    ./auto-commit.nix
   ];
 
   flake.nixosModules.code = {
