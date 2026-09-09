@@ -55,7 +55,8 @@
       imports = [
         inputs.home-manager.flakeModules.home-manager
         inputs.treefmt-nix.flakeModule
-        ./treefmt.nix
+        ./nix/treefmt.nix
+        ./nix/devshell.nix
         ./hosts
         ./modules
       ];
