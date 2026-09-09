@@ -1,9 +1,5 @@
 {inputs, ...}: {
-  flake.nixosModules.gitgui = {
-    config,
-    pkgs,
-    ...
-  }: {
+  flake.nixosModules.gitgui = {pkgs, ...}: {
     # imports = [
     #   inputs.gitgui.nixosModules.default
     # ];

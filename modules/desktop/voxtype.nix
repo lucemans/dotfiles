@@ -1,5 +1,5 @@
 {inputs, ...}: let
-  voxtype = inputs.voxtype;
+  inherit (inputs) voxtype;
 
   voxtypeModule = {
     config,
@@ -33,7 +33,7 @@
     settings =
       lib.recursiveUpdate
       (lib.filterAttrs (_: v: v != null) {
-        engine = cfg.engine;
+        inherit (cfg) engine;
         ${cfg.engine} = lib.optionalAttrs (resolvedModelPath != null) {
           model = toString resolvedModelPath;
         };
@@ -78,7 +78,7 @@
       };
 
       settings = lib.mkOption {
-        type = tomlFormat.type;
+        inherit (tomlFormat) type;
         default = {};
         description = "Settings merged over upstream default.toml and written to /etc/voxtype/config.toml.";
       };

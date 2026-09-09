@@ -1,4 +1,4 @@
-{...}: {
+_: {
   perSystem = {pkgs, ...}: let
     metadata = pkgs.writeText "ethereum-price-metadata.json" (builtins.toJSON {
       KPackageStructure = "Plasma/Applet";

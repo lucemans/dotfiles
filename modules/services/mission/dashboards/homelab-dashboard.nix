@@ -155,9 +155,9 @@ let
       (rectangle {
         name = "Rack U${toString unit}";
         text = "";
-        left = rack.left;
+        inherit (rack) left;
         inherit top;
-        width = rack.width;
+        inherit (rack) width;
         height = rack.unitHeight;
         background = shade;
         border = "#262626";

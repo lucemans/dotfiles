@@ -1,8 +1,4 @@
-{
-  inputs,
-  lib,
-  ...
-}: {
+{inputs, ...}: {
   perSystem = {pkgs, ...}: let
     zshConfig = pkgs.writeTextFile {
       name = "zsh-config";

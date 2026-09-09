@@ -37,7 +37,6 @@
     ];
 
     home-manager.users.luc = {
-      self,
       pkgs,
       config,
       ...

@@ -1,4 +1,4 @@
-{...}: {
+_: {
   flake.nixosModules.missionDisko = {
     disko.devices = {
       disk.main = {

@@ -1,12 +1,7 @@
-{
-  self,
-  inputs,
-  ...
-}: {
+_: {
   flake.nixosModules.pointPhysical = {
     config,
     lib,
-    pkgs,
     modulesPath,
     ...
   }: {

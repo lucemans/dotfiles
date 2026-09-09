@@ -1,4 +1,4 @@
-{...}: {
+_: {
   flake.nixosModules.piperSpeech = {
     pkgs,
     lib,

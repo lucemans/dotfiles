@@ -80,7 +80,7 @@
 
         kscreenlocker = {
           appearance = {
-            wallpaper = self.wallpaper;
+            inherit (self) wallpaper;
           };
         };
 

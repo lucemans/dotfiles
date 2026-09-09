@@ -1,4 +1,4 @@
-{self, ...}: {
+_: {
   flake.nixosModules.spotify = {pkgs, ...}: {
     services.pipewire.wireplumber = {
       extraConfig."50-spotify-routing" = {

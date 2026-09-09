@@ -1,15 +1,5 @@
-{
-  self,
-  inputs,
-  ...
-}: {
-  flake.nixosModules.teapotDisko = {
-    config,
-    lib,
-    pkgs,
-    modulesPath,
-    ...
-  }: {
+_: {
+  flake.nixosModules.teapotDisko = _: {
     disko.devices = {
       disk.main = {
         type = "disk";

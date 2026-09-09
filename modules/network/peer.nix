@@ -1,4 +1,4 @@
-{...}: let
+_: let
   inherit (import ./topology.nix) hub resolver subnet;
   inherit (import ./hosts.nix) hosts;
 

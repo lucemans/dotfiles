@@ -1,4 +1,4 @@
-{...}: {
+_: {
   perSystem = {pkgs, ...}: let
     py = pkgs.python3Packages;
     repoReaderMcpServer = py.buildPythonApplication {

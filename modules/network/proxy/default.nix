@@ -1,4 +1,4 @@
-{...}: let
+_: let
   inherit (import ../topology.nix) hub zone acmeEmail trusted containers;
   inherit (import ../hosts.nix) hosts;
   inherit (import ../services.nix) services sections;

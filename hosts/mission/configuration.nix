@@ -1,14 +1,8 @@
-{
-  config,
-  lib,
-  pkgs,
-  ...
-}: {
+_: {
   flake.nixosModules.mission = {
     self,
     config,
     pkgs,
-    lib,
     ...
   }: let
     missionNiriConfig =

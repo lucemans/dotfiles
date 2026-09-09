@@ -1,16 +1,5 @@
-{
-  config,
-  lib,
-  pkgs,
-  ethereum-nix,
-  ...
-}: {
-  flake.nixosModules.point = {
-    self,
-    pkgs,
-    lib,
-    ...
-  }: {
+_: {
+  flake.nixosModules.point = {self, ...}: {
     imports = [
       self.nixosModules.peripheral
     ];

@@ -1,7 +1,6 @@
-{...}: {
+_: {
   flake.nixosModules.teapot = {
     self,
-    config,
     pkgs,
     ...
   }: {

@@ -71,7 +71,6 @@
   };
 
   flake.nixosModules.environment = {
-    config,
     pkgs,
     self,
     lib,

@@ -1,4 +1,4 @@
-{...}: let
+_: let
   inherit (import ../network/topology.nix) zone;
   inherit (import ../network/services.nix) services;
 in {

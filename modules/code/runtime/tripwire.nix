@@ -1,6 +1,6 @@
-{...}: {
+_: {
   perSystem = {pkgs, ...}: let
-    rules = import ./_rules;
+    rules = import ../_rules;
     mutations = builtins.concatStringsSep "|" rules.gitMutations;
   in {
     # A PreToolUse hook. It runs before the permission rules, so it sees the

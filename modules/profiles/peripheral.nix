@@ -1,16 +1,5 @@
-{
-  self,
-  inputs,
-  ...
-}: {
-  flake.nixosModules.peripheral = {
-    config,
-    pkgs,
-    ...
-  }: let
-    nixosConfig = config;
-    selfpkgs = self.packages.${pkgs.stdenv.hostPlatform.system};
-  in {
+{self, ...}: {
+  flake.nixosModules.peripheral = {pkgs, ...}: {
     imports = [
       # self.nixosModules.plasma
       self.nixosModules.environment

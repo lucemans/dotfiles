@@ -1,14 +1,5 @@
-{
-  self,
-  inputs,
-  ...
-}: {
-  flake.nixosModules.ethereumMainnet = {
-    config,
-    pkgs,
-    lib,
-    ...
-  }: {
+{inputs, ...}: {
+  flake.nixosModules.ethereumMainnet = {pkgs, ...}: {
     services.ethereum.reth.mainnet = {
       enable = true;
       package = pkgs.reth;

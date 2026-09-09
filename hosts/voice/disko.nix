@@ -1,15 +1,5 @@
-{
-  self,
-  inputs,
-  ...
-}: {
-  flake.nixosModules.voiceDisko = {
-    config,
-    lib,
-    pkgs,
-    modulesPath,
-    ...
-  }: {
+_: {
+  flake.nixosModules.voiceDisko = _: {
     disko.devices = {
       disk.main = {
         type = "disk";

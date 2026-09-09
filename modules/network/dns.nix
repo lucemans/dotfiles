@@ -1,4 +1,4 @@
-{...}: let
+_: let
   inherit (import ./topology.nix) hub zone resolver;
   inherit (import ./services.nix) services records;
   inherit (import ./hosts.nix) hosts;

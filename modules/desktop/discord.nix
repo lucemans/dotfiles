@@ -1,9 +1,5 @@
 {
-  flake.nixosModules.discord = {
-    lib,
-    pkgs,
-    ...
-  }: {
+  flake.nixosModules.discord = {pkgs, ...}: {
     # nixpkgs.overlays = [
     #   (_: prev: let
     #     fetchDiscordArchive = args:

@@ -1,4 +1,4 @@
-{...}: {
+_: {
   perSystem = {pkgs, ...}: {
     # framesh on wayland struggles with registering keybindings, this patches that by unsetting the ozone wayland environment variable
     packages.frame-sh-wayland =

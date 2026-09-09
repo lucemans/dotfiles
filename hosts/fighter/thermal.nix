@@ -1,8 +1,4 @@
-{
-  self,
-  inputs,
-  ...
-}: {
+_: {
   flake.nixosModules.fighterThermal = {
     config,
     pkgs,

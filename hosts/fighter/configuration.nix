@@ -2,7 +2,6 @@
   flake.nixosModules.fighter = {
     self,
     pkgs,
-    lib,
     config,
     ...
   }: {
@@ -163,13 +162,13 @@
     nixpkgs.config.allowUnfree = true;
 
     nixpkgs.overlays = [
-      (final: prev: {
+      (_final: prev: {
         # patool 4.0.5's archive tests fail under Python 3.14 in the Nix sandbox.
         pythonPackagesExtensions =
           prev.pythonPackagesExtensions
           ++ [
-            (pythonPackages: super: {
-              patool = super.patool.overridePythonAttrs (old: {
+            (_pythonPackages: super: {
+              patool = super.patool.overridePythonAttrs (_old: {
                 doCheck = false;
               });
             })

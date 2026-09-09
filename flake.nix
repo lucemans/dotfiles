@@ -5,6 +5,8 @@
     sops-nix.url = "github:Mic92/sops-nix";
     sops-nix.inputs.nixpkgs.follows = "nixpkgs";
     flake-parts.url = "github:hercules-ci/flake-parts";
+    treefmt-nix.url = "github:numtide/treefmt-nix";
+    treefmt-nix.inputs.nixpkgs.follows = "nixpkgs";
     preservation.url = "github:nix-community/preservation";
     disko.url = "github:nix-community/disko";
     disko.inputs.nixpkgs.follows = "nixpkgs";
@@ -52,6 +54,8 @@
 
       imports = [
         inputs.home-manager.flakeModules.home-manager
+        inputs.treefmt-nix.flakeModule
+        ./treefmt.nix
         ./hosts
         ./modules
       ];

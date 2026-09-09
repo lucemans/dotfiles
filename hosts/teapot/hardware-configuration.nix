@@ -1,12 +1,7 @@
-{
-  self,
-  inputs,
-  ...
-}: {
+_: {
   flake.nixosModules.teapotPhysical = {
     config,
     lib,
-    pkgs,
     modulesPath,
     ...
   }: {

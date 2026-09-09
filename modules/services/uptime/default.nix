@@ -1,7 +1,7 @@
-{...}: let
+_: let
   monitors = import ./monitors.nix;
 in {
-  flake.nixosModules.missionUptime = {...}: {
+  flake.nixosModules.missionUptime = _: {
     services.gatus = {
       enable = true;
       openFirewall = false;

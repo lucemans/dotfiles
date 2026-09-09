@@ -1,4 +1,4 @@
-{...}: let
+_: let
   inherit (import ../../network/services.nix) services;
 in {
   flake.nixosModules.litellm = {
@@ -230,7 +230,7 @@ in {
     };
 
     nixpkgs.overlays = [
-      (final: prev: {
+      (_final: prev: {
         pythonPackagesExtensions =
           prev.pythonPackagesExtensions
           ++ [

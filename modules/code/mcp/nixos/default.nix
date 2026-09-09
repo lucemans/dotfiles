@@ -1,4 +1,4 @@
-{...}: {
+_: {
   perSystem = {pkgs, ...}: {
     packages.mcp-nixos-sandbox = pkgs.writeShellApplication {
       name = "mcp-nixos-sandbox";

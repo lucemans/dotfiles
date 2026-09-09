@@ -1,4 +1,4 @@
-{...}: {
+_: {
   perSystem = {pkgs, ...}: let
     chromiumEntry = builtins.head (
       builtins.filter

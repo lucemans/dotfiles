@@ -1,5 +1,5 @@
 {inputs, ...}: {
-  flake.nixosModules.keyhold = {config, ...}: {
+  flake.nixosModules.keyhold = {...}: {
     imports = [
       inputs.koi.nixosModules.default
     ];

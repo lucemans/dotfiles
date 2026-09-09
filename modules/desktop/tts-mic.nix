@@ -1,4 +1,4 @@
-{...}: {
+_: {
   flake.nixosModules.ttsMic = {
     pkgs,
     lib,

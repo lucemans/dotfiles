@@ -1,12 +1,6 @@
-{
-  self,
-  inputs,
-  ...
-}: {
+_: {
   flake.nixosModules.voicePhysical = {
-    config,
     lib,
-    pkgs,
     modulesPath,
     ...
   }: {
