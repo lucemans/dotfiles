@@ -5,5 +5,6 @@
     ./teapot
     ./point
     ./voice
+    ./watch
   ];
 }
