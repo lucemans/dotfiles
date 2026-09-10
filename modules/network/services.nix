@@ -78,6 +78,13 @@ in {
       upstream = "${hosts.v3x-teapot.address}:8090";
       access = ["f0" "f1" "f2"];
     };
+    bit = {
+      name = "bit.${zone}";
+      title = "Bit";
+      icon = "vw";
+      upstream = "${hosts.v3x-watch.address}:8222";
+      access = [];
+    };
   };
 
   sections = [
@@ -95,7 +102,7 @@ in {
     }
     {
       title = "Infrastructure";
-      services = ["auth" "cache"];
+      services = ["auth" "bit" "cache"];
     }
   ];
 }

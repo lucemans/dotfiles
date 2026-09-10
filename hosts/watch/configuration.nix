@@ -7,6 +7,9 @@ _: {
   }: {
     imports = [
       self.nixosModules.peripheral
+      self.nixosModules.wireguard
+      self.nixosModules.dns
+      self.nixosModules.vaultwarden
     ];
 
     boot.loader.systemd-boot.enable = true;
@@ -62,6 +65,7 @@ _: {
           "/var/lib/nixos"
           "/var/lib/sbctl"
           "/var/lib/systemd"
+          "/var/lib/vaultwarden"
           "/var/lib/wireguard"
           "/var/log"
         ];

@@ -19,6 +19,10 @@ in {
       publicKey = "a1tn/2rRUEDHMx0nJINy8znyDCmpqCKFftalNxSJwDU=";
       address = "100.127.0.60";
     };
+    v3x-watch = {
+      publicKey = "Gfq2r+6fM+idiiSrU0JSbB/L237iQptvvOsnTcN+fAg=";
+      address = "100.127.0.99";
+    };
     v3x-b1 = {
       publicKey = "ClfVgAM5blGyKjubpsboHts5qL5jDOD3gM3S1ZexARo=";
       address = "100.127.10.1";
