@@ -4,10 +4,9 @@
 
 ### Git
 
-Use the file, search, and editing tools for file operations
-Use the shell only for project tooling or to inspect the system
-Use Git only to look at the working tree and history
-Do not stage, commit, amend, restore, reset, switch, check out, merge, rebase, cherry-pick, fetch, pull, push, change remotes, create worktrees, or mutate Git state
+Use of the `git` or `gh` CLI is strictly forbidden.
+Use the file, search, and editing tools for file operations.
+Leverage the repo_reader tool when reading remote repositories.
 If a Git mutation is necessary, explain the exact command and ask the user to run it
 
 ### Secrets
