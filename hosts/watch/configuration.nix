@@ -66,7 +66,6 @@ _: {
           "/var/lib/docker"
           "/var/lib/nixos"
           "/var/lib/sbctl"
-          "/var/lib/sops-nix"
           "/var/lib/systemd"
           "/var/lib/vaultwarden"
           "/var/lib/wireguard"
@@ -84,14 +83,7 @@ _: {
       }
     ];
 
-    sops = {
-      # The key lives on a preservation bind mount, which systemd sets up well
-      # after stage-2 activation scripts run. Installing secrets from a unit
-      # instead lets RequiresMountsFor hold it until the key is really there.
-      useSystemdActivation = true;
-      age.keyFile = "/var/lib/sops-nix/key.txt";
-      defaultSopsFile = ../../secrets/watch.sops.yaml;
-    };
+    sops.defaultSopsFile = ../../secrets/watch.sops.yaml;
 
     virtualisation.docker.enable = true;
 
