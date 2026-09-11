@@ -31,6 +31,13 @@ _: {
           remote-management:
             allow-remote: true
             secret-key: ""
+
+          logging-to-file: true
+          logs-max-total-size-mb: 1024
+          request-log: true
+
+          usage-statistics-enabled: true
+          redis-usage-queue-retention-seconds: 3600
         '';
       };
     };
@@ -38,6 +45,7 @@ _: {
     systemd.tmpfiles.rules = [
       "d ${stateDir} 0700 root root -"
       "d ${stateDir}/auths 0700 root root -"
+      "d ${stateDir}/logs 0700 root root -"
       "d ${stateDir}/static 0700 root root -"
     ];
 
@@ -59,6 +67,7 @@ _: {
         volumes = [
           "${config.sops.templates.watch_cliproxy_config.path}:/CLIProxyAPI/config.yaml:ro"
           "${stateDir}/auths:/data/auths"
+          "${stateDir}/logs:/CLIProxyAPI/logs"
           "${stateDir}/static:/data/static"
         ];
       };

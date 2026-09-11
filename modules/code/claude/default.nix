@@ -5,11 +5,12 @@
 
   flake.nixosModules.claude-code = {
     self,
-    config,
     pkgs,
     ...
   }: let
     inherit (import ../../network/services.nix) services;
+
+    selfpkgs = self.packages.${pkgs.stdenv.hostPlatform.system};
 
     rules = import ../_rules;
 
@@ -19,18 +20,9 @@
     # inside a project. Read-only git stays allowed, as the policy intends.
     gitMutations = map (subcommand: "Bash(git ${subcommand}:*)") rules.gitMutations;
   in {
-    environment.systemPackages = [
-      self.packages.${pkgs.stdenv.hostPlatform.system}.claude-code
-    ];
-
-    # Keeps the account file inside ~/.claude instead of ~/.claude.json, so
-    # the sandbox shares the whole state with one directory bind.
+    environment.systemPackages = [selfpkgs.claude-code];
     environment.sessionVariables.CLAUDE_CONFIG_DIR = "/home/luc/.claude";
 
-    # Claude Code does not read ~/.claude/mcp.json; the declarative system-wide
-    # location is /etc/claude-code/managed-mcp.json. Deploying it gives Nix
-    # exclusive control over MCP servers: `claude mcp add` is rejected and
-    # claude.ai connectors are suppressed unless re-allowed in managed settings.
     environment.etc."claude-code/managed-mcp.json".text = builtins.toJSON {
       mcpServers = self.mcp.claude;
     };
@@ -45,20 +37,13 @@
         };
       };
 
-    sops.secrets.fighter_cliproxy_api_key.owner = "luc";
+    # The matching token is carried by the agent env file, not by this module.
+    sops.secrets.v3x_agent_token.owner = "luc";
 
     environment.etc."claude-code/managed-settings.json".text = builtins.toJSON {
       env.ANTHROPIC_BASE_URL = "https://${services.agent.name}";
+      env.CLAUDE_CODE_ENABLE_GATEWAY_MODEL_DISCOVERY = "1";
 
-      # This file is world-readable in the store, so the key is fetched at run
-      # time instead of written here. It also stays out of the agent's reach,
-      # which the Read(//run/secrets/**) denial below would otherwise have to
-      # cover on its own.
-      apiKeyHelper = "${pkgs.coreutils}/bin/cat ${config.sops.secrets.fighter_cliproxy_api_key.path}";
-
-      # Load claude.ai connectors (Calendar, Drive, ...) alongside the managed
-      # set, except Gmail. Denying by name and URL since the display name can
-      # change on the claude.ai side.
       allowAllClaudeAiMcps = true;
       deniedMcpServers = [
         {serverName = "claude.ai Gmail";}
@@ -74,7 +59,7 @@
           hooks = [
             {
               type = "command";
-              command = "${self.packages.${pkgs.stdenv.hostPlatform.system}.agent-tripwire}/bin/agent-tripwire";
+              command = "${selfpkgs.agent-tripwire}/bin/agent-tripwire";
             }
           ];
         }
