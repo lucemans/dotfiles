@@ -61,6 +61,10 @@ in {
           name = "icons";
           path = ./icons;
         }
+        {
+          name = "home.css";
+          path = ./home.css;
+        }
       ]
       ++ map (audience: {
         name = "${audience}.html";
