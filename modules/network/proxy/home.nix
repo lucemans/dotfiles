@@ -3,7 +3,6 @@
   sections,
 }: let
   card = svc: ''<li><a href="https://${svc.name}"><img src="/icons/${svc.icon}.webp" alt="" width="96" height="96"><strong>${svc.title}</strong><span>${svc.name}</span></a></li>'';
-
   block = section:
     builtins.concatStringsSep "\n" (
       ["<section>"]
@@ -16,7 +15,6 @@
       ++ map card section.services
       ++ ["</ul>" "</section>"]
     );
-
   layout = name: layoutSections: ''
     <main class="layout layout-${name}">
       <h1>${zone}</h1>
