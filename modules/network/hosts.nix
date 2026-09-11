@@ -5,11 +5,13 @@ in {
     v3x-teapot = {
       publicKey = "8FDbnPsRkbhl/Req/KfND0pT3+6aoNjohiOiAUlXFGc=";
       endpoint = "wg.${zone}:${toString hubPort}";
+      lanEndpoint = "10.0.0.227:${toString hubPort}";
       address = "100.127.0.127";
     };
     v3x-fighter = {
       publicKey = "/XYyaxvqHkggVsh8/tJSZBs6LuYk82CVhSGxYeKstj4=";
       address = "100.127.0.103";
+      lan = true;
     };
     v3x-prototype = {
       publicKey = "cMShVsxa70NeFiN2rInXgedWGXIUwecIEHVUvIj7GEg=";
@@ -18,10 +20,12 @@ in {
     v3x-mission = {
       publicKey = "a1tn/2rRUEDHMx0nJINy8znyDCmpqCKFftalNxSJwDU=";
       address = "100.127.0.60";
+      lan = true;
     };
     v3x-watch = {
       publicKey = "Gfq2r+6fM+idiiSrU0JSbB/L237iQptvvOsnTcN+fAg=";
       address = "100.127.0.99";
+      lan = true;
     };
     v3x-b1 = {
       publicKey = "ClfVgAM5blGyKjubpsboHts5qL5jDOD3gM3S1ZexARo=";

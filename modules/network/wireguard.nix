@@ -36,7 +36,11 @@ in {
           else [
             {
               name = hub;
-              inherit (hosts.${hub}) publicKey endpoint;
+              inherit (hosts.${hub}) publicKey;
+              endpoint =
+                if me.lan or false
+                then hosts.${hub}.lanEndpoint
+                else hosts.${hub}.endpoint;
               allowedIPs = [subnet];
               persistentKeepalive = 25;
             }
