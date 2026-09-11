@@ -64,6 +64,7 @@ in {
           iptables -N v3x-guests 2>/dev/null || iptables -F v3x-guests
           iptables -A v3x-guests -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
           iptables -A v3x-guests -p icmp --icmp-type echo-request -j ACCEPT
+          iptables -A v3x-guests -d ${resolver} -p tcp --dport 53 -j ACCEPT
           iptables -A v3x-guests -d ${resolver} -p udp --dport 53 -j ACCEPT
           iptables -A v3x-guests -j v3x-guest-allow
           iptables -A v3x-guests -j DROP

@@ -9,13 +9,29 @@
           exit 2
         fi
 
-        if [ "$#" -eq 1 ]; then
-          git -C /etc/nixos fetch origin "$1"
-          git -C /etc/nixos checkout --force -B "$1" "origin/$1"
-        else
-          git -C /etc/nixos fetch origin master
-          git -C /etc/nixos checkout --force -B master origin/master
+        branch="''${1:-master}"
+        cd /etc/nixos
+
+        confirm() {
+          printf '%s Continue? [y/N] ' "$1" >&2
+          read -r answer
+          [ "$answer" = "y" ]
+        }
+
+        if [ -n "$(git status --porcelain)" ]; then
+          git status --short >&2
+          git diff --stat >&2
+          confirm "update: the forced checkout discards these local changes." || exit 1
         fi
+
+        git fetch origin "$branch"
+
+        if [ -n "$(git log --oneline "origin/$branch..HEAD")" ]; then
+          git log --oneline "origin/$branch..HEAD" >&2
+          confirm "update: these local commits are not on origin/$branch." || exit 1
+        fi
+
+        git checkout --force -B "$branch" "origin/$branch"
       '';
     };
     upgrade = pkgs.writeShellApplication {

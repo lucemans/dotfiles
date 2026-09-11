@@ -31,6 +31,7 @@
 
     [from-trunk]
     exten => _+X.,1,NoOp(Incoming ''${EXTEN} from ''${CALLERID(num)})
+    same => n,Set(CALLERID(num)=''${FILTER(+0-9,''${CALLERID(num)})})
     same => n,Gosub(cid-national,''${CALLERID(num)},1)
     same => n,Set(FROM=''${CALLERID(num)})
     same => n,Answer()
