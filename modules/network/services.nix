@@ -85,6 +85,13 @@ in {
       upstream = "${hosts.v3x-watch.address}:8222";
       access = [];
     };
+    relay = {
+      name = "relay.${zone}";
+      title = "Relay";
+      icon = "cliproxy";
+      upstream = "${hosts.v3x-watch.address}:8317";
+      access = [];
+    };
   };
 
   sections = [
@@ -102,7 +109,7 @@ in {
     }
     {
       title = "Infrastructure";
-      services = ["auth" "bit" "cache"];
+      services = ["auth" "bit" "cache" "relay"];
     }
   ];
 }

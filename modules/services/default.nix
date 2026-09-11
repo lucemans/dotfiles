@@ -12,5 +12,6 @@
     ./vaultwarden.nix
     ./kanidm.nix
     ./attic.nix
+    ./cliproxy.nix
   ];
 }

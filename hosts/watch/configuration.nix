@@ -10,6 +10,7 @@ _: {
       self.nixosModules.wireguard
       self.nixosModules.dns
       self.nixosModules.vaultwarden
+      self.nixosModules.cliproxy
     ];
 
     boot.loader.systemd-boot.enable = true;
@@ -61,9 +62,11 @@ _: {
         ];
         directories = [
           "/etc/secrets"
+          "/var/lib/cli-proxy-api"
           "/var/lib/docker"
           "/var/lib/nixos"
           "/var/lib/sbctl"
+          "/var/lib/sops-nix"
           "/var/lib/systemd"
           "/var/lib/vaultwarden"
           "/var/lib/wireguard"
@@ -81,11 +84,22 @@ _: {
       }
     ];
 
+    sops = {
+      age.keyFile = "/var/lib/sops-nix/key.txt";
+      age.generateKey = true;
+      defaultSopsFile = ../../secrets/watch.sops.yaml;
+    };
+
     virtualisation.docker.enable = true;
 
     networking.hostName = "v3x-watch";
     networking.useDHCP = true;
     time.timeZone = "Europe/Amsterdam";
+
+    environment.systemPackages = with pkgs; [
+      sops
+      age
+    ];
 
     system.stateVersion = "26.05";
   };
