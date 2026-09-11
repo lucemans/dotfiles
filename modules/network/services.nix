@@ -101,7 +101,7 @@ in {
     }
     {
       title = "Tools";
-      services = ["chat" "search" "inference" "rss"];
+      services = ["chat" "search" "rss" "inference" "agent"];
     }
     {
       title = "Media";
@@ -109,7 +109,7 @@ in {
     }
     {
       title = "Infrastructure";
-      services = ["auth" "bit" "cache" "agent"];
+      services = ["auth" "bit" "cache"];
     }
   ];
 }
