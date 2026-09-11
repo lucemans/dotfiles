@@ -5,9 +5,12 @@
 
   flake.nixosModules.claude-code = {
     self,
+    config,
     pkgs,
     ...
   }: let
+    inherit (import ../../network/services.nix) services;
+
     rules = import ../_rules;
 
     # A project's own .claude/settings.local.json is writable by whoever works
@@ -42,7 +45,17 @@
         };
       };
 
+    sops.secrets.fighter_cliproxy_api_key.owner = "luc";
+
     environment.etc."claude-code/managed-settings.json".text = builtins.toJSON {
+      env.ANTHROPIC_BASE_URL = "https://${services.agent.name}";
+
+      # This file is world-readable in the store, so the key is fetched at run
+      # time instead of written here. It also stays out of the agent's reach,
+      # which the Read(//run/secrets/**) denial below would otherwise have to
+      # cover on its own.
+      apiKeyHelper = "${pkgs.coreutils}/bin/cat ${config.sops.secrets.fighter_cliproxy_api_key.path}";
+
       # Load claude.ai connectors (Calendar, Drive, ...) alongside the managed
       # set, except Gmail. Denying by name and URL since the display name can
       # change on the claude.ai side.
