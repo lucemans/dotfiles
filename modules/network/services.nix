@@ -109,7 +109,7 @@ in {
     }
     {
       title = "Infrastructure";
-      services = ["auth" "bit" "cache" "relay"];
+      services = ["auth" "bit" "cache" "agent"];
     }
   ];
 }
