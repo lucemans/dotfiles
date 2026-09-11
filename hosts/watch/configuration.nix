@@ -83,7 +83,13 @@ _: {
       }
     ];
 
-    sops.defaultSopsFile = ../../secrets/watch.sops.yaml;
+    sops = {
+      # Read straight off the persist filesystem, which is neededForBoot and so
+      # is mounted before activation. A path under /var/lib would instead wait on
+      # a preservation bind mount that systemd sets up much later.
+      age.keyFile = "/persist/var/lib/sops-nix/key.txt";
+      defaultSopsFile = ../../secrets/watch.sops.yaml;
+    };
 
     virtualisation.docker.enable = true;
 
