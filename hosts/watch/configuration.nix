@@ -48,7 +48,6 @@ _: {
 
     boot.blacklistedKernelModules = ["iwlwifi"];
 
-    # preservation reads /persist before stage 2, so disko's mount is not early enough on its own.
     fileSystems."/persist".neededForBoot = true;
 
     preservation = {
@@ -84,10 +83,8 @@ _: {
     ];
 
     sops = {
-      # Read straight off the persist filesystem, which is neededForBoot and so
-      # is mounted before activation. A path under /var/lib would instead wait on
-      # a preservation bind mount that systemd sets up much later.
       age.keyFile = "/persist/var/lib/sops-nix/key.txt";
+      age.sshKeyPaths = [];
       defaultSopsFile = ../../secrets/watch.sops.yaml;
     };
 

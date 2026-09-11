@@ -85,9 +85,9 @@ in {
       upstream = "${hosts.v3x-watch.address}:8222";
       access = [];
     };
-    relay = {
-      name = "relay.${zone}";
-      title = "Relay";
+    agent = {
+      name = "agent.${zone}";
+      title = "Inference Proxy";
       icon = "cliproxy";
       upstream = "${hosts.v3x-watch.address}:8317";
       access = [];

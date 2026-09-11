@@ -19,9 +19,6 @@ _: {
       templates.watch_cliproxy_config = {
         mode = "0400";
         restartUnits = ["docker-cliproxy.service"];
-        # A plaintext secret-key is bcrypt-hashed back into this file on every
-        # start, which the read-only mount refuses. MANAGEMENT_PASSWORD carries
-        # the key instead and leaves the file untouched.
         content = ''
           host: "${config.v3x.address}"
           port: ${toString port}
@@ -56,8 +53,6 @@ _: {
 
         environment = {
           TZ = config.time.timeZone;
-          # The control panel is downloaded from GitHub on first request, into a
-          # directory derived from the config path unless this points elsewhere.
           MANAGEMENT_STATIC_PATH = "/data/static";
         };
 
