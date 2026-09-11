@@ -14,7 +14,28 @@
 
     selfpkgs = self.packages.${pkgs.stdenv.hostPlatform.system};
     piModels = pkgs.writeText "pi-models.json" (builtins.toJSON {
-      providers.anthropic.baseUrl = "https://${services.agent.name}";
+      providers = {
+        anthropic = {
+          baseUrl = "https://${services.agent.name}";
+          models = map (id: {inherit id;}) [
+            "gpt-5.6-luna"
+            "gpt-5.6-terra"
+            "gpt-5.6-sol"
+            "gpt-6-astra"
+          ];
+        };
+        "v3x-inference" = {
+          baseUrl = "https://${services.inference.name}/v1";
+          api = "openai-completions";
+          apiKey = "!${pkgs.coreutils}/bin/cat ${lib.escapeShellArg config.sops.secrets.v3x_inference_token.path}";
+          authHeader = true;
+          models = map (id: {inherit id;}) [
+            "v3x-m/gpt-oss-20b"
+            "v3x-m/qwen3.8-27b"
+            "v3x-t/qwen3.6-35b-a3b"
+          ];
+        };
+      };
     });
 
     prohibited = map (name:
