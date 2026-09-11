@@ -1,6 +1,5 @@
 {...}: {
   imports = [
-    ./pi
     ./mcp
     ./claude
     ./runtime
@@ -58,11 +57,8 @@
         pkgs.pi-coding-agent
         pkgs.kubectl
         pkgs.kicad-unstable
-        selfpkgs.kicad-mcp
         pkgs.sqlite
       ];
-
-      home.file.".pi/agent/extensions/kicad-mcp/index.ts".source = ./pi/kicad-mcp-extension.ts;
 
       programs.direnv = {
         enable = true;

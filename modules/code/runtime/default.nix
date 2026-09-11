@@ -10,7 +10,12 @@
     pkgs,
     ...
   }: let
+    inherit (import ../../network/services.nix) services;
+
     selfpkgs = self.packages.${pkgs.stdenv.hostPlatform.system};
+    piModels = pkgs.writeText "pi-models.json" (builtins.toJSON {
+      providers.anthropic.baseUrl = "https://${services.agent.name}";
+    });
 
     prohibited = map (name:
       pkgs.writeShellScriptBin name ''
@@ -21,6 +26,7 @@
       selfpkgs.claude-code
       selfpkgs.opencode
       selfpkgs.mcp-servers
+      pkgs.pi-coding-agent
       pkgs.bashInteractive
       pkgs.nix
       pkgs.coreutils
@@ -55,9 +61,9 @@
       runtimeInputs = [pkgs.bubblewrap pkgs.coreutils];
       text = ''
         case "''${1:-}" in
-          claude|opencode|bash) tool="$1"; shift ;;
+          claude|opencode|pi|bash) tool="$1"; shift ;;
           *)
-            echo "usage: agent <claude|opencode|bash> [args...]" >&2
+            echo "usage: agent <claude|opencode|pi|bash> [args...]" >&2
             exit 2
             ;;
         esac
@@ -92,6 +98,9 @@
           --proc /proc --dev /dev --tmpfs /tmp
           --ro-bind ${bash} /bin/sh
           --tmpfs "$HOME"
+          --dir "$HOME/.pi"
+          --dir "$HOME/.pi/agent"
+          --ro-bind ${piModels} "$HOME/.pi/agent/models.json"
           --bind "$nixcache" "$HOME/.cache/nix"
           --bind "$project" "$project"
           --chdir "$project"
@@ -150,6 +159,7 @@
         case "$tool" in
           claude) command=(claude "$@") ;;
           opencode) command=(opencode "$@") ;;
+          pi) command=(pi "$@") ;;
           bash) command=(bash --norc "$@") ;;
         esac
 
