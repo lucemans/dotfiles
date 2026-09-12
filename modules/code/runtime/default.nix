@@ -82,9 +82,9 @@
       runtimeInputs = [pkgs.bubblewrap pkgs.coreutils];
       text = ''
         case "''${1:-}" in
-          claude|opencode|pi|bash) tool="$1"; shift ;;
+          claude|claude-gpt|opencode|pi|bash) tool="$1"; shift ;;
           *)
-            echo "usage: agent <claude|opencode|pi|bash> [args...]" >&2
+            echo "usage: agent <claude|claude-gpt|opencode|pi|bash> [args...]" >&2
             exit 2
             ;;
         esac
@@ -179,6 +179,14 @@
 
         case "$tool" in
           claude) command=(claude "$@") ;;
+          claude-gpt)
+            command=(
+              claude
+              --model gpt-5.6-terra
+              --settings '{"availableModels":["gpt-5.6-terra"],"enforceAvailableModels":true}'
+              "$@"
+            )
+            ;;
           opencode) command=(opencode "$@") ;;
           pi) command=(pi "$@") ;;
           bash) command=(bash --norc "$@") ;;

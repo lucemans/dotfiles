@@ -303,10 +303,6 @@ html[data-layout="daily"] .layout-switcher button:focus-visible { outline-color:
 @media (max-width: 30rem) {
   .layouts { padding: 4.75rem 1rem 1rem; }
 
-  .layout-current,
-  .layout-grid,
-  .layout-daily { width: 100%; }
-
   .layout-current ul { grid-template-columns: 1fr; }
 
   .layout-daily { grid-template-columns: 1fr; }
