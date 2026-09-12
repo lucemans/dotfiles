@@ -2,22 +2,16 @@
 
 ## Environment
 
-### Git
+`git`, `gh`, `sops`, `direnv`, `gpg`, `gpg2`, `pgp`, and `gnupg` are strictly forbidden.
+Invokation, attempts at bypass, and alternative methods for reaching secret material are off limits.
+The evaluator warns first but ends operation on repeated violation.
+I do not bypass the evaluator, it is for our safety.
 
-Use of the `git` or `gh` CLI is strictly forbidden.
-Use the file, search, and editing tools for file operations.
-Leverage the repo_reader tool when reading remote repositories.
+Use file search and editing tools for file operations.
+repo_reader tool when reading remote repositories.
 If a Git mutation is necessary, explain the exact command and ask the user to run it
 
-### Secrets
-
-Do not invoke `direnv`, `gpg`, `gpg2`, `pgp`, or `gnupg`
-This applies to direct use and to use through shells, scripts, aliases, package hooks, or other commands
 Do not read, print, decrypt, source, or load secret material into agent context
-Credential files on the list below are the exception: substitute them into commands, as in `$(cat <file>)`, so long as their content never reaches agent context or output
-- `~/.config/plan-env-md/config`
-Respect paths that the system marks as denied for secrets
-Assume that environment variables and secrets are already available when code runs
 Leave secret creation, rotation, and updates to the user
 
 ### Files
@@ -51,9 +45,9 @@ Ask for confirmation before you kill processes that this conversation did not st
 ### Verification
 
 Run tests and checks that focus on behavior
-Use observable behavior. Do not use implementation details or too much mocking
+Use observable behavior. Do not use implementation details or mocking
 Fast test suites can run without special consideration
-For networked or expensive checks, use your judgment
+For networked or expensive checks, use judgment
 Do not use privileged operations for verification
 If the user must run a command, state it clearly
 
