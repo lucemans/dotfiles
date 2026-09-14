@@ -883,7 +883,7 @@ alpha = 255
 
 [[panels.controls.default_state.layers]]
 kind = "image"
-image = "mdi:lightbulb"
+image = "mdi:grid"
 fit = "contain"
 anchor = "top_center"
 scale_percent = 50
@@ -892,7 +892,7 @@ scale_percent = 50
 kind = "text"
 text = "LEDBOARD"
 anchor = "bottom_center"
-font_size = 16
+font_size = 14
 
 [panels.controls.default_state.layers.color]
 red = 255
@@ -915,137 +915,6 @@ action_name = "light.toggle"
 
 [panels.controls.action_bindings.actions.parameters]
 entity_id = "light.wled_2"
-
-[[panels.controls]]
-control_id = "control-1785507225900"
-name = "CPU usage"
-action_bindings = []
-
-[panels.controls.position]
-column = 2
-row = 1
-
-[panels.controls.default_state]
-is_pressed = false
-
-[[panels.controls.default_state.layers]]
-kind = "fill"
-
-[panels.controls.default_state.layers.color]
-red = 0
-green = 0
-blue = 0
-alpha = 255
-
-[[panels.controls.default_state.layers]]
-kind = "image"
-image = "mdi:cpu-64-bit"
-fit = "contain"
-anchor = "top_center"
-scale_percent = 50
-
-[[panels.controls.default_state.layers]]
-kind = "text"
-text = "$(system.default:cpu_usage_pct)%"
-anchor = "bottom_center"
-font_size = 21
-
-[panels.controls.default_state.layers.color]
-red = 255
-green = 255
-blue = 255
-alpha = 255
-
-[[panels.controls]]
-control_id = "control-1785507226238"
-name = "Disk free"
-action_bindings = []
-
-[panels.controls.position]
-column = 4
-row = 1
-
-[panels.controls.default_state]
-is_pressed = false
-
-[[panels.controls.default_state.layers]]
-kind = "fill"
-
-[panels.controls.default_state.layers.color]
-red = 0
-green = 0
-blue = 0
-alpha = 255
-
-[[panels.controls.default_state.layers]]
-kind = "image"
-image = "mdi:harddisk"
-fit = "contain"
-anchor = "top_center"
-scale_percent = 40
-
-[[panels.controls.default_state.layers]]
-kind = "text"
-text = "$(system.default:disk_free)$(system.default:disk_usage_pct)%"
-anchor = "bottom_center"
-
-[panels.controls.default_state.layers.color]
-red = 255
-green = 255
-blue = 255
-alpha = 255
-
-[[panels.controls.default_state.layers]]
-kind = "bar"
-value = "$(system.default:disk_usage_pct)"
-maximum = 100
-edge = "bottom"
-thickness = 5
-
-[panels.controls.default_state.layers.color]
-red = 255
-green = 255
-blue = 255
-alpha = 255
-
-[[panels.controls]]
-control_id = "control-1785507226785"
-name = "Load average"
-action_bindings = []
-
-[panels.controls.position]
-column = 3
-row = 1
-
-[panels.controls.default_state]
-is_pressed = false
-
-[[panels.controls.default_state.layers]]
-kind = "fill"
-
-[panels.controls.default_state.layers.color]
-red = 0
-green = 0
-blue = 0
-alpha = 255
-
-[[panels.controls.default_state.layers]]
-kind = "image"
-image = "mdi:chart-line"
-fit = "contain"
-anchor = "top_center"
-scale_percent = 40
-
-[[panels.controls.default_state.layers]]
-kind = "text"
-text = "$(system.default:load_average_1m)"
-anchor = "bottom_center"
-
-[panels.controls.default_state.layers.color]
-red = 255
-green = 255
-blue = 255
-alpha = 255
 
 [[panels.controls]]
 control_id = "control-1785507227850"
@@ -1308,8 +1177,7 @@ alpha = 255
 
 [[panels.controls]]
 control_id = "control-1785507231383"
-name = "Control 31"
-action_bindings = []
+name = "Sleep"
 
 [panels.controls.position]
 column = 7
@@ -1328,15 +1196,38 @@ blue = 0
 alpha = 255
 
 [[panels.controls.default_state.layers]]
+kind = "image"
+image = "mdi:power-sleep"
+fit = "contain"
+anchor = "top_center"
+scale_percent = 40
+
+[[panels.controls.default_state.layers]]
 kind = "text"
-text = ""
-anchor = "center"
+text = "Sleep"
+anchor = "bottom_center"
+font_size = 25
 
 [panels.controls.default_state.layers.color]
 red = 255
 green = 255
 blue = 255
 alpha = 255
+
+[[panels.controls.action_bindings]]
+gesture = "press"
+
+[[panels.controls.action_bindings.actions]]
+type = "set_surface_display"
+surface_ids = ["network-dock"]
+include_triggering_surface = false
+is_display_off = true
+
+[[panels.controls.action_bindings.actions]]
+type = "set_surface_display"
+surface_ids = ["stream-deck-studio"]
+include_triggering_surface = false
+is_display_off = true
 
 [[panels.controls]]
 control_id = "control-1785507236655"
