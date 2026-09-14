@@ -111,54 +111,63 @@ in {
       title = "Shelf";
       icon = "kavita";
       upstream = "10.90.0.11:5000";
+      access = [];
     };
     sinkarr = {
       name = "sinkarr.${zone}";
       title = "Sinkarr";
       icon = "qbit";
       upstream = "10.90.0.11:8080";
+      access = [];
     };
     linkarr = {
       name = "linkarr.${zone}";
       title = "Linkarr";
       icon = "prowlarr";
       upstream = "10.90.0.11:9696";
+      access = [];
     };
     showarr = {
       name = "showarr.${zone}";
       title = "Showarr";
       icon = "sonar";
       upstream = "10.90.0.11:8989";
+      access = [];
     };
     movarr = {
       name = "movarr.${zone}";
       title = "Movarr";
       icon = "radar";
       upstream = "10.90.0.11:7878";
+      access = [];
     };
     listernarr = {
       name = "listernarr.${zone}";
       title = "listernarr";
       icon = "lidarr";
-      upstream = "10.90.0.11:";
+      upstream = "10.90.0.11:8686";
+      access = [];
     };
     bookarr = {
       name = "bookarr.${zone}";
       title = "Bookarr";
       icon = "chaptarr";
       upstream = "10.90.0.11:8789";
+      access = [];
     };
     titlarr = {
       name = "titlarr.${zone}";
       title = "Titlarr";
       icon = "bazarr";
       upstream = "10.90.0.11:6767";
+      access = [];
     };
     coatarr = {
       name = "coatarr.${zone}";
       title = "Coatarr";
       icon = "jackett";
       upstream = "10.90.0.11:9117";
+      access = [];
     };
   };
 
