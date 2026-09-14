@@ -141,9 +141,9 @@ in {
       upstream = "10.90.0.11:7878";
       access = [];
     };
-    listernarr = {
-      name = "listernarr.${zone}";
-      title = "listernarr";
+    listenarr = {
+      name = "listenarr.${zone}";
+      title = "listenarr";
       icon = "lidarr";
       upstream = "10.90.0.11:8686";
       access = [];
