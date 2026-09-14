@@ -1,4 +1,7 @@
-_: {
+_: let
+  inherit (import ../../modules/network/topology.nix) hub;
+  inherit (import ../../modules/network/hosts.nix) hosts;
+in {
   flake.nixosModules.mission = {
     self,
     config,
@@ -96,6 +99,12 @@ _: {
       9200
       8545
     ];
+    networking.firewall.extraCommands = ''
+      iptables -A nixos-fw -i wg0 -s ${hosts.${hub}.address} -p tcp -m multiport --dports 3000,7778 -j ACCEPT
+    '';
+    networking.firewall.extraStopCommands = ''
+      iptables -D nixos-fw -i wg0 -s ${hosts.${hub}.address} -p tcp -m multiport --dports 3000,7778 -j ACCEPT 2>/dev/null || true
+    '';
 
     environment.systemPackages = [
       pkgs.kitty.terminfo

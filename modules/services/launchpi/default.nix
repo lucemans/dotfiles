@@ -23,7 +23,7 @@
       enable = true;
       host = "0.0.0.0";
       port = 7778;
-      openFirewall = true;
+      openFirewall = false;
       discovery = false;
       settings = {
         devices = [

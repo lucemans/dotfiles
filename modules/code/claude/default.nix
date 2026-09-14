@@ -45,6 +45,7 @@
       env.CLAUDE_CODE_ENABLE_GATEWAY_MODEL_DISCOVERY = "1";
 
       allowAllClaudeAiMcps = true;
+      feedbackDrafts = "off";
       deniedMcpServers = [
         {serverName = "claude.ai Gmail";}
         {serverUrl = "https://gmailmcp.googleapis.com/*";}

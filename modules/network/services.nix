@@ -92,6 +92,20 @@ in {
       upstream = "${hosts.v3x-watch.address}:8317";
       access = [];
     };
+    mission = {
+      name = "mission.${zone}";
+      title = "Mission";
+      icon = "home-assistant";
+      upstream = "${hosts.v3x-mission.address}:3000";
+      access = [];
+    };
+    launchpi = {
+      name = "launchpi.${zone}";
+      title = "LaunchPi";
+      icon = "vw";
+      upstream = "${hosts.v3x-mission.address}:7778";
+      access = [];
+    };
   };
 
   sections = [
@@ -109,7 +123,7 @@ in {
     }
     {
       title = "Infrastructure";
-      services = ["auth" "bit" "cache"];
+      services = ["auth" "bit" "cache" "mission" "launchpi"];
     }
   ];
 }

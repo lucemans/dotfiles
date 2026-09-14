@@ -37,7 +37,7 @@
       enable = true;
       user = "luc";
       host = "0.0.0.0";
-      openFirewall = true;
+      openFirewall = false;
       adminKeyFile = config.sops.secrets.missiond_admin_key.path;
 
       # A systemd unit does not inherit the user's PATH, and the display commands
