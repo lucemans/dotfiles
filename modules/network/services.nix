@@ -143,7 +143,7 @@ in {
     };
     listenarr = {
       name = "listenarr.${zone}";
-      title = "listenarr";
+      title = "Listenarr";
       icon = "lidarr";
       upstream = "10.90.0.11:8686";
       access = [];
