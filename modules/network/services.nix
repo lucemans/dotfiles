@@ -102,7 +102,7 @@ in {
     launchpi = {
       name = "launchpi.${zone}";
       title = "LaunchPi";
-      icon = "vw";
+      icon = "launchpi";
       upstream = "${hosts.v3x-mission.address}:7778";
       access = [];
     };
