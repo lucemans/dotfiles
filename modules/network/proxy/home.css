@@ -61,7 +61,6 @@ html[data-layout="daily"] .layout-daily { display: grid; }
 .layout-current h1 {
   color: #6f6f7b;
   font-size: 1rem;
-  font-weight: 500;
 }
 
 .layout-current section {
@@ -102,7 +101,7 @@ html[data-layout="daily"] .layout-daily { display: grid; }
   height: 2rem;
 }
 
-.layout-current strong { font-weight: 600; }
+.layout-current strong { font-weight: 400; }
 
 .layout-current span {
   color: #6f6f7b;
@@ -118,9 +117,7 @@ html[data-layout="daily"] .layout-daily { display: grid; }
   margin-bottom: 1.5rem;
   padding-bottom: 1.5rem;
   border-bottom: 1px solid #34363c;
-  font-size: 1.15rem;
-  font-weight: 500;
-  letter-spacing: -.03em;
+  font-size: 1rem;
 }
 
 .layout-grid section {
@@ -134,8 +131,7 @@ html[data-layout="daily"] .layout-daily { display: grid; }
 .layout-grid h2 {
   margin: .2rem 0 0;
   color: #a9abb2;
-  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
-  font-size: .84rem;
+  font-size: 1rem;
   font-weight: 400;
 }
 
@@ -152,7 +148,6 @@ html[data-layout="daily"] .layout-daily { display: grid; }
   gap: 1.2rem;
   padding: 1rem;
   background: #1e2025;
-  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 
 .layout-grid a:hover { background: #2b2e35; }
@@ -163,9 +158,8 @@ html[data-layout="daily"] .layout-daily { display: grid; }
 }
 
 .layout-grid strong {
-  font-size: .9rem;
+  font-size: 1rem;
   font-weight: 400;
-  line-height: 1.25;
 }
 
 .layout-grid span { display: none; }
@@ -175,15 +169,13 @@ html[data-layout="daily"] .layout-daily { display: grid; }
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 2rem;
   color: #23221f;
-  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 
 .layout-daily h1 {
   grid-column: 1 / -1;
   padding: 0 0 2rem;
-  font-size: clamp(1.8rem, 4vw, 3rem);
+  font-size: 1rem;
   font-weight: 400;
-  letter-spacing: -.04em;
 }
 
 .layout-daily section {
@@ -194,8 +186,7 @@ html[data-layout="daily"] .layout-daily { display: grid; }
 .layout-daily h2 {
   margin: 0 0 1.25rem;
   color: #6c675c;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  font-size: .72rem;
+  font-size: 1rem;
   font-weight: 400;
 }
 
@@ -223,9 +214,8 @@ html[data-layout="daily"] .layout-daily { display: grid; }
 }
 
 .layout-daily strong {
-  font-size: .98rem;
+  font-size: 1rem;
   font-weight: 400;
-  line-height: 1.15;
 }
 
 .layout-daily span { display: none; }
