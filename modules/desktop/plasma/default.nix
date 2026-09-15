@@ -48,7 +48,7 @@
         input.keyboard = {
           layouts = [{layout = "us";}];
           model = "pc104";
-          options = ["caps:super"];
+          options = ["caps:backslash"];
           numlockOnStartup = "on";
         };
 

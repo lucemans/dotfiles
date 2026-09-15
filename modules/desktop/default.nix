@@ -2,6 +2,7 @@
   imports = [
     ./anyrun
     ./browsers
+    ./clearurls-clipboard.nix
     ./plasma
     ./rofi
     ./midjournal

@@ -40,7 +40,7 @@
       videoDrivers = ["nvidia"];
       xkb = {
         layout = "us";
-        options = "caps:super";
+        options = "caps:backslash";
       };
     };
     hardware.graphics.enable = true;
