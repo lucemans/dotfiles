@@ -548,11 +548,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1787607605,
-        "narHash": "sha256-3zirkyy6sc5eehlDoFDPgRzLuP3zMmtTLpkR4R28meA=",
+        "lastModified": 1789476246,
+        "narHash": "sha256-fwyLXRwsgInOD4zCLtl6kd5UtUGSL95Ptb5Ci5s7f0s=",
         "owner": "lucemans",
         "repo": "midjournal",
-        "rev": "073272f5d0118c5740f2d3f1f8a25fea17a2c9d7",
+        "rev": "3edeb3bd47472005a2a191d2317026514f05f9ec",
         "type": "github"
       },
       "original": {

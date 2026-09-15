@@ -20,6 +20,16 @@
       autoNumlock = true;
     };
 
+    # xkeyboard-config has no caps: option that emits a symbol key, so the
+    # remap happens at evdev level instead of in the keyboard layout.
+    services.keyd = {
+      enable = true;
+      keyboards.default = {
+        ids = ["*"];
+        settings.main.capslock = "backslash";
+      };
+    };
+
     environment.etc."plasma/start-icon.jpg".source = self.startIcon;
 
     home-manager.sharedModules = [
@@ -48,7 +58,6 @@
         input.keyboard = {
           layouts = [{layout = "us";}];
           model = "pc104";
-          options = ["caps:backslash"];
           numlockOnStartup = "on";
         };
 
