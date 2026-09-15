@@ -11,6 +11,7 @@
       self.nixosModules.audio
       self.nixosModules.spotify
       self.nixosModules.code
+      self.nixosModules.clearurlsClipboard
       self.nixosModules.workstation
       self.nixosModules.gaming
       self.nixosModules.nix
@@ -30,6 +31,8 @@
 
     networking.hostName = "v3x-fighter";
     networking.networkmanager.enable = true;
+
+    programs.clearurlsClipboard.enable = true;
     time.timeZone = "Europe/Amsterdam";
 
     services.xserver = {
