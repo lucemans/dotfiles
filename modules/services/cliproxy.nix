@@ -32,6 +32,9 @@ _: {
             allow-remote: true
             secret-key: ""
 
+          quota-exceeded:
+            switch-project: true
+
           logging-to-file: true
           logs-max-total-size-mb: 1024
           request-log: true
