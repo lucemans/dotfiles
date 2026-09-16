@@ -41,9 +41,7 @@
     };
   };
 
-  # The adapters are the only place either tool's spelling appears.
-  # `enabled = false` means off by default, toggled on from the OpenCode UI
-  # when a task needs it.
+  # The adapters are the only place each client's spelling appears.
   toOpenCode = s:
     {
       type = "local";
@@ -59,6 +57,13 @@
     type = "stdio";
     inherit (s) command args;
   };
+
+  toOmp = s:
+    {
+      type = "stdio";
+      inherit (s) command args enabled;
+    }
+    // lib.optionalAttrs (s.timeout != null) {inherit (s) timeout;};
 in {
   imports = [
     ./playwright/default.nix
@@ -79,6 +84,7 @@ in {
     mcp = {
       opencode = lib.mapAttrs (_: toOpenCode) servers;
       claude = lib.mapAttrs (_: toClaude) servers;
+      omp = lib.mapAttrs (_: toOmp) servers;
     };
 
     nixosModules.mcp = {pkgs, ...}: let

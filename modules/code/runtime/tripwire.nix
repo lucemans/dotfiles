@@ -36,15 +36,10 @@ _: {
         # the first block was understood and is being worked around.
         detour='(nix[^;|&]*((#|-p +|--packages +)git([^a-z-]|$))|/nix/store/[^ ]*-git-[^ ]*/bin)'
 
-        # The direct attempt. On the host, read-only git is policy, so only the
-        # withheld subcommands count. Inside the sandbox there is no real git
-        # at all, so any invocation is already the first flag.
-        direct='(^|[^[:alnum:]_./-])(sudo|sops)([^[:alnum:]_-]|$)'
-        if [ "''${AGENT_SANDBOX:-}" = 1 ]; then
-          direct="$direct"'|(^|[^[:alnum:]_./-])git([^[:alnum:]_-]|$)'
-        else
-          direct="$direct"'|(^|[^[:alnum:]_./-])git[[:space:]]+(${mutations})([^[:alnum:]_-]|$)'
-        fi
+        # Read-only Git commands are allowed in the sandbox. The runtime Git
+        # shim validates command-specific read forms; this hook catches the
+        # unconditionally mutating commands before they reach it.
+        direct='(^|[^[:alnum:]_./-])(sudo|sops)([^[:alnum:]_-]|$)|(^|[^[:alnum:]_./-])git[[:space:]]+(${mutations})([^[:alnum:]_-]|$)'
 
         if grep -qE "$secrets" <<<"$subject"; then
           tier=3
@@ -54,7 +49,7 @@ _: {
           reason='Blocked. You tried to reach a withheld tool by another route, which is a second-level offence. Stop this line of work, and tell the user what you wanted to run and why.'
         elif grep -qE "$direct" <<<"$subject"; then
           tier=1
-          reason='Blocked by policy. Git, sops, and sudo belong to the user, not to you. State the exact command and ask the user to run it. Do not look for another route to the same tool: attempts are counted, and three of them end the session.'
+          reason='Blocked by policy. Git mutations, sops, and sudo belong to the user. State the exact command and ask the user to run it. Do not look for another route to the same tool: attempts are counted, and three of them end the session.'
         else
           exit 0
         fi
@@ -76,7 +71,7 @@ _: {
         if [ "$strikes" -ge 3 ]; then
           jq -n --arg reason "$reason" --arg note "$note" '{
             continue: false,
-            stopReason: "Tripwire: three strikes. Git and credential access is the user'"'"'s alone, and this session reached for it after being told. Nothing further runs.",
+            stopReason: "Tripwire: three strikes. Git mutations and credential access are reserved to the user, and this session reached for them after being told. Nothing further runs.",
             systemMessage: $note,
             hookSpecificOutput: {
               hookEventName: "PreToolUse",

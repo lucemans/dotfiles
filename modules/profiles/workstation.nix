@@ -24,7 +24,31 @@
     ];
 
     fonts.packages = with pkgs; [nerd-fonts.hack];
-    fonts.fontconfig.defaultFonts.monospace = ["Hack"];
+    fonts.fontconfig = {
+      defaultFonts.monospace = ["Hack Nerd Font Mono"];
+      localConf = ''
+        <?xml version="1.0"?>
+        <!DOCTYPE fontconfig SYSTEM "urn:fontconfig:fonts.dtd">
+        <fontconfig>
+          <match target="pattern">
+            <test name="lang" compare="contains">
+              <string>zh-hant</string>
+            </test>
+            <edit name="family" mode="prepend" binding="strong">
+              <string>Noto Sans CJK TC</string>
+            </edit>
+          </match>
+          <match target="pattern">
+            <test name="lang" compare="contains">
+              <string>zh-tw</string>
+            </test>
+            <edit name="family" mode="prepend" binding="strong">
+              <string>Noto Sans CJK TC</string>
+            </edit>
+          </match>
+        </fontconfig>
+      '';
+    };
 
     home-manager.useGlobalPkgs = true;
     home-manager.useUserPackages = true;
@@ -50,6 +74,7 @@
           hackrf
           soapyhackrf
           gqrx
+          sdrangel
 
           # koi
           obsidian

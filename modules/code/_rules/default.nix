@@ -23,20 +23,6 @@ let
         };
       };
     };
-
-    # visual-qa = {
-    #   description = "Uses Playwright to inspect running frontend features, navigate the browser, capture screenshots, and review visual design quality. Read-only on source code.";
-    #   claude = {};
-    #   opencode = {
-    #     mode = "subagent";
-    #     model = "openai/gpt-5.6-terra";
-    #     permission = {
-    #       edit = "deny";
-    #       bash = "ask";
-    #       "playwright_*" = "allow";
-    #     };
-    #   };
-    # };
   };
 
   # builtins.toJSON renders strings, numbers, booleans, and lists as valid YAML
@@ -71,14 +57,43 @@ let
 in {
   policy = ./AGENTS.md;
 
-  # The git subcommands AGENTS.md withholds. Read-only git is deliberately
-  # absent. Consumed as permission rules by ./claude and as a pattern by
-  # ../tripwire.nix, so the two can never drift apart.
+  # Commands that never change repository state. The runtime Git shim allows
+  # only these commands, with `branch` and `tag` handled separately because
+  # their mutation behavior depends on arguments.
+  gitReadOnly = [
+    "blame"
+    "cat-file"
+    "check-attr"
+    "check-ignore"
+    "describe"
+    "diff"
+    "diff-tree"
+    "for-each-ref"
+    "grep"
+    "log"
+    "ls-files"
+    "ls-remote"
+    "ls-tree"
+    "merge-base"
+    "name-rev"
+    "rev-list"
+    "rev-parse"
+    "show"
+    "show-ref"
+    "shortlog"
+    "status"
+    "verify-commit"
+    "verify-tag"
+    "whatchanged"
+  ];
+
+  # The mutating commands consumed by Claude permissions and the tripwire.
+  # `branch` and `tag` stay out because their read forms are checked by the
+  # runtime Git shim.
   gitMutations = [
     "add"
     "am"
     "apply"
-    "branch"
     "checkout"
     "cherry-pick"
     "clean"
@@ -96,7 +111,6 @@ in {
     "revert"
     "stash"
     "switch"
-    "tag"
     "update-ref"
     "worktree"
   ];

@@ -1,0 +1,132 @@
+{inputs, ...}: {
+  flake.nixosModules.omp = {
+    config,
+    lib,
+    pkgs,
+    self,
+    ...
+  }: let
+    inherit (import ../../network/services.nix) services;
+  in {
+    home-manager.users.luc.home.file.".omp/agent/themes/titanium-v3x.json".source = ./titanium-v3x.json;
+
+    agentRuntime.omp = {
+      package = inputs.omp.packages.${pkgs.stdenv.hostPlatform.system}.default;
+      mcp = pkgs.writeText "omp-mcp.json" (builtins.toJSON {
+        mcpServers =
+          self.mcp.omp
+          // {
+            sdrangel = {
+              type = "http";
+              url = "http://127.0.0.1:8092";
+              enabled = true;
+              timeout = 30000;
+            };
+          };
+        enabledServers = ["playwright" "dapp_wallet"];
+      });
+      models = pkgs.writeText "omp-models.yml" ''
+        providers:
+          anthropic:
+            baseUrl: https://${services.agent.name}
+            api: anthropic-messages
+            apiKey: "!${pkgs.coreutils}/bin/printenv ANTHROPIC_API_KEY"
+            models:
+              - id: gpt-5.6-luna
+                contextWindow: 1050000
+                maxTokens: 128000
+              - id: gpt-5.6-terra
+                contextWindow: 1050000
+                maxTokens: 128000
+              - id: gpt-5.6-sol
+                contextWindow: 1050000
+                maxTokens: 128000
+              - id: gpt-6-astra
+                contextWindow: 1050000
+                maxTokens: 128000
+          v3x-inference:
+            baseUrl: https://${services.inference.name}/v1
+            api: openai-completions
+            apiKey: "!${pkgs.coreutils}/bin/cat ${lib.escapeShellArg config.sops.secrets.v3x_inference_token.path}"
+            authHeader: true
+            models:
+              - id: v3x-m/gpt-oss-20b
+              - id: v3x-m/qwen3.8-27b
+              - id: v3x-t/qwen3.6-35b-a3b
+      '';
+      settings = pkgs.writeText "omp-settings.yml" ''
+        theme:
+          dark: titanium-v3x
+        # Use the shared `playwright` MCP server (see enabledServers) for the
+        # browser, exactly like the claude-code and opencode harnesses. OMP's
+        # built-in browser is disabled because its native "freeze owned browser
+        # tabs at turn settle" step issues a synchronous CDP round-trip on the
+        # main thread with no timeout; when that browser daemon wedges it locks
+        # up the whole agent (same class of main-thread stall as the old git
+        # subprocess issue).
+        browser:
+          enabled: false
+        advisor:
+          enabled: false
+        providers:
+          maxInFlightRequests:
+            anthropic: 3
+          webSearchOrder: [searxng]
+          webSearchExclude:
+            - perplexity
+            - gemini
+            - anthropic
+            - codex
+            - xai
+            - zai
+            - exa
+            - tinyfish
+            - jina
+            - kagi
+            - tavily
+            - firecrawl
+            - brave
+            - kimi
+            - parallel
+            - synthetic
+            - ollama
+            - startpage
+            - duckduckgo
+            - ecosia
+            - google
+            - mojeek
+            - public
+        searxng:
+          endpoint: https://search.v3x.host
+        startup:
+          checkUpdate: false
+        marketplace:
+          autoUpdate: "off"
+        symbolPreset: nerd
+      '';
+      roles = {
+        gpt = pkgs.writeText "omp-roles-gpt.yml" ''
+          modelRoles:
+            default: anthropic/gpt-5.6-terra
+            tiny: anthropic/gpt-5.6-luna
+            smol: anthropic/gpt-5.6-luna
+            slow: anthropic/gpt-6-astra
+        '';
+        claude = pkgs.writeText "omp-roles-claude.yml" ''
+          modelRoles:
+            default: anthropic/claude-opus-5
+            tiny: anthropic/claude-haiku-4-5
+            smol: anthropic/claude-haiku-4-5
+            slow: anthropic/claude-fable-5-1
+        '';
+        local = pkgs.writeText "omp-roles-local.yml" ''
+          modelRoles:
+            default: v3x-inference/v3x-m/qwen3.8-27b
+            tiny: v3x-inference/v3x-t/qwen3.6-35b-a3b
+            smol: v3x-inference/v3x-t/qwen3.6-35b-a3b
+            slow: v3x-inference/v3x-m/qwen3.8-27b
+        '';
+      };
+    };
+  };
+}

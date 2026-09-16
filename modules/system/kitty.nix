@@ -16,7 +16,7 @@
         confirm_os_window_close = 0;
 
         font_size = 12;
-        font_family = "Hack";
+        font_family = "Hack Nerd Font Mono";
 
         cursor_text_color = "background";
         background_opacity = 0.9;

@@ -4,10 +4,11 @@
 
 `git`, `gh`, `sops`, `direnv`, `gpg`, `gpg2`, `pgp`, and `gnupg` are strictly forbidden.
 Invokation, attempts at bypass, and alternative methods for reaching secret material are off limits.
+Simply using the word "git" inside a "bash" tool use is enough to trigger it.
 The evaluator warns first but ends operation on repeated violation.
 I do not bypass the evaluator, it is for our safety.
 
-Use file search and editing tools for file operations.
+Use file search and write tools for file operations not bash.
 repo_reader tool when reading remote repositories.
 If a Git mutation is necessary, explain the exact command and ask the user to run it
 

@@ -2,6 +2,8 @@
   imports = [
     ./mcp
     ./claude
+    ./omp
+    ./pi
     ./runtime
     ./vscode
     ./opencode
@@ -23,6 +25,8 @@
       self.nixosModules.mcp
       self.nixosModules.opencode
       self.nixosModules.claude-code
+      self.nixosModules.omp
+      self.nixosModules.pi
       self.nixosModules.agentRuntime
       self.nixosModules.gitgui
       self.nixosModules.auto-commit
@@ -54,7 +58,6 @@
         pkgs.gitkraken
         selfpkgs.agentsview
         selfpkgs.agentsview-desktop
-        pkgs.pi-coding-agent
         pkgs.kubectl
         pkgs.kicad-unstable
         pkgs.sqlite
