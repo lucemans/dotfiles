@@ -37,6 +37,8 @@
                   mode: anthropic-adaptive
                   efforts: [low, medium, high, xhigh, max]
                   supportsDisplay: true
+            discovery:
+              type: openai-models-list
             models:
               - id: gpt-5.6-luna
                 contextWindow: 1050000
@@ -49,6 +51,9 @@
                 maxTokens: 128000
               - id: gpt-6-astra
                 contextWindow: 1050000
+                maxTokens: 128000
+              - id: kimi-k3-256k
+                contextWindow: 256000
                 maxTokens: 128000
           v3x-inference:
             baseUrl: https://${services.inference.name}/v1
