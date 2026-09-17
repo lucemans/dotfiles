@@ -172,6 +172,42 @@ in {
             };
           }
           {
+            model_name = "v3x-m/nex-n2.5-mini";
+            litellm_params = {
+              api_base = "https://ollama.v3x.sh/v1";
+              model = "openai/nex-n2.5-mini";
+              api_key = "local";
+            };
+            model_info = {
+              input_cost_per_token = 0.00000010;
+              output_cost_per_token = 0.00000010;
+            };
+          }
+          {
+            model_name = "v3x-m/nex-n2.5-mini-uncensored";
+            litellm_params = {
+              api_base = "https://ollama.v3x.sh/v1";
+              model = "openai/nex-n2.5-mini-uncensored";
+              api_key = "local";
+            };
+            model_info = {
+              input_cost_per_token = 0.00000010;
+              output_cost_per_token = 0.00000010;
+            };
+          }
+          {
+            model_name = "v3x-m/minicpm5-2b";
+            litellm_params = {
+              api_base = "https://ollama.v3x.sh/v1";
+              model = "openai/minicpm5-2b";
+              api_key = "local";
+            };
+            model_info = {
+              input_cost_per_token = 0.00000005;
+              output_cost_per_token = 0.00000005;
+            };
+          }
+          {
             model_name = "openai/gpt-5.6-luna";
             litellm_params.model = "openrouter/openai/gpt-5.6-luna";
             model_info.base_model = "gpt-5.6-luna";
