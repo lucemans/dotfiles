@@ -37,6 +37,7 @@ in {
     imports = [
       self.nixosModules.peripheral
       self.nixosModules.wireguard
+      self.nixosModules.nodeMetrics
       self.nixosModules.dns
       self.nixosModules.missionUptime
       self.nixosModules.missionGrafana

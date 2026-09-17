@@ -2,6 +2,7 @@
   overviewDashboard = pkgs.writeTextDir "overview.json" (builtins.readFile ./overview.json);
   homelabDashboard = pkgs.writeTextDir "homelab.json" (builtins.toJSON (import ./homelab-dashboard.nix));
   indexerPriceDashboard = pkgs.writeTextDir "indexer-prices.json" (builtins.toJSON (import ./indexer-price-dashboard.nix));
+  storageDashboard = pkgs.writeTextDir "storage.json" (builtins.toJSON (import ./storage-dashboard.nix));
 in
   pkgs.symlinkJoin {
     name = "mission-dashboards";
@@ -9,5 +10,6 @@ in
       overviewDashboard
       homelabDashboard
       indexerPriceDashboard
+      storageDashboard
     ];
   }

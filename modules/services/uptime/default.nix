@@ -1,5 +1,19 @@
 _: let
   monitors = import ./monitors.nix;
+  inherit (import ../../network/hosts.nix) hosts;
+  meshHosts = ["v3x-fighter" "v3x-teapot" "v3x-watch"];
+  metricTargets = port:
+    [
+      {
+        targets = ["127.0.0.1:${toString port}"];
+        labels.instance = "v3x-mission";
+      }
+    ]
+    ++ map (name: {
+      targets = ["${hosts.${name}.address}:${toString port}"];
+      labels.instance = name;
+    })
+    meshHosts;
 in {
   flake.nixosModules.missionUptime = _: {
     services.gatus = {
@@ -70,6 +84,14 @@ in {
       retentionTime = "30d";
       extraFlags = ["--enable-feature=promql-experimental-functions"];
       scrapeConfigs = [
+        {
+          job_name = "node";
+          static_configs = metricTargets 9100;
+        }
+        {
+          job_name = "smartctl";
+          static_configs = metricTargets 9633;
+        }
         {
           job_name = "gatus";
           static_configs = [

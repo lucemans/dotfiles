@@ -6,6 +6,7 @@ _: {
   }: {
     imports = [
       self.nixosModules.wireguard
+      self.nixosModules.nodeMetrics
       self.nixosModules.dns
       self.nixosModules.proxy
       self.nixosModules.peripheral

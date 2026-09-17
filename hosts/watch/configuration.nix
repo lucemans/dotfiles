@@ -8,6 +8,7 @@ _: {
     imports = [
       self.nixosModules.peripheral
       self.nixosModules.wireguard
+      self.nixosModules.nodeMetrics
       self.nixosModules.dns
       self.nixosModules.vaultwarden
       self.nixosModules.cliproxy

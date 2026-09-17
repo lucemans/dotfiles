@@ -7,6 +7,7 @@
   }: {
     imports = [
       self.nixosModules.wireguard
+      self.nixosModules.nodeMetrics
       self.nixosModules.dns
       self.nixosModules.audio
       self.nixosModules.spotify
@@ -185,21 +186,23 @@
             rev = "65e40f5f3355e583d9a626787a074a00d7b28108";
             hash = "sha256-W2aWBERipNbbekaEtzTMrHnh3CiglluaNb4fxhY9z44=";
           };
-          patches = (_old.patches or []) ++ [
-            (prev.writeText "sdrangel-mcp-static-constants.patch" ''
-              diff --git a/sdrbase/dsp/spectrumvis.cpp b/sdrbase/dsp/spectrumvis.cpp
-              index 1e05946f..eff4b613 100644
-              --- a/sdrbase/dsp/spectrumvis.cpp
-              +++ b/sdrbase/dsp/spectrumvis.cpp
-              @@ -55,6 +55,8 @@ MESSAGE_CLASS_DEFINITION(SpectrumVis::MsgStartStop, Message)
-               
-               const Real SpectrumVis::m_mult = (10.0f / log2(10.0f));
-              +const int SpectrumVis::m_maxDataBins;
-              +const int SpectrumVis::m_maxHistoryRows;
-               
-               SpectrumVis::SpectrumVis(Real scalef) :
-            '')
-          ];
+          patches =
+            (_old.patches or [])
+            ++ [
+              (prev.writeText "sdrangel-mcp-static-constants.patch" ''
+                diff --git a/sdrbase/dsp/spectrumvis.cpp b/sdrbase/dsp/spectrumvis.cpp
+                index 1e05946f..eff4b613 100644
+                --- a/sdrbase/dsp/spectrumvis.cpp
+                +++ b/sdrbase/dsp/spectrumvis.cpp
+                @@ -55,6 +55,8 @@ MESSAGE_CLASS_DEFINITION(SpectrumVis::MsgStartStop, Message)
+
+                 const Real SpectrumVis::m_mult = (10.0f / log2(10.0f));
+                +const int SpectrumVis::m_maxDataBins;
+                +const int SpectrumVis::m_maxHistoryRows;
+
+                 SpectrumVis::SpectrumVis(Real scalef) :
+              '')
+            ];
         });
       })
     ];
