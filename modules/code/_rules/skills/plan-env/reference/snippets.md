@@ -28,7 +28,7 @@ exactly, elide nothing.
 ## Highlighting
 
 Runs at read time with Shiki, pinned inside `code.js`. Supported: `typescript`,
-`javascript`, `rust`, `nix`, `lua`, `markdown`, `bash`, `json`, `css`, `html`,
+`javascript`, `rust`, `nix`, `lua`, `markdown`, `bash`, `json`, `toml`, `css`, `html`,
 `solidity`, `ansi`. Any other value renders plain. Do not add grammars per document.
 
 Syntax colour comes from the language, not from the page. It sits outside the one hue one
@@ -63,6 +63,11 @@ reads them and colours the text, so write one per line and nothing else. The cap
 carries the path and the line range. Quote removed lines exactly from the current file,
 and include one or two unchanged lines when they locate the edit. If you have not read
 that file, say so instead of reconstructing it.
+
+`data-lang` on an `is-diff` figure declares the language of the file that changes. It is
+never `diff`. A diff is not a language here; the `ins`, `del` and `span` elements carry
+the change, and Shiki highlights the lines as the file's own language. Writing
+`data-lang="diff"` renders the whole block plain.
 
 ```html
 <figure class="snippet is-diff" data-lang="css">

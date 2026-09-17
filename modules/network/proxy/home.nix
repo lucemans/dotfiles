@@ -2,7 +2,7 @@
   zone,
   sections,
 }: let
-  card = svc: ''<li><a href="https://${svc.name}"><img src="/icons/${svc.icon}.webp" alt="" width="96" height="96"><strong>${svc.title}</strong><span>${svc.name}</span></a></li>'';
+  card = svc: ''<li><a href="https://${svc.name}${svc.path or ""}"><img src="/icons/${svc.icon}.webp" alt="" width="96" height="96"><strong>${svc.title}</strong><span>${svc.name}</span></a></li>'';
   block = section:
     builtins.concatStringsSep "\n" (
       ["<section>"]

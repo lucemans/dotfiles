@@ -1,0 +1,89 @@
+/* plan-env theme layer. Tokens only, never a component: a theme changes what
+   a colour is, never what a component does. Link it third, after document.css
+   and code.css, so it overrides the tokens both of them read.
+
+   The default theme is black, it lives in document.css, and it needs no
+   attribute and no block here. A document opts into another one with
+   <html lang="en" data-theme="ink">.
+
+   Every text token in every block below reaches AA on all three surfaces of
+   its own theme, in light and in dark. Each block states its lowest pair.
+   Recompute all three surfaces before you change a value. */
+
+/* Off-white and near-black. The same ladder as the default, one step in from
+   the ends, for a reader who finds true black too hard.
+   Lowest pair: --ink-faint on --sunk, 4.57 light. Dark lowest is 4.94.
+   --ink-faint is one step darker than the default in light, because on
+   #efefef the default #6e6e6e falls to 4.43. */
+[data-theme="neutral"] {
+  --bg: light-dark(#f7f7f7, #0c0c0d);
+  --panel: light-dark(#ffffff, #151517);
+  --sunk: light-dark(#efefef, #101011);
+  --code-bg: light-dark(#efefef, #101011);
+  --rule: light-dark(#e2e2e2, #262628);
+  --guide: light-dark(#d2d2d2, #343437);
+  --ink: light-dark(#171717, #ededed);
+  --ink-soft: light-dark(#666666, #a1a1a1);
+  --ink-faint: light-dark(#6c6c6c, #858585);
+}
+
+/* Paper and ink, from the Swiss print variation. This theme separates by
+   weight, by rule and by space, so five of the six hues collapse to --ink:
+   --pos, --warn, --note and --move all carry the ink, and a done row differs
+   from an open row by its label and its position, not by its colour. --neg
+   keeps the one accent, signal red, because a failure is the single status
+   that must still catch the eye across a page of black text.
+   Lowest pair: --accent on --sunk, 4.58 light. Dark lowest is 5.25. */
+[data-theme="ink"] {
+  --bg: light-dark(#fbfbf9, #0e0e0e);
+  --panel: light-dark(#ffffff, #171716);
+  /* One step lighter than the ladder wants. At #f1f1ee the accent falls to
+     4.43, and the accent is fixed by the print palette. */
+  --sunk: light-dark(#f5f5f2, #121211);
+  --code-bg: light-dark(#f5f5f2, #121211);
+  --rule: light-dark(#e3e3df, #2a2a28);
+  --guide: light-dark(#cbcbc6, #3b3b38);
+  --ink: light-dark(#111111, #f2f2f0);
+  --ink-soft: light-dark(#5a5a58, #a8a8a4);
+  --ink-faint: light-dark(#6b6b68, #8b8b87);
+
+  --accent: light-dark(#d8232a, #ff5257);
+  --accent-soft: light-dark(#d8232a16, #ff525724);
+  --neg: light-dark(#d8232a, #ff5257);
+  --neg-soft: light-dark(#d8232a16, #ff525724);
+  --pos: light-dark(#111111, #f2f2f0);
+  --pos-soft: light-dark(#11111116, #f2f2f024);
+  --warn: light-dark(#111111, #f2f2f0);
+  --warn-soft: light-dark(#11111116, #f2f2f024);
+  --note: light-dark(#111111, #f2f2f0);
+  --note-soft: light-dark(#11111116, #f2f2f024);
+  --move: light-dark(#111111, #f2f2f0);
+  --move-soft: light-dark(#11111116, #f2f2f024);
+}
+
+/* The macOS ladder, for a document that sits beside native windows. Light
+   runs white to grey, dark runs grey to lighter grey, which is the opposite
+   direction to the default. --warn, --note and --move keep the default
+   values, because the system ships no counterpart for them; the lowest of
+   those three is --warn on --sunk in light, 5.36.
+   Lowest pair: --neg on --sunk, 4.56 light. Dark lowest is 4.72.
+   --ink-faint is one step darker than the system value in light, because on
+   #ececee the system #6e6e73 falls to 4.30. */
+[data-theme="native"] {
+  --bg: light-dark(#ffffff, #1c1c1e);
+  --panel: light-dark(#f5f5f7, #262628);
+  --sunk: light-dark(#ececee, #2e2e30);
+  --code-bg: light-dark(#ececee, #2e2e30);
+  --rule: light-dark(#d8d8dc, #3d3d40);
+  --guide: light-dark(#c7c7cc, #48484a);
+  --ink: light-dark(#1d1d1f, #f5f5f7);
+  --ink-soft: light-dark(#515154, #aeaeb2);
+  --ink-faint: light-dark(#69696e, #98989d);
+
+  --accent: light-dark(#0040dd, #409cff);
+  --accent-soft: light-dark(#0040dd16, #409cff24);
+  --pos: light-dark(#0e7a33, #30db5b);
+  --pos-soft: light-dark(#0e7a3316, #30db5b24);
+  --neg: light-dark(#d70015, #ff6961);
+  --neg-soft: light-dark(#d7001516, #ff696124);
+}

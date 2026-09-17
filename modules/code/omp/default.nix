@@ -31,6 +31,12 @@
             baseUrl: https://${services.agent.name}
             api: anthropic-messages
             apiKey: "!${pkgs.coreutils}/bin/printenv ANTHROPIC_API_KEY"
+            modelOverrides:
+              claude-fable-5-1:
+                thinking:
+                  mode: anthropic-adaptive
+                  efforts: [low, medium, high, xhigh, max]
+                  supportsDisplay: true
             models:
               - id: gpt-5.6-luna
                 contextWindow: 1050000
@@ -52,6 +58,9 @@
             models:
               - id: v3x-m/gpt-oss-20b
               - id: v3x-m/qwen3.8-27b
+              - id: v3x-m/minicpm5-2b
+              - id: v3x-m/nex-n2.5-mini
+              - id: v3x-m/nex-n2.5-mini-uncensored
               - id: v3x-t/qwen3.6-35b-a3b
       '';
       settings = pkgs.writeText "omp-settings.yml" ''
@@ -115,8 +124,8 @@
         claude = pkgs.writeText "omp-roles-claude.yml" ''
           modelRoles:
             default: anthropic/claude-opus-5
-            tiny: anthropic/claude-haiku-4-5
-            smol: anthropic/claude-haiku-4-5
+            tiny: anthropic/claude-sonnet-5
+            smol: anthropic/claude-sonnet-5
             slow: anthropic/claude-fable-5-1
         '';
         local = pkgs.writeText "omp-roles-local.yml" ''

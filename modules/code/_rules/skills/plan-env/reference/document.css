@@ -1,37 +1,45 @@
 /* plan-env document component stylesheet. Inline verbatim into the page.
    Pair it with code.css when the page carries code snippets; code.css needs
-   the tokens defined here. Full width by design: nothing centers, nothing
-   caps, and --rail is the only fixed measurement on the page.
+   the tokens defined here. themes.css comes third, because it overrides
+   those tokens. Full width by design: nothing centers, nothing caps, and
+   --rail is the only fixed measurement on the page.
 
    Nothing on this page has a border-radius, and no surface is drawn with a
    closed outline. Surfaces separate by fill, by hairline, and by space. */
 
 :root {
   color-scheme: light dark;
-  --bg: light-dark(#f4f2ee, #131419);
-  --panel: light-dark(#ffffff, #1c1e26);
-  --sunk: light-dark(#eae7e0, #16181f);
-  --code-bg: light-dark(#efece5, #0f1014);
-  --rule: light-dark(#dedbd4, #2c2f38);
-  --guide: light-dark(#cfcbc2, #383c47);
-  --ink: light-dark(#1f2024, #e6e6e4);
-  --ink-soft: light-dark(#55575e, #a2a5ad);
-  --ink-faint: light-dark(#83858c, #71747d);
+  /* True black ground, no colour cast. Every text token below reaches AA on
+     all three surfaces of its own theme, so a faint caption on --sunk is as
+     readable as body text on --bg. The lowest pair is --ink-faint on --sunk,
+     4.55 light and 4.86 dark. Recompute all three surfaces before you change
+     any value here. themes.css redeclares these tokens and nothing else. */
+  --bg: light-dark(#ffffff, #000000);
+  --panel: light-dark(#fafafa, #0a0a0a);
+  --sunk: light-dark(#f2f2f2, #171717);
+  /* Same value as --sunk on purpose. A code fill and a sunk surface sit at
+     the same depth, and two greys one step apart read as a mistake. */
+  --code-bg: light-dark(#f2f2f2, #171717);
+  --rule: light-dark(#ededed, #2e2e2e);
+  --guide: light-dark(#d4d4d4, #3d3d3d);
+  --ink: light-dark(#171717, #ededed);
+  --ink-soft: light-dark(#666666, #a1a1a1);
+  --ink-faint: light-dark(#6e6e6e, #858585);
 
   /* Six hues. Each means one thing on the page, and the meaning is named
      where the reader first meets it. */
-  --accent: light-dark(#2f5fd0, #86a8f7);   /* change, proposal, modified */
-  --accent-soft: light-dark(#2f5fd016, #86a8f724);
-  --pos: light-dark(#1c7340, #5fbf87);      /* done, passing, added */
-  --pos-soft: light-dark(#1c734016, #5fbf8724);
-  --neg: light-dark(#ad241d, #f2867d);      /* must fix, failing, removed */
-  --neg-soft: light-dark(#ad241d16, #f2867d24);
-  --warn: light-dark(#8a5600, #e2b25f);     /* open, needs a decision */
-  --warn-soft: light-dark(#8a560016, #e2b25f24);
-  --note: light-dark(#0d6674, #5fc6d4);     /* context, no action */
-  --note-soft: light-dark(#0d667416, #5fc6d424);
-  --move: light-dark(#6a3cbd, #b79bf0);     /* renamed or moved */
-  --move-soft: light-dark(#6a3cbd16, #b79bf024);
+  --accent: light-dark(#1f5fd8, #8ab0ff);   /* change, proposal, modified */
+  --accent-soft: light-dark(#1f5fd816, #8ab0ff24);
+  --pos: light-dark(#15703f, #5fc98d);      /* done, passing, added */
+  --pos-soft: light-dark(#15703f16, #5fc98d24);
+  --neg: light-dark(#b02318, #ff8f85);      /* must fix, failing, removed */
+  --neg-soft: light-dark(#b0231816, #ff8f8524);
+  --warn: light-dark(#8a5300, #e8b866);     /* open, needs a decision */
+  --warn-soft: light-dark(#8a530016, #e8b86624);
+  --note: light-dark(#0c6673, #5fcede);     /* context, no action */
+  --note-soft: light-dark(#0c667316, #5fcede24);
+  --move: light-dark(#6a3cbd, #bba0f5);     /* renamed or moved */
+  --move-soft: light-dark(#6a3cbd16, #bba0f524);
 
   --h: var(--accent);
   --h-soft: var(--accent-soft);
@@ -88,6 +96,14 @@ code { font-family: var(--mono); font-size: .84em; background: var(--code-bg); p
 .meta, .where { font-family: var(--mono); font-size: .76rem; color: var(--ink-faint); }
 .where { word-break: break-word; }
 
+/* Citations. The mono label is the marker, so the bullet goes. Entries
+   separate by space: a hairline between two one line entries reads as a
+   table, and a source list is not a table. */
+ul.sources { list-style: none; margin: 0 0 1rem; padding: 0; }
+ul.sources li { margin: 0 0 .6rem; }
+ul.sources li:last-child { margin-bottom: 0; }
+ul.sources b { display: block; font-family: var(--mono); font-size: .72rem; font-weight: 500; color: var(--ink-faint); }
+
 /* Contents rail. One hue per group, matching the chips of the items it
    lists. The group name and the ID carry the colour; nothing else does. */
 nav.toc { font-size: .85rem; }
@@ -98,9 +114,17 @@ nav.toc > div { margin-bottom: 1.2rem; }
 nav.toc strong { display: block; font-family: var(--mono); font-weight: 500; font-size: .78rem; color: var(--h); margin-bottom: .3rem; }
 nav.toc ol { list-style: none; margin: 0; padding: 0; }
 nav.toc li { margin: 0; }
-nav.toc a { display: flex; gap: .5rem; color: var(--ink-soft); text-decoration: none; line-height: 1.35; padding: .12rem .35rem .12rem 0; }
+/* flex-start, not the default stretch: on a two line entry a stretched em is a
+   tall box with its glyph at the top, which reads as a misaligned chip. The em
+   is a square of its own and centres its own text, like .chip does. */
+nav.toc a { display: flex; align-items: flex-start; gap: .5rem; color: var(--ink-soft); text-decoration: none; line-height: 1.35; padding: .12rem .35rem .12rem 0; }
 nav.toc a:hover { color: var(--h); background: var(--h-soft); }
-nav.toc em { font-family: var(--mono); font-size: .68rem; font-style: normal; color: var(--h); background: var(--h-soft); padding: 0 .28rem; flex: 0 0 auto; }
+nav.toc em {
+  display: inline-flex; align-items: center; justify-content: center;
+  flex: 0 0 auto; width: 1.35rem; height: 1.35rem;
+  font-family: var(--mono); font-size: .68rem; font-style: normal; line-height: 1;
+  color: var(--h); background: var(--h-soft);
+}
 nav.toc a.tab-link { padding: .22rem .45rem; }
 nav.toc a.tab-link:hover { background: var(--h-soft); color: var(--h); }
 
@@ -125,7 +149,7 @@ nav.toc a.tab-link:hover { background: var(--h-soft); color: var(--h); }
 .chip {
   display: inline-flex; align-items: center; justify-content: center;
   width: 1.9rem; height: 1.9rem; flex: 0 0 auto;
-  font-family: var(--mono); font-size: .72rem; font-weight: 600;
+  font-family: var(--mono); font-size: .72rem; font-weight: 600; line-height: 1;
   color: var(--h); background: var(--h-soft);
 }
 .badge { font-family: var(--mono); font-size: .72rem; color: var(--h); background: var(--h-soft); padding: .1rem .4rem; }
@@ -135,11 +159,20 @@ nav.toc a.tab-link:hover { background: var(--h-soft); color: var(--h); }
 table { border-collapse: collapse; width: 100%; font-size: .85rem; }
 th, td { text-align: left; padding: .42rem .7rem; border-bottom: 1px solid var(--rule); vertical-align: top; }
 th { font-size: .8rem; font-weight: 500; color: var(--ink-soft); background: var(--sunk); }
+/* --code-bg equals --sunk in every theme, so an inline code span in a table
+   head would carry no fill at all. It takes the panel behind it instead. */
+th code { background: var(--panel); }
 tbody tr:last-child td { border-bottom: 0; }
 td.id { font-family: var(--mono); font-size: .76rem; white-space: nowrap; color: var(--h); }
 td.id a { color: var(--h); text-decoration: none; }
 td.sz { font-family: var(--mono); font-size: .72rem; color: var(--ink-faint); white-space: nowrap; }
 tr:target { background: var(--accent-soft); }
+
+/* Screenshot. The image is the evidence, so no fill and no frame compete
+   with it. The caption carries the same weight as any other .meta line. */
+figure.shot { margin: 0 0 1.2rem; }
+figure.shot img { display: block; width: 100%; height: auto; }
+figure.shot figcaption { font-family: var(--mono); font-size: .76rem; color: var(--ink-faint); margin-top: .4rem; }
 
 /* Item list. Hairlines from the grid gap. */
 .list { display: grid; gap: 1px; background: var(--rule); }
