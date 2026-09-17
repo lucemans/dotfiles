@@ -86,7 +86,6 @@
         "wheel"
         "networkmanager"
         "uucp"
-        "docker"
         "video"
         "plugdev"
       ];
