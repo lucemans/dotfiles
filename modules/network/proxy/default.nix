@@ -100,6 +100,7 @@ in {
           handle_errors {
             root * ${assets}
             rewrite * /error.html
+            templates
             file_server
           }
         '';
