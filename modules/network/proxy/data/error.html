@@ -4,10 +4,37 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Oh oh.</title>
+    <style>
+        :root {
+            color-scheme: dark;
+        }
+        * {
+            box-sizing: border-box;
+        }
+        html[data-layout="daily"] {
+            color-scheme: light;
+        }
+        body {
+            min-height: 100dvh;
+            margin: 0;
+            background: #000;
+            color: #e6e6ea;
+            font: 16px monospace;
+            display: flex;
+            justify-items: center;
+            align-items: center;
+        }
+        .box {
+            background: #1e2025;
+            padding: 1rem;
+        }
+    </style>
 </head>
 <body>
-    <h1>The computer is having a problem, please wait, or contact the system admin.</h1>
-    <p class="status-text">{{placeholder "http.error.status_text" | html}}</p>
-    <p class="status-code">{{placeholder "http.error.status_code" | html}}</p>
+    <div class="box">
+        <p class="status-code">{{placeholder "http.error.status_code" | html}}</p>
+        <p class="status-text">{{placeholder "http.error.status_text" | html}}</p>
+        <h1>The computer is having a problem, please wait, or contact the system admin.</h1>
+    </div>
 </body>
 </html>
