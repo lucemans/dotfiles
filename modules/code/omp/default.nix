@@ -61,7 +61,7 @@
             apiKey: "!${pkgs.coreutils}/bin/cat ${lib.escapeShellArg config.sops.secrets.v3x_inference_token.path}"
             authHeader: true
             discovery:
-              type: openai-models-list
+              type: litellm
             models:
               - id: v3x-m/gpt-oss-20b
               - id: v3x-m/qwen3.8-27b

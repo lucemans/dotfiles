@@ -34,6 +34,7 @@ in {
       title = "Inference";
       icon = "litellm";
       upstream = "${hosts.v3x-teapot.address}:4000";
+      path = "/ui/";
       access = ["f0" "f1" "f2"];
     };
     mealie = {

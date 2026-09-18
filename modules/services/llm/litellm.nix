@@ -252,7 +252,7 @@ in {
             };
           }
           {
-            model_name = "*";
+            model_name = "openrouter/*";
             litellm_params.model = "openrouter/*";
           }
         ];
