@@ -62,13 +62,6 @@
             authHeader: true
             discovery:
               type: litellm
-            models:
-              - id: v3x-m/gpt-oss-20b
-              - id: v3x-m/qwen3.8-27b
-              - id: v3x-m/minicpm5-2b
-              - id: v3x-m/nex-n2.5-mini
-              - id: v3x-m/nex-n2.5-mini-uncensored
-              - id: v3x-t/qwen3.6-35b-a3b
       '';
       settings = pkgs.writeText "omp-settings.yml" ''
         theme:
@@ -124,21 +117,21 @@
         gpt = pkgs.writeText "omp-roles-gpt.yml" ''
           modelRoles:
             default: anthropic/gpt-5.6-terra
-            tiny: anthropic/gpt-5.6-luna
+            tiny: v3x-inference/v3x-m/nex-n2.5-mini
             smol: anthropic/gpt-5.6-luna
             slow: anthropic/gpt-6-astra
         '';
         claude = pkgs.writeText "omp-roles-claude.yml" ''
           modelRoles:
             default: anthropic/claude-opus-5
-            tiny: anthropic/claude-sonnet-5
+            tiny: v3x-inference/v3x-m/nex-n2.5-mini
             smol: anthropic/claude-sonnet-5
             slow: anthropic/claude-fable-5-1
         '';
         local = pkgs.writeText "omp-roles-local.yml" ''
           modelRoles:
             default: v3x-inference/v3x-m/qwen3.8-27b
-            tiny: v3x-inference/v3x-t/qwen3.6-35b-a3b
+            tiny: v3x-inference/v3x-m/nex-n2.5-mini
             smol: v3x-inference/v3x-t/qwen3.6-35b-a3b
             slow: v3x-inference/v3x-m/qwen3.8-27b
         '';

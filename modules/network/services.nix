@@ -97,8 +97,15 @@ in {
     mission = {
       name = "mission.${zone}";
       title = "Mission";
-      icon = "home-assistant";
+      icon = "bin";
       upstream = "${hosts.v3x-mission.address}:3000";
+      access = [];
+    };
+    grafanaMission = {
+      name = "grafana-mission.${zone}";
+      title = "Mission Grafana";
+      icon = "grafana";
+      upstream = "${hosts.v3x-mission.address}:3001";
       access = [];
     };
     launchpi = {
@@ -192,7 +199,7 @@ in {
     }
     {
       title = "Infrastructure";
-      services = ["auth" "bit" "cache" "mission" "launchpi"];
+      services = ["auth" "bit" "cache" "mission" "grafanaMission" "launchpi"];
     }
   ];
 }

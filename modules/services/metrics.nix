@@ -1,4 +1,6 @@
-_: {
+_: let
+  inherit (import ../network/hosts.nix) hosts;
+in {
   flake.nixosModules.nodeMetrics = {pkgs, ...}: let
     textfileDir = "/var/lib/node-exporter-textfile";
     nixStoreMetrics = pkgs.writeShellScript "nix-store-metrics" ''
@@ -24,7 +26,15 @@ _: {
       port = 9633;
     };
 
-    networking.firewall.interfaces.wg0.allowedTCPPorts = [9100 9633];
+    networking.firewall.extraCommands = ''
+      iptables -I nixos-fw 1 -i wg0 -s ${hosts.v3x-mission.address} -p tcp -m multiport --dports 9100,9633 -j ACCEPT
+      iptables -I nixos-fw 2 -i wg0 -p tcp -m multiport --dports 9100,9633 -j DROP
+    '';
+
+    networking.firewall.extraStopCommands = ''
+      iptables -D nixos-fw -i wg0 -p tcp -m multiport --dports 9100,9633 -j DROP 2>/dev/null || true
+      iptables -D nixos-fw -i wg0 -s ${hosts.v3x-mission.address} -p tcp -m multiport --dports 9100,9633 -j ACCEPT 2>/dev/null || true
+    '';
 
     systemd.tmpfiles.rules = ["d ${textfileDir} 0755 root root -"];
 

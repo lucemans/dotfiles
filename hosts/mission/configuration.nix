@@ -101,10 +101,10 @@ in {
       8545
     ];
     networking.firewall.extraCommands = ''
-      iptables -A nixos-fw -i wg0 -s ${hosts.${hub}.address} -p tcp -m multiport --dports 3000,7778 -j ACCEPT
+      iptables -A nixos-fw -i wg0 -s ${hosts.${hub}.address} -p tcp -m multiport --dports 3000,3001,7778 -j ACCEPT
     '';
     networking.firewall.extraStopCommands = ''
-      iptables -D nixos-fw -i wg0 -s ${hosts.${hub}.address} -p tcp -m multiport --dports 3000,7778 -j ACCEPT 2>/dev/null || true
+      iptables -D nixos-fw -i wg0 -s ${hosts.${hub}.address} -p tcp -m multiport --dports 3000,3001,7778 -j ACCEPT 2>/dev/null || true
     '';
 
     environment.systemPackages = [
