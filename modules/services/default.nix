@@ -1,7 +1,7 @@
 {
   imports = [
     ./uptime
-    ./node-metrics.nix
+    ./metrics.nix
     ./llm
     ./keyhold
     ./launchpi

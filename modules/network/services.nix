@@ -90,7 +90,7 @@ in {
       title = "Inference Proxy";
       icon = "cliproxy";
       upstream = "${hosts.v3x-watch.address}:8317";
-      path = "management.html";
+      path = "/management.html";
       access = [];
     };
     mission = {
