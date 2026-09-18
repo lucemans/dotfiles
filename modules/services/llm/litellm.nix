@@ -208,6 +208,18 @@ in {
             };
           }
           {
+            model_name = "v3x-m/qwen3.8-flash-next";
+            litellm_params = {
+              api_base = "https://ollama.v3x.sh/v1";
+              model = "openai/qwen3.8-flash-next";
+              api_key = "local";
+            };
+            model_info = {
+              input_cost_per_token = 0.00000020;
+              output_cost_per_token = 0.00000020;
+            };
+          }
+          {
             model_name = "openai/gpt-5.6-luna";
             litellm_params.model = "openrouter/openai/gpt-5.6-luna";
             model_info.base_model = "gpt-5.6-luna";
