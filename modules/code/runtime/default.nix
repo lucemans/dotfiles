@@ -106,6 +106,8 @@
     secrets = lib.concatMapStringsSep " " lib.escapeShellArg [
       # opencode resolves this one itself, through a {file:} reference.
       config.sops.secrets.v3x_inference_token.path
+      # omp resolves this one itself, through a !command header value.
+      config.sops.secrets.v3x_error_menu_token.path
       envFile
     ];
 
@@ -201,6 +203,11 @@
           --setenv DISPLAY "$DISPLAY"
           --setenv XDG_SESSION_TYPE "$XDG_SESSION_TYPE"
         )
+        # HackRF uses libusb's usbfs backend. The device bus directory stays
+        # live across reconnects; sysfs is only an optional enumeration path.
+        if [ "''${tool%%-*}" = "omp" ]; then
+          args+=(--dev-bind /dev/bus/usb /dev/bus/usb)
+        fi
 
         # The webcam nodes are absent from the sandbox devtmpfs, and their
         # numbering follows what is plugged in, so bind the ones that exist

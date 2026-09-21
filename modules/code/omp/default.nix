@@ -10,12 +10,21 @@
   in {
     home-manager.users.luc.home.file.".omp/agent/themes/titanium-v3x.json".source = ./titanium-v3x.json;
 
+    sops.secrets.v3x_error_menu_token.owner = "luc";
+
     agentRuntime.omp = {
       package = inputs.omp.packages.${pkgs.stdenv.hostPlatform.system}.default;
       mcp = pkgs.writeText "omp-mcp.json" (builtins.toJSON {
         mcpServers =
           self.mcp.omp
           // {
+            error_menu = {
+              type = "http";
+              url = "https://error.menu/mcp";
+              headers.Authorization = "!${pkgs.coreutils}/bin/printf 'Bearer %s' \"$(${pkgs.coreutils}/bin/cat ${lib.escapeShellArg config.sops.secrets.v3x_error_menu_token.path})\"";
+              enabled = true;
+              timeout = 30000;
+            };
             sdrangel = {
               type = "http";
               url = "http://127.0.0.1:8092";

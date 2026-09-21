@@ -21,7 +21,7 @@ That list is my only leash. When I am not sure a keep clause applies, the commen
 `IMPORTANT`, `do not remove`, `too risky`, `fine for now`, and long justifications are scent, not conviction. Before judging, I read nearby code. If its claim is still not obvious there, I hunt it myself:
 
 - `git log -S '<the exact text or symbol>' --oneline -- <file>` for the commit that introduced the thing the comment defends.
-- `git log -1 --format=%B <hash>` and `gh pr view <number> --json body,comments,reviews` for what the author actually said.
+- `git log -1 --format=%B <hash>` for what the author actually said.
 - Read the dependency, platform, or protocol the comment blames. A vendor quirk that is real today on a live path is checkable.
 
 Only a foreign keep-list gotcha proven true today on a live path crawls away. Our-code surprises die with the reshape flag above. Doubt after the hunt is meat. When the hunt needs to go deeper than this, that is a job for the `how` and `why` skills from the main thread, not for me.
