@@ -2,6 +2,7 @@ _: {
   flake.nixosModules.ttsMic = {
     pkgs,
     lib,
+    config,
     ...
   }: let
     replacements = {
@@ -86,6 +87,11 @@ _: {
 
     voicelines = import ./glados.nix;
 
+    ada-speak = import ./ada.nix pkgs;
+
+    ada-google-speak =
+      import ./ada-google.nix pkgs config.sops.secrets.google_tts_key.path;
+
     # piper reads the voice configuration from <model>.onnx.json next to the
     # model, so both files must share one directory. Upstream repositories name
     # the pair inconsistently, hence the rename.
@@ -105,7 +111,9 @@ _: {
     );
 
     voiceMenu = pkgs.writeText "tts-voice-menu" (
-      lib.concatStringsSep "\n" (lib.attrNames voices ++ ["voicelines"])
+      lib.concatStringsSep "\n" (
+        ["ada" "ada-google"] ++ lib.attrNames voices ++ ["voicelines"]
+      )
     );
 
     # A clip is addressed by its position in glados.nix, which is also the line
@@ -150,6 +158,8 @@ _: {
     tts-speak = pkgs.writeShellApplication {
       name = "tts-speak";
       runtimeInputs = [
+        ada-speak
+        ada-google-speak
         pkgs.coreutils
         pkgs.gnused
         pkgs.piper-tts
@@ -179,6 +189,24 @@ _: {
           exit 0
         fi
 
+        case "$choice" in
+          ada) render=ada-speak ;;
+          ada-google) render=ada-google-speak ;;
+          *) render="" ;;
+        esac
+
+        if [ -n "$render" ]; then
+          clip=$(mktemp --suffix=.wav)
+          trap 'rm -f "$clip"' EXIT
+
+          printf '%s\n' "$text" \
+            | sed -E -f ${dictionary} \
+            | "$render" "$clip"
+
+          play "$clip"
+          exit 0
+        fi
+
         model="${voiceDir}/$choice"
 
         clip=$(mktemp --suffix=.raw)
@@ -203,6 +231,11 @@ _: {
     ];
   in {
     environment.systemPackages = [tts-speak];
+
+    sops.secrets.google_tts_key = {
+      owner = "luc";
+      mode = "0400";
+    };
 
     # Running the loopback as a client keeps a crash inside it away from the
     # daemon, which otherwise takes all system audio down with it.
