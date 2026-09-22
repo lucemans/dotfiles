@@ -56,7 +56,7 @@ _: {
       backend = "docker";
 
       containers.cliproxy = {
-        image = "eceasy/cli-proxy-api:v7.3.13";
+        image = "eceasy/cli-proxy-api:v7.3.14";
 
         extraOptions = ["--network=host"];
 

@@ -70,6 +70,9 @@
               - id: kimi-k3-256k
                 contextWindow: 256000
                 maxTokens: 128000
+              - id: claude-opus-5-5
+                contextWindow: 1050000
+                maxTokens: 128000
           v3x-inference:
             baseUrl: https://${services.inference.name}/v1
             api: openai-completions
@@ -138,9 +141,9 @@
         '';
         claude = pkgs.writeText "omp-roles-claude.yml" ''
           modelRoles:
-            default: anthropic/claude-opus-5
+            default: anthropic/claude-opus-5-5
             tiny: v3x-inference/v3x-m/nex-n2.5-mini
-            smol: anthropic/claude-sonnet-5
+            smol: anthropic/claude-opus-5
             slow: anthropic/claude-fable-5-1
         '';
         kimi = pkgs.writeText "omp-roles-kimi.yml" ''

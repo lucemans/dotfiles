@@ -112,13 +112,13 @@
             command = [
               "claude"
               "--model"
-              "gpt-5.6-terra"
+              "gpt-6-sol"
               "--settings"
-              ''{"availableModels":["gpt-5.6-terra"],"enforceAvailableModels":true}''
+              ''{"availableModels":["gpt-6-sol"],"enforceAvailableModels":true}''
             ];
             glyph = "";
             color = "16;163;127";
-            blurb = "gpt-5.6-terra";
+            blurb = "gpt-6-sol";
             logo = ./icons/openai.png;
           }
         ];
