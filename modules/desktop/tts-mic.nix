@@ -155,6 +155,40 @@ _: {
       )
     );
 
+    tts-type =
+      pkgs.writers.writePython3Bin "tts-type" {flakeIgnore = ["E501"];}
+      (builtins.readFile ./tts-type.py);
+
+    tts-play =
+      pkgs.writers.writePython3Bin "tts-play" {flakeIgnore = ["E501"];}
+      (builtins.readFile ./tts-play.py);
+
+    # piper keeps the voice loaded and renders one line at a time, so feeding it
+    # finished words as they are typed starts the audio long before the sentence
+    # is complete. The other voices render a whole clip in one call and cannot
+    # take part in this.
+    tts-session = pkgs.writeShellApplication {
+      name = "tts-session";
+      runtimeInputs = [
+        pkgs.coreutils
+        pkgs.gnused
+        pkgs.piper-tts
+        pkgs.pipewire
+        tts-play
+        tts-type
+      ];
+      text = ''
+        model=$1
+
+        tts-type \
+          | sed -u -E -f ${dictionary} \
+          | tts-play \
+              --sink tts_mic_sink \
+              --model "$model/voice.onnx" \
+              --rate "$(cat "$model/sample-rate")"
+      '';
+    };
+
     tts-speak = pkgs.writeShellApplication {
       name = "tts-speak";
       runtimeInputs = [
@@ -162,30 +196,18 @@ _: {
         ada-google-speak
         pkgs.coreutils
         pkgs.gnused
-        pkgs.piper-tts
+        pkgs.kitty
         pkgs.pipewire
         pkgs.rofi
+        tts-play
+        tts-session
       ];
       text = ''
-        play() {
-          local clip=$1
-          shift
-          pw-cat --playback "$@" --target tts_mic_sink "$clip" &
-          pw-cat --playback "$@" "$clip" &
-          wait
-        }
-
         choice=$(rofi -dmenu -i -no-custom -p "Voice" < ${voiceMenu}) || exit 0
 
         if [ "$choice" = "voicelines" ]; then
           line=$(rofi -dmenu -i -no-custom -format i -p "Line" < ${voicelineMenu}) || exit 0
-          play "${voicelineAudio}/$line.wav"
-          exit 0
-        fi
-
-        text=$(rofi -dmenu -lines 0 -p "Say") || exit 0
-
-        if [ -z "$text" ]; then
+          tts-play --sink tts_mic_sink --wav "${voicelineAudio}/$line.wav"
           exit 0
         fi
 
@@ -196,6 +218,12 @@ _: {
         esac
 
         if [ -n "$render" ]; then
+          text=$(rofi -dmenu -lines 0 -p "Say") || exit 0
+
+          if [ -z "$text" ]; then
+            exit 0
+          fi
+
           clip=$(mktemp --suffix=.wav)
           trap 'rm -f "$clip"' EXIT
 
@@ -203,20 +231,11 @@ _: {
             | sed -E -f ${dictionary} \
             | "$render" "$clip"
 
-          play "$clip"
+          tts-play --sink tts_mic_sink --wav "$clip"
           exit 0
         fi
 
-        model="${voiceDir}/$choice"
-
-        clip=$(mktemp --suffix=.raw)
-        trap 'rm -f "$clip"' EXIT
-
-        printf '%s\n' "$text" \
-          | sed -E -f ${dictionary} \
-          | piper --model "$model/voice.onnx" --output-raw > "$clip"
-
-        play "$clip" --raw --channels 1 --format s16 --rate "$(cat "$model/sample-rate")"
+        exec kitty --class tts-speak --title "Speak" tts-session "${voiceDir}/$choice"
       '';
     };
 
