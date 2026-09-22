@@ -66,6 +66,14 @@
     logos;
 
   resolveEntries = lib.concatMapStringsSep " " (entry: "[${entry.key}]=${entry.tool}") entries;
+
+  catalogs =
+    lib.concatMapStringsSep "\n"
+    (target: ''
+      ${target.tool})
+        catalog=(${lib.escapeShellArgs [target.catalog.url target.catalog.token target.catalog.prefix target.catalog.qualify]})
+        ;;'')
+    (lib.filter (target: target ? catalog) entries);
 in ''
   # A virtual placement holds the image; the rows only reference it, so fzf can
   # redraw and filter them like any other text. The terminator is written as
@@ -74,6 +82,20 @@ in ''
   icon() {
     printf '\033_Ga=T,U=1,i=%s,f=100,t=f,c=2,r=1,q=2;%s\033\134' \
       "$1" "$(printf '%s' "$2" | base64 -w0)" >&2
+  }
+
+  # The proxy decides what exists: a model it cannot route must not be offered,
+  # so the catalog is its model list rather than the upstream's.
+  models() {
+    curl -sS --fail --max-time 15 -H "Authorization: Bearer $(cat "$2")" "$1" |
+      jq -r --arg prefix "$3" --arg qualify "$4" '
+        [.data[].id]
+        | map(select(startswith($prefix)))
+        | sort
+        | .[]
+        | [$qualify + ., ltrimstr($prefix)]
+        | @tsv
+      '
   }
 
   pick() {
@@ -124,4 +146,26 @@ in ''
       printf '\n  agent %s%s\n\n' "$tool" "''${*:+ $*}" >&2
       ;;
   esac
+
+  # A profile whose model is chosen from a live catalog resolves it here, so
+  # the explicit `agent omp-openrouter` form asks too.
+  model=""
+  catalog=()
+  case "$tool" in
+  ${catalogs}
+  esac
+  if [ "''${#catalog[@]}" -gt 0 ]; then
+    if [ ! -t 2 ]; then
+      echo "agent: $tool picks its model interactively, so it needs a terminal" >&2
+      exit 2
+    fi
+    mapfile -t options < <(models "''${catalog[@]}")
+    if [ "''${#options[@]}" -eq 0 ]; then
+      echo "agent: ''${catalog[0]} offers no ''${catalog[2]} models" >&2
+      exit 1
+    fi
+    pick model "''${options[@]}"
+    model="$choice"
+    printf '\n  agent %s %s\n\n' "$tool" "$model" >&2
+  fi
 ''

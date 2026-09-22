@@ -144,6 +144,14 @@
             smol: anthropic/kimi-k3-256k
             slow: anthropic/kimi-k3-256k
         '';
+        # `default` is deliberately absent: the picked OpenRouter model arrives
+        # as --model, so a stale fallback here could silently win instead.
+        openrouter = pkgs.writeText "omp-roles-openrouter.yml" ''
+          modelRoles:
+            tiny: v3x-inference/v3x-m/nex-n2.5-mini
+            smol: anthropic/gpt-5.6-luna
+            slow: anthropic/gpt-6-astra
+        '';
         local = pkgs.writeText "omp-roles-local.yml" ''
           modelRoles:
             default: v3x-inference/v3x-m/qwen3.8-27b

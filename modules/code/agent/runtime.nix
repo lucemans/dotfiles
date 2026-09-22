@@ -105,12 +105,12 @@
 
   dispatch =
     lib.concatMapStringsSep "\n"
-    (target: "  ${target.tool}) command=(${lib.escapeShellArgs target.command} \"$@\") ;;")
+    (target: "  ${target.tool}) command=(${lib.escapeShellArgs target.command}${lib.optionalString (target ? catalog) " \"$model\""} \"$@\") ;;")
     targets;
 in
   pkgs.writeShellApplication {
     name = "agent";
-    runtimeInputs = [pkgs.bubblewrap pkgs.coreutils pkgs.fzf];
+    runtimeInputs = [pkgs.bubblewrap pkgs.coreutils pkgs.curl pkgs.fzf pkgs.jq];
     text = ''
       ${picker}
       project="$(realpath "$PWD")"

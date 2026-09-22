@@ -10,21 +10,27 @@
     pkgs,
     ...
   }: let
+    inherit (import ../../network/services.nix) services;
     selfpkgs = self.packages.${pkgs.stdenv.hostPlatform.system};
     pi = config.agentRuntime.pi;
     omp = config.agentRuntime.omp;
 
     ompProfile = profile: let
       inherit (profile) role;
-    in {
-      label = role;
-      tool =
-        if role == "gpt"
-        then "omp"
-        else "omp-${role}";
-      command = ["omp" "--config" "${omp.settings}" "--config" "${omp.roles.${role}}" "--model" "@default"];
-      inherit (profile) glyph color blurb logo;
-    };
+    in
+      {
+        label = role;
+        tool =
+          if role == "gpt"
+          then "omp"
+          else "omp-${role}";
+        # A profile with a catalog leaves --model to the picked entry.
+        command =
+          ["omp" "--config" "${omp.settings}" "--config" "${omp.roles.${role}}" "--model"]
+          ++ lib.optional (!(profile ? catalog)) "@default";
+        inherit (profile) glyph color blurb logo;
+      }
+      // lib.optionalAttrs (profile ? catalog) {inherit (profile) catalog;};
 
     # The menu tree, the accepted tool names, the usage line, the launch
     # dispatch, and what the picker shows all come from here, so a harness is
@@ -65,6 +71,22 @@
             color = "80;250;123";
             blurb = "v3x-inference";
             logo = ./icons/local.png;
+          }
+          {
+            role = "openrouter";
+            glyph = "";
+            color = "148;163;184";
+            blurb = "OpenRouter";
+            logo = ./icons/openrouter.png;
+            # LiteLLM is the authority, not OpenRouter's public catalog: a
+            # model absent from the proxy cannot be routed, so it must not be
+            # offered. Wildcard routes are expanded into concrete ids.
+            catalog = {
+              url = "https://${services.inference.name}/v1/models?return_wildcard_routes=true";
+              token = config.sops.secrets.v3x_inference_token.path;
+              prefix = "openrouter/";
+              qualify = "v3x-inference/";
+            };
           }
         ];
       }
