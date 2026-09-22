@@ -21,7 +21,7 @@
       enable = true;
       endpoint.file = config.sops.secrets.auto_commit_endpoint.path;
       apiKey.file = config.sops.secrets.auto_commit_token.path;
-      model = "openai/gpt-5.6-luna";
+      model = "openai/gpt-6-luna-pro:batch";
       settings = {
         context_commits = 10;
         max_tool_calls = 3;

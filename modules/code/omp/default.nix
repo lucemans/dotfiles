@@ -58,6 +58,12 @@
               - id: gpt-5.6-sol
                 contextWindow: 1050000
                 maxTokens: 128000
+              - id: gpt-6-luna
+                contextWindow: 1050000
+                maxTokens: 128000
+              - id: gpt-6-sol
+                contextWindow: 1050000
+                maxTokens: 128000
               - id: gpt-6-astra
                 contextWindow: 1050000
                 maxTokens: 128000

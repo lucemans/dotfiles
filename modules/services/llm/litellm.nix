@@ -225,6 +225,11 @@ in {
             model_info.base_model = "gpt-5.6-luna";
           }
           {
+            model_name = "openai/gpt-6-luna";
+            litellm_params.model = "openrouter/openai/gpt-6-luna";
+            model_info.base_model = "gpt-6-luna";
+          }
+          {
             model_name = "openai/gpt-oss-120b";
             litellm_params.model = "openrouter/openai/gpt-oss-120b";
             model_info.base_model = "openai/gpt-oss-120b";
