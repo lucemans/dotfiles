@@ -54,6 +54,12 @@
           echo "git tag only supports listing tags in the agent sandbox" >&2
           exit 1
           ;;
+        worktree)
+          # Containment is enforced by the sandbox mounts rather than by argv:
+          # the only writable destinations are the project and the worktree
+          # base, and the object store stays read-only.
+          exec ${pkgs.git}/bin/git --no-optional-locks "''${args[@]}"
+          ;;
         *)
           echo "git ''${1:-<none>} is reserved to the user" >&2
           exit 1
@@ -115,11 +121,62 @@
       name = "agent";
       runtimeInputs = [pkgs.bubblewrap pkgs.coreutils];
       text = ''
+        pick() {
+          local prompt="$1"
+          shift
+          local options=("$@")
+          local index key
+          {
+            printf '\n  %s\n\n' "$prompt"
+            for index in "''${!options[@]}"; do
+              printf '    %d) %s\n' "$((index + 1))" "''${options[index]}"
+            done
+            printf '\n  > '
+          } >&2
+          while true; do
+            IFS= read -rsn1 key || exit 130
+            case "$key" in
+              [1-9])
+                if [ "$key" -le "''${#options[@]}" ]; then
+                  choice="''${options[$((key - 1))]}"
+                  printf '%s\n' "$choice" >&2
+                  return 0
+                fi
+                ;;
+              q) printf 'cancelled\n' >&2; exit 130 ;;
+            esac
+          done
+        }
+
+        # An unrecognised first argument means "ask me", not a usage error, so
+        # `agent --resume <id>` picks a harness and forwards its arguments
+        # untouched.
         case "''${1:-}" in
-          claude|claude-gpt|opencode|pi|omp|omp-claude|omp-local|bash) tool="$1"; shift ;;
+          claude|claude-gpt|opencode|pi|omp|omp-claude|omp-kimi|omp-local|bash) tool="$1"; shift ;;
           *)
-            echo "usage: agent <claude|claude-gpt|opencode|pi|omp|omp-claude|omp-local|bash> [args...]" >&2
-            exit 2
+            if [ ! -t 0 ] || [ ! -t 2 ]; then
+              echo "usage: agent <claude|claude-gpt|opencode|pi|omp|omp-claude|omp-kimi|omp-local|bash> [args...]" >&2
+              exit 2
+            fi
+            pick harness omp claude-code opencode pi bash
+            case "$choice" in
+              omp)
+                pick models gpt claude kimi local
+                case "$choice" in
+                  gpt) tool=omp ;;
+                  *) tool="omp-$choice" ;;
+                esac
+                ;;
+              claude-code)
+                pick models claude gpt
+                case "$choice" in
+                  claude) tool=claude ;;
+                  gpt) tool=claude-gpt ;;
+                esac
+                ;;
+              *) tool="$choice" ;;
+            esac
+            printf '\n  agent %s%s\n\n' "$tool" "''${*:+ $*}" >&2
             ;;
         esac
 
@@ -127,6 +184,41 @@
         if [ "$project" = "$HOME" ] || [ "$project" = / ]; then
           echo "agent: refusing to sandbox $project" >&2
           exit 1
+        fi
+
+        # Creating a worktree writes .git/worktrees/<id> and a branch ref, so
+        # those stay writable while .git/objects and .git/config do not: a
+        # worktree can be created and filled, and no commit or history rewrite
+        # can reach the object store. Launching inside a linked worktree
+        # resolves the repository it belongs to, because its .git file points
+        # at the primary checkout.
+        primary="$project"
+        gitdir=""
+        if gitdir="$(${pkgs.git}/bin/git -C "$project" rev-parse --path-format=absolute --git-common-dir 2>/dev/null)"; then
+          primary="$(dirname "$gitdir")"
+          mkdir -p "$gitdir/worktrees" "$gitdir/logs"
+        fi
+
+        # One base per repository, bound as a directory instead of per
+        # worktree, so a worktree created mid-session appears without
+        # relaunching. Only the leaf enters the namespace: ~/dev/wt and
+        # ~/dev/wt/<project> are never bound, so another project's worktrees,
+        # and those of a same-named repository elsewhere, stay out of reach.
+        worktrees="$HOME/dev/wt/$(basename "$primary")/$(printf '%s' "$primary" | sha256sum | cut -c1-7)"
+        mkdir -p "$worktrees"
+
+        roots=()
+        if [ "$primary" != "$project" ]; then
+          roots+=(--ro-bind "$primary" "$primary")
+        fi
+        roots+=(--bind "$worktrees" "$worktrees" --bind "$project" "$project")
+        if [ -n "$gitdir" ]; then
+          roots+=(
+            --ro-bind "$gitdir" "$gitdir"
+            --bind "$gitdir/worktrees" "$gitdir/worktrees"
+            --bind "$gitdir/refs/heads" "$gitdir/refs/heads"
+            --bind "$gitdir/logs" "$gitdir/logs"
+          )
         fi
 
         nixcache="$HOME/.local/state/agent/nix-cache"
@@ -162,7 +254,7 @@
           --ro-bind ${omp.models} "$HOME/.omp/agent/models.yml"
           --ro-bind ${omp.mcp} "$HOME/.omp/agent/mcp.json"
           --bind "$nixcache" "$HOME/.cache/nix"
-          --bind "$project" "$project"
+          "''${roots[@]}"
           --chdir "$project"
           --setenv HOME "$HOME"
           --setenv USER "$USER"
@@ -177,6 +269,7 @@
           --setenv PI_SKIP_VERSION_CHECK 1
           --setenv PS1 'agent:\w\$ '
           --setenv AGENT_SANDBOX 1
+          --setenv OMP_WORKTREE_DIR "$worktrees"
 
           --ro-bind /etc/claude-code/managed-mcp.json /etc/claude-code/managed-mcp.json
           --ro-bind /etc/claude-code/managed-settings.json /etc/claude-code/managed-settings.json
@@ -229,10 +322,6 @@
           args+=(--ro-bind "$secret" "$secret")
         done
 
-        if [ -e "$project/.git" ]; then
-          args+=(--ro-bind "$project/.git" "$project/.git")
-        fi
-
         # Debug hook for the OMP main-thread freeze (stripped binary => native
         # profilers give no symbols; we need JS-level ones). Enable with
         #   OMP_DEBUG_INSPECT=1 agent omp
@@ -265,6 +354,7 @@
           pi) command=(pi "$@") ;;
           omp) command=(omp --config ${omp.settings} --config ${omp.roles.gpt} --model @default "$@") ;;
           omp-claude) command=(omp --config ${omp.settings} --config ${omp.roles.claude} --model @default "$@") ;;
+          omp-kimi) command=(omp --config ${omp.settings} --config ${omp.roles.kimi} --model @default "$@") ;;
           omp-local) command=(omp --config ${omp.settings} --config ${omp.roles.local} --model @default "$@") ;;
           bash) command=(bash --norc "$@") ;;
         esac

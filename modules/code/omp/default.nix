@@ -137,6 +137,13 @@
             smol: anthropic/claude-sonnet-5
             slow: anthropic/claude-fable-5-1
         '';
+        kimi = pkgs.writeText "omp-roles-kimi.yml" ''
+          modelRoles:
+            default: anthropic/kimi-k3-256k
+            tiny: v3x-inference/v3x-m/nex-n2.5-mini
+            smol: anthropic/kimi-k3-256k
+            slow: anthropic/kimi-k3-256k
+        '';
         local = pkgs.writeText "omp-roles-local.yml" ''
           modelRoles:
             default: v3x-inference/v3x-m/qwen3.8-27b

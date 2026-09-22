@@ -60,8 +60,9 @@ pkgs: let
       }} -d $out
     '';
 
-  # RVC rewrites timbre but keeps the wording and delivery of whatever it is
-  # given, so the source only has to be a clean neutral read.
+  # RVC keeps the wording, pacing and pitch contour of the source and rewrites
+  # only the timbre. Flatter sources were tried and lost on listening, so this
+  # one is chosen by ear.
   source =
     pkgs.runCommand "ada-source-voice" {} ''
       mkdir -p $out

@@ -88,8 +88,9 @@ in {
   ];
 
   # The mutating commands consumed by Claude permissions and the tripwire.
-  # `branch` and `tag` stay out because their read forms are checked by the
-  # runtime Git shim.
+  # `branch`, `tag`, and `worktree` stay out: the runtime Git shim checks the
+  # read forms of the first two, and the sandbox mounts confine where a
+  # worktree may be written.
   gitMutations = [
     "add"
     "am"
@@ -112,7 +113,6 @@ in {
     "stash"
     "switch"
     "update-ref"
-    "worktree"
   ];
 
   mkSkillFiles = skillDirectory:
