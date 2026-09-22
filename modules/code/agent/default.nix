@@ -14,29 +14,75 @@
     pi = config.agentRuntime.pi;
     omp = config.agentRuntime.omp;
 
-    ompProfile = role: {
+    ompProfile = profile: let
+      inherit (profile) role;
+    in {
       label = role;
       tool =
         if role == "gpt"
         then "omp"
         else "omp-${role}";
       command = ["omp" "--config" "${omp.settings}" "--config" "${omp.roles.${role}}" "--model" "@default"];
+      inherit (profile) glyph color blurb logo;
     };
 
-    # The menu tree, the accepted tool names, the usage line, and the launch
-    # dispatch all come from here, so a harness is added in one place.
+    # The menu tree, the accepted tool names, the usage line, the launch
+    # dispatch, and what the picker shows all come from here, so a harness is
+    # added in one place. Kitty gets the logo inline; every other terminal
+    # falls back to the glyph in its truecolor triplet.
     harnesses = [
       {
         label = "omp";
-        profiles = map ompProfile ["gpt" "claude" "kimi" "local"];
+        glyph = "󰚩";
+        color = "189;147;249";
+        blurb = "Oh My Pi";
+        logo = ./icons/omp.png;
+        profiles = map ompProfile [
+          {
+            role = "gpt";
+            glyph = "";
+            color = "16;163;127";
+            blurb = "OpenAI";
+            logo = ./icons/openai.png;
+          }
+          {
+            role = "claude";
+            glyph = "󰦣";
+            color = "217;119;87";
+            blurb = "Anthropic";
+            logo = ./icons/claude.png;
+          }
+          {
+            role = "kimi";
+            glyph = "";
+            color = "248;248;242";
+            blurb = "Moonshot";
+            logo = ./icons/kimi.png;
+          }
+          {
+            role = "local";
+            glyph = "";
+            color = "80;250;123";
+            blurb = "v3x-inference";
+            logo = ./icons/local.png;
+          }
+        ];
       }
       {
         label = "claude-code";
+        glyph = "";
+        color = "217;119;87";
+        blurb = "Claude Code";
+        logo = ./icons/claude.png;
         profiles = [
           {
             label = "claude";
             tool = "claude";
             command = ["claude"];
+            glyph = "󰦣";
+            color = "217;119;87";
+            blurb = "Anthropic";
+            logo = ./icons/claude.png;
           }
           {
             label = "gpt";
@@ -48,6 +94,10 @@
               "--settings"
               ''{"availableModels":["gpt-5.6-terra"],"enforceAvailableModels":true}''
             ];
+            glyph = "";
+            color = "16;163;127";
+            blurb = "gpt-5.6-terra";
+            logo = ./icons/openai.png;
           }
         ];
       }
@@ -55,16 +105,28 @@
         label = "opencode";
         tool = "opencode";
         command = ["opencode"];
+        glyph = "";
+        color = "248;248;242";
+        blurb = "OpenCode";
+        logo = ./icons/opencode.png;
       }
       {
         label = "pi";
         tool = "pi";
         command = ["pi"];
+        glyph = "π";
+        color = "139;233;253";
+        blurb = "pi";
+        logo = ./icons/pi.png;
       }
       {
         label = "bash";
         tool = "bash";
         command = ["bash" "--norc"];
+        glyph = "";
+        color = "78;170;37";
+        blurb = "sandbox shell";
+        logo = ./icons/gnubash.png;
       }
     ];
 

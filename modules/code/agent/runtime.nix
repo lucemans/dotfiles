@@ -110,7 +110,7 @@
 in
   pkgs.writeShellApplication {
     name = "agent";
-    runtimeInputs = [pkgs.bubblewrap pkgs.coreutils];
+    runtimeInputs = [pkgs.bubblewrap pkgs.coreutils pkgs.fzf];
     text = ''
       ${picker}
       project="$(realpath "$PWD")"
