@@ -1,4 +1,4 @@
-"""Convert a neutral speech render onto the ADASatisfactory RVC voice."""
+"""Convert a neutral speech render onto an RVC voice."""
 
 import sys
 
@@ -14,7 +14,7 @@ from rvc.lib.utils import load_embedding
 INDEX_RATE = 0.75
 PROTECT = 0.5
 
-model_path, index_path, source_path, target_path = sys.argv[1:5]
+model_path, index_path, pitch, source_path, target_path = sys.argv[1:6]
 
 config = Config()
 checkpoint = torch.load(model_path, map_location="cpu", weights_only=True)
@@ -47,7 +47,7 @@ converted = Pipeline(rate, config).pipeline(
     net_g=generator,
     sid=0,
     audio=source,
-    pitch=0,
+    pitch=int(pitch),
     f0_method="rmvpe",
     file_index=index_path,
     index_rate=INDEX_RATE,

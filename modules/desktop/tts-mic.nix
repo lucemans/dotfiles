@@ -87,7 +87,35 @@ _: {
 
     voicelines = import ./glados.nix;
 
-    ada-speak = import ./ada.nix pkgs;
+    rvc = import ./rvc.nix pkgs;
+
+    # ADA from Satisfactory, trained on the game audio. The training audio
+    # already carries the chorus and delay that
+    # https://satisfactory.guru/articles/read/index/id/47/name/ADA+Voice
+    # describes, so no effect chain runs on top of the conversion.
+    ada-speak = rvc {
+      name = "ada";
+      archive = {
+        url = "https://huggingface.co/AIEnhanceVoices/ADASatisfactory/resolve/main/ADASatisfactory.zip";
+        hash = "sha256-3m1FN9kADt0n3FhXfN0DaGkfHrYig68vYTmkw2XzeUk=";
+      };
+      model = "ADASatisfactory.pth";
+      index = "ADASatisfactory.index";
+      pitch = 0;
+    };
+
+    # Elmo speaks in falsetto: the training audio sits around 500 Hz against
+    # the 195 Hz of the neutral render, which is the +16 semitones below.
+    elmo-speak = rvc {
+      name = "elmo";
+      archive = {
+        url = "https://huggingface.co/YourLocalWorm/SesameSteetmodels/resolve/main/ElmoLCV1_485e_7275s.zip";
+        hash = "sha256-vfVfk+eT7JCxuS5d33xZxbW4KD7OGhIffOpNLqCx9ZI=";
+      };
+      model = "ElmoLCV1_485e_7275s.pth";
+      index = "ElmoLCV1.index";
+      pitch = 16;
+    };
 
     ada-google-speak =
       import ./ada-google.nix pkgs config.sops.secrets.google_tts_key.path;
@@ -112,7 +140,7 @@ _: {
 
     voiceMenu = pkgs.writeText "tts-voice-menu" (
       lib.concatStringsSep "\n" (
-        ["ada" "ada-google"] ++ lib.attrNames voices ++ ["voicelines"]
+        ["ada" "ada-google" "elmo"] ++ lib.attrNames voices ++ ["voicelines"]
       )
     );
 
@@ -194,6 +222,7 @@ _: {
       runtimeInputs = [
         ada-speak
         ada-google-speak
+        elmo-speak
         pkgs.coreutils
         pkgs.gnused
         pkgs.kitty
@@ -214,6 +243,7 @@ _: {
         case "$choice" in
           ada) render=ada-speak ;;
           ada-google) render=ada-google-speak ;;
+          elmo) render=elmo-speak ;;
           *) render="" ;;
         esac
 
