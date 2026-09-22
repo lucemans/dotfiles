@@ -4,7 +4,7 @@
     ./claude
     ./omp
     ./pi
-    ./runtime
+    ./agent
     ./vscode
     ./opencode
     ./agentsview.nix
