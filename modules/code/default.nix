@@ -58,6 +58,7 @@
         pkgs.gitkraken
         selfpkgs.agentsview
         selfpkgs.agentsview-desktop
+        pkgs.herdr
         pkgs.kubectl
         pkgs.kicad-unstable
         pkgs.sqlite

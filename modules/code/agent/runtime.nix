@@ -100,6 +100,9 @@
   cacert = "${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt";
   terminfo = "${pkgs.ncurses}/share/terminfo:${pkgs.kitty.terminfo}/share/terminfo";
   bash = "${pkgs.bashInteractive}/bin/bash";
+  herdrRelay =
+    pkgs.writers.writePython3Bin "herdr-relay" {flakeIgnore = ["E501"];}
+    (builtins.readFile ./herdr-relay.py);
 
   secrets = lib.concatMapStringsSep " " lib.escapeShellArg secretPaths;
 
@@ -157,6 +160,36 @@ in
       nixcache="$HOME/.local/state/agent/nix-cache"
       mkdir -p "$nixcache" "$HOME/.local/share/opencode" "$HOME/.local/state/opencode" \
         "$HOME/.cache/ms-playwright" "$HOME/.pi/agent/sessions" "$HOME/.omp/agent"
+
+      # Herdr injects its API socket into pane processes, and that socket opens
+      # panes on the host, outside this sandbox. The relay takes its place:
+      # it pins this pane and forwards agent state reports only.
+      herdr=()
+      if [ "''${HERDR_ENV:-}" = 1 ] && [ -n "''${HERDR_PANE_ID:-}" ] && [ -n "''${HERDR_SOCKET_PATH:-}" ]; then
+        relay="$XDG_RUNTIME_DIR/agent-herdr-$$.sock"
+        mkdir -p "$HOME/.local/state/agent"
+        ${herdrRelay}/bin/herdr-relay "$HERDR_SOCKET_PATH" "$relay" "$HERDR_PANE_ID" \
+          >>"$HOME/.local/state/agent/herdr-relay.log" 2>&1 &
+
+        for _ in $(seq 50); do
+          if [ -S "$relay" ]; then
+            break
+          fi
+          sleep 0.1
+        done
+
+        if [ -S "$relay" ]; then
+          herdr=(
+            --bind "$relay" "$XDG_RUNTIME_DIR/herdr.sock"
+            --setenv HERDR_ENV 1
+            --setenv HERDR_PANE_ID "$HERDR_PANE_ID"
+            --setenv HERDR_SOCKET_PATH "$XDG_RUNTIME_DIR/herdr.sock"
+            --setenv HERDR_BIN_PATH ${pkgs.herdr}/bin/herdr
+          )
+        else
+          echo "agent: herdr relay did not start, the pane will report no agent state" >&2
+        fi
+      fi
 
       # Only the current user and group, so the host account list stays out.
       exec 3<<<"$USER:x:$(id -u):$(id -g):$USER:$HOME:${bash}"
@@ -228,6 +261,7 @@ in
         --setenv WAYLAND_DISPLAY "$WAYLAND_DISPLAY"
         --setenv DISPLAY "$DISPLAY"
         --setenv XDG_SESSION_TYPE "$XDG_SESSION_TYPE"
+        "''${herdr[@]}"
       )
       # HackRF uses libusb's usbfs backend. The device bus directory stays
       # live across reconnects; sysfs is only an optional enumeration path.
@@ -275,6 +309,13 @@ in
 
       case "$tool" in
       ${dispatch}
+      esac
+
+      # Herdr sees bwrap as the pane process, never the harness inside it. The
+      # hint names the screen manifest to evaluate; it stays on this process,
+      # because bwrap clears the environment it passes on.
+      case "''${tool%%-*}" in
+        omp | claude | opencode | pi) export HERDR_AGENT="''${tool%%-*}" ;;
       esac
 
       # Sourced in the sandbox rather than passed with --setenv, which would
