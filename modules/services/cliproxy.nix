@@ -32,9 +32,6 @@ _: {
             allow-remote: true
             secret-key: ""
 
-          claude-header-defaults:
-            user-agent: "claude-cli/2.1.280 (external, cli)"
-
           quota-exceeded:
             switch-project: true
 
@@ -59,7 +56,7 @@ _: {
       backend = "docker";
 
       containers.cliproxy = {
-        image = "eceasy/cli-proxy-api:v7.3.14";
+        image = "eceasy/cli-proxy-api:v7.3.15";
 
         extraOptions = ["--network=host"];
 
