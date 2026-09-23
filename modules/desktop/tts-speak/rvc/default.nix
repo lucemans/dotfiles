@@ -1,7 +1,7 @@
 # Piper reads the line in a neutral voice and an RVC model replaces the timbre.
-# One argument set describes one voice: the archive it ships in, the checkpoint
-# and index names inside that archive, and the transpose in semitones that puts
-# the neutral render into the pitch range the model was trained on.
+# One voice is the archive it ships in, the checkpoint and index names inside
+# that archive, and the transpose in semitones that puts the neutral render
+# into the pitch range the model was trained on.
 pkgs: let
   python = pkgs.python3Packages;
 
@@ -81,9 +81,9 @@ pkgs: let
         wget
       ]);
     flakeIgnore = ["E501"];
-  } (builtins.readFile ./rvc-convert.py);
-in
-  {
+  } (builtins.readFile ./convert.py);
+
+  mkSpeak = {
     name,
     archive,
     model,
@@ -119,4 +119,33 @@ in
           "$scratch/source.wav" \
           "$target"
       '';
-    }
+    };
+in {
+  # ADA from Satisfactory, trained on the game audio. The training audio
+  # already carries the chorus and delay that
+  # https://satisfactory.guru/articles/read/index/id/47/name/ADA+Voice
+  # describes, so no effect chain runs on top of the conversion.
+  ada = mkSpeak {
+    name = "ada";
+    archive = {
+      url = "https://huggingface.co/AIEnhanceVoices/ADASatisfactory/resolve/main/ADASatisfactory.zip";
+      hash = "sha256-3m1FN9kADt0n3FhXfN0DaGkfHrYig68vYTmkw2XzeUk=";
+    };
+    model = "ADASatisfactory.pth";
+    index = "ADASatisfactory.index";
+    pitch = 0;
+  };
+
+  # Elmo speaks in falsetto: the training audio sits around 500 Hz against
+  # the 195 Hz of the neutral render, which is the +16 semitones below.
+  elmo = mkSpeak {
+    name = "elmo";
+    archive = {
+      url = "https://huggingface.co/YourLocalWorm/SesameSteetmodels/resolve/main/ElmoLCV1_485e_7275s.zip";
+      hash = "sha256-vfVfk+eT7JCxuS5d33xZxbW4KD7OGhIffOpNLqCx9ZI=";
+    };
+    model = "ElmoLCV1_485e_7275s.pth";
+    index = "ElmoLCV1.index";
+    pitch = 16;
+  };
+}

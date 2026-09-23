@@ -10,7 +10,7 @@
     ./doubletake.nix
     ./gaming.nix
     ./spotify.nix
-    ./tts-mic.nix
+    ./tts-speak
     ./voxtype.nix
   ];
 }

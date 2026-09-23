@@ -3,11 +3,10 @@
 # https://satisfactory.guru/articles/read/index/id/47/name/ADA+Voice
 # This reproduces that recipe: the same cloud voice, the same two effects.
 pkgs: keyFile: let
-  effects =
-    pkgs.writers.writePython3Bin "ada-effects" {
-      libraries = [pkgs.python3Packages.numpy];
-      flakeIgnore = ["E501"];
-    } (builtins.readFile ./ada-effects.py);
+  effects = pkgs.writers.writePython3Bin "ada-effects" {
+    libraries = [pkgs.python3Packages.numpy];
+    flakeIgnore = ["E501"];
+  } (builtins.readFile ./effects.py);
 in
   pkgs.writeShellApplication {
     name = "ada-google-speak";
