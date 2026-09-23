@@ -134,9 +134,9 @@
       roles = {
         gpt = pkgs.writeText "omp-roles-gpt.yml" ''
           modelRoles:
-            default: anthropic/gpt-5.6-terra
+            default: anthropic/gpt-6-sol
             tiny: v3x-inference/v3x-m/nex-n2.5-mini
-            smol: anthropic/gpt-5.6-luna
+            smol: anthropic/gpt-6-luna
             slow: anthropic/gpt-6-astra
         '';
         claude = pkgs.writeText "omp-roles-claude.yml" ''
@@ -158,7 +158,7 @@
         openrouter = pkgs.writeText "omp-roles-openrouter.yml" ''
           modelRoles:
             tiny: v3x-inference/v3x-m/nex-n2.5-mini
-            smol: anthropic/gpt-5.6-luna
+            smol: anthropic/gpt-6-luna
             slow: anthropic/gpt-6-astra
         '';
         local = pkgs.writeText "omp-roles-local.yml" ''
