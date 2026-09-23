@@ -29,6 +29,9 @@ _: {
       '';
     };
     playwrightMcpConfig = pkgs.writeText "playwright-mcp.json" (builtins.toJSON {
+      # The sandboxes have separate PID namespaces, so Chromium cannot see the
+      # profile lock of another sandbox, and a shared profile gets corrupted.
+      browser.isolated = true;
       browser.initScript = [walletProvider];
     });
     playwrightMcpIcon = pkgs.runCommand "playwright-mcp-icon" {} ''
@@ -71,7 +74,6 @@ _: {
           export PLAYWRIGHT_MCP_BROWSER=chrome
           export PLAYWRIGHT_MCP_EXECUTABLE_PATH=${playwrightMcpChromium}/bin/chromium
           export PLAYWRIGHT_MCP_CONFIG=${playwrightMcpConfig}
-          export PLAYWRIGHT_MCP_USER_DATA_DIR=/home/luc/.cache/ms-playwright/playwright-mcp
           # The server starts in the project directory, which is the only
           # directory the sandbox binds writable.
           export PLAYWRIGHT_MCP_OUTPUT_DIR="$PWD/.tmp/screenshots"
