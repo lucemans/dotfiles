@@ -1,4 +1,4 @@
-{...}: {
+{inputs, ...}: {
   imports = [
     ./mcp
     ./claude
@@ -58,7 +58,7 @@
         pkgs.gitkraken
         selfpkgs.agentsview
         selfpkgs.agentsview-desktop
-        pkgs.herdr
+        inputs.herdr.packages.${pkgs.stdenv.hostPlatform.system}.default
         pkgs.kubectl
         pkgs.kicad-unstable
         pkgs.sqlite

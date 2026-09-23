@@ -27,6 +27,8 @@
     launchpi.inputs.nixpkgs.follows = "nixpkgs";
     omp.url = "github:can1357/oh-my-pi";
     omp.inputs.nixpkgs.follows = "nixpkgs";
+    herdr.url = "github:herdrdev/herdr";
+    herdr.inputs.nixpkgs.follows = "nixpkgs";
     koi.url = "github:v3xlabs/koi";
     koi.inputs.nixpkgs.follows = "nixpkgs";
     plan-env-md.url = "github:v3xlabs/plan-env-md";

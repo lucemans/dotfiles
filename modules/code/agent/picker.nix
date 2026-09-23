@@ -128,7 +128,7 @@ in ''
         echo "usage: agent <${tools}> [args...]" >&2
         exit 2
       fi
-      if [ -n "''${KITTY_WINDOW_ID:-}" ]; then
+      if [ -n "''${KITTY_WINDOW_ID:-}" ] || [ "''${HERDR_ENV:-}" = 1 ]; then
         marks=image
   ${transmits}
       else

@@ -1,4 +1,4 @@
-{...}: {
+{inputs, ...}: {
   imports = [
     ./tripwire.nix
   ];
@@ -14,6 +14,7 @@
     selfpkgs = self.packages.${pkgs.stdenv.hostPlatform.system};
     pi = config.agentRuntime.pi;
     omp = config.agentRuntime.omp;
+    herdr = inputs.herdr.packages.${pkgs.stdenv.hostPlatform.system}.default;
 
     ompProfile = profile: let
       inherit (profile) role;
@@ -155,7 +156,7 @@
     envFile = config.sops.templates.agent-env.path;
 
     agent = import ./runtime.nix {
-      inherit pkgs lib selfpkgs pi omp envFile;
+      inherit pkgs lib selfpkgs pi omp herdr envFile;
       targets = lib.concatMap (harness: harness.profiles or [harness]) harnesses;
       picker = import ./picker.nix {inherit lib harnesses;};
 

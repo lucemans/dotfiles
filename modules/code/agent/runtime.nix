@@ -4,6 +4,7 @@
   selfpkgs,
   pi,
   omp,
+  herdr,
   targets,
   secretPaths,
   envFile,
@@ -184,7 +185,7 @@ in
             --setenv HERDR_ENV 1
             --setenv HERDR_PANE_ID "$HERDR_PANE_ID"
             --setenv HERDR_SOCKET_PATH "$XDG_RUNTIME_DIR/herdr.sock"
-            --setenv HERDR_BIN_PATH ${pkgs.herdr}/bin/herdr
+            --setenv HERDR_BIN_PATH ${herdr}/bin/herdr
           )
         else
           echo "agent: herdr relay did not start, the pane will report no agent state" >&2
