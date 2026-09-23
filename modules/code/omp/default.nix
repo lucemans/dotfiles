@@ -163,7 +163,7 @@
           modelRoles = {
             default = "anthropic/claude-opus-5-5";
             inherit tiny;
-            smol = "anthropic/claude-opus-5";
+            smol = "anthropic/claude-opus-5-5";
             slow = "anthropic/claude-fable-5-1";
           };
         }
