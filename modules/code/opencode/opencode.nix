@@ -61,5 +61,14 @@
           force = true;
         };
       };
+
+    agentRuntime.harnesses.opencode = {
+      command = ["opencode"];
+      glyph = "";
+      color = "248;248;242";
+      blurb = "OpenCode";
+      logo = ../agent/icons/opencode.png;
+      package = self.packages.${pkgs.stdenv.hostPlatform.system}.opencode;
+    };
   };
 }

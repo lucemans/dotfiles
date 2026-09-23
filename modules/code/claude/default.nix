@@ -79,5 +79,37 @@
           "Read(//etc/nixos/secrets/**)"
         ];
     };
+
+    agentRuntime.harnesses.claude = {
+      glyph = "";
+      color = "217;119;87";
+      blurb = "Claude Code";
+      logo = ../agent/icons/claude.png;
+      package = selfpkgs.claude-code;
+      profiles = [
+        {
+          name = "claude";
+          command = ["claude"];
+          glyph = "󰦣";
+          color = "217;119;87";
+          blurb = "Anthropic";
+          logo = ../agent/icons/claude.png;
+        }
+        {
+          name = "gpt";
+          command = [
+            "claude"
+            "--model"
+            "gpt-6-sol"
+            "--settings"
+            ''{"availableModels":["gpt-6-sol"],"enforceAvailableModels":true}''
+          ];
+          glyph = "";
+          color = "16;163;127";
+          blurb = "gpt-6-sol";
+          logo = ../agent/icons/openai.png;
+        }
+      ];
+    };
   };
 }

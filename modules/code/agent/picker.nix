@@ -1,171 +1,221 @@
 {
-  lib,
+  pkgs,
   harnesses,
+  sandbox,
 }: let
-  targets = lib.concatMap (harness: harness.profiles or [harness]) harnesses;
-  tools = lib.concatMapStringsSep "|" (target: target.tool) targets;
+  manifest = pkgs.writeText "agent-harnesses.json" (builtins.toJSON harnesses);
+in
+  pkgs.writeShellApplication {
+    name = "agent";
+    runtimeInputs = [pkgs.coreutils pkgs.curl pkgs.fzf pkgs.gnused pkgs.jq];
+    # Single-quoted $names in the jq programs below are jq variables, not shell
+    # expansions.
+    excludeShellChecks = ["SC2016"];
+    text = ''
+      project="$(realpath "$PWD")"
+      if [ "$project" = "$HOME" ] || [ "$project" = / ]; then
+        echo "agent: refusing to sandbox $project" >&2
+        exit 1
+      fi
 
-  keyed = harness: map (profile: profile // {key = "${harness.label}/${profile.label}";}) harness.profiles;
-  menu = map (harness: harness // {key = harness.label;}) harnesses;
+      # Harness and profile data come from the manifest, which Nix writes from every
+      # harness module's entry.
+      harness=""
+      key=""
+      marks=""
 
-  profiled = lib.filter (harness: harness ? profiles) menu;
-
-  # Rows the picker can draw: the harness menu plus every profile submenu.
-  rendered = menu ++ lib.concatMap keyed profiled;
-
-  # Rows that resolve to a tool: leaf harnesses and profiles, never a harness
-  # that only leads to a submenu.
-  entries =
-    lib.concatMap
-    (harness:
-      if harness ? profiles
-      then keyed harness
-      else [harness])
-    menu;
-
-  # One kitty image id per distinct logo, carried to the terminal as a 24-bit
-  # foreground colour: r=1, b=index. fzf rewrites 8-bit colours into legacy SGR
-  # codes and would corrupt the id, but it passes a truecolor triplet through
-  # unchanged, including on the highlighted row.
-  logos = lib.unique (map (entry: "${entry.logo}") rendered);
-  index = logo: lib.lists.findFirstIndex (candidate: candidate == logo) 0 logos + 1;
-
-  # Two cells of U+10EEEE, tagged (row 0, column 0) and (row 0, column 1) with
-  # kitty's rowcolumn diacritics. Nix has no unicode escape, so the codepoints
-  # arrive through JSON, U+10EEEE as its surrogate pair.
-  cells = builtins.fromJSON ''"\udbfb\udeee\u0305\u0305\udbfb\udeee\u0305\u030d"'';
-
-  mark = {
-    image = entry: "\\033[38;2;1;0;${toString (index "${entry.logo}")}m${cells}\\033[39m";
-    glyph = entry: "\\033[38;2;${entry.color}m${entry.glyph} \\033[0m";
-  };
-
-  width = group: lib.foldl' (accumulator: entry: lib.max accumulator (lib.stringLength entry.label)) 0 group;
-  pad = size: text: text + lib.concatStrings (lib.genList (_: " ") (size - lib.stringLength text));
-
-  row = kind: size: entry: "'${entry.key}\\t${mark.${kind} entry}  ${pad size entry.label}  \\033[2m${entry.blurb}\\033[0m'";
-  rows = kind: group: lib.concatMapStringsSep " \\\n        " (row kind (width group)) group;
-
-  stage = kind: group: key: ''
-    ${kind}/${key})
-      printf '%s\n' ${rows kind group}
-      ;;'';
-
-  stages =
-    lib.concatMapStringsSep "\n"
-    (kind:
-      lib.concatMapStringsSep "\n" (line: line)
-      ([(stage kind menu "")]
-        ++ map (harness: stage kind (keyed harness) harness.label)
-        profiled))
-    ["image" "glyph"];
-
-  transmits =
-    lib.concatMapStringsSep "\n"
-    (logo: "      icon ${toString (65536 + index logo)} ${logo}")
-    logos;
-
-  resolveEntries = lib.concatMapStringsSep " " (entry: "[${entry.key}]=${entry.tool}") entries;
-
-  catalogs =
-    lib.concatMapStringsSep "\n"
-    (target: ''
-      ${target.tool})
-        catalog=(${lib.escapeShellArgs [target.catalog.url target.catalog.token target.catalog.prefix target.catalog.qualify]})
-        ;;'')
-    (lib.filter (target: target ? catalog) entries);
-in ''
-  # A virtual placement holds the image; the rows only reference it, so fzf can
-  # redraw and filter them like any other text. The terminator is written as
-  # \134 so the format does not end on an escaped backslash, which the linter
-  # reads as a quoting mistake.
-  icon() {
-    printf '\033_Ga=T,U=1,i=%s,f=100,t=f,c=2,r=1,q=2;%s\033\134' \
-      "$1" "$(printf '%s' "$2" | base64 -w0)" >&2
-  }
-
-  # The proxy decides what exists: a model it cannot route must not be offered,
-  # so the catalog is its model list rather than the upstream's.
-  models() {
-    curl -sS --fail --max-time 15 -H "Authorization: Bearer $(cat "$2")" "$1" |
-      jq -r --arg prefix "$3" --arg qualify "$4" '
-        [.data[].id]
-        | map(select(startswith($prefix)))
-        | sort
-        | .[]
-        | [$qualify + ., ltrimstr($prefix)]
-        | @tsv
+      defs='
+        def logos: [.[] | .logo, .profiles[]?.logo] | unique;
+        def harness: .[] | select(.name == $harness);
+        def entry: harness | if .profiles then .profiles[] | select("\($harness)/\(.name)" == $key) else . end;
       '
-  }
 
-  pick() {
-    local label="$1"
-    shift
-    choice="$(
-      printf '%b\n' "$@" |
+      # jq over the manifest, taking options first and the filter last as jq does.
+      query() {
+        jq --arg harness "$harness" --arg key "$key" --arg marks "$marks" "''${@:1:$#-1}" "$defs''${!#}" "${manifest}"
+      }
+
+      # Reads a jq list into the named array, NUL-separated so an argument may hold
+      # any character.
+      load() {
+        mapfile -d ''' "$1" < <(query -j "$2"' | .[] | . + "\u0000"')
+      }
+
+      # Kitty draws a logo through a virtual placement, which the rows only
+      # reference, so fzf can redraw and filter them like any other text. A row
+      # carries its image id as a 24-bit foreground colour, r=1 and b=index: fzf
+      # rewrites 8-bit colours into legacy SGR codes and would corrupt the id, but
+      # passes a truecolor triplet through unchanged. The id is drawn as two cells of
+      # U+10EEEE tagged (row 0, column 0) and (row 0, column 1) with kitty's
+      # rowcolumn diacritics.
+      rows() {
+        query -r '
+          logos as $logos
+          | [if $harness == "" then .[] | . + {key: .name}
+             else harness | .profiles[] | . + {key: "\($harness)/\(.name)"} end]
+          | (map(.name | length) | max) as $width
+          | .[]
+          | .logo as $logo
+          | (if $marks == "image"
+             then "\u001b[38;2;1;0;\(($logos | index($logo)) + 1)m\udbfb\udeee\u0305\u0305\udbfb\udeee\u0305\u030d\u001b[39m"
+             else "\u001b[38;2;\(.color)m\(.glyph) \u001b[0m" end) as $mark
+          | "\(.key)\t\($mark)  \(.name)\(" " * ($width - (.name | length) + 2))\u001b[2m\(.blurb)\u001b[0m"'
+      }
+
+      # The terminator is written as \134 so the format does not end on an escaped
+      # backslash, which the linter reads as a quoting mistake.
+      ready_marks() {
+        if [ -n "$marks" ]; then
+          return
+        fi
+        marks=glyph
+        # Herdr renders kitty placements for a kitty client but does not pass
+        # KITTY_WINDOW_ID into its panes.
+        if [ -n "''${KITTY_WINDOW_ID:-}" ] || [ "''${HERDR_ENV:-}" = 1 ]; then
+          marks=image
+          while IFS=$'\t' read -r id logo; do
+            printf '\033_Ga=T,U=1,i=%s,f=100,t=f,c=2,r=1,q=2;%s\033\134' \
+              "$id" "$(printf '%s' "$logo" | base64 -w0)" >&2
+          done < <(query -r 'logos | to_entries[] | "\(.key + 65537)\t\(.value)"')
+        fi
+      }
+
+      pick() {
         fzf --ansi --delimiter='\t' --with-nth=2 --accept-nth=1 \
-          --layout=reverse --cycle --height=~60% --border=rounded --border-label=" $label " \
+          --layout=reverse --cycle --height=~60% --border=rounded --border-label=" $1 " \
           --info=inline-right --pointer='▌' --prompt='  ' \
           --color=fg:-1,bg:-1,hl:#bd93f9,fg+:-1:regular,bg+:#3a3c4e,hl+:#ff79c6 \
           --color=border:#44475a,label:#6272a4,prompt:#8be9fd,pointer:#ff79c6,info:#6272a4
-    )" || exit 130
-  }
+      }
 
-  rows_for() {
-    case "$marks/$1" in
-    ${stages}
-    esac
-  }
+      # The proxy decides what exists: a model it cannot route must not be offered,
+      # so the catalog is its model list rather than the upstream's.
+      models() {
+        curl -sS --fail --max-time 15 -H "Authorization: Bearer $(cat "$2")" "$1" |
+          jq -r --arg prefix "$3" --arg qualify "$4" '
+            [.data[].id]
+            | map(select(startswith($prefix) and (contains("*") | not)))
+            | sort
+            | .[]
+            | [$qualify + ., ltrimstr($prefix)]
+            | @tsv
+          '
+      }
 
-  declare -A resolve=(${resolveEntries})
+      # Any of these makes OMP load an existing session. An explicit --model would
+      # then replace the model that session recorded, so none is passed.
+      resuming() {
+        local arg
+        for arg in "$@"; do
+          case "$arg" in
+            --resume | --resume=* | -r | --session | --session=* | --continue | -c | --fork | --fork=*) return 0 ;;
+          esac
+        done
+        return 1
+      }
 
-  # An unrecognised first argument means "ask me", not a usage error, so
-  # `agent --resume <id>` picks a harness and forwards its arguments untouched.
-  case "''${1:-}" in
-    ${tools}) tool="$1"; shift ;;
-    *)
-      if [ ! -t 0 ] || [ ! -t 2 ]; then
-        echo "usage: agent <${tools}> [args...]" >&2
-        exit 2
+      # A session records every model it switched to, and each OMP profile starts on
+      # its own default model, so the last default-role model names the profile that
+      # owns the session. Resuming under that profile keeps its tiny, smol and slow
+      # roles.
+      omp_session_key() {
+        local ref="" file="" model
+        while [ "$#" -gt 0 ]; do
+          case "$1" in
+            --resume=* | --session=*) ref="''${1#*=}" ;;
+            --resume | -r | --session) ref="''${2:-}" ;;
+          esac
+          shift
+        done
+        if [ -z "$ref" ] || [ "''${ref#-}" != "$ref" ]; then
+          return 1
+        fi
+        if [ -f "$ref" ]; then
+          file="$ref"
+        else
+          for file in "$HOME"/.omp/agent/sessions/*/*_"$ref"*.jsonl; do
+            if [ -f "$file" ]; then
+              break
+            fi
+          done
+        fi
+        if [ ! -f "$file" ]; then
+          return 1
+        fi
+        model="$(
+          jq -rR 'fromjson? | select(.type == "model_change" and (.role // "default") == "default") | .model' "$file" |
+            sed -n '$p'
+        )"
+        query -er --arg model "$model" '
+          first(harness | .profiles[]
+            | .catalog as $catalog
+            | select(.modelRoles.default == $model
+              or ($catalog != null and ($model | startswith($catalog.qualify + $catalog.prefix))))
+            | "\($harness)/\(.name)")'
+      }
+
+      interactive=false
+      if [ -t 0 ] && [ -t 2 ]; then
+        interactive=true
       fi
-      if [ -n "''${KITTY_WINDOW_ID:-}" ] || [ "''${HERDR_ENV:-}" = 1 ]; then
-        marks=image
-  ${transmits}
+
+      # An unrecognised first argument means "ask me", not a usage error, so
+      # `agent --resume <id>` picks a harness and forwards its arguments untouched.
+      harness="''${1:-}"
+      if [ -n "$harness" ] && query -e 'any(.[]; .name == $harness)' >/dev/null; then
+        shift
       else
-        marks=glyph
+        harness=""
+        if ! $interactive; then
+          echo "usage: agent [$(query -r '[.[].name] | join("|")')] [args...]" >&2
+          exit 2
+        fi
+        ready_marks
+        harness="$(rows | pick harness)" || exit 130
       fi
-      mapfile -t options < <(rows_for "")
-      pick harness "''${options[@]}"
-      key="$choice"
-      mapfile -t options < <(rows_for "$key")
-      if [ "''${#options[@]}" -gt 0 ]; then
-        pick profile "''${options[@]}"
-        key="$choice"
-      fi
-      tool="''${resolve[$key]}"
-      printf '\n  agent %s%s\n\n' "$tool" "''${*:+ $*}" >&2
-      ;;
-  esac
 
-  # A profile whose model is chosen from a live catalog resolves it here, so
-  # the explicit `agent omp-openrouter` form asks too.
-  model=""
-  catalog=()
-  case "$tool" in
-  ${catalogs}
-  esac
-  if [ "''${#catalog[@]}" -gt 0 ]; then
-    if [ ! -t 2 ]; then
-      echo "agent: $tool picks its model interactively, so it needs a terminal" >&2
-      exit 2
-    fi
-    mapfile -t options < <(models "''${catalog[@]}")
-    if [ "''${#options[@]}" -eq 0 ]; then
-      echo "agent: ''${catalog[0]} offers no ''${catalog[2]} models" >&2
-      exit 1
-    fi
-    pick model "''${options[@]}"
-    model="$choice"
-    printf '\n  agent %s %s\n\n' "$tool" "$model" >&2
-  fi
-''
+      key="$harness"
+      if query -e 'harness | has("profiles")' >/dev/null; then
+        if [ "$harness" = omp ] && session="$(omp_session_key "$@")"; then
+          key="$session"
+        elif $interactive; then
+          ready_marks
+          key="$(rows | pick "$harness")" || exit 130
+        else
+          # A harness run without a terminal gets its first profile.
+          key="$(query -r 'harness | "\(.name)/\(.profiles[0].name)"')"
+        fi
+      fi
+
+      start=()
+      catalog=()
+      if ! resuming "$@"; then
+        load start 'entry | .start // []'
+        load catalog 'entry | if .catalog then .catalog | [.url, .token, .prefix, .qualify] else [] end'
+      fi
+
+      # A profile whose model is chosen from a live catalog resolves it here, so a
+      # fresh `agent omp` session on that profile asks too.
+      if [ "''${#catalog[@]}" -gt 0 ]; then
+        if ! $interactive; then
+          echo "agent: $key picks its model interactively, so it needs a terminal" >&2
+          exit 2
+        fi
+        mapfile -t options < <(models "''${catalog[@]}")
+        if [ "''${#options[@]}" -eq 0 ]; then
+          echo "agent: ''${catalog[0]} offers no ''${catalog[2]} models" >&2
+          exit 1
+        fi
+        model="$(printf '%s\n' "''${options[@]}" | pick model)" || exit 130
+        start=(--model "$model")
+      fi
+
+      if $interactive; then
+        printf '\n  agent %s%s\n\n' "$key" "''${start[*]:+ ''${start[*]}}''${*:+ $*}" >&2
+      fi
+
+      command=()
+      load command 'entry | .command'
+      exec ${sandbox}/bin/agent-sandbox "''${command[@]}" "''${start[@]}" "$@"
+    '';
+  }

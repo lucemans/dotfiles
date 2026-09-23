@@ -7,34 +7,16 @@
   }: let
     inherit (import ../../network/services.nix) services;
   in {
-    agentRuntime.pi = {
-      package = pkgs.pi-coding-agent;
+    agentRuntime.harnesses.pi = let
       models = pkgs.writeText "pi-models.json" (builtins.toJSON {
         providers = {
           anthropic = {
             baseUrl = "https://${services.agent.name}";
-            models = [
-              {
-                id = "gpt-5.6-luna";
-                contextWindow = 1050000;
-                maxTokens = 128000;
-              }
-              {
-                id = "gpt-5.6-terra";
-                contextWindow = 1050000;
-                maxTokens = 128000;
-              }
-              {
-                id = "gpt-5.6-sol";
-                contextWindow = 1050000;
-                maxTokens = 128000;
-              }
-              {
-                id = "gpt-6-astra";
-                contextWindow = 1050000;
-                maxTokens = 128000;
-              }
-            ];
+            models = map (id: {
+              inherit id;
+              contextWindow = 1050000;
+              maxTokens = 128000;
+            }) ["gpt-5.6-luna" "gpt-5.6-terra" "gpt-5.6-sol" "gpt-6-astra"];
           };
           "v3x-inference" = {
             baseUrl = "https://${services.inference.name}/v1";
@@ -57,6 +39,14 @@
         # fullscreen TUI mode.
         fullscreenCopyOnSelect = true;
       });
+    in {
+      command = ["pi"];
+      glyph = "π";
+      color = "139;233;253";
+      blurb = "pi";
+      logo = ../agent/icons/pi.png;
+      package = pkgs.pi-coding-agent;
+      inherit models settings;
     };
   };
 }
