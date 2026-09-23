@@ -45,6 +45,8 @@
     missiond.inputs.nixpkgs.follows = "nixpkgs";
     voice-channel.url = "github:v3xlabs/voice-channel";
     voice-channel.inputs.nixpkgs.follows = "nixpkgs";
+    metered-usage.url = "github:v3xlabs/metered-usage";
+    metered-usage.inputs.nixpkgs.follows = "nixpkgs";
 
     attic.url = "github:zhaofengli/attic";
     voxtype.url = "github:peteonrails/voxtype";

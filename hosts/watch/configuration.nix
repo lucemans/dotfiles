@@ -12,6 +12,7 @@ _: {
       self.nixosModules.dns
       self.nixosModules.vaultwarden
       self.nixosModules.cliproxy
+      self.nixosModules.usage
     ];
 
     boot.loader.systemd-boot.enable = true;

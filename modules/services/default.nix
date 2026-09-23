@@ -14,5 +14,6 @@
     ./kanidm.nix
     ./attic.nix
     ./cliproxy.nix
+    ./usage.nix
   ];
 }

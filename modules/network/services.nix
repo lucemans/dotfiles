@@ -94,6 +94,13 @@ in {
       path = "/management.html";
       access = [];
     };
+    usage = {
+      name = "usage.${zone}";
+      title = "Usage";
+      icon = "grafana";
+      upstream = "${hosts.v3x-watch.address}:3000";
+      access = [];
+    };
     mission = {
       name = "mission.${zone}";
       title = "Mission";
@@ -187,7 +194,7 @@ in {
     }
     {
       title = "Tools";
-      services = ["chat" "search" "rss" "inference" "agent"];
+      services = ["chat" "search" "rss" "inference" "agent" "usage"];
     }
     {
       title = "Media";
