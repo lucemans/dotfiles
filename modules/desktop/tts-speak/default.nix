@@ -136,7 +136,9 @@ _: {
       programs.plasma.hotkeys.commands."tts-speak" = {
         name = "Speak Text Into Microphone";
         key = "Alt+T";
-        command = "${tts-speak}/bin/tts-speak";
+        # Plasma caches the Exec line of the hotkey until the next login, so a
+        # store path here keeps running the build from before the last switch.
+        command = "/run/current-system/sw/bin/tts-speak";
       };
     };
   };
