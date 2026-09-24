@@ -51,11 +51,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1787530417,
-        "narHash": "sha256-XUMrTmcG694C8lBqFk4xGlSq4TuPKZbjMVlnS3NzA94=",
+        "lastModified": 1790289200,
+        "narHash": "sha256-VsPxZvXN3eGq1D9xu8lVSbZdhRHoao3svyiaDGjJv+w=",
         "owner": "v3xlabs",
         "repo": "auto-commit",
-        "rev": "364ab9f8e15391bbc26649ff98fc49c5bb2c19bc",
+        "rev": "cc3e09a77541845fe5067c19b03e6c26246035d9",
         "type": "github"
       },
       "original": {
