@@ -2,12 +2,13 @@
   pkgs,
   harnesses,
   sandbox,
+  worktreeBase,
 }: let
   manifest = pkgs.writeText "agent-harnesses.json" (builtins.toJSON harnesses);
 in
   pkgs.writeShellApplication {
     name = "agent";
-    runtimeInputs = [pkgs.coreutils pkgs.curl pkgs.fzf pkgs.gnused pkgs.jq];
+    runtimeInputs = [pkgs.coreutils pkgs.curl pkgs.fzf pkgs.git pkgs.gnused pkgs.jq];
     # Single-quoted $names in the jq programs below are jq variables, not shell
     # expansions.
     excludeShellChecks = ["SC2016"];
@@ -114,6 +115,57 @@ in
         return 1
       }
 
+      # The sandbox mounts the git directory read-only, so worktrees and their
+      # branches are made here, on the host.
+      # The worktree around $PWD comes first and keeps $PWD, so Enter starts where
+      # `agent` was run, subdirectory included.
+      worktree_rows() {
+        local field value path="" label row top first="" rest=""
+        top="$(git rev-parse --show-toplevel)"
+        while read -r field value; do
+          case "$field" in
+            worktree)
+              path="$value"
+              continue
+              ;;
+            branch) label="''${value#refs/heads/}" ;;
+            detached) label="(detached)" ;;
+            *) continue ;;
+          esac
+          if [ "$path" = "$top" ]; then
+            printf -v first '%s\t%s  \033[2m%s\033[0m\n' "$PWD" "$label" "$path"
+          else
+            printf -v row '%s\t%s  \033[2m%s\033[0m\n' "$path" "$label" "$path"
+            rest+="$row"
+          fi
+        done < <(git worktree list --porcelain)
+        printf '%s%s+new\tnew worktree\n' "$first" "$rest"
+      }
+
+      pick_worktree() {
+        local gitdir primary base choice name path
+        gitdir="$(git rev-parse --path-format=absolute --git-common-dir 2>/dev/null)" || return 0
+        primary="$(dirname "$gitdir")"
+        choice="$(worktree_rows | pick worktree)" || exit 130
+        if [ "$choice" != +new ]; then
+          cd "$choice"
+          return
+        fi
+        read -rp "  branch: " name
+        if ! git check-ref-format --branch "$name" >/dev/null 2>&1; then
+          echo "agent: '$name' is not a valid branch name" >&2
+          exit 1
+        fi
+        base="${worktreeBase}"
+        path="$base/''${name//\//-}"
+        if git show-ref --verify --quiet "refs/heads/$name"; then
+          git worktree add "$path" "$name" >&2
+        else
+          git worktree add -b "$name" "$path" >&2
+        fi
+        cd "$path"
+      }
+
       # A session records every model it switched to, and each OMP profile starts on
       # its own default model, so the last default-role model names the profile that
       # owns the session. Resuming under that profile keeps its tiny, smol and slow
@@ -185,6 +237,11 @@ in
           # A harness run without a terminal gets its first profile.
           key="$(query -r 'harness | "\(.name)/\(.profiles[0].name)"')"
         fi
+      fi
+
+      # A resumed session stays in the directory it was recorded in.
+      if $interactive && ! resuming "$@"; then
+        pick_worktree
       fi
 
       start=()

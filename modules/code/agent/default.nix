@@ -12,9 +12,12 @@
   }: let
     envFile = config.sops.templates.agent-env.path;
     inherit (config.agentRuntime) harnesses;
+    # One worktree directory per repository, named after its primary checkout,
+    # so the picker creates worktrees where the sandbox mounts them.
+    worktreeBase = ''$HOME/dev/wt/$(basename "$primary")-$(printf '%s' "$primary" | sha256sum | cut -c1-7)'';
 
     sandbox = import ./runtime.nix {
-      inherit pkgs lib envFile harnesses;
+      inherit pkgs lib envFile harnesses worktreeBase;
       selfpkgs = self.packages.${pkgs.stdenv.hostPlatform.system};
       herdr = inputs.herdr.packages.${pkgs.stdenv.hostPlatform.system}.default;
 
@@ -30,7 +33,7 @@
     };
 
     agent = import ./picker.nix {
-      inherit pkgs sandbox;
+      inherit pkgs sandbox worktreeBase;
       # The picker lists harnesses in this order.
       harnesses = map (name: harnesses.${name} // {inherit name;}) ["omp" "claude" "opencode" "pi" "bash"];
     };

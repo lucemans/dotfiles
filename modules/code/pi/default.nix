@@ -1,4 +1,4 @@
-{...}: {
+{inputs, ...}: {
   flake.nixosModules.pi = {
     config,
     lib,
@@ -38,6 +38,12 @@
         # grabbing padded/soft-wrapped screen cells. Only takes effect in
         # fullscreen TUI mode.
         fullscreenCopyOnSelect = true;
+        # The sandbox home is a tmpfs, so extensions that `herdr integration
+        # install pi` puts in ~/.pi/agent/extensions are never seen there.
+        extensions = [
+          "${inputs.herdr}/src/integration/assets/pi/herdr-agent-state.ts"
+          "${./herdr-metadata.ts}"
+        ];
       });
     in {
       command = ["pi"];

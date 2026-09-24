@@ -6,6 +6,7 @@
   harnesses,
   secretPaths,
   envFile,
+  worktreeBase,
 }: let
   inherit (harnesses) claude opencode pi omp;
   # Shadow git, sops and sudo on PATH, so these safeguards from tripwire.nix
@@ -53,37 +54,38 @@ in
     text = ''
       project="$(realpath "$PWD")"
 
-      # Creating a worktree writes .git/worktrees/<id> and a branch ref, so those stay
-      # writable while .git/objects and .git/config do not: a worktree can be created
-      # and filled, and no commit or history rewrite can reach the object store.
+      # The sandbox covers the primary checkout and every worktree of its repository,
+      # so a session can /move between them. The git directory stays read-only:
+      # worktrees and branches are created on the host, never by the agent.
       # Launching inside a linked worktree resolves the repository it belongs to,
       # because its .git file points at the primary checkout.
       primary="$project"
       gitdir=""
       if gitdir="$(git -C "$project" rev-parse --path-format=absolute --git-common-dir 2>/dev/null)"; then
         primary="$(dirname "$gitdir")"
-        mkdir -p "$gitdir/worktrees" "$gitdir/logs"
+      fi
+
+      # The primary checkout is bound after the home binds, so a repository at
+      # $HOME or above it would hide them and expose all of $HOME.
+      if [ "$primary" = / ] || [ "$primary" = "$HOME" ] || [ "''${HOME#"$primary"/}" != "$HOME" ]; then
+        echo "agent: refusing to sandbox $project, its repository $primary contains $HOME" >&2
+        exit 1
       fi
 
       # One base per repository, bound as a directory instead of per worktree, so a
       # worktree created mid-session appears without relaunching. ~/dev/wt itself is
       # never bound, so another project's worktrees, and those of a same-named
       # repository elsewhere, stay out of reach.
-      worktrees="$HOME/dev/wt/$(basename "$primary")-$(printf '%s' "$primary" | sha256sum | cut -c1-7)"
+      worktrees="${worktreeBase}"
       mkdir -p "$worktrees"
 
-      roots=()
-      if [ "$primary" != "$project" ]; then
-        roots+=(--ro-bind "$primary" "$primary")
+      roots=(--bind "$primary" "$primary" --bind "$worktrees" "$worktrees")
+      # A linked worktree outside the base, or a subdirectory launch, is bound as well.
+      if [ "$project" != "$primary" ]; then
+        roots+=(--bind "$project" "$project")
       fi
-      roots+=(--bind "$worktrees" "$worktrees" --bind "$project" "$project")
       if [ -n "$gitdir" ]; then
-        roots+=(
-          --ro-bind "$gitdir" "$gitdir"
-          --bind "$gitdir/worktrees" "$gitdir/worktrees"
-          --bind "$gitdir/refs/heads" "$gitdir/refs/heads"
-          --bind "$gitdir/logs" "$gitdir/logs"
-        )
+        roots+=(--ro-bind "$gitdir" "$gitdir")
       fi
 
 

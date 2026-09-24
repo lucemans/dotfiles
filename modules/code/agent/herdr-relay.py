@@ -18,6 +18,8 @@ ALLOWED = frozenset(
         "pane.report_agent",
         "pane.report_agent_session",
         "pane.release_agent",
+        "pane.report_metadata",
+        "pane.rename",
     )
 )
 
