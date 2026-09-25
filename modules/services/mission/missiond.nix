@@ -6,31 +6,35 @@
   }: {
     imports = [inputs.missiond.nixosModules.default];
 
-    sops.secrets.missiond_admin_key = {
-      owner = "luc";
-      mode = "0400";
-    };
-
-    sops.secrets.rtsp_front_door = {
-      owner = "luc";
-      mode = "0400";
-    };
-
-    sops.secrets.missiond_ics_ef = {
-      owner = "luc";
-      mode = "0400";
-    };
-    sops.secrets.missiond_ics_ef_protocol = {
-      owner = "luc";
-      mode = "0400";
-    };
-    sops.secrets.missiond_ics_v3x = {
-      owner = "luc";
-      mode = "0400";
-    };
-    sops.secrets.missiond_ics_personal = {
-      owner = "luc";
-      mode = "0400";
+    sops.secrets = {
+      missiond_admin_key = {
+        owner = "luc";
+        mode = "0400";
+      };
+      rtsp_front_door = {
+        owner = "luc";
+        mode = "0400";
+      };
+      missiond_ics_ef = {
+        owner = "luc";
+        mode = "0400";
+      };
+      missiond_ics_ef_protocol = {
+        owner = "luc";
+        mode = "0400";
+      };
+      missiond_ics_v3x = {
+        owner = "luc";
+        mode = "0400";
+      };
+      missiond_ics_personal = {
+        owner = "luc";
+        mode = "0400";
+      };
+      missiond_webhook_doorbell_token = {
+        owner = "luc";
+        mode = "0400";
+      };
     };
 
     services.missiond = {
@@ -94,9 +98,21 @@
           "jitsi" = ["eu.meet.ethereum.org"];
         };
 
-        notifications.stingers.doorbell = {
-          file = "doorbell.webm";
-          max_duration = "2500ms";
+        notifications = {
+          stingers.doorbell = {
+            file = "doorbell.webm";
+            max_duration = "2500ms";
+          };
+
+          webhooks.doorbell = {
+            token.file = config.sops.secrets.missiond_webhook_doorbell_token.path;
+            title = "Someone is at the door";
+            level = "warning";
+            mode = "takeover";
+            tab_id = "front-door";
+            stinger = "doorbell";
+            duration = "30s";
+          };
         };
 
         media = {
