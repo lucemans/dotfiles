@@ -679,11 +679,11 @@
         "rust-overlay": "rust-overlay_5"
       },
       "locked": {
-        "lastModified": 1789392029,
-        "narHash": "sha256-yHzrItLu59O+zLsl1ZDlY/39bNG/A0ChLGAclDNJx5M=",
+        "lastModified": 1790296798,
+        "narHash": "sha256-deXRUAlzUfHBZ4FlaGKaxDobo+pAkA1tVm/NuyJX35o=",
         "owner": "v3xlabs",
         "repo": "launchpi",
-        "rev": "9e27015c5b567fbd66c75a594a5f9ff68c0349c1",
+        "rev": "d67f75195984f6508d1cf45f829099431539a27f",
         "type": "github"
       },
       "original": {
@@ -740,11 +740,11 @@
         "rust-overlay": "rust-overlay_7"
       },
       "locked": {
-        "lastModified": 1790289710,
-        "narHash": "sha256-APNmM7eFFQlxbi4vR1jB/CUSoyXhRDRZrlRkoLhYNHg=",
+        "lastModified": 1790334877,
+        "narHash": "sha256-NR7shqLAEepNhS2LhQqDS1beSBU2uYW+3TothyZXQIU=",
         "owner": "v3xlabs",
         "repo": "missiond",
-        "rev": "256085323966b2c4246780046b273e6d7b2f555c",
+        "rev": "f480acc265d817a3dd6f41a189613dc562745624",
         "type": "github"
       },
       "original": {
