@@ -740,11 +740,11 @@
         "rust-overlay": "rust-overlay_7"
       },
       "locked": {
-        "lastModified": 1790334877,
-        "narHash": "sha256-NR7shqLAEepNhS2LhQqDS1beSBU2uYW+3TothyZXQIU=",
+        "lastModified": 1790372900,
+        "narHash": "sha256-xo4u5HUcuFe911FpraFktKIkc22PyMSArd+CXvBCB6s=",
         "owner": "v3xlabs",
         "repo": "missiond",
-        "rev": "f480acc265d817a3dd6f41a189613dc562745624",
+        "rev": "78a4ff5f8559f0fc4161e57ebd9ed680986a57a2",
         "type": "github"
       },
       "original": {
