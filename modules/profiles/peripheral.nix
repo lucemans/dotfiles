@@ -42,10 +42,14 @@
       2022 # SSH
     ];
 
-    nix.settings.experimental-features = [
-      "nix-command"
-      "flakes"
-    ];
+    nix.settings = {
+      experimental-features = [
+        "nix-command"
+        "flakes"
+      ];
+      # deploy-rs copies closures as luc; paths built on fighter are unsigned.
+      trusted-users = ["luc"];
+    };
 
     services.fstrim.enable = true;
 

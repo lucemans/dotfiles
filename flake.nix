@@ -50,6 +50,8 @@
     metered-usage.url = "github:v3xlabs/metered-usage";
 
     attic.url = "github:zhaofengli/attic";
+    deploy-rs.url = "github:serokell/deploy-rs";
+    deploy-rs.inputs.nixpkgs.follows = "nixpkgs";
     voxtype.url = "github:peteonrails/voxtype";
   };
 

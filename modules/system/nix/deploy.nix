@@ -1,4 +1,30 @@
-{inputs, ...}: {
+{
+  self,
+  inputs,
+  lib,
+  ...
+}: {
+  # fighter builds and deploys; it switches itself with `upgrade`.
+  flake.deploy.nodes =
+    lib.mapAttrs (name: nixos: {
+      hostname = name;
+      sshUser = "luc";
+      user = "root";
+      # deploy-rs opens the activation and its confirmation waiter at the same
+      # time; without a shared master they race for the key passphrase prompt.
+      sshOpts = [
+        "-o"
+        "ControlMaster=auto"
+        "-o"
+        "ControlPath=~/.ssh/cm-%C"
+        "-o"
+        "ControlPersist=120"
+      ];
+      profiles.system.path =
+        inputs.deploy-rs.lib.${nixos.pkgs.stdenv.hostPlatform.system}.activate.nixos nixos;
+    })
+    (removeAttrs self.nixosConfigurations ["v3x-fighter"]);
+
   flake.nixosModules.rollout = {pkgs, ...}: let
     update = pkgs.writeShellApplication {
       name = "update";
@@ -44,44 +70,7 @@
         nh os switch /etc/nixos -H "$(hostname)"
       '';
     };
-    deploy = pkgs.writeShellApplication {
-      name = "deploy";
-      excludeShellChecks = ["SC2029"];
-
-      runtimeInputs = [
-        inputs.attic.packages.${pkgs.stdenv.hostPlatform.system}.attic
-        pkgs.openssh
-        pkgs.nix
-      ];
-
-      text = ''
-        if [ "$#" -ne 1 ]; then
-          echo "usage: deploy <hostname>" >&2
-          exit 2
-        fi
-
-        host="$1"
-
-        echo "==> Building $host"
-        out="$(
-          nix build \
-            "/etc/nixos#nixosConfigurations.$host.config.system.build.toplevel" \
-            --no-link \
-            --print-out-paths
-        )"
-
-        echo "==> Pushing $out to Attic"
-        attic push v3x:v3x "$out"
-
-        echo "==> copying to $host"
-        nix copy --to "ssh://$host" --substitute-on-destination "$out"
-
-        echo "==> Activating"
-        ssh "$host" \
-          "sudo nix-env -p /nix/var/nix/profiles/system --set '$out' && \
-           sudo '$out/bin/switch-to-configuration' switch"
-      '';
-    };
+    deploy = inputs.deploy-rs.packages.${pkgs.stdenv.hostPlatform.system}.default;
   in {
     environment.systemPackages = [
       update
