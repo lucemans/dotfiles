@@ -100,6 +100,18 @@ in {
             };
           }
           {
+            model_name = "v3x-t/bonsai-2-27b";
+            litellm_params = {
+              model = "openai/bonsai-2-27b";
+              api_base = "http://127.0.0.1:8081/v1";
+              api_key = "local";
+            };
+            model_info = {
+              input_cost_per_token = 0.00000020;
+              output_cost_per_token = 0.00000020;
+            };
+          }
+          {
             model_name = "v3x-t/piper";
             litellm_params = {
               model = "openai/piper";

@@ -7,6 +7,20 @@
   }: let
     llama-cpp = pkgs.llama-cpp.override {cudaSupport = true;};
     llama-server = lib.getExe' llama-cpp "llama-server";
+    # Stock llama.cpp rejects the PQ2_0 and PTQ1_0 tensor types that Bonsai ships.
+    llama-cpp-prism = llama-cpp.overrideAttrs {
+      src = pkgs.fetchFromGitHub {
+        owner = "PrismML-Eng";
+        repo = "llama.cpp";
+        tag = "prism-b10743-adfffbe";
+        hash = "sha256-SNBAC+dNTwQxpGmKyG7i/8eqCNg6985DXtqGbzWgwFA=";
+      };
+    };
+    llama-server-prism = lib.getExe' llama-cpp-prism "llama-server";
+    bonsai-2-27b = pkgs.fetchurl {
+      url = "https://huggingface.co/prism-ml/Ternary-Bonsai-2-27B-gguf/resolve/b072e1d3b35a0a630cece372c2127528e0994386/Ternary-Bonsai-2-27B-PQ2_0.gguf";
+      sha256 = "3907dc1658db1f78a9826bf8d5bcb8dc65db0d466388937af57f2294fae62ec1";
+    };
   in {
     nixpkgs.config.allowUnfree = true;
 
@@ -56,6 +70,25 @@
             ttl = 900;
             concurrencyLimit = 10;
           };
+          "bonsai-2-27b" = {
+            cmd = ''
+              ${llama-server-prism} \
+                --port ${"\${PORT}"} \
+                --model ${bonsai-2-27b} \
+                --alias bonsai-2-27b \
+                --ctx-size 65536 \
+                --n-gpu-layers 99 \
+                --flash-attn on \
+                --cache-type-k q8_0 \
+                --cache-type-v q8_0 \
+                --jinja \
+                --temp 1.0 --top-p 0.95 --top-k 20 --min-p 0.05 \
+                --parallel 1 \
+                --no-webui
+            '';
+            ttl = 900;
+            concurrencyLimit = 10;
+          };
         };
 
         groups.local-gpu = {
@@ -63,6 +96,7 @@
           exclusive = true;
           members = [
             "qwen3.6-35b-a3b"
+            "bonsai-2-27b"
           ];
         };
       };
