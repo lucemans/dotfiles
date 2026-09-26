@@ -4,59 +4,169 @@ let
     uid = "mission-prometheus";
   };
 
-  fsFilter = ''job="node", instance=~"$host", fstype!~"tmpfs|devtmpfs|overlay|squashfs", mountpoint!~"/run.*|/sys.*|/proc.*|/dev.*"'';
+  fsFilter = ''job="node", instance=~"$host", fstype!~"tmpfs|devtmpfs|overlay|squashfs|ramfs|efivarfs|autofs|fuse.*", mountpoint!~"/run.*|/sys.*|/proc.*|/dev.*|/nix/store"'';
+  diskFilter = ''job="node", instance=~"$host", device!~"dm-.*|sr.*"'';
   smartFilter = ''job="smartctl", instance=~"$host"'';
 
-  usageThresholds = {
+  thresholds = steps: {
     mode = "absolute";
-    steps = [
+    inherit steps;
+  };
+
+  step = color: value: {inherit color value;};
+
+  usageThresholds = thresholds [
+    (step "green" null)
+    (step "yellow" 70)
+    (step "red" 90)
+  ];
+
+  temperatureThresholds = thresholds [
+    (step "green" null)
+    (step "yellow" 50)
+    (step "red" 60)
+  ];
+
+  wearThresholds = thresholds [
+    (step "green" null)
+    (step "yellow" 80)
+    (step "red" 95)
+  ];
+
+  errorThresholds = thresholds [
+    (step "green" null)
+    (step "red" 1)
+  ];
+
+  gridPos = x: y: w: h: {inherit x y w h;};
+
+  byName = name: properties: {
+    matcher = {
+      id = "byName";
+      options = name;
+    };
+    inherit properties;
+  };
+
+  instantTable = refId: expr: {
+    inherit expr refId;
+    format = "table";
+    instant = true;
+    range = false;
+  };
+
+  stat = {
+    id,
+    title,
+    pos,
+    expr,
+    unit,
+    thresholds,
+    noValue ? null,
+  }: {
+    inherit id title;
+    type = "stat";
+    datasource = ds;
+    gridPos = pos;
+    fieldConfig = {
+      defaults =
+        {
+          color.mode = "thresholds";
+          decimals = 0;
+          inherit unit thresholds;
+        }
+        // (
+          if noValue == null
+          then {}
+          else {inherit noValue;}
+        );
+      overrides = [];
+    };
+    options = {
+      colorMode = "background";
+      graphMode = "none";
+      justifyMode = "center";
+      orientation = "auto";
+      reduceOptions = {
+        calcs = ["lastNotNull"];
+        fields = "";
+        values = false;
+      };
+      textMode = "value";
+    };
+    targets = [
       {
-        color = "green";
-        value = null;
-      }
-      {
-        color = "yellow";
-        value = 70;
-      }
-      {
-        color = "red";
-        value = 90;
+        inherit expr;
+        instant = true;
+        range = false;
+        refId = "A";
       }
     ];
   };
 
-  tsCustom = {
-    axisBorderShow = false;
-    axisCenteredZero = false;
-    axisColorMode = "text";
-    axisGridShow = true;
-    axisPlacement = "auto";
-    drawStyle = "line";
-    fillOpacity = 12;
-    gradientMode = "opacity";
-    lineInterpolation = "smooth";
-    lineWidth = 2;
-    pointSize = 5;
-    showPoints = "never";
-    spanNulls = true;
-    stacking = {
-      group = "A";
-      mode = "none";
-    };
-    thresholdsStyle.mode = "off";
-  };
-
-  tsLegend = {
-    calcs = ["lastNotNull" "min" "max"];
-    displayMode = "table";
-    placement = "bottom";
-    showLegend = true;
-  };
-
-  tsTooltip = {
-    mode = "multi";
-    sort = "desc";
-  };
+  timeseries = {
+    id,
+    title,
+    pos,
+    unit,
+    targets,
+    defaults ? {},
+    overrides ? [],
+    timeFrom ? null,
+    drawStyle ? "line",
+    lineInterpolation ? "smooth",
+  }:
+    {
+      inherit id title targets;
+      type = "timeseries";
+      datasource = ds;
+      gridPos = pos;
+      fieldConfig = {
+        defaults =
+          {
+            color.mode = "palette-classic";
+            custom = {
+              axisBorderShow = false;
+              axisCenteredZero = false;
+              axisColorMode = "text";
+              axisGridShow = true;
+              axisPlacement = "auto";
+              inherit drawStyle lineInterpolation;
+              fillOpacity = 12;
+              gradientMode = "opacity";
+              lineWidth = 2;
+              pointSize = 5;
+              showPoints = "never";
+              spanNulls = true;
+              stacking = {
+                group = "A";
+                mode = "none";
+              };
+              thresholdsStyle.mode = "off";
+            };
+            inherit unit;
+          }
+          // defaults;
+        inherit overrides;
+      };
+      options = {
+        legend = {
+          calcs = ["lastNotNull" "max"];
+          displayMode = "table";
+          placement = "right";
+          showLegend = true;
+        };
+        tooltip = {
+          mode = "multi";
+          sort = "desc";
+        };
+      };
+    }
+    // (
+      if timeFrom == null
+      then {}
+      else {inherit timeFrom;}
+    );
 in {
   annotations.list = [];
   editable = false;
@@ -65,184 +175,256 @@ in {
   links = [];
   liveNow = false;
   panels = [
-    {
+    (stat {
       id = 1;
-      title = "$host";
-      type = "stat";
-      datasource = ds;
-      gridPos = {
-        h = 6;
-        w = 6;
-        x = 0;
-        y = 0;
-      };
-      maxPerRow = 4;
-      repeat = "host";
-      repeatDirection = "h";
-      fieldConfig = {
-        defaults = {
-          color.mode = "thresholds";
-          max = 100;
-          min = 0;
-          thresholds = usageThresholds;
-          unit = "percent";
-        };
-        overrides = [];
-      };
-      options = {
-        colorMode = "background_gradient";
-        graphMode = "area";
-        justifyMode = "center";
-        orientation = "auto";
-        reduceOptions = {
-          calcs = ["lastNotNull"];
-          fields = "";
-          values = false;
-        };
-        textMode = "value";
-      };
-      targets = [
-        {
-          expr = ''100 * (1 - node_filesystem_avail_bytes{${fsFilter}, mountpoint="/"} / node_filesystem_size_bytes{${fsFilter}, mountpoint="/"})'';
-          legendFormat = "{{instance}}";
-          refId = "A";
-        }
-      ];
-    }
-    {
+      title = "Fullest Filesystem";
+      pos = gridPos 0 0 4 4;
+      expr = ''max(100 * (1 - node_filesystem_avail_bytes{${fsFilter}} / node_filesystem_size_bytes{${fsFilter}}))'';
+      unit = "percent";
+      thresholds = usageThresholds;
+    })
+    (stat {
       id = 2;
-      title = "Filesystem Usage";
-      type = "bargauge";
+      title = "Nearest Full";
+      pos = gridPos 4 0 4 4;
+      expr = ''min((node_filesystem_avail_bytes{${fsFilter}} / -deriv(node_filesystem_avail_bytes{${fsFilter}}[24h])) > 0)'';
+      unit = "s";
+      noValue = "Stable";
+      thresholds = thresholds [
+        (step "red" null)
+        (step "yellow" 604800)
+        (step "green" 2592000)
+      ];
+    })
+    (stat {
+      id = 3;
+      title = "SMART Failing";
+      pos = gridPos 8 0 4 4;
+      expr = ''count(smartctl_device_smart_status{${smartFilter}} == 0) or vector(0)'';
+      unit = "none";
+      thresholds = errorThresholds;
+    })
+    (stat {
+      id = 4;
+      title = "Media Errors";
+      pos = gridPos 12 0 4 4;
+      expr = ''sum(smartctl_device_media_errors{${smartFilter}} or smartctl_device_attribute{${smartFilter}, attribute_name=~"Reallocated_Sector_Ct|Current_Pending_Sector|Offline_Uncorrectable", attribute_value_type="raw"}) or vector(0)'';
+      unit = "none";
+      thresholds = errorThresholds;
+    })
+    (stat {
+      id = 5;
+      title = "Hottest Disk";
+      pos = gridPos 16 0 4 4;
+      expr = ''max(smartctl_device_temperature{${smartFilter}, temperature_type="current"})'';
+      unit = "celsius";
+      thresholds = temperatureThresholds;
+    })
+    (stat {
+      id = 6;
+      title = "Worst NVMe Wear";
+      pos = gridPos 20 0 4 4;
+      expr = ''max(smartctl_device_percentage_used{${smartFilter}})'';
+      unit = "percent";
+      thresholds = wearThresholds;
+    })
+    {
+      id = 7;
+      title = "Filesystems";
+      type = "table";
       datasource = ds;
-      gridPos = {
-        h = 10;
-        w = 24;
-        x = 0;
-        y = 6;
-      };
+      gridPos = gridPos 0 4 12 9;
       fieldConfig = {
-        defaults = {
-          color.mode = "thresholds";
-          max = 100;
-          min = 0;
-          thresholds = usageThresholds;
-          unit = "percent";
+        defaults.custom = {
+          align = "auto";
+          cellOptions.type = "auto";
+          inspect = false;
         };
-        overrides = [];
+        overrides = [
+          (byName "Size" [
+            {
+              id = "unit";
+              value = "bytes";
+            }
+          ])
+          (byName "Free" [
+            {
+              id = "unit";
+              value = "bytes";
+            }
+          ])
+          (byName "Used" [
+            {
+              id = "unit";
+              value = "percent";
+            }
+            {
+              id = "min";
+              value = 0;
+            }
+            {
+              id = "max";
+              value = 100;
+            }
+            {
+              id = "decimals";
+              value = 0;
+            }
+            {
+              id = "thresholds";
+              value = usageThresholds;
+            }
+            {
+              id = "color";
+              value.mode = "thresholds";
+            }
+            {
+              id = "custom.cellOptions";
+              value = {
+                type = "gauge";
+                mode = "basic";
+                valueDisplayMode = "text";
+              };
+            }
+          ])
+        ];
       };
       options = {
-        displayMode = "gradient";
-        orientation = "horizontal";
-        reduceOptions = {
-          calcs = ["lastNotNull"];
-          fields = "";
-          values = false;
-        };
-        showUnfilled = true;
-        valueMode = "color";
+        cellHeight = "sm";
+        showHeader = true;
+        sortBy = [
+          {
+            displayName = "Used";
+            desc = true;
+          }
+        ];
       };
       targets = [
+        (instantTable "A" ''node_filesystem_size_bytes{${fsFilter}}'')
+        (instantTable "B" ''node_filesystem_avail_bytes{${fsFilter}}'')
+        (instantTable "C" ''100 * (1 - node_filesystem_avail_bytes{${fsFilter}} / node_filesystem_size_bytes{${fsFilter}})'')
+      ];
+      transformations = [
         {
-          expr = ''100 * (1 - node_filesystem_avail_bytes{${fsFilter}} / node_filesystem_size_bytes{${fsFilter}})'';
-          legendFormat = "{{instance}} {{mountpoint}}";
-          refId = "A";
+          id = "merge";
+          options = {};
+        }
+        {
+          id = "organize";
+          options = {
+            excludeByName = {
+              Time = true;
+              job = true;
+              device = true;
+              fstype = true;
+            };
+            indexByName = {
+              instance = 0;
+              mountpoint = 1;
+              "Value #A" = 2;
+              "Value #B" = 3;
+              "Value #C" = 4;
+            };
+            renameByName = {
+              instance = "Host";
+              mountpoint = "Mount";
+              "Value #A" = "Size";
+              "Value #B" = "Free";
+              "Value #C" = "Used";
+            };
+          };
         }
       ];
     }
     {
-      id = 3;
+      id = 8;
       title = "Disks";
       type = "table";
       datasource = ds;
-      gridPos = {
-        h = 8;
-        w = 24;
-        x = 0;
-        y = 16;
-      };
+      gridPos = gridPos 12 4 12 9;
       fieldConfig = {
-        defaults = {
-          custom = {
-            align = "auto";
-            cellOptions.type = "auto";
-            inspect = false;
-          };
+        defaults.custom = {
+          align = "auto";
+          cellOptions.type = "auto";
+          inspect = false;
         };
         overrides = [
-          {
-            matcher = {
-              id = "byName";
-              options = "Size";
-            };
-            properties = [
-              {
-                id = "unit";
-                value = "bytes";
-              }
-            ];
-          }
-          {
-            matcher = {
-              id = "byName";
-              options = "RPM";
-            };
-            properties = [
-              {
-                id = "mappings";
-                value = [
-                  {
-                    type = "value";
-                    options."0" = {
-                      text = "SSD";
-                      color = "blue";
+          (byName "Size" [
+            {
+              id = "unit";
+              value = "bytes";
+            }
+          ])
+          (byName "Temp" [
+            {
+              id = "unit";
+              value = "celsius";
+            }
+            {
+              id = "thresholds";
+              value = temperatureThresholds;
+            }
+            {
+              id = "color";
+              value.mode = "thresholds";
+            }
+            {
+              id = "custom.cellOptions";
+              value.type = "color-text";
+            }
+          ])
+          (byName "Wear" [
+            {
+              id = "unit";
+              value = "percent";
+            }
+            {
+              id = "thresholds";
+              value = wearThresholds;
+            }
+            {
+              id = "color";
+              value.mode = "thresholds";
+            }
+            {
+              id = "custom.cellOptions";
+              value.type = "color-text";
+            }
+          ])
+          (byName "Power-On" [
+            {
+              id = "unit";
+              value = "s";
+            }
+            {
+              id = "decimals";
+              value = 1;
+            }
+          ])
+          (byName "SMART" [
+            {
+              id = "mappings";
+              value = [
+                {
+                  type = "value";
+                  options = {
+                    "0" = {
+                      text = "FAIL";
+                      color = "red";
                     };
-                  }
-                ];
-              }
-            ];
-          }
-          {
-            matcher = {
-              id = "byName";
-              options = "SMART";
-            };
-            properties = [
-              {
-                id = "mappings";
-                value = [
-                  {
-                    type = "value";
-                    options = {
-                      "0" = {
-                        text = "FAIL";
-                        color = "red";
-                      };
-                      "1" = {
-                        text = "OK";
-                        color = "green";
-                      };
+                    "1" = {
+                      text = "OK";
+                      color = "green";
                     };
-                  }
-                ];
-              }
-              {
-                id = "custom.cellOptions";
-                value.type = "color-background";
-              }
-            ];
-          }
-          {
-            matcher = {
-              id = "byName";
-              options = "Power-On";
-            };
-            properties = [
-              {
-                id = "unit";
-                value = "s";
-              }
-            ];
-          }
+                  };
+                }
+              ];
+            }
+            {
+              id = "custom.cellOptions";
+              value.type = "color-background";
+            }
+          ])
         ];
       };
       options = {
@@ -250,36 +432,12 @@ in {
         showHeader = true;
       };
       targets = [
-        {
-          expr = ''smartctl_device{${smartFilter}}'';
-          format = "table";
-          instant = true;
-          refId = "A";
-        }
-        {
-          expr = ''smartctl_device_capacity_blocks{${smartFilter}} * on(instance, device) group_left() smartctl_device_block_size{${smartFilter}, block_type="logical"}'';
-          format = "table";
-          instant = true;
-          refId = "B";
-        }
-        {
-          expr = ''smartctl_device_rotation_rate{${smartFilter}}'';
-          format = "table";
-          instant = true;
-          refId = "C";
-        }
-        {
-          expr = ''smartctl_device_smart_status{${smartFilter}}'';
-          format = "table";
-          instant = true;
-          refId = "D";
-        }
-        {
-          expr = ''smartctl_device_power_on_seconds{${smartFilter}}'';
-          format = "table";
-          instant = true;
-          refId = "E";
-        }
+        (instantTable "A" ''max by (instance, device, model_name) (smartctl_device{${smartFilter}})'')
+        (instantTable "B" ''max by (instance, device) (smartctl_device_capacity_bytes{${smartFilter}})'')
+        (instantTable "C" ''max by (instance, device) (smartctl_device_temperature{${smartFilter}, temperature_type="current"})'')
+        (instantTable "D" ''max by (instance, device) (smartctl_device_percentage_used{${smartFilter}})'')
+        (instantTable "E" ''max by (instance, device) (smartctl_device_power_on_seconds{${smartFilter}})'')
+        (instantTable "F" ''max by (instance, device) (smartctl_device_smart_status{${smartFilter}})'')
       ];
       transformations = [
         {
@@ -292,165 +450,51 @@ in {
             excludeByName = {
               Time = true;
               "Value #A" = true;
-              job = true;
             };
-            indexByName = {};
+            indexByName = {
+              instance = 0;
+              device = 1;
+              model_name = 2;
+              "Value #B" = 3;
+              "Value #C" = 4;
+              "Value #D" = 5;
+              "Value #E" = 6;
+              "Value #F" = 7;
+            };
             renameByName = {
               instance = "Host";
               device = "Device";
               model_name = "Model";
-              serial_number = "Serial";
               "Value #B" = "Size";
-              "Value #C" = "RPM";
-              "Value #D" = "SMART";
+              "Value #C" = "Temp";
+              "Value #D" = "Wear";
               "Value #E" = "Power-On";
+              "Value #F" = "SMART";
             };
           };
         }
       ];
     }
-    {
-      id = 4;
+    (timeseries {
+      id = 9;
       title = "Disk Temperature";
-      type = "timeseries";
-      datasource = ds;
-      gridPos = {
-        h = 8;
-        w = 12;
-        x = 0;
-        y = 24;
-      };
-      fieldConfig = {
-        defaults = {
-          color.mode = "palette-classic";
-          custom = tsCustom;
-          unit = "celsius";
-        };
-        overrides = [];
-      };
-      options = {
-        legend = tsLegend;
-        tooltip = tsTooltip;
-      };
+      pos = gridPos 0 13 12 6;
+      unit = "celsius";
       targets = [
         {
-          expr = ''smartctl_device_temperature{${smartFilter}}'';
+          expr = ''smartctl_device_temperature{${smartFilter}, temperature_type="current"}'';
           legendFormat = "{{instance}} {{device}}";
           refId = "A";
         }
       ];
-    }
-    {
-      id = 5;
-      title = "NVMe Wear";
-      type = "stat";
-      datasource = ds;
-      gridPos = {
-        h = 8;
-        w = 12;
-        x = 12;
-        y = 24;
-      };
-      fieldConfig = {
-        defaults = {
-          color.mode = "thresholds";
-          max = 100;
-          min = 0;
-          thresholds = {
-            mode = "absolute";
-            steps = [
-              {
-                color = "green";
-                value = null;
-              }
-              {
-                color = "yellow";
-                value = 80;
-              }
-              {
-                color = "red";
-                value = 95;
-              }
-            ];
-          };
-          unit = "percent";
-        };
-        overrides = [];
-      };
-      options = {
-        colorMode = "value";
-        graphMode = "area";
-        justifyMode = "center";
-        orientation = "auto";
-        reduceOptions = {
-          calcs = ["lastNotNull"];
-          fields = "";
-          values = false;
-        };
-        textMode = "value_and_name";
-      };
-      targets = [
-        {
-          expr = ''smartctl_device_percentage_used{${smartFilter}}'';
-          legendFormat = "{{instance}} {{device}}";
-          refId = "A";
-        }
-      ];
-    }
-    {
-      id = 6;
-      title = "Disk Usage";
-      type = "timeseries";
-      datasource = ds;
-      gridPos = {
-        h = 8;
-        w = 12;
-        x = 0;
-        y = 32;
-      };
-      fieldConfig = {
-        defaults = {
-          color.mode = "palette-classic";
-          custom = tsCustom;
-          unit = "bytes";
-        };
-        overrides = [];
-      };
-      options = {
-        legend = tsLegend;
-        tooltip = tsTooltip;
-      };
-      targets = [
-        {
-          expr = ''node_filesystem_size_bytes{${fsFilter}} - node_filesystem_avail_bytes{${fsFilter}}'';
-          legendFormat = "{{instance}} {{mountpoint}}";
-          refId = "A";
-        }
-      ];
-    }
-    {
-      id = 7;
+    })
+    (timeseries {
+      id = 10;
       title = "Nix Store Size";
-      type = "timeseries";
-      datasource = ds;
-      gridPos = {
-        h = 8;
-        w = 12;
-        x = 12;
-        y = 32;
-      };
-      fieldConfig = {
-        defaults = {
-          color.mode = "palette-classic";
-          custom = tsCustom;
-          unit = "bytes";
-        };
-        overrides = [];
-      };
-      options = {
-        legend = tsLegend;
-        tooltip = tsTooltip;
-      };
+      pos = gridPos 12 13 12 6;
+      unit = "bytes";
+      timeFrom = "7d";
+      lineInterpolation = "stepAfter";
       targets = [
         {
           expr = ''nix_store_size_bytes{job="node", instance=~"$host"}'';
@@ -458,7 +502,56 @@ in {
           refId = "A";
         }
       ];
-    }
+    })
+    (timeseries {
+      id = 11;
+      title = "Disk Throughput";
+      pos = gridPos 0 19 12 6;
+      unit = "Bps";
+      targets = [
+        {
+          expr = ''sum by (instance) (rate(node_disk_read_bytes_total{${diskFilter}}[$__rate_interval]))'';
+          legendFormat = "{{instance}} read";
+          refId = "A";
+        }
+        {
+          expr = ''sum by (instance) (rate(node_disk_written_bytes_total{${diskFilter}}[$__rate_interval]))'';
+          legendFormat = "{{instance}} write";
+          refId = "B";
+        }
+      ];
+      overrides = [
+        {
+          matcher = {
+            id = "byRegexp";
+            options = ".* write$";
+          };
+          properties = [
+            {
+              id = "custom.transform";
+              value = "negative-Y";
+            }
+          ];
+        }
+      ];
+    })
+    (timeseries {
+      id = 12;
+      title = "Disk Busy";
+      pos = gridPos 12 19 12 6;
+      unit = "percentunit";
+      defaults = {
+        min = 0;
+        max = 1;
+      };
+      targets = [
+        {
+          expr = ''rate(node_disk_io_time_seconds_total{${diskFilter}}[$__rate_interval])'';
+          legendFormat = "{{instance}} {{device}}";
+          refId = "A";
+        }
+      ];
+    })
   ];
   refresh = "1m";
   schemaVersion = 42;
@@ -493,6 +586,6 @@ in {
   timezone = "browser";
   title = "Storage";
   uid = "storage";
-  version = 1;
+  version = 2;
   weekStart = "";
 }
