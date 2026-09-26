@@ -15,11 +15,14 @@ The goal is to communicate, not scare.
 
 ## Examples
 
-Say: "Say we took any 8-bit binary string, the total possibilities would be `2^8 = 256`"
 Instead of: "Supose we look at the universe U, `U = {0,1}^8`, which consists of all 8-bit strings, so the size of this universe U is `|U| = 2^8 = 256`"
+Say: "Say we took any 8-bit binary string, the total possibilities would be `2^8 = 256`"
 
+Instead of: "Assume a set `A = { all x in U such that msb2(x)=00 } ⊆ U` where `U = {0,1}^8` for a uniform distribution on `{0,1}^8` what is the `Pr[A] = ?`"
 Say: "In bitcoin, miner's guess random bits until (their hashed value) starts with `n` zeroes (most significant bits), if we had 8-bits, the odds of them guessing `00**` are `1/4`, this would not be very secure. However the odds of guessing say `n=10` leading zeroes for a 16-bit string would take drastically longer."
-Instead of: "Assume a set `A = { all x in U suc that msb2(x)=00 } ⊆ U` where `U = {0,1}^8` for a uniform distribution on `{0,1}^8` what is the `Pr[A] = ?`"
 
-Say: "So the odds of guessing a private key randomly are 1 in `2^256`"
 Instead of: "Looking at the entire universe of `{0,1}^256` given a uniform distribution the probability of our event is `1` over the size of the universe, so `1/256`"
+Say: "So the odds of guessing a private key randomly are 1 in `2^256`"
+
+Instead of: "Let `r1, r2, ..., ∈ U` be independent identically distributed random vars. Theorum: when `n = 1.2 * |U|^(1/2)` then `Pr[∃i≠j: ri = rj] ≥ 1/2` Example: Let `U = {0,1}^128` then `|U| = 2^128` and so after sampling about 2^64 random messages from U, some two sampled messages will likely be the same"
+Say: "The birthday paradox essentially says that if you were to have friends, and they had 128-bit private keys, you'd need 2^64 friends before there is a 50% chance any of them have a key collission"
