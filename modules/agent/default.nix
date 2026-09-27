@@ -15,9 +15,10 @@
     envFile = config.sops.templates.agent-env.path;
     inherit (config.agentRuntime) harnesses servers toolsets;
 
-    # The picker lists base first, then the other toolsets, then each server
-    # outside base as a toolset of its own, so one can be added on its own. A
-    # toolset row lists what it adds; a server row keeps its own blurb.
+    # The picker lists base first, then the other toolsets, the kitchen sink,
+    # and each server outside base as a toolset of its own, so one can be added
+    # on its own. A toolset row lists what it adds; a server row keeps its own
+    # blurb.
     toolsetChoice = name: t:
       t
       // {
@@ -26,7 +27,8 @@
       };
     choices =
       [(toolsetChoice "base" toolsets.base)]
-      ++ lib.mapAttrsToList toolsetChoice (removeAttrs toolsets ["base"])
+      ++ lib.mapAttrsToList toolsetChoice (removeAttrs toolsets ["base" "all"])
+      ++ [(toolsetChoice "all" toolsets.all // {blurb = "every toolset and server";})]
       ++ lib.mapAttrsToList (name: s: {
         inherit name;
         inherit (s) blurb;

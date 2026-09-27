@@ -79,6 +79,19 @@ in {
 
         sops.secrets = lib.mapAttrs' (_: s: lib.nameValuePair s.bearer {owner = "luc";}) bearers;
 
+        # Every server, package and device, from every other toolset, so it
+        # never falls behind when one is added.
+        agentRuntime.toolsets.all = let
+          others = lib.attrValues (removeAttrs toolsets ["all"]);
+        in {
+          label = "Kitchen Sink";
+          glyph = "";
+          color = "255;121;198";
+          servers = lib.attrNames servers;
+          packages = lib.unique (lib.concatMap (t: t.packages) others);
+          devices = lib.unique (lib.concatMap (t: t.devices) others);
+        };
+
         # A server is also a toolset of its own in the picker, so the two share
         # one namespace.
         assertions =

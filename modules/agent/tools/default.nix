@@ -52,13 +52,13 @@
     agentRuntime.toolsets = {
       base = {
         label = "Base";
-        glyph = "";
+        glyph = "";
         color = "248;248;242";
         servers = ["repo_reader" "nixos" "plan_env" "playwright" "error_menu"];
       };
       rf = {
         label = "Radio Frequency";
-        glyph = "󰑀";
+        glyph = "";
         color = "255;184;108";
         servers = ["sdrangel"];
         packages = [pkgs.hackrf];
@@ -68,9 +68,16 @@
       };
       ethereum = {
         label = "Ethereum";
-        glyph = "󰡪";
+        glyph = "";
         color = "98;126;234";
         servers = ["dapp_wallet" "eth_data"];
+      };
+      manufacturing = {
+        label = "Manufacturing";
+        glyph = "";
+        color = "80;250;123";
+        # Render and inspect parts from code; the 3D modeling MCPs join here.
+        packages = [pkgs.openscad-unstable pkgs.f3d];
       };
     };
   };
