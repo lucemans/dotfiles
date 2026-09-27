@@ -4,5 +4,6 @@
     ./theme
     ./nix
     ./environment.nix
+    ./fonts.nix
   ];
 }
