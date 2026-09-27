@@ -20,7 +20,7 @@ _: {
       coolercontrol.coolercontrol-gui
     ];
 
-    home-manager.users.luc.xdg.configFile."autostart/org.coolercontrol.CoolerControl.desktop".source = "${pkgs.coolercontrol.coolercontrol-gui}/share/applications/org.coolercontrol.CoolerControl.desktop";
+    environment.etc."xdg/autostart/org.coolercontrol.CoolerControl.desktop".source = "${pkgs.coolercontrol.coolercontrol-gui}/share/applications/org.coolercontrol.CoolerControl.desktop";
 
     systemd.services.coolercontrold = {
       description = "CoolerControl daemon";
