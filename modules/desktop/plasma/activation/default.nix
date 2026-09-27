@@ -24,18 +24,20 @@
       '';
     };
   in {
-    environment.systemPackages = [toggle-activate-linux];
-
-    home-manager.users.luc = {
-      xdg.desktopEntries.activate-linux-toggle = {
-        name = "Toggle Activate Linux";
+    environment.systemPackages = [
+      toggle-activate-linux
+      (pkgs.makeDesktopItem {
+        name = "activate-linux-toggle";
+        desktopName = "Toggle Activate Linux";
         comment = "Toggle the Activate Linux overlay";
         exec = "/run/current-system/sw/bin/toggle-activate-linux";
         icon = "preferences-desktop-display";
         terminal = false;
         categories = ["Utility"];
-      };
+      })
+    ];
 
+    home-manager.users.luc = {
       programs.plasma = {
         hotkeys.commands."toggle-activate-linux" = {
           name = "Toggle Activate Linux";
