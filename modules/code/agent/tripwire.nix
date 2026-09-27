@@ -1,8 +1,67 @@
-_: {
+let
+  # Commands that never change repository state. The runtime Git shim allows
+  # only these commands, with `branch` and `tag` handled separately because
+  # their mutation behavior depends on arguments.
+  gitReadOnly = [
+    "blame"
+    "cat-file"
+    "check-attr"
+    "check-ignore"
+    "describe"
+    "diff"
+    "diff-tree"
+    "for-each-ref"
+    "grep"
+    "log"
+    "ls-files"
+    "ls-remote"
+    "ls-tree"
+    "merge-base"
+    "name-rev"
+    "rev-list"
+    "rev-parse"
+    "show"
+    "show-ref"
+    "shortlog"
+    "status"
+    "verify-commit"
+    "verify-tag"
+    "whatchanged"
+  ];
+
+  # The mutating commands consumed by the tripwire and Claude permissions.
+  # `branch`, `tag`, and `worktree` stay out: the runtime Git shim checks the
+  # read forms of the first two, and the sandbox mounts confine where a
+  # worktree may be written.
+  gitMutations = [
+    "add"
+    "am"
+    "apply"
+    "checkout"
+    "cherry-pick"
+    "clean"
+    "commit"
+    "config"
+    "fetch"
+    "filter-branch"
+    "merge"
+    "pull"
+    "push"
+    "rebase"
+    "remote"
+    "reset"
+    "restore"
+    "revert"
+    "stash"
+    "switch"
+    "update-ref"
+  ];
+in {
+  flake.tripwire = {inherit gitMutations;};
+
   perSystem = {pkgs, ...}: let
-    rules = import ../_rules;
-    mutations = builtins.concatStringsSep "|" rules.gitMutations;
-    gitReadOnly = builtins.concatStringsSep "|" rules.gitReadOnly;
+    mutations = builtins.concatStringsSep "|" gitMutations;
+    readOnly = builtins.concatStringsSep "|" gitReadOnly;
   in {
     # The sandbox's git: inspection passes through, and every mutation stays
     # with the user.
@@ -22,7 +81,7 @@ _: {
       done
 
       case "''${1:-}" in
-        ${gitReadOnly})
+        ${readOnly})
           exec ${pkgs.git}/bin/git --no-optional-locks "''${args[@]}"
           ;;
         branch)
@@ -68,8 +127,8 @@ _: {
     };
 
     # A PreToolUse hook. It runs before the permission rules, so it sees the
-    # attempt first and the deny list in ./claude stays as the backstop for
-    # anything the patterns miss.
+    # attempt first and the deny list in ./harnesses/claude stays as the
+    # backstop for anything the patterns miss.
     #
     # Each match adds its own tier to the session total, and three ends the
     # session. So the direct attempt warns, a detour around it warns harder,

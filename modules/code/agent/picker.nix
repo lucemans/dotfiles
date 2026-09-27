@@ -1,10 +1,12 @@
 {
   pkgs,
   harnesses,
+  toolsets,
   sandbox,
   worktreeBase,
 }: let
   manifest = pkgs.writeText "agent-harnesses.json" (builtins.toJSON harnesses);
+  toolsetManifest = pkgs.writeText "agent-toolsets.json" (builtins.toJSON (map (t: {inherit (t) name glyph color blurb;}) toolsets));
 in
   pkgs.writeShellApplication {
     name = "agent";
@@ -63,6 +65,15 @@ in
           | "\(.key)\t\($mark)  \(.name)\(" " * ($width - (.name | length) + 2))\u001b[2m\(.blurb)\u001b[0m"'
       }
 
+      # Toolsets carry no logo, so their rows always use the glyph.
+      toolset_rows() {
+        jq -r '
+          (map(.name | length) | max) as $width
+          | .[]
+          | "\(.name)\t\u001b[38;2;\(.color)m\(.glyph) \u001b[0m  \(.name)\(" " * ($width - (.name | length) + 2))\u001b[2m\(.blurb)\u001b[0m"
+        ' ${toolsetManifest}
+      }
+
       # The terminator is written as \134 so the format does not end on an escaped
       # backslash, which the linter reads as a quoting mistake.
       ready_marks() {
@@ -86,7 +97,8 @@ in
           --layout=reverse --cycle --height=~60% --border=rounded --border-label=" $1 " \
           --info=inline-right --pointer='▌' --prompt='  ' \
           --color=fg:-1,bg:-1,hl:#bd93f9,fg+:-1:regular,bg+:#3a3c4e,hl+:#ff79c6 \
-          --color=border:#44475a,label:#6272a4,prompt:#8be9fd,pointer:#ff79c6,info:#6272a4
+          --color=border:#44475a,label:#6272a4,prompt:#8be9fd,pointer:#ff79c6,info:#6272a4 \
+          "''${@:2}"
       }
 
       # The proxy decides what exists: a model it cannot route must not be offered,
@@ -166,12 +178,9 @@ in
         cd "$path"
       }
 
-      # A session records every model it switched to, and each OMP profile starts on
-      # its own default model, so the last default-role model names the profile that
-      # owns the session. Resuming under that profile keeps its tiny, smol and slow
-      # roles.
-      omp_session_key() {
-        local ref="" file="" model
+      # The session file named by --resume or --session, as a path or an id prefix.
+      omp_session_file() {
+        local ref="" file=""
         while [ "$#" -gt 0 ]; do
           case "$1" in
             --resume=* | --session=*) ref="''${1#*=}" ;;
@@ -194,6 +203,16 @@ in
         if [ ! -f "$file" ]; then
           return 1
         fi
+        printf '%s\n' "$file"
+      }
+
+      # A session records every model it switched to, and each OMP profile starts on
+      # its own default model, so the last default-role model names the profile that
+      # owns the session. Resuming under that profile keeps its tiny, smol and slow
+      # roles.
+      omp_session_key() {
+        local file model
+        file="$(omp_session_file "$@")" || return 1
         model="$(
           jq -rR 'fromjson? | select(.type == "model_change" and (.role // "default") == "default") | .model' "$file" |
             sed -n '$p'
@@ -204,6 +223,15 @@ in
             | select(.modelRoles.default == $model
               or ($catalog != null and ($model | startswith($catalog.qualify + $catalog.prefix))))
             | "\($harness)/\(.name)")'
+      }
+
+      # The toolsets that omp's agent-toolsets extension last recorded in the
+      # session, space-separated. A session from before the extension has none.
+      omp_session_toolsets() {
+        local file
+        file="$(omp_session_file "$@")" || return 0
+        jq -rR 'fromjson? | select(.type == "custom" and .customType == "agent.toolsets") | .data.toolsets | join(" ")' "$file" |
+          sed -n '$p'
       }
 
       interactive=false
@@ -219,12 +247,22 @@ in
       else
         harness=""
         if ! $interactive; then
-          echo "usage: agent [$(query -r '[.[].name] | join("|")')] [args...]" >&2
+          echo "usage: agent [$(query -r '[.[].name] | join("|")')] [+toolset ...] [args...]" >&2
           exit 2
         fi
         ready_marks
         harness="$(rows | pick harness)" || exit 130
       fi
+
+      # Leading +name arguments choose the toolsets, so `agent omp +rf` skips that
+      # picker. They come after the harness, or first when the picker asks for it.
+      toolsets=()
+      explicit=false
+      while [ -n "''${1:-}" ] && [ "''${1#+}" != "$1" ]; do
+        toolsets+=("''${1#+}")
+        explicit=true
+        shift
+      done
 
       key="$harness"
       if query -e 'harness | has("profiles")' >/dev/null; then
@@ -238,6 +276,33 @@ in
           key="$(query -r 'harness | "\(.name)/\(.profiles[0].name)"')"
         fi
       fi
+
+      # A resumed session keeps the toolsets it recorded, so a herdr resume never
+      # asks. Any other harness resumes with base unless +names say otherwise.
+      if ! $explicit; then
+        if resuming "$@"; then
+          if [ "$harness" = omp ]; then
+            read -ra toolsets <<<"$(omp_session_toolsets "$@")"
+          fi
+        elif $interactive; then
+          picked="$(toolset_rows | pick "toolsets, tab adds" --multi)" || exit 130
+          mapfile -t toolsets <<<"$picked"
+        fi
+      fi
+
+      # Every session has base, so only the toolsets added to it are passed on.
+      extras=()
+      for name in "''${toolsets[@]}"; do
+        if ! jq -e --arg name "$name" 'any(.[]; .name == $name)' ${toolsetManifest} >/dev/null; then
+          echo "agent: no toolset '$name', choose from: $(jq -r '[.[].name] | join(" ")' ${toolsetManifest})" >&2
+          exit 2
+        fi
+        if [ "$name" != base ]; then
+          extras+=("$name")
+        fi
+      done
+      export AGENT_TOOLSETS="''${extras[*]}"
+      plus=("''${extras[@]/#/+}")
 
       # A resumed session stays in the directory it was recorded in.
       if $interactive && ! resuming "$@"; then
@@ -268,7 +333,7 @@ in
       fi
 
       if $interactive; then
-        printf '\n  agent %s%s\n\n' "$key" "''${start[*]:+ ''${start[*]}}''${*:+ $*}" >&2
+        printf '\n  agent %s%s%s\n\n' "$key" "''${plus[*]:+ ''${plus[*]}}" "''${start[*]:+ ''${start[*]}}''${*:+ $*}" >&2
       fi
 
       command=()

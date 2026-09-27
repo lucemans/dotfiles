@@ -1,12 +1,7 @@
 {inputs, ...}: {
   imports = [
-    ./mcp
-    ./claude
-    ./omp
-    ./pi
     ./agent
     ./vscode
-    ./opencode
     ./agentsview.nix
     ./git.nix
     ./gitgui.nix
@@ -23,7 +18,7 @@
     imports = [
       # self.nixosModules.cursor
       self.nixosModules.vscodium
-      self.nixosModules.mcp
+      self.nixosModules.tools
       self.nixosModules.opencode
       self.nixosModules.claude-code
       self.nixosModules.omp

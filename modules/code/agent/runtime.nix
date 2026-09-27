@@ -4,6 +4,7 @@
   selfpkgs,
   herdr,
   harnesses,
+  toolsets,
   secretPaths,
   envFile,
   worktreeBase,
@@ -46,11 +47,26 @@
   herdrRelay =
     pkgs.writers.writePython3Bin "herdr-relay" {flakeIgnore = ["E501"];}
     (builtins.readFile ./herdr-relay.py);
+
+  # A toolset's servers become entries in each harness's MCP config, its
+  # packages join PATH and its devices are bound into the sandbox.
+  toolsManifest = pkgs.writeText "agent-toolsets.json" (builtins.toJSON {
+    toolsets = builtins.listToAttrs (map (t:
+      lib.nameValuePair t.name {
+        inherit (t) servers devices;
+        bin = lib.makeBinPath t.packages;
+      })
+    toolsets);
+    configs = map (h: h.mcp) (lib.filter (h: h ? mcp) (lib.attrValues harnesses));
+  });
 in
   # Runs the given command in the sandbox around the project at $PWD.
   pkgs.writeShellApplication {
     name = "agent-sandbox";
-    runtimeInputs = [pkgs.bubblewrap pkgs.coreutils pkgs.git];
+    runtimeInputs = [pkgs.bubblewrap pkgs.coreutils pkgs.git pkgs.jq];
+    # Single-quoted $names in the jq programs below are jq variables, not shell
+    # expansions.
+    excludeShellChecks = ["SC2016"];
     text = ''
       project="$(realpath "$PWD")"
 
@@ -126,6 +142,29 @@ in
       exec 3<<<"$USER:x:$(id -u):$(id -g):$USER:$HOME:${bash}"
       exec 4<<<"$(id -gn):x:$(id -g):"
 
+      # Every session has base. AGENT_TOOLSETS names the toolsets added to it.
+      read -ra chosen <<<"base ''${AGENT_TOOLSETS:-}"
+      toolpath="$(jq -r '[.toolsets[$ARGS.positional[]].bin | select(. != "")] | join(":")' ${toolsManifest} --args "''${chosen[@]}")"
+      mapfile -t devices < <(jq -r '[.toolsets[$ARGS.positional[]].devices[]] | unique[]' ${toolsManifest} --args "''${chosen[@]}")
+      servers="$(jq -c '[.toolsets[$ARGS.positional[]].servers[]] | unique' ${toolsManifest} --args "''${chosen[@]}")"
+
+      # Each harness MCP config goes to bwrap through a descriptor, so a launch
+      # leaves no file behind.
+      configs=()
+      mapfile -t paths < <(jq -r '.configs[].path' ${toolsManifest})
+      for i in "''${!paths[@]}"; do
+        path="''${paths[$i]}"
+        case "$path" in
+          /*) ;;
+          *) path="$HOME/$path" ;;
+        esac
+        config="$(jq --argjson i "$i" --argjson servers "$servers" '
+          .configs[$i] | {(.key): (.servers | with_entries(select(.key | IN($servers[]))))}
+        ' ${toolsManifest})"
+        exec {fd}<<<"$config"
+        configs+=(--ro-bind-data "$fd" "$path")
+      done
+
       args=(
         --die-with-parent --unshare-all --share-net --clearenv
         --dir /nix --ro-bind /nix/store /nix/store
@@ -149,13 +188,13 @@ in
         --bind "$HOME/.pi/agent/sessions" "$HOME/.pi/agent/sessions"
         --bind "$HOME/.omp" "$HOME/.omp"
         --ro-bind ${omp.models} "$HOME/.omp/agent/models.yml"
-        --ro-bind ${omp.mcp} "$HOME/.omp/agent/mcp.json"
         --bind "$nixcache" "$HOME/.cache/nix"
         "''${roots[@]}"
         --chdir "$project"
         --setenv HOME "$HOME"
         --setenv USER "$USER"
-        --setenv PATH "${safeguards}:${lib.makeBinPath tools}"
+        --setenv PATH "${safeguards}:${lib.makeBinPath tools}''${toolpath:+:$toolpath}"
+        --setenv AGENT_TOOLSETS "''${AGENT_TOOLSETS:-}"
         --setenv PUPPETEER_EXECUTABLE_PATH "${selfpkgs.playwrightMcpChromium}/bin/chromium"
         --setenv TERM "''${TERM:-xterm}"
         --setenv COLORTERM "''${COLORTERM:-}"
@@ -168,7 +207,6 @@ in
         --setenv AGENT_SANDBOX 1
         --setenv OMP_WORKTREE_DIR "$worktrees"
 
-        --ro-bind /etc/claude-code/managed-mcp.json /etc/claude-code/managed-mcp.json
         --ro-bind /etc/claude-code/managed-settings.json /etc/claude-code/managed-settings.json
         --bind "$HOME/.claude" "$HOME/.claude"
         --ro-bind "$HOME/.claude/settings.json" "$HOME/.claude/settings.json"
@@ -181,6 +219,10 @@ in
         --bind "$HOME/.local/state/opencode" "$HOME/.local/state/opencode"
         --ro-bind "$HOME/.config/plan-env-md/config" "$HOME/.config/plan-env-md/config"
         --setenv OPENCODE_DISABLE_CHANNEL_DB 1
+        # OpenCode merges this over its global config. A bind over the global
+        # file fails, because home-manager makes it a symlink into the store and
+        # bwrap cannot follow that while it builds the sandbox root.
+        --setenv OPENCODE_CONFIG "${opencode.mcp.path}"
 
         --dir "$XDG_RUNTIME_DIR"
         --bind "$XDG_RUNTIME_DIR/$WAYLAND_DISPLAY" "$XDG_RUNTIME_DIR/$WAYLAND_DISPLAY"
@@ -193,12 +235,13 @@ in
         --setenv DISPLAY "$DISPLAY"
         --setenv XDG_SESSION_TYPE "$XDG_SESSION_TYPE"
         "''${herdr[@]}"
+        "''${configs[@]}"
       )
-      # HackRF uses libusb's usbfs backend. The device bus directory stays
-      # live across reconnects; sysfs is only an optional enumeration path.
-      if [ "$1" = omp ]; then
-        args+=(--dev-bind /dev/bus/usb /dev/bus/usb)
-      fi
+      for device in "''${devices[@]}"; do
+        if [ -e "$device" ]; then
+          args+=(--dev-bind "$device" "$device")
+        fi
+      done
 
       # The webcam nodes are absent from the sandbox devtmpfs, and their numbering
       # follows what is plugged in, so bind the ones that exist at launch. Access
@@ -229,14 +272,12 @@ in
 
       # Sourced in the sandbox rather than passed with --setenv, which would publish
       # every value through bwrap's argv in /proc.
-      # shellcheck disable=SC2016
       command=(
         "${bash}" -c 'set -a; . "$1"; set +a; shift; exec "$@"'
         agent "${envFile}" "$@"
       )
 
       if grep -qs '^use flake' "$project/.envrc"; then
-        # shellcheck disable=SC2016
         command=(
           nix develop "$project" -c
           "${bash}" -c 'PATH=$1:$PATH; shift; exec "$@"' agent "${safeguards}"

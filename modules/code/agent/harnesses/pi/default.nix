@@ -5,7 +5,7 @@
     pkgs,
     ...
   }: let
-    inherit (import ../../network/services.nix) services;
+    inherit (import ../../../../network/services.nix) services;
   in {
     agentRuntime.harnesses.pi = let
       models = pkgs.writeText "pi-models.json" (builtins.toJSON {
@@ -50,7 +50,7 @@
       glyph = "π";
       color = "139;233;253";
       blurb = "pi";
-      logo = ../agent/icons/pi.png;
+      logo = ../../icons/pi.png;
       package = pkgs.pi-coding-agent;
       inherit models settings;
     };

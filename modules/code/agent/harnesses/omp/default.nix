@@ -3,36 +3,38 @@
     config,
     lib,
     pkgs,
-    self,
     ...
   }: let
-    inherit (import ../../network/services.nix) services;
+    inherit (import ../../../../network/services.nix) services;
   in {
     home-manager.users.luc.home.file.".omp/agent/themes/titanium-v3x.json".source = ./titanium-v3x.json;
 
-    sops.secrets.v3x_error_menu_token.owner = "luc";
-
     agentRuntime.harnesses.omp = let
-      mcp = pkgs.writeText "omp-mcp.json" (builtins.toJSON {
-        mcpServers =
-          self.mcp.omp
-          // {
-            error_menu = {
-              type = "http";
-              url = "https://error.menu/mcp";
-              headers.Authorization = "!${pkgs.coreutils}/bin/printf 'Bearer %s' \"$(${pkgs.coreutils}/bin/cat ${lib.escapeShellArg config.sops.secrets.v3x_error_menu_token.path})\"";
-              enabled = true;
-              timeout = 30000;
-            };
-            sdrangel = {
-              type = "http";
-              url = "http://127.0.0.1:8092";
-              enabled = true;
-              timeout = 30000;
-            };
-          };
-        enabledServers = ["playwright" "dapp_wallet"];
-      });
+      mcp = {
+        path = ".omp/agent/mcp.json";
+        key = "mcpServers";
+        servers =
+          lib.mapAttrs (
+            _: s:
+              (
+                if s ? url
+                then
+                  {
+                    type = "http";
+                    inherit (s) url;
+                  }
+                  // lib.optionalAttrs (s ? bearer) {
+                    headers.Authorization = "!${pkgs.coreutils}/bin/printf 'Bearer %s' \"$(${pkgs.coreutils}/bin/cat ${lib.escapeShellArg s.bearer})\"";
+                  }
+                else {
+                  type = "stdio";
+                  inherit (s) command;
+                }
+              )
+              // lib.optionalAttrs (s.timeout != null) {inherit (s) timeout;}
+          )
+          config.agentRuntime.servers;
+      };
       models = pkgs.writeText "omp-models.yml" (builtins.toJSON {
         providers = {
           anthropic = {
@@ -73,7 +75,7 @@
       settings = pkgs.writeText "omp-settings.yml" ''
         theme:
           dark: titanium-v3x
-        # Use the shared `playwright` MCP server (see enabledServers) for the
+        # Use the shared `playwright` MCP server from the base toolset for the
         # browser, exactly like the claude-code and opencode harnesses. OMP's
         # built-in browser is disabled because its native "freeze owned browser
         # tabs at turn settle" step issues a synchronous CDP round-trip on the
@@ -123,11 +125,20 @@
 
       # A profile is a role map. A fresh session starts on the profile's
       # default model; a resumed one keeps the model it recorded, which is
-      # also how `agent` finds the profile that owns a session.
+      # also how `agent` finds the profile that owns a session. The toolsets
+      # extension records the session's toolsets the same way.
       profile = entry:
         entry
         // {
-          command = ["omp" "--config" "${settings}" "--config" "${pkgs.writeText "omp-roles-${entry.name}.yml" (builtins.toJSON {inherit (entry) modelRoles;})}"];
+          command = [
+            "omp"
+            "--config"
+            "${settings}"
+            "--config"
+            "${pkgs.writeText "omp-roles-${entry.name}.yml" (builtins.toJSON {inherit (entry) modelRoles;})}"
+            "--extension"
+            "${./agent-toolsets.ts}"
+          ];
           # A profile with a catalog leaves --model to the picked entry.
           start = lib.optionals (!(entry ? catalog)) ["--model" "@default"];
         };
@@ -137,7 +148,7 @@
       glyph = "󰚩";
       color = "189;147;249";
       blurb = "Oh My Pi";
-      logo = ../agent/icons/omp.png;
+      logo = ../../icons/omp.png;
       package = inputs.omp.packages.${pkgs.stdenv.hostPlatform.system}.default;
       inherit models mcp;
       profiles = map profile [
@@ -146,7 +157,7 @@
           glyph = "";
           color = "16;163;127";
           blurb = "OpenAI";
-          logo = ../agent/icons/openai.png;
+          logo = ../../icons/openai.png;
           modelRoles = {
             default = "anthropic/gpt-6-sol";
             inherit tiny;
@@ -159,7 +170,7 @@
           glyph = "󰦣";
           color = "217;119;87";
           blurb = "Anthropic";
-          logo = ../agent/icons/claude.png;
+          logo = ../../icons/claude.png;
           modelRoles = {
             default = "anthropic/claude-opus-5-5";
             inherit tiny;
@@ -172,7 +183,7 @@
           glyph = "";
           color = "248;248;242";
           blurb = "Moonshot";
-          logo = ../agent/icons/kimi.png;
+          logo = ../../icons/kimi.png;
           modelRoles = {
             default = "anthropic/kimi-k3-256k";
             inherit tiny;
@@ -185,7 +196,7 @@
           glyph = "";
           color = "80;250;123";
           blurb = "v3x-inference";
-          logo = ../agent/icons/local.png;
+          logo = ../../icons/local.png;
           modelRoles = {
             default = "v3x-inference/v3x-m/qwen3.8-27b";
             inherit tiny;
@@ -198,7 +209,7 @@
           glyph = "";
           color = "148;163;184";
           blurb = "OpenRouter";
-          logo = ../agent/icons/openrouter.png;
+          logo = ../../icons/openrouter.png;
           # `default` is deliberately absent: the picked OpenRouter model
           # arrives as --model, so a stale fallback here could silently win
           # instead.

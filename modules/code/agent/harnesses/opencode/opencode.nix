@@ -17,17 +17,38 @@
 
   flake.nixosModules.opencode = {
     self,
+    lib,
     pkgs,
     config,
     ...
   }: let
-    rules = import ../_rules;
     opencodeConfig =
       (builtins.fromJSON (builtins.readFile ./opencode.jsonc))
       // {
-        mcp = self.mcp.opencode;
         provider = config.inference.providers;
       };
+    mcpServers =
+      lib.mapAttrs (
+        _: s:
+          (
+            if s ? url
+            then
+              {
+                type = "remote";
+                inherit (s) url;
+              }
+              // lib.optionalAttrs (s ? bearer) {
+                headers.Authorization = "Bearer {file:${s.bearer}}";
+              }
+            else {
+              type = "local";
+              command = [s.command];
+            }
+          )
+          // {enabled = true;}
+          // lib.optionalAttrs (s.timeout != null) {inherit (s) timeout;}
+      )
+      config.agentRuntime.servers;
   in {
     imports = [
       self.nixosModules.inference
@@ -48,16 +69,19 @@
     };
 
     home-manager.users.luc.home.file =
-      (rules.mkSkillFiles ".config/opencode/skills")
-      // (rules.mkAgentFiles "opencode" ".config/opencode/agents")
+      ((import ../../skills).files ".config/opencode/skills")
+      // ((import ../../subagents).files "opencode" ".config/opencode/agents")
       // {
         ".config/opencode/opencode.jsonc" = {
-          text = builtins.toJSON opencodeConfig;
+          text = builtins.toJSON (opencodeConfig
+            // {
+              mcp = lib.getAttrs config.agentRuntime.toolsets.base.servers mcpServers;
+            });
           force = true;
         };
 
         ".config/opencode/AGENTS.md" = {
-          source = rules.policy;
+          source = ../../AGENTS.md;
           force = true;
         };
       };
@@ -67,8 +91,15 @@
       glyph = "";
       color = "248;248;242";
       blurb = "OpenCode";
-      logo = ../agent/icons/opencode.png;
+      logo = ../../icons/opencode.png;
       package = self.packages.${pkgs.stdenv.hostPlatform.system}.opencode;
+      # The sandbox points OPENCODE_CONFIG here, and OpenCode merges it over the
+      # global config, whose servers are only base.
+      mcp = {
+        path = "/etc/agent/opencode.json";
+        key = "mcp";
+        servers = mcpServers;
+      };
     };
   };
 }

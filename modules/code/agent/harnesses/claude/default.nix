@@ -5,34 +5,58 @@
 
   flake.nixosModules.claude-code = {
     self,
+    config,
+    lib,
     pkgs,
     ...
   }: let
-    inherit (import ../../network/services.nix) services;
+    inherit (import ../../../../network/services.nix) services;
 
     selfpkgs = self.packages.${pkgs.stdenv.hostPlatform.system};
-
-    rules = import ../_rules;
 
     # A project's own .claude/settings.local.json is writable by whoever works
     # in the project, and managed settings are the only tier that outranks it.
     # These mirror the prohibitions in AGENTS.md so they cannot be widened from
     # inside a project. Read-only git stays allowed, as the policy intends.
-    gitMutations = map (subcommand: "Bash(git ${subcommand}:*)") rules.gitMutations;
+    gitMutations = map (subcommand: "Bash(git ${subcommand}:*)") self.tripwire.gitMutations;
+
+    # Claude has no `enabled` and no `timeout`. Its deferred tool schemas keep an
+    # unused server out of the context window.
+    mcpServers =
+      lib.mapAttrs (
+        name: s:
+          if s ? url
+          then
+            {
+              type = "http";
+              inherit (s) url;
+            }
+            // lib.optionalAttrs (s ? bearer) {
+              headersHelper = "${pkgs.writeShellScript "${name}-mcp-headers" ''
+                exec ${pkgs.jq}/bin/jq -n --rawfile token ${lib.escapeShellArg s.bearer} \
+                  '{Authorization: "Bearer \($token | rtrimstr("\n"))"}'
+              ''}";
+            }
+          else {
+            type = "stdio";
+            inherit (s) command;
+          }
+      )
+      config.agentRuntime.servers;
   in {
     environment.systemPackages = [selfpkgs.claude-code];
     environment.sessionVariables.CLAUDE_CONFIG_DIR = "/home/luc/.claude";
 
     environment.etc."claude-code/managed-mcp.json".text = builtins.toJSON {
-      mcpServers = self.mcp.claude;
+      mcpServers = lib.getAttrs config.agentRuntime.toolsets.base.servers mcpServers;
     };
 
     home-manager.users.luc.home.file =
-      (rules.mkSkillFiles ".claude/skills")
-      // (rules.mkAgentFiles "claude" ".claude/agents")
+      ((import ../../skills).files ".claude/skills")
+      // ((import ../../subagents).files "claude" ".claude/agents")
       // {
         ".claude/CLAUDE.md" = {
-          source = rules.policy;
+          source = ../../AGENTS.md;
           force = true;
         };
       };
@@ -84,8 +108,13 @@
       glyph = "";
       color = "217;119;87";
       blurb = "Claude Code";
-      logo = ../agent/icons/claude.png;
+      logo = ../../icons/claude.png;
       package = selfpkgs.claude-code;
+      mcp = {
+        path = "/etc/claude-code/managed-mcp.json";
+        key = "mcpServers";
+        servers = mcpServers;
+      };
       profiles = [
         {
           name = "claude";
@@ -93,7 +122,7 @@
           glyph = "󰦣";
           color = "217;119;87";
           blurb = "Anthropic";
-          logo = ../agent/icons/claude.png;
+          logo = ../../icons/claude.png;
         }
         {
           name = "gpt";
@@ -107,7 +136,7 @@
           glyph = "";
           color = "16;163;127";
           blurb = "gpt-6-sol";
-          logo = ../agent/icons/openai.png;
+          logo = ../../icons/openai.png;
         }
       ];
     };

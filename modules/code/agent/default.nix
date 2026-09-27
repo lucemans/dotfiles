@@ -1,5 +1,7 @@
 {inputs, ...}: {
   imports = [
+    ./harnesses
+    ./tools
     ./tripwire.nix
   ];
 
@@ -11,13 +13,29 @@
     ...
   }: let
     envFile = config.sops.templates.agent-env.path;
-    inherit (config.agentRuntime) harnesses;
+    inherit (config.agentRuntime) harnesses servers toolsets;
+
+    # The picker lists base first, then the other toolsets, then each server
+    # outside base as a toolset of its own, so one can be added on its own.
+    choices =
+      [(toolsets.base // {name = "base";})]
+      ++ lib.mapAttrsToList (name: t: t // {inherit name;}) (removeAttrs toolsets ["base"])
+      ++ lib.mapAttrsToList (name: s: {
+        inherit name;
+        inherit (s) blurb;
+        glyph = "";
+        color = "98;114;164";
+        servers = [name];
+        packages = [];
+        devices = [];
+      }) (removeAttrs servers toolsets.base.servers);
     # One worktree directory per repository, named after its primary checkout,
     # so the picker creates worktrees where the sandbox mounts them.
     worktreeBase = ''$HOME/dev/wt/$(basename "$primary")-$(printf '%s' "$primary" | sha256sum | cut -c1-7)'';
 
     sandbox = import ./runtime.nix {
       inherit pkgs lib envFile harnesses worktreeBase;
+      toolsets = choices;
       selfpkgs = self.packages.${pkgs.stdenv.hostPlatform.system};
       herdr = inputs.herdr.packages.${pkgs.stdenv.hostPlatform.system}.default;
 
@@ -26,7 +44,8 @@
       secretPaths = [
         # opencode resolves this one itself, through a {file:} reference.
         config.sops.secrets.v3x_inference_token.path
-        # omp resolves this one itself, through a !command header value.
+        # Every harness reads this one itself: omp and Claude through a
+        # command, OpenCode through a {file:} reference.
         config.sops.secrets.v3x_error_menu_token.path
         envFile
       ];
@@ -34,6 +53,7 @@
 
     agent = import ./picker.nix {
       inherit pkgs sandbox worktreeBase;
+      toolsets = choices;
       # The picker lists harnesses in this order.
       harnesses = map (name: harnesses.${name} // {inherit name;}) ["omp" "claude" "opencode" "pi" "bash"];
     };
@@ -47,7 +67,9 @@
   in {
     # A harness module declares what the picker shows (glyph, color, blurb,
     # logo) and either a `command` or `profiles` of such entries. The sandbox
-    # puts its `package` on PATH and mounts the config files it names.
+    # puts its `package` on PATH and mounts the config files it names. A harness
+    # with `mcp` gets a file at `path` (under $HOME unless absolute) that holds
+    # the chosen toolsets' entries of `servers` under `key`.
     options.agentRuntime.harnesses = lib.mkOption {
       type = lib.types.attrsOf lib.types.attrs;
     };
