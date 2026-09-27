@@ -63,7 +63,18 @@
         init.defaultBranch = "master";
         core.excludesFile = "${pkgs.writeText "gitignore" ''
           .pnpm-store
+          .tmp
         ''}";
+      };
+    };
+
+    programs.direnv = {
+      enable = true;
+      settings.global = {
+        hide_env_diff = false;
+        log_format = "direnv › %s";
+        warn_timeout = "2s";
+        disable_stdin = true;
       };
     };
 
@@ -78,18 +89,6 @@
         pkgs.kicad-unstable
         pkgs.sqlite
       ];
-
-      programs.direnv = {
-        enable = true;
-        silent = false;
-        nix-direnv.enable = true;
-        config.global = {
-          hide_env_diff = false;
-          log_format = "direnv › %s";
-          warn_timeout = "2s";
-          disable_stdin = true;
-        };
-      };
     };
   };
 }
