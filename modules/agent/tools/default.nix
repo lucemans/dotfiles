@@ -51,15 +51,15 @@
   flake.nixosModules.tools = {pkgs, ...}: {
     agentRuntime.toolsets = {
       base = {
+        label = "Base";
         glyph = "";
         color = "248;248;242";
-        blurb = "every session has these";
         servers = ["repo_reader" "nixos" "plan_env" "playwright" "error_menu"];
       };
       rf = {
-        glyph = "";
+        label = "Radio Frequency";
+        glyph = "󰑀";
         color = "255;184;108";
-        blurb = "SDRangel and the HackRF";
         servers = ["sdrangel"];
         packages = [pkgs.hackrf];
         # HackRF uses libusb's usbfs backend. The device bus directory stays
@@ -67,9 +67,9 @@
         devices = ["/dev/bus/usb"];
       };
       ethereum = {
-        glyph = "";
+        label = "Ethereum";
+        glyph = "󰡪";
         color = "98;126;234";
-        blurb = "dapp wallet and chain data";
         servers = ["dapp_wallet" "eth_data"];
       };
     };

@@ -16,13 +16,21 @@
     inherit (config.agentRuntime) harnesses servers toolsets;
 
     # The picker lists base first, then the other toolsets, then each server
-    # outside base as a toolset of its own, so one can be added on its own.
+    # outside base as a toolset of its own, so one can be added on its own. A
+    # toolset row lists what it adds; a server row keeps its own blurb.
+    toolsetChoice = name: t:
+      t
+      // {
+        inherit name;
+        blurb = lib.concatStringsSep ", " (t.servers ++ map lib.getName t.packages ++ t.devices);
+      };
     choices =
-      [(toolsets.base // {name = "base";})]
-      ++ lib.mapAttrsToList (name: t: t // {inherit name;}) (removeAttrs toolsets ["base"])
+      [(toolsetChoice "base" toolsets.base)]
+      ++ lib.mapAttrsToList toolsetChoice (removeAttrs toolsets ["base"])
       ++ lib.mapAttrsToList (name: s: {
         inherit name;
         inherit (s) blurb;
+        label = name;
         glyph = "";
         color = "98;114;164";
         servers = [name];

@@ -50,7 +50,7 @@ in {
             options = {
               glyph = lib.mkOption {type = lib.types.str;};
               color = lib.mkOption {type = lib.types.str;};
-              blurb = lib.mkOption {type = lib.types.str;};
+              label = lib.mkOption {type = lib.types.str;};
               servers = lib.mkOption {
                 type = lib.types.listOf lib.types.str;
                 default = [];

@@ -6,7 +6,7 @@
   worktreeBase,
 }: let
   manifest = pkgs.writeText "agent-harnesses.json" (builtins.toJSON harnesses);
-  toolsetManifest = pkgs.writeText "agent-toolsets.json" (builtins.toJSON (map (t: {inherit (t) name glyph color blurb;}) toolsets));
+  toolsetManifest = pkgs.writeText "agent-toolsets.json" (builtins.toJSON (map (t: {inherit (t) name label glyph color blurb;}) toolsets));
 in
   pkgs.writeShellApplication {
     name = "agent";
@@ -68,9 +68,9 @@ in
       # Toolsets carry no logo, so their rows always use the glyph.
       toolset_rows() {
         jq -r '
-          (map(.name | length) | max) as $width
+          (map(.label | length) | max) as $width
           | .[]
-          | "\(.name)\t\u001b[38;2;\(.color)m\(.glyph) \u001b[0m  \(.name)\(" " * ($width - (.name | length) + 2))\u001b[2m\(.blurb)\u001b[0m"
+          | "\(.name)\t\u001b[38;2;\(.color)m\(.glyph) \u001b[0m  \(.label)\(" " * ($width - (.label | length) + 2))\u001b[2m\(.blurb)\u001b[0m"
         ' ${toolsetManifest}
       }
 
@@ -285,7 +285,8 @@ in
             read -ra toolsets <<<"$(omp_session_toolsets "$@")"
           fi
         elif $interactive; then
-          picked="$(toolset_rows | pick "toolsets, tab adds" --multi)" || exit 130
+          # Base is the first row and every session has it, so it starts selected.
+          picked="$(toolset_rows | pick "toolsets, tab adds" --multi --bind 'start:select')" || exit 130
           mapfile -t toolsets <<<"$picked"
         fi
       fi
