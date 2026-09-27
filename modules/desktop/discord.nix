@@ -25,7 +25,7 @@
     #   })
     # ];
 
-    home-manager.users.luc.home.packages = [
+    users.users.luc.packages = [
       (pkgs.discord.override {
         withVencord = true;
       })

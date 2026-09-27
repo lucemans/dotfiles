@@ -67,45 +67,6 @@
       ...
     }: {
       home = {
-        packages = with pkgs; [
-          tree
-          fastfetch
-          selfpkgs.frame-sh-wayland
-          soapysdr
-          hackrf
-          soapyhackrf
-          gqrx
-          sdrangel
-
-          # koi
-          obsidian
-
-          sops
-          age
-          jq
-          # Plasma keeps the clipboard in Klipper and ships no CLI for it, so
-          # anything reading a selection from a terminal needs this. Claude
-          # Code's image paste is one such reader.
-          wl-clipboard
-
-          signal-desktop
-          telegram-desktop
-          mattermost-desktop
-          gajim
-
-          tailscale
-          netbird
-
-          freelens-bin
-
-          thunderbird
-          rpi-imager
-          orca-slicer
-
-          obs-studio
-          vlc
-        ];
-
         username = "luc";
         homeDirectory = "/home/luc";
 
@@ -148,6 +109,45 @@
         };
       };
     };
+
+    users.users.luc.packages = with pkgs; [
+      tree
+      fastfetch
+      selfpkgs.frame-sh-wayland
+      soapysdr
+      hackrf
+      soapyhackrf
+      gqrx
+      sdrangel
+
+      # koi
+      obsidian
+
+      sops
+      age
+      jq
+      # Plasma keeps the clipboard in Klipper and ships no CLI for it, so
+      # anything reading a selection from a terminal needs this. Claude
+      # Code's image paste is one such reader.
+      wl-clipboard
+
+      signal-desktop
+      telegram-desktop
+      mattermost-desktop
+      gajim
+
+      tailscale
+      netbird
+
+      freelens-bin
+
+      thunderbird
+      rpi-imager
+      orca-slicer
+
+      obs-studio
+      vlc
+    ];
 
     # https://wiki.nixos.org/wiki/Chromium#Enabling_native_Wayland_support
     environment.sessionVariables.NIXOS_OZONE_WL = "1";

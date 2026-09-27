@@ -64,17 +64,15 @@
       };
     };
 
-    home-manager.users.luc = {pkgs, ...}: {
-      home.packages = [
-        pkgs.zed-editor
-        pkgs.gitkraken
-        selfpkgs.agentsview
-        selfpkgs.agentsview-desktop
-        inputs.herdr.packages.${pkgs.stdenv.hostPlatform.system}.default
-        pkgs.kubectl
-        pkgs.kicad-unstable
-        pkgs.sqlite
-      ];
-    };
+    users.users.luc.packages = [
+      pkgs.zed-editor
+      pkgs.gitkraken
+      selfpkgs.agentsview
+      selfpkgs.agentsview-desktop
+      inputs.herdr.packages.${pkgs.stdenv.hostPlatform.system}.default
+      pkgs.kubectl
+      pkgs.kicad-unstable
+      pkgs.sqlite
+    ];
   };
 }

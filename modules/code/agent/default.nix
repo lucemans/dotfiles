@@ -69,7 +69,7 @@
         '';
       };
 
-      home-manager.users.luc.home.packages = [agent ompEntry];
+      users.users.luc.packages = [agent ompEntry];
     };
   };
 }

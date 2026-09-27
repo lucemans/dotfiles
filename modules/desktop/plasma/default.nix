@@ -36,11 +36,11 @@
       inputs.plasma-manager.homeModules.plasma-manager
     ];
 
-    home-manager.users.luc = {pkgs, ...}: {
-      home.packages = [
-        selfpkgs.ethereum-price-plasmoid
-      ];
+    users.users.luc.packages = [
+      selfpkgs.ethereum-price-plasmoid
+    ];
 
+    home-manager.users.luc = {pkgs, ...}: {
       xdg.portal = {
         enable = true;
         extraPortals = [

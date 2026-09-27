@@ -16,6 +16,6 @@ _: {
       extraScripts."spotify-routing.lua" = builtins.readFile ../system/audio/wireplumber/spotify-routing.lua;
     };
 
-    home-manager.users.luc.home.packages = [pkgs.spotify];
+    users.users.luc.packages = [pkgs.spotify];
   };
 }
