@@ -52,6 +52,21 @@
 
     environment.systemPackages = [pkgs.android-tools];
 
+    programs.git = {
+      enable = true;
+      lfs.enable = true;
+      config = {
+        user = {
+          name = "Luc";
+          email = "luc@lucemans.nl";
+        };
+        init.defaultBranch = "master";
+        core.excludesFile = "${pkgs.writeText "gitignore" ''
+          .pnpm-store
+        ''}";
+      };
+    };
+
     home-manager.users.luc = {pkgs, ...}: {
       home.packages = [
         pkgs.zed-editor
@@ -73,18 +88,6 @@
           log_format = "direnv › %s";
           warn_timeout = "2s";
           disable_stdin = true;
-        };
-      };
-
-      programs.git = {
-        enable = true;
-        lfs.enable = true;
-        settings = {
-          user = {
-            name = "Luc";
-            email = "luc@lucemans.nl";
-          };
-          init.defaultBranch = "master";
         };
       };
     };

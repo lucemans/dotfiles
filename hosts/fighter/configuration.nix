@@ -76,7 +76,7 @@
     };
 
     sops = {
-      age.keyFile = "/home/luc/.config/sops/age/keys.txt";
+      age.keyFile = "/var/lib/sops-nix/key.txt";
       defaultSopsFile = ../../secrets/secrets.sops.yaml;
     };
 
