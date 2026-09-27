@@ -86,8 +86,6 @@
           # anything reading a selection from a terminal needs this. Claude
           # Code's image paste is one such reader.
           wl-clipboard
-          gnupg
-          pinentry-qt
 
           signal-desktop
           telegram-desktop
@@ -148,20 +146,36 @@
           };
         };
       };
-
-      programs.gpg = {
-        enable = true;
-      };
-
-      services.gpg-agent = {
-        enable = true;
-        pinentry.package = pkgs.pinentry-qt;
-      };
-
-      services.ssh-agent = {
-        enable = false;
-      };
     };
+
+    programs.gnupg.agent = {
+      enable = true;
+      pinentryPackage = pkgs.pinentry-qt;
+      # An empty value renders as `grab ` with no argument, the bare flag gpg-agent expects.
+      settings.grab = "";
+    };
+
+    systemd.tmpfiles.rules = [
+      "d /home/luc/.gnupg 0700 luc users -"
+      "L+ /home/luc/.gnupg/gpg.conf - - - - ${pkgs.writeText "gpg.conf" ''
+        cert-digest-algo SHA512
+        default-preference-list SHA512 SHA384 SHA256 AES256 AES192 AES ZLIB BZIP2 ZIP Uncompressed
+        display-charset utf-8
+        keyid-format 0xlong
+        list-options show-uid-validity
+        no-comments
+        no-emit-version
+        no-symkey-cache
+        personal-cipher-preferences AES256 AES192 AES
+        personal-compress-preferences ZLIB BZIP2 ZIP Uncompressed
+        personal-digest-preferences SHA512 SHA384 SHA256
+        require-cross-certification
+        s2k-cipher-algo AES256
+        s2k-digest-algo SHA512
+        verify-options show-uid-validity
+        with-fingerprint
+      ''}"
+    ];
 
     # https://wiki.nixos.org/wiki/Chromium#Enabling_native_Wayland_support
     environment.sessionVariables.NIXOS_OZONE_WL = "1";
