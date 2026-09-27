@@ -6,6 +6,7 @@
     ./theme
     ./nix
     ./environment.nix
+    ./gnupg.nix
     ./kitty.nix
   ];
 }

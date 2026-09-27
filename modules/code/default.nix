@@ -8,6 +8,7 @@
     ./vscode
     ./opencode
     ./agentsview.nix
+    ./git.nix
     ./gitgui.nix
     ./auto-commit.nix
   ];
@@ -28,6 +29,7 @@
       self.nixosModules.omp
       self.nixosModules.pi
       self.nixosModules.agentRuntime
+      self.nixosModules.git
       self.nixosModules.gitgui
       self.nixosModules.auto-commit
     ];
@@ -51,22 +53,6 @@
     '';
 
     environment.systemPackages = [pkgs.android-tools];
-
-    programs.git = {
-      enable = true;
-      lfs.enable = true;
-      config = {
-        user = {
-          name = "Luc";
-          email = "luc@lucemans.nl";
-        };
-        init.defaultBranch = "master";
-        core.excludesFile = "${pkgs.writeText "gitignore" ''
-          .pnpm-store
-          .tmp
-        ''}";
-      };
-    };
 
     programs.direnv = {
       enable = true;
