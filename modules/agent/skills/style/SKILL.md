@@ -83,7 +83,7 @@ Removing patterns is half the job. Sterile, voiceless writing is just as obvious
 
 Applies to chat replies as much as to documents. Most agent output fails here, not on vocabulary.
 
-32. **The codebase is the word list.** Write the real symbol, file, flag, or command, never a description of it. Not "the service calls the API layer" but "`UserService.get()` calls `UserApi.get()`". Not "the config file" but "`modules/code/agent/subagents/default.nix`". A sentence that survives find-and-replacing the project name says nothing about the project.
+32. **The codebase is the word list.** Write the real symbol, file, flag, or command, never a description of it. Not "the service calls the API layer" but "`UserService.get()` calls `UserApi.get()`". Not "the config file" but "`modules/agent/subagents/default.nix`". A sentence that survives find-and-replacing the project name says nothing about the project.
 33. **One name per thing, everywhere.** "the gate", "the ratchet", and "the budget check" for one script teaches three things. Pick the real name and repeat it.
 34. **Report the action, not the state.** "The harness picked up the new work and the wiring resolves end to end" claims a state you inferred. "Added `comment-sicko` to `agent/subagents/`. Two skills added: `how` and `why`. Verified with `nix eval --impure --expr ...`" names what you did and what proved it.
 35. **Every claim carries its evidence.** `path:line` for a file claim, the command for a count, a build, or a test result. Ran nothing? Say the claim is unverified. Never let a guess wear the grammar of a fact.

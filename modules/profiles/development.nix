@@ -1,14 +1,5 @@
 {inputs, ...}: {
-  imports = [
-    ./agent
-    ./vscode
-    ./agentsview.nix
-    ./git.nix
-    ./gitgui.nix
-    ./auto-commit.nix
-  ];
-
-  flake.nixosModules.code = {
+  flake.nixosModules.development = {
     self,
     pkgs,
     ...

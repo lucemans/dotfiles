@@ -5,7 +5,7 @@
     pkgs,
     ...
   }: let
-    inherit (import ../../../../network/services.nix) services;
+    inherit (import ../../../network/services.nix) services;
   in {
     agentRuntime.harnesses.pi = let
       models = pkgs.writeText "pi-models.json" (builtins.toJSON {

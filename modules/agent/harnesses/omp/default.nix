@@ -5,7 +5,7 @@
     pkgs,
     ...
   }: let
-    inherit (import ../../../../network/services.nix) services;
+    inherit (import ../../../network/services.nix) services;
   in {
     home-manager.users.luc.home.file.".omp/agent/themes/titanium-v3x.json".source = ./titanium-v3x.json;
 

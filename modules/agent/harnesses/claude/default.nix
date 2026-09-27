@@ -10,7 +10,7 @@
     pkgs,
     ...
   }: let
-    inherit (import ../../../../network/services.nix) services;
+    inherit (import ../../../network/services.nix) services;
 
     selfpkgs = self.packages.${pkgs.stdenv.hostPlatform.system};
 

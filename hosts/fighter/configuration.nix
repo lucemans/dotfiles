@@ -11,7 +11,7 @@
       self.nixosModules.dns
       self.nixosModules.audio
       self.nixosModules.spotify
-      self.nixosModules.code
+      self.nixosModules.development
       self.nixosModules.clearurlsClipboard
       self.nixosModules.workstation
       self.nixosModules.gaming
