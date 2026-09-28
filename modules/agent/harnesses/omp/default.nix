@@ -47,17 +47,20 @@
               supportsDisplay = true;
             };
             discovery.type = "openai-models-list";
-            # Discovery lists these without their real context limits, so the
-            # limits are stated here until the gateway reports them.
+            # Discovery lists these without their real context limits or
+            # modalities, so both are stated here until the gateway reports
+            # them. A model without `image` input gets image metadata only.
             models =
               map (id: {
                 inherit id;
+                input = ["text" "image"];
                 contextWindow = 1050000;
                 maxTokens = 128000;
               }) ["gpt-5.6-luna" "gpt-5.6-terra" "gpt-5.6-sol" "gpt-6-luna" "gpt-6-sol" "gpt-6-astra" "claude-opus-5-5"]
               ++ [
                 {
                   id = "kimi-k3-256k";
+                  input = ["text" "image"];
                   contextWindow = 256000;
                   maxTokens = 128000;
                 }
@@ -135,7 +138,7 @@
             "--config"
             "${settings}"
             "--config"
-            "${pkgs.writeText "omp-roles-${entry.name}.yml" (builtins.toJSON {inherit (entry) modelRoles;})}"
+            "${pkgs.writeText "omp-roles-${entry.name}.yml" (builtins.toJSON {modelRoles = {inherit vision;} // entry.modelRoles;})}"
             "--extension"
             "${./agent-toolsets.ts}"
           ];
@@ -144,6 +147,9 @@
         };
 
       tiny = "v3x-inference/v3x-m/nex-n2.5-mini";
+      # Answers `read <image>?q=` for a model that takes no images. Unset, OMP
+      # falls back to a built-in model the gateway does not route.
+      vision = "anthropic/claude-opus-5-5";
     in {
       glyph = "󰚩";
       color = "189;147;249";
