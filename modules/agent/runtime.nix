@@ -48,6 +48,33 @@
     pkgs.writers.writePython3Bin "herdr-relay" {flakeIgnore = ["E501"];}
     (builtins.readFile ./herdr-relay.py);
 
+  # Each sandbox runs its own rootless X server as a client of the host
+  # compositor, so X11 apps get windows without reaching the host's X server,
+  # whose clients can read and type into each other. `-nolisten local` drops
+  # the abstract socket: the sandbox shares the host network namespace, where
+  # that socket would be visible to the host and to every other sandbox. The
+  # display number skips any abstract socket already there, because libxcb
+  # tries that before the socket file and would reach the host's server.
+  privateX = pkgs.writeShellScript "agent-private-x" ''
+    for n in $(${pkgs.coreutils}/bin/seq 100 199); do
+      if ! ${pkgs.gnugrep}/bin/grep -q "@/tmp/.X11-unix/X$n\$" /proc/net/unix; then
+        break
+      fi
+    done
+    ${pkgs.xwayland-satellite}/bin/xwayland-satellite ":$n" -nolisten local >/tmp/xwayland-satellite.log 2>&1 &
+    for _ in $(${pkgs.coreutils}/bin/seq 50); do
+      if [ -S "/tmp/.X11-unix/X$n" ]; then
+        export DISPLAY=":$n"
+        break
+      fi
+      ${pkgs.coreutils}/bin/sleep 0.1
+    done
+    if [ -z "''${DISPLAY:-}" ]; then
+      echo "agent: the private X server did not start, X11 apps will not open; see /tmp/xwayland-satellite.log" >&2
+    fi
+    exec "$@"
+  '';
+
   # A toolset's servers become entries in each harness's MCP config, its
   # packages join PATH and its devices are bound into the sandbox.
   toolsManifest = pkgs.writeText "agent-toolsets.json" (builtins.toJSON {
@@ -226,13 +253,12 @@ in
 
         --dir "$XDG_RUNTIME_DIR"
         --bind "$XDG_RUNTIME_DIR/$WAYLAND_DISPLAY" "$XDG_RUNTIME_DIR/$WAYLAND_DISPLAY"
-        --ro-bind /tmp/.X11-unix /tmp/.X11-unix
+        --dir /tmp/.X11-unix
         --dev-bind /dev/dri /dev/dri
         --ro-bind /etc/fonts /etc/fonts
         --bind "$HOME/.cache/ms-playwright" "$HOME/.cache/ms-playwright"
         --setenv XDG_RUNTIME_DIR "$XDG_RUNTIME_DIR"
         --setenv WAYLAND_DISPLAY "$WAYLAND_DISPLAY"
-        --setenv DISPLAY "$DISPLAY"
         --setenv XDG_SESSION_TYPE "$XDG_SESSION_TYPE"
         "''${herdr[@]}"
         "''${configs[@]}"
@@ -248,6 +274,18 @@ in
       # rests on the host video group, which survives the user namespace as an
       # unmapped supplementary gid.
       for device in /dev/video*; do
+        if [ -e "$device" ]; then
+          args+=(--dev-bind "$device" "$device")
+        fi
+      done
+
+      # OpenGL and EGL load their vendor libraries from /run/opengl-driver, a
+      # link into the store, which is already bound. The NVIDIA libraries also
+      # need the driver's own device nodes; /dev/dri alone is not enough.
+      if [ -e /run/opengl-driver ]; then
+        args+=(--symlink "$(readlink -f /run/opengl-driver)" /run/opengl-driver)
+      fi
+      for device in /dev/nvidia*; do
         if [ -e "$device" ]; then
           args+=(--dev-bind "$device" "$device")
         fi
@@ -285,6 +323,6 @@ in
         )
       fi
 
-      exec bwrap "''${args[@]}" -- "''${command[@]}"
+      exec bwrap "''${args[@]}" -- ${privateX} "''${command[@]}"
     '';
   }
