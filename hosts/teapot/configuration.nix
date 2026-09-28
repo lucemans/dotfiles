@@ -12,6 +12,7 @@ _: {
       self.nixosModules.peripheral
       self.nixosModules.teapotInference
       self.nixosModules.piperSpeech
+      self.nixosModules.qwen3Speech
       self.nixosModules.litellm
       self.nixosModules.librechat
       self.nixosModules.searxng

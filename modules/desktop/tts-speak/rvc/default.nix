@@ -1,7 +1,7 @@
-# Piper reads the line in a neutral voice and an RVC model replaces the timbre.
-# One voice is the archive it ships in, the checkpoint and index names inside
-# that archive, and the transpose in semitones that puts the neutral render
-# into the pitch range the model was trained on.
+# Piper reads each line in a neutral voice and an RVC model replaces the
+# timbre. One voice is the archive it ships in, the checkpoint and index names
+# inside that archive, and the transpose in semitones that puts the neutral
+# render into the pitch range the model was trained on.
 pkgs: let
   python = pkgs.python3Packages;
 
@@ -63,9 +63,9 @@ pkgs: let
     }} $out/voice.onnx.json
   '';
 
-  convert = pkgs.writers.writePython3Bin "rvc-convert" {
+  stream = pkgs.writers.writePython3Bin "rvc-stream" {
     libraries =
-      [torchfcpe]
+      [torchfcpe (python.toPythonModule pkgs.piper-tts)]
       ++ (with python; [
         faiss
         librosa
@@ -81,9 +81,38 @@ pkgs: let
         wget
       ]);
     flakeIgnore = ["E501"];
-  } (builtins.readFile ./convert.py);
+  } (builtins.readFile ./stream.py);
 
-  mkSpeak = {
+  live = pkgs.writers.writePython3Bin "rvc-live" {
+    libraries =
+      [torchfcpe]
+      ++ (with python; [
+        faiss
+        librosa
+        local-attention
+        noisereduce
+        numpy
+        scipy
+        soundfile
+        soxr
+        torch
+        torchaudio
+        torchcrepe
+        transformers
+        wget
+        webrtcvad
+      ]);
+    flakeIgnore = ["E501"];
+  } (builtins.readFile ./live.py);
+
+  # One rate for every voice, so the player does not have to learn it from
+  # the checkpoint.
+  rate = 48000;
+
+  # Each voice both renders typed lines (stream) and converts the microphone
+  # as it is spoken into (live). The pitch is the transpose for the neutral
+  # female render the stream starts from, and the live window starts there.
+  mkVoice = {
     name,
     archive,
     model,
@@ -97,35 +126,47 @@ pkgs: let
         mkdir -p $out
         unzip -j ${pkgs.fetchurl archive} -d $out
       '';
-  in
-    pkgs.writeShellApplication {
-      name = "${name}-speak";
-      runtimeInputs = [pkgs.coreutils pkgs.piper-tts convert];
+
+    # Applio resolves rvc/models/... against the working directory, and both
+    # transformers and numba write caches that must not land in the store.
+    applioEnv = ''
+      cache=''${XDG_CACHE_HOME:-$HOME/.cache}/rvc
+      mkdir -p "$cache"
+      cd ${applio}
+      export PYTHONPATH=${applio} HF_HOME=$cache NUMBA_CACHE_DIR=$cache
+    '';
+  in {
+    stream = pkgs.writeShellApplication {
+      name = "${name}-stream";
+      runtimeInputs = [stream];
       text = ''
-        target=$(realpath -m "$1")
-        scratch=$(mktemp -d)
-        trap 'rm -rf "$scratch"' EXIT
-
-        piper --model ${source}/voice.onnx --output-file "$scratch/source.wav"
-
-        # Applio resolves rvc/models/... against the working directory, and both
-        # transformers and numba write caches that must not land in the store.
-        cd ${applio}
-        PYTHONPATH=${applio} HF_HOME=$scratch NUMBA_CACHE_DIR=$scratch \
-          rvc-convert \
+        ${applioEnv}
+        exec rvc-stream \
           ${voice}/${model} \
           ${voice}/${index} \
           ${toString pitch} \
-          "$scratch/source.wav" \
-          "$target"
+          ${source}/voice.onnx \
+          ${toString rate}
       '';
     };
+
+    live = pkgs.writeShellApplication {
+      name = "${name}-live";
+      runtimeInputs = [live pkgs.pipewire];
+      text = ''
+        ${applioEnv}
+        exec rvc-live ${voice}/${model} ${voice}/${index} ${toString pitch} "$1"
+      '';
+    };
+  };
 in {
+  inherit rate;
+
   # ADA from Satisfactory, trained on the game audio. The training audio
   # already carries the chorus and delay that
   # https://satisfactory.guru/articles/read/index/id/47/name/ADA+Voice
   # describes, so no effect chain runs on top of the conversion.
-  ada = mkSpeak {
+  ada = mkVoice {
     name = "ada";
     archive = {
       url = "https://huggingface.co/AIEnhanceVoices/ADASatisfactory/resolve/main/ADASatisfactory.zip";
@@ -138,7 +179,7 @@ in {
 
   # Elmo speaks in falsetto: the training audio sits around 500 Hz against
   # the 195 Hz of the neutral render, which is the +16 semitones below.
-  elmo = mkSpeak {
+  elmo = mkVoice {
     name = "elmo";
     archive = {
       url = "https://huggingface.co/YourLocalWorm/SesameSteetmodels/resolve/main/ElmoLCV1_485e_7275s.zip";

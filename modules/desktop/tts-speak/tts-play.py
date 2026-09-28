@@ -1,9 +1,10 @@
-"""Speaks into the TTS microphone and holds the speech back while the far end of a call is talking."""
+"""Speaks into the TTS microphone and gives way while the far end of a call is talking."""
 
 import argparse
 import array
 import fcntl
 import json
+import math
 import os
 import selectors
 import struct
@@ -21,11 +22,39 @@ PROBE_NODE = "tts-probe"
 
 PROBE_RATE = 16000
 PROBE_FRAME = 320
-SPEECH_LEVEL = 0.012 * 32768.0
+SPEECH_LEVEL = 0.008 * 32768.0
 SPEECH_FRAMES = 2
+# Words inside one utterance of the far end are closer together than this.
+UTTERANCE_GAP = 0.5
+# Backchannels like "yeah" or "hmm" end before this and only lower the speech.
+INTERRUPT_SECONDS = 0.5
+# The far end has finished its turn once it has been quiet this long.
 SILENCE_RELEASE = 0.7
+PREROLL_BYTES = int(0.3 * PROBE_RATE) * 2
+# A turn this long goes to the transcriber in parts, so the text keeps up.
+LONGEST_BYTES = 20 * PROBE_RATE * 2
 
-FADE_SECONDS = 0.01
+# The whole output sits this far below the level the voices render at.
+LEVEL = 0.75
+DUCK_GAIN = 0.2
+DUCK_SECONDS = 0.08
+TRAIL_SECONDS = 0.2
+RESUME_SECONDS = 0.02
+
+# After an interruption the speech picks back up at the start of the sentence
+# that was talked over, like a speaker would, or at the start of its phrase
+# when the sentence began further back than this.
+REWIND_SECONDS = 6.0
+HISTORY_SECONDS = REWIND_SECONDS + INTERRUPT_SECONDS + 1.0
+PAUSE_WINDOW = 0.02
+PAUSE_RATIO = 0.1
+# The renderers leave 0.45 s after a sentence and 0.2 s after a comma, and a
+# gap between words is shorter than either.
+SENTENCE_PAUSE = 0.35
+PHRASE_PAUSE = 0.15
+# Silence kept in front of the restart, so it does not begin on the first syllable.
+BREATH_SECONDS = 0.15
+
 # How far ahead of the speakers we are allowed to run. It has to cover a stall in
 # this loop, and it is also how long a pause takes to become audible.
 LEAD_SECONDS = 0.05
@@ -39,6 +68,58 @@ def ramp(data, start, end):
         for index in range(len(samples)):
             samples[index] = int(samples[index] * (start + step * index))
     return samples.tobytes()
+
+
+def trail_off(data, start):
+    """Fade to nothing on a cosine curve, which falls slowly at first like a voice that is still finishing its syllable."""
+    samples = array.array("h", data)
+    count = len(samples)
+    for index in range(count):
+        samples[index] = int(samples[index] * start * (1.0 + math.cos(math.pi * index / count)) / 2.0)
+    return samples.tobytes()
+
+
+def rewind_point(history, onset, rate, channels):
+    """Byte offset in the history where speech that the far end talked over should resume.
+
+    That is the pause in front of the sentence that was talked over, or in
+    front of its phrase when the sentence began out of reach. The end of the
+    history when nothing was talked over."""
+    window = int(PAUSE_WINDOW * rate) * channels
+    samples = array.array("h", history)
+    levels = []
+    for start in range(0, len(samples) - window + 1, window):
+        levels.append(sum(sample * sample for sample in samples[start:start + window]))
+
+    quiet = max(levels, default=0) * PAUSE_RATIO ** 2
+    last = min(onset // 2 // window, len(levels) - 1)
+    if all(level <= quiet for level in levels[last:]):
+        return len(history)
+
+    first = max(0, last - int(REWIND_SECONDS / PAUSE_WINDOW))
+    pauses = []
+    index = last
+    while index >= first:
+        if levels[index] > quiet:
+            index -= 1
+            continue
+        end = index + 1
+        while end < len(levels) and levels[end] <= quiet:
+            end += 1
+        start = index
+        while start > 0 and levels[start - 1] <= quiet:
+            start -= 1
+        pauses.append((start, end))
+        index = start - 1
+
+    breath = int(BREATH_SECONDS / PAUSE_WINDOW)
+    for shortest in (SENTENCE_PAUSE, PHRASE_PAUSE):
+        for start, end in pauses:
+            if (end - start) * PAUSE_WINDOW >= shortest:
+                return max(start, end - breath) * window * 2
+    if first == 0:
+        return 0
+    return min(range(first, last + 1), key=levels.__getitem__) * window * 2
 
 
 def playback(rate, channels, target):
@@ -117,27 +198,56 @@ class CallProbe:
         self.tail = bytearray()
         self.loud = 0
         self.last_speech = float("-inf")
+        self.onset = float("-inf")
+        # Audio from just before the speech was loud enough to count, so the
+        # first syllable reaches the transcriber too.
+        self.recent = bytearray()
+        self.utterance = None
+        self.heard = []
         self.links = set()
         threading.Thread(target=self._follow, daemon=True).start()
 
     def quiet_for(self, now):
         return now - self.last_speech
 
+    def talk_length(self, now):
+        """How long the far end has been talking, 0 once its utterance is over."""
+        if self.quiet_for(now) >= UTTERANCE_GAP:
+            return 0.0
+        return now - self.onset
+
     def feed(self, data, now):
         self.tail += data
         step = PROBE_FRAME * 2
         while len(self.tail) >= step:
-            frame = array.array("h", self.tail[:step])
+            raw = bytes(self.tail[:step])
             del self.tail[:step]
+            frame = array.array("h", raw)
             energy = 0
             for sample in frame:
                 energy += sample * sample
             if (energy / len(frame)) ** 0.5 >= SPEECH_LEVEL:
                 self.loud += 1
                 if self.loud >= SPEECH_FRAMES:
+                    if self.quiet_for(now) >= UTTERANCE_GAP:
+                        self.onset = now
                     self.last_speech = now
+                    if self.utterance is None:
+                        self.utterance = bytearray(self.recent)
             else:
                 self.loud = 0
+
+            if self.utterance is None:
+                self.recent += raw
+                del self.recent[:-PREROLL_BYTES]
+                continue
+            self.utterance += raw
+            if self.quiet_for(now) >= SILENCE_RELEASE:
+                self.heard.append(bytes(self.utterance))
+                self.utterance = None
+            elif len(self.utterance) >= LONGEST_BYTES:
+                self.heard.append(bytes(self.utterance))
+                self.utterance = bytearray()
 
     def _follow(self):
         while self.proc.poll() is None:
@@ -208,40 +318,72 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--sink", required=True, help="node name of the TTS microphone sink")
     parser.add_argument("--wav", help="clip to speak")
-    parser.add_argument("--model", help="piper voice to speak the lines arriving on stdin")
-    parser.add_argument("--rate", type=int, help="sample rate of the piper voice")
+    parser.add_argument("--rate", type=int, help="sample rate of the renderer output")
+    parser.add_argument("--status", help="pipe that learns the playback state and what the far end said")
+    parser.add_argument("--transcriber",
+                        help="command that turns length-prefixed 16 kHz utterances on stdin into text lines")
+    parser.add_argument("render", nargs="*",
+                        help="command that turns the text lines arriving on stdin into raw 16 bit mono audio")
     args = parser.parse_args()
-    if bool(args.wav) == bool(args.model):
-        parser.error("pass either --wav or --model")
+    if bool(args.wav) == bool(args.render):
+        parser.error("pass either --wav or a renderer")
+    if args.render and not args.rate:
+        parser.error("a renderer needs --rate")
 
-    piper = None
+    renderer = None
     if args.wav:
         rate, channels, source = open_clip(args.wav)
         source_done = True
     else:
         rate, channels, source, source_done = args.rate, 1, bytearray(), False
-        piper = subprocess.Popen(["piper", "--model", args.model, "--output-raw"],
-                                 stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-                                 stderr=subprocess.DEVNULL)
-        os.set_blocking(piper.stdout.fileno(), False)
+        renderer = subprocess.Popen(args.render, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+                                    stderr=subprocess.DEVNULL)
+        os.set_blocking(renderer.stdout.fileno(), False)
+
+    status = open(args.status, "w", buffering=1) if args.status else None
+
+    def tell(kind, text):
+        nonlocal status
+        if status:
+            try:
+                status.write(kind + " " + text + "\n")
+            except BrokenPipeError:
+                status = None
+
+    transcriber = None
+    if args.transcriber:
+        transcriber = subprocess.Popen([args.transcriber], stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+                                       stderr=subprocess.DEVNULL)
+        os.set_blocking(transcriber.stdout.fileno(), False)
+        # Buffered like the playback, so a long turn never stalls the audio.
+        ear = Fanout([transcriber])
 
     frame = 2 * channels
     lead = int(LEAD_SECONDS * rate) * frame
-    fade = int(FADE_SECONDS * rate) * frame
+    trail = int(TRAIL_SECONDS * rate) * frame
+    resume = int(RESUME_SECONDS * rate) * frame
+    remembered = int(HISTORY_SECONDS * rate) * frame
 
     probe = CallProbe()
     fan = Fanout([playback(rate, channels, args.sink), playback(rate, channels, None)])
 
     selector = selectors.DefaultSelector()
     selector.register(probe.proc.stdout.fileno(), selectors.EVENT_READ, "probe")
-    if piper:
+    if renderer:
         os.set_blocking(sys.stdin.fileno(), False)
         selector.register(sys.stdin.fileno(), selectors.EVENT_READ, "text")
-        selector.register(piper.stdout.fileno(), selectors.EVENT_READ, "audio")
+        selector.register(renderer.stdout.fileno(), selectors.EVENT_READ, "audio")
+    if transcriber:
+        selector.register(transcriber.stdout.fileno(), selectors.EVENT_READ, "heard")
 
-    speaking = True
-    held = b""
+    held = False
+    gain = LEVEL
+    # Everything played since the last interruption, so the next one can go back.
+    history = bytearray()
+    waiting = False
+    reported = "ready"
     line = ""
+    heard = ""
     stopped = False
 
     while True:
@@ -252,13 +394,20 @@ def main():
                 if key.data == "audio":
                     source_done = True
                 elif key.data == "text":
-                    piper.stdin.close()
+                    renderer.stdin.close()
                 continue
 
             if key.data == "probe":
                 probe.feed(chunk, time.monotonic())
             elif key.data == "audio":
                 source += chunk
+                waiting = False
+            elif key.data == "heard":
+                heard += chunk.decode("utf-8", "ignore")
+                while "\n" in heard:
+                    said, _, heard = heard.partition("\n")
+                    if said:
+                        tell("heard", said)
             else:
                 line += chunk.decode("utf-8", "ignore")
                 while "\n" in line:
@@ -266,50 +415,93 @@ def main():
                     if said == CANCEL:
                         stopped = True
                     else:
-                        piper.stdin.write((said + "\n").encode())
-                        piper.stdin.flush()
+                        renderer.stdin.write((said + "\n").encode())
+                        renderer.stdin.flush()
+                        waiting = True
 
         if stopped:
             break
 
+        if transcriber:
+            for utterance in probe.heard:
+                ear.push(struct.pack("<I", len(utterance)) + utterance)
+            try:
+                ear.flush()
+            except BrokenPipeError:
+                # The speech matters more than the transcript, so it carries on without one.
+                transcriber = None
+        probe.heard.clear()
+
         now = time.monotonic()
-        wanted = probe.quiet_for(now) >= SILENCE_RELEASE
-        if wanted != speaking:
-            speaking = wanted
-            if speaking:
-                fan.push(ramp(held, 0.0, 1.0))
-                held = b""
-            else:
-                # Held back rather than dropped, so the pause costs no words.
-                held = bytes(source[:fade])
-                del source[:fade]
-                fan.push(ramp(held, 1.0, 0.0))
+        if not held and probe.talk_length(now) >= INTERRUPT_SECONDS:
+            held = True
+            cut = bytes(source[:trail])
+            del source[:trail]
+            fan.push(trail_off(cut, gain))
+            onset = len(history) - int((now - probe.onset + LEAD_SECONDS) * rate) * frame
+            history += cut
+            source[:0] = history[rewind_point(history, max(0, onset), rate, channels):]
+            history.clear()
+        elif held and probe.quiet_for(now) >= SILENCE_RELEASE:
+            held = False
+            opening = bytes(source[:resume])
+            del source[:resume]
+            fan.push(ramp(opening, 0.0, LEVEL))
+            history += opening
+            gain = LEVEL
 
         room = lead - fan.pending()
         room -= room % frame
         if room > 0:
             block = b""
-            if speaking:
+            if not held:
                 block = bytes(source[:room])
                 del source[:room]
-            if not speaking or not source_done:
+            if len(block) < room and (source or not source_done):
                 block += bytes(room - len(block))
+            if not held:
+                history += block
+                del history[:-remembered]
+                target = LEVEL * (DUCK_GAIN if probe.quiet_for(now) < UTTERANCE_GAP else 1.0)
+                step = len(block) / frame / rate / DUCK_SECONDS * LEVEL * (1.0 - DUCK_GAIN)
+                following = max(gain - step, target) if target < gain else min(gain + step, target)
+                block = ramp(block, gain, following)
+                gain = following
             fan.push(block)
 
         fan.flush()
-        if speaking and source_done and not source and not fan.pending():
+
+        if held:
+            state = "paused"
+        elif probe.quiet_for(now) < UTTERANCE_GAP:
+            state = "ducked"
+        elif waiting and not source:
+            state = "rendering"
+        else:
+            state = "ready"
+        if state != reported:
+            reported = state
+            tell("state", state)
+
+        if source_done and not source and not fan.pending():
             break
 
     if stopped:
-        piper.kill()
+        renderer.kill()
         fan.kill()
         probe.proc.kill()
+        if transcriber:
+            transcriber.kill()
         return 1
 
     fan.close()
-    if piper:
-        piper.wait()
+    if renderer:
+        renderer.wait()
     probe.proc.kill()
+    if transcriber:
+        transcriber.kill()
+    if status:
+        status.close()
     return 0
 
 

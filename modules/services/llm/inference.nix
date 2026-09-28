@@ -49,6 +49,9 @@
       settings = {
         healthCheckTimeout = 300;
 
+        # No --n-gpu-layers or --n-cpu-moe: the speech server holds part of the
+        # card, and llama.cpp's --fit, on by default, places the layers and
+        # experts in whatever memory is free when a model loads.
         models = {
           "qwen3.6-35b-a3b" = {
             cmd = ''
@@ -57,8 +60,6 @@
                 --model /var/lib/llama-models/Qwen3.6-35B-A3B-UD-Q4_K_XL.gguf \
                 --alias qwen3.6-35b-a3b \
                 --ctx-size 131072 \
-                --n-gpu-layers 99 \
-                --n-cpu-moe 28 \
                 --flash-attn on \
                 --cache-type-k q8_0 \
                 --cache-type-v q8_0 \
@@ -77,7 +78,6 @@
                 --model ${bonsai-2-27b} \
                 --alias bonsai-2-27b \
                 --ctx-size 65536 \
-                --n-gpu-layers 99 \
                 --flash-attn on \
                 --cache-type-k q8_0 \
                 --cache-type-v q8_0 \

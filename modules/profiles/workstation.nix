@@ -35,11 +35,7 @@
       self.homeModules.chromium
     ];
 
-    home-manager.users.luc = {
-      pkgs,
-      config,
-      ...
-    }: {
+    home-manager.users.luc = {config, ...}: {
       home = {
         username = "luc";
         homeDirectory = "/home/luc";
