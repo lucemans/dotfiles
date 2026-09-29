@@ -1,12 +1,13 @@
 version = 5
 
 [[panels]]
-panel_id = "studio-panel-1"
-name = "Hello"
+panel_id = "studio-panel-6"
+name = "Main"
+dials = []
 
 [panels.layout]
-columns = 16
-rows = 2
+columns = 8
+rows = 4
 
 [panels.capabilities]
 supports_color = true
@@ -16,30 +17,28 @@ supports_brightness = true
 supports_haptics = false
 
 [[panels.controls]]
-control_id = "control-1784934562931"
-name = "Hello"
-action_bindings = []
+control_id = "control-1785502847590"
+name = "Camera Privacy"
 
 [panels.controls.position]
-column = 3
+column = 6
 row = 0
 
 [panels.controls.default_state]
 is_pressed = false
 
 [[panels.controls.default_state.layers]]
-kind = "fill"
-
-[panels.controls.default_state.layers.color]
-red = 89
-green = 89
-blue = 89
-alpha = 255
+kind = "image"
+image = "mdi:cctv"
+fit = "contain"
+anchor = "top_center"
+scale_percent = 50
 
 [[panels.controls.default_state.layers]]
 kind = "text"
-text = "Test"
-anchor = "center"
+text = "Privacy"
+anchor = "bottom_center"
+font_size = 21
 
 [panels.controls.default_state.layers.color]
 red = 255
@@ -47,109 +46,47 @@ green = 255
 blue = 255
 alpha = 255
 
-[panels.controls.pressed_state]
-is_pressed = true
+[[panels.controls.action_bindings]]
+gesture = "press"
 
-[[panels.controls.pressed_state.layers]]
-kind = "fill"
+[[panels.controls.action_bindings.actions]]
+type = "invoke_integration"
+integration_id = "hass.default"
+action_name = "call_service"
 
-[panels.controls.pressed_state.layers.color]
-red = 66
-green = 255
-blue = 139
-alpha = 255
-
-[[panels.controls.pressed_state.layers]]
-kind = "text"
-text = "fds"
-anchor = "center"
-
-[panels.controls.pressed_state.layers.color]
-red = 255
-green = 255
-blue = 255
-alpha = 255
+[panels.controls.action_bindings.actions.parameters]
+domain = "input_boolean"
+entity_id = "input_boolean.camera_privacy"
+service = "toggle"
 
 [[panels.controls]]
-control_id = "control-1784934563860"
-name = "Hello"
-action_bindings = []
-
-[panels.controls.position]
-column = 4
-row = 0
-
-[panels.controls.default_state]
-is_pressed = false
-
-[[panels.controls.default_state.layers]]
-kind = "fill"
-
-[panels.controls.default_state.layers.color]
-red = 89
-green = 89
-blue = 89
-alpha = 255
-
-[[panels.controls.default_state.layers]]
-kind = "text"
-text = "Test"
-anchor = "center"
-
-[panels.controls.default_state.layers.color]
-red = 255
-green = 255
-blue = 255
-alpha = 255
-
-[panels.controls.pressed_state]
-is_pressed = true
-
-[[panels.controls.pressed_state.layers]]
-kind = "fill"
-
-[panels.controls.pressed_state.layers.color]
-red = 66
-green = 255
-blue = 139
-alpha = 255
-
-[[panels.controls.pressed_state.layers]]
-kind = "text"
-text = "fds"
-anchor = "center"
-
-[panels.controls.pressed_state.layers.color]
-red = 255
-green = 255
-blue = 255
-alpha = 255
-
-[[panels.controls]]
-control_id = "control-1784934564378"
-name = "Hello"
-action_bindings = []
+control_id = "control-1785502927513"
+name = "Dining Light 1 Light"
 
 [panels.controls.position]
 column = 5
-row = 0
+row = 2
 
 [panels.controls.default_state]
 is_pressed = false
 
 [[panels.controls.default_state.layers]]
-kind = "fill"
+kind = "image"
+image = "mdi:ceiling-light"
+fit = "contain"
+anchor = "top_center"
+scale_percent = 50
 
-[panels.controls.default_state.layers.color]
-red = 89
-green = 89
-blue = 89
-alpha = 255
+[[panels.controls.default_state.layers]]
+kind = "border"
+color = "$(hass.default:light.dining_light_1_light.color)"
+width = 8
 
 [[panels.controls.default_state.layers]]
 kind = "text"
-text = "Test"
-anchor = "center"
+text = "Dining 1"
+anchor = "bottom_center"
+font_size = 21
 
 [panels.controls.default_state.layers.color]
 red = 255
@@ -157,37 +94,544 @@ green = 255
 blue = 255
 alpha = 255
 
-[panels.controls.pressed_state]
-is_pressed = true
+[[panels.controls.action_bindings]]
+gesture = "press"
 
-[[panels.controls.pressed_state.layers]]
-kind = "fill"
+[[panels.controls.action_bindings.actions]]
+type = "invoke_integration"
+integration_id = "hass.default"
+action_name = "light.toggle"
 
-[panels.controls.pressed_state.layers.color]
-red = 66
-green = 255
-blue = 139
-alpha = 255
-
-[[panels.controls.pressed_state.layers]]
-kind = "text"
-text = "fds"
-anchor = "center"
-
-[panels.controls.pressed_state.layers.color]
-red = 255
-green = 255
-blue = 255
-alpha = 255
+[panels.controls.action_bindings.actions.parameters]
+entity_id = "light.dining_light_1_light"
 
 [[panels.controls]]
-control_id = "control-1784934564761"
-name = "Hello"
-action_bindings = []
+control_id = "control-1785502933888"
+name = "Dining 2"
 
 [panels.controls.position]
 column = 6
-row = 0
+row = 2
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "image"
+image = "mdi:ceiling-light"
+fit = "contain"
+anchor = "top_center"
+scale_percent = 50
+
+[[panels.controls.default_state.layers]]
+kind = "border"
+color = "$(hass.default:light.dining_light_2_light_2.color)"
+width = 8
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "Dining 2"
+anchor = "bottom_center"
+font_size = 21
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls.action_bindings]]
+gesture = "press"
+
+[[panels.controls.action_bindings.actions]]
+type = "invoke_integration"
+integration_id = "hass.default"
+action_name = "light.toggle"
+
+[panels.controls.action_bindings.actions.parameters]
+entity_id = "light.dining_light_2_light_2"
+
+[[panels.controls]]
+control_id = "control-1785502974315"
+name = "East"
+
+[panels.controls.position]
+column = 4
+row = 2
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "image"
+image = "mdi:led-strip-variant"
+fit = "contain"
+anchor = "top_center"
+scale_percent = 50
+
+[[panels.controls.default_state.layers]]
+kind = "border"
+color = "$(hass.default:light.living_east_strip.color)"
+width = 8
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "East"
+anchor = "bottom_center"
+font_size = 21
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls.action_bindings]]
+gesture = "press"
+
+[[panels.controls.action_bindings.actions]]
+type = "invoke_integration"
+integration_id = "hass.default"
+action_name = "light.toggle"
+
+[panels.controls.action_bindings.actions.parameters]
+entity_id = "light.living_east_strip"
+
+[[panels.controls]]
+control_id = "control-1785503020839"
+name = "Christmas Tree Lights (ENSP7) Switch"
+
+[panels.controls.position]
+column = 1
+row = 2
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "image"
+image = "mdi:pine-tree"
+fit = "contain"
+anchor = "top_center"
+scale_percent = 50
+
+[panels.controls.default_state.layers.tint]
+red = 34
+green = 109
+blue = 24
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "Tree"
+anchor = "bottom_center"
+font_size = 21
+
+[panels.controls.default_state.layers.color]
+red = 34
+green = 109
+blue = 24
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "border"
+color = "$(hass.default:switch.christmas_tree_lights_ensp7_switch_3.color)"
+width = 5
+
+[[panels.controls.action_bindings]]
+gesture = "press"
+
+[[panels.controls.action_bindings.actions]]
+type = "invoke_integration"
+integration_id = "hass.default"
+action_name = "call_service"
+
+[panels.controls.action_bindings.actions.parameters]
+domain = "switch"
+entity_id = "switch.christmas_tree_lights_ensp7_switch_3"
+service = "toggle"
+
+[[panels.controls]]
+control_id = "control-1785503021146"
+name = "Skadis LED Strip A Light"
+
+[panels.controls.position]
+column = 2
+row = 2
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "image"
+image = "mdi:led-strip-variant"
+fit = "contain"
+anchor = "top_center"
+scale_percent = 50
+
+[[panels.controls.default_state.layers]]
+kind = "border"
+color = "$(hass.default:light.skadis_led_strip_a_light.color)"
+width = 8
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "Skadis A"
+anchor = "bottom_center"
+font_size = 21
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls.action_bindings]]
+gesture = "press"
+
+[[panels.controls.action_bindings.actions]]
+type = "invoke_integration"
+integration_id = "hass.default"
+action_name = "light.toggle"
+
+[panels.controls.action_bindings.actions.parameters]
+entity_id = "light.skadis_led_strip_a_light"
+
+[[panels.controls]]
+control_id = "control-1785503021499"
+name = "Skadis LED Strip B Light"
+
+[panels.controls.position]
+column = 3
+row = 2
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "image"
+image = "mdi:led-strip-variant"
+fit = "contain"
+anchor = "top_center"
+scale_percent = 50
+
+[[panels.controls.default_state.layers]]
+kind = "border"
+color = "$(hass.default:light.skadis_led_strip_b_light_2.color)"
+width = 8
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "Skadis B"
+anchor = "bottom_center"
+font_size = 21
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls.action_bindings]]
+gesture = "press"
+
+[[panels.controls.action_bindings.actions]]
+type = "invoke_integration"
+integration_id = "hass.default"
+action_name = "light.toggle"
+
+[panels.controls.action_bindings.actions.parameters]
+entity_id = "light.skadis_led_strip_b_light_2"
+
+[[panels.controls]]
+control_id = "control-1785503021829"
+name = "Night"
+
+[panels.controls.position]
+column = 3
+row = 3
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "image"
+image = "mdi:lightbulb-night"
+fit = "contain"
+anchor = "top_center"
+scale_percent = 50
+
+[panels.controls.default_state.layers.tint]
+red = 60
+green = 34
+blue = 191
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "Night"
+anchor = "bottom_center"
+font_size = 21
+
+[panels.controls.default_state.layers.color]
+red = 60
+green = 34
+blue = 191
+alpha = 255
+
+[[panels.controls.action_bindings]]
+gesture = "press"
+
+[[panels.controls.action_bindings.actions]]
+type = "invoke_integration"
+integration_id = "hass.default"
+action_name = "call_service"
+
+[panels.controls.action_bindings.actions.parameters]
+domain = "scene"
+entity_id = "scene.livingroom_dark_night"
+service = "turn_on"
+
+[[panels.controls]]
+control_id = "control-1785503022114"
+name = "Flash"
+
+[panels.controls.position]
+column = 2
+row = 3
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "image"
+image = "mdi:sun-wireless"
+fit = "contain"
+anchor = "top_center"
+scale_percent = 50
+
+[panels.controls.default_state.layers.tint]
+red = 255
+green = 226
+blue = 36
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "Flash"
+anchor = "bottom_center"
+font_size = 21
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 226
+blue = 36
+alpha = 255
+
+[[panels.controls.action_bindings]]
+gesture = "press"
+
+[[panels.controls.action_bindings.actions]]
+type = "invoke_integration"
+integration_id = "hass.default"
+action_name = "call_service"
+
+[panels.controls.action_bindings.actions.parameters]
+domain = "scene"
+entity_id = "scene.living_room_flash"
+service = "turn_on"
+
+[[panels.controls]]
+control_id = "control-1785503022414"
+name = "Plain"
+
+[panels.controls.position]
+column = 1
+row = 3
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "image"
+image = "mdi:home-account"
+fit = "contain"
+anchor = "top_center"
+scale_percent = 50
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "Plain"
+anchor = "bottom_center"
+font_size = 21
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls.action_bindings]]
+gesture = "press"
+
+[[panels.controls.action_bindings.actions]]
+type = "invoke_integration"
+integration_id = "hass.default"
+action_name = "call_service"
+
+[panels.controls.action_bindings.actions.parameters]
+domain = "scene"
+entity_id = "scene.livingroom_plain"
+service = "turn_on"
+
+[[panels.controls]]
+control_id = "control-1785503023127"
+name = "All Lights Off Kill"
+
+[panels.controls.position]
+column = 4
+row = 3
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "image"
+image = "mdi:flashlight-off"
+fit = "contain"
+anchor = "top_center"
+scale_percent = 50
+
+[panels.controls.default_state.layers.tint]
+red = 98
+green = 34
+blue = 34
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "All Off"
+anchor = "bottom_center"
+font_size = 21
+
+[panels.controls.default_state.layers.color]
+red = 98
+green = 34
+blue = 34
+alpha = 255
+
+[[panels.controls.action_bindings]]
+gesture = "press"
+
+[[panels.controls.action_bindings.actions]]
+type = "invoke_integration"
+integration_id = "hass.default"
+action_name = "call_service"
+
+[panels.controls.action_bindings.actions.parameters]
+domain = "script"
+entity_id = "script.all_lights_off_kill"
+service = "turn_on"
+
+[[panels.controls]]
+control_id = "control-1785503023427"
+name = "Kitchen Strip Light"
+
+[panels.controls.position]
+column = 5
+row = 3
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "image"
+image = "mdi:led-strip-variant"
+fit = "contain"
+anchor = "top_center"
+scale_percent = 50
+
+[[panels.controls.default_state.layers]]
+kind = "border"
+color = "$(hass.default:light.kitchen_strip_light.color)"
+width = 8
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "Kitchen"
+anchor = "bottom_center"
+font_size = 21
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls.action_bindings]]
+gesture = "press"
+
+[[panels.controls.action_bindings.actions]]
+type = "invoke_integration"
+integration_id = "hass.default"
+action_name = "light.toggle"
+
+[panels.controls.action_bindings.actions.parameters]
+entity_id = "light.kitchen_strip_light"
+
+[[panels.controls]]
+control_id = "control-1785503024161"
+name = "Hallway Light"
+
+[panels.controls.position]
+column = 6
+row = 3
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "image"
+image = "mdi:lightbulb"
+fit = "contain"
+anchor = "top_center"
+scale_percent = 50
+
+[[panels.controls.default_state.layers]]
+kind = "border"
+color = "$(hass.default:light.ikea_of_sweden_tradfribulbe27wwclear250lm_light.color)"
+width = 8
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "Hallway"
+anchor = "bottom_center"
+font_size = 21
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls.action_bindings]]
+gesture = "press"
+
+[[panels.controls.action_bindings.actions]]
+type = "invoke_integration"
+integration_id = "hass.default"
+action_name = "light.toggle"
+
+[panels.controls.action_bindings.actions.parameters]
+entity_id = "light.ikea_of_sweden_tradfribulbe27wwclear250lm_light"
+
+[[panels.controls]]
+control_id = "control-1785506555916"
+name = "Living Front Speakers"
+
+[panels.controls.position]
+column = 5
+row = 1
 
 [panels.controls.default_state]
 is_pressed = false
@@ -196,15 +640,28 @@ is_pressed = false
 kind = "fill"
 
 [panels.controls.default_state.layers.color]
-red = 89
-green = 89
-blue = 89
+red = 0
+green = 0
+blue = 0
 alpha = 255
 
 [[panels.controls.default_state.layers]]
+kind = "image"
+image = "mdi:speaker-multiple"
+fit = "contain"
+anchor = "top_center"
+scale_percent = 40
+
+[[panels.controls.default_state.layers]]
+kind = "border"
+color = "$(hass.default:switch.living_front_speaker_left_switch.color)"
+width = 8
+
+[[panels.controls.default_state.layers]]
 kind = "text"
-text = "Test"
-anchor = "center"
+text = "Speakers"
+anchor = "bottom_center"
+font_size = 19
 
 [panels.controls.default_state.layers.color]
 red = 255
@@ -212,33 +669,22 @@ green = 255
 blue = 255
 alpha = 255
 
-[panels.controls.pressed_state]
-is_pressed = true
+[[panels.controls.action_bindings]]
+gesture = "press"
 
-[[panels.controls.pressed_state.layers]]
-kind = "fill"
+[[panels.controls.action_bindings.actions]]
+type = "invoke_integration"
+integration_id = "hass.default"
+action_name = "call_service"
 
-[panels.controls.pressed_state.layers.color]
-red = 66
-green = 255
-blue = 139
-alpha = 255
-
-[[panels.controls.pressed_state.layers]]
-kind = "text"
-text = "fds"
-anchor = "center"
-
-[panels.controls.pressed_state.layers.color]
-red = 255
-green = 255
-blue = 255
-alpha = 255
+[panels.controls.action_bindings.actions.parameters]
+domain = "switch"
+entity_id = "switch.living_front_speaker_left_switch"
+service = "toggle"
 
 [[panels.controls]]
-control_id = "control-1784934565015"
-name = "Hello"
-action_bindings = []
+control_id = "control-1785506572100"
+name = "ATEM Mini Pro"
 
 [panels.controls.position]
 column = 6
@@ -248,18 +694,17 @@ row = 1
 is_pressed = false
 
 [[panels.controls.default_state.layers]]
-kind = "fill"
-
-[panels.controls.default_state.layers.color]
-red = 89
-green = 89
-blue = 89
-alpha = 255
+kind = "image"
+image = "mdi:theater"
+fit = "contain"
+anchor = "top_center"
+scale_percent = 50
 
 [[panels.controls.default_state.layers]]
 kind = "text"
-text = "Test"
-anchor = "center"
+text = "ATEM"
+anchor = "bottom_center"
+font_size = 21
 
 [panels.controls.default_state.layers.color]
 red = 255
@@ -267,54 +712,47 @@ green = 255
 blue = 255
 alpha = 255
 
-[panels.controls.pressed_state]
-is_pressed = true
+[[panels.controls.default_state.layers]]
+kind = "border"
+color = "$(hass.default:switch.living_front_speaker_right_switch.color)"
+width = 5
 
-[[panels.controls.pressed_state.layers]]
-kind = "fill"
+[[panels.controls.action_bindings]]
+gesture = "press"
 
-[panels.controls.pressed_state.layers.color]
-red = 66
-green = 255
-blue = 139
-alpha = 255
+[[panels.controls.action_bindings.actions]]
+type = "invoke_integration"
+integration_id = "hass.default"
+action_name = "call_service"
 
-[[panels.controls.pressed_state.layers]]
-kind = "text"
-text = "fds"
-anchor = "center"
-
-[panels.controls.pressed_state.layers.color]
-red = 255
-green = 255
-blue = 255
-alpha = 255
+[panels.controls.action_bindings.actions.parameters]
+domain = "switch"
+entity_id = "switch.living_front_speaker_right_switch"
+service = "toggle"
 
 [[panels.controls]]
-control_id = "control-1784934565323"
-name = "Hello"
-action_bindings = []
+control_id = "control-1785507214418"
+name = "Open Front Door"
 
 [panels.controls.position]
 column = 7
-row = 1
+row = 3
 
 [panels.controls.default_state]
 is_pressed = false
 
 [[panels.controls.default_state.layers]]
-kind = "fill"
-
-[panels.controls.default_state.layers.color]
-red = 89
-green = 89
-blue = 89
-alpha = 255
+kind = "image"
+image = "mdi:door-closed-lock"
+fit = "contain"
+anchor = "top_center"
+scale_percent = 50
 
 [[panels.controls.default_state.layers]]
 kind = "text"
-text = "Test"
-anchor = "center"
+text = "Front Door"
+anchor = "bottom_center"
+font_size = 16
 
 [panels.controls.default_state.layers.color]
 red = 255
@@ -322,573 +760,36 @@ green = 255
 blue = 255
 alpha = 255
 
-[panels.controls.pressed_state]
-is_pressed = true
+[[panels.controls.action_bindings]]
+gesture = "press"
 
-[[panels.controls.pressed_state.layers]]
-kind = "fill"
+[[panels.controls.action_bindings.actions]]
+type = "invoke_integration"
+integration_id = "hass.default"
+action_name = "call_service"
 
-[panels.controls.pressed_state.layers.color]
-red = 66
-green = 255
-blue = 139
-alpha = 255
-
-[[panels.controls.pressed_state.layers]]
-kind = "text"
-text = "fds"
-anchor = "center"
-
-[panels.controls.pressed_state.layers.color]
-red = 255
-green = 255
-blue = 255
-alpha = 255
+[panels.controls.action_bindings.actions.parameters]
+domain = "script"
+entity_id = "script.open_front_door"
+service = "turn_on"
 
 [[panels.controls]]
-control_id = "control-1784934565616"
-name = "Hello"
-action_bindings = []
+control_id = "control-1785507222465"
+name = "Members in channel"
 
 [panels.controls.position]
-column = 7
-row = 0
+column = 0
+row = 3
 
 [panels.controls.default_state]
 is_pressed = false
 
 [[panels.controls.default_state.layers]]
-kind = "fill"
-
-[panels.controls.default_state.layers.color]
-red = 89
-green = 89
-blue = 89
-alpha = 255
-
-[[panels.controls.default_state.layers]]
 kind = "text"
-text = "Test"
+text = "$(discord.default:member_count)"
 anchor = "center"
 
 [panels.controls.default_state.layers.color]
-red = 255
-green = 255
-blue = 255
-alpha = 255
-
-[panels.controls.pressed_state]
-is_pressed = true
-
-[[panels.controls.pressed_state.layers]]
-kind = "fill"
-
-[panels.controls.pressed_state.layers.color]
-red = 66
-green = 255
-blue = 139
-alpha = 255
-
-[[panels.controls.pressed_state.layers]]
-kind = "text"
-text = "fds"
-anchor = "center"
-
-[panels.controls.pressed_state.layers.color]
-red = 255
-green = 255
-blue = 255
-alpha = 255
-
-[[panels.controls]]
-control_id = "control-1784934565991"
-name = "Hello"
-action_bindings = []
-
-[panels.controls.position]
-column = 8
-row = 0
-
-[panels.controls.default_state]
-is_pressed = false
-
-[[panels.controls.default_state.layers]]
-kind = "fill"
-
-[panels.controls.default_state.layers.color]
-red = 89
-green = 89
-blue = 89
-alpha = 255
-
-[[panels.controls.default_state.layers]]
-kind = "text"
-text = "Test"
-anchor = "center"
-
-[panels.controls.default_state.layers.color]
-red = 255
-green = 255
-blue = 255
-alpha = 255
-
-[panels.controls.pressed_state]
-is_pressed = true
-
-[[panels.controls.pressed_state.layers]]
-kind = "fill"
-
-[panels.controls.pressed_state.layers.color]
-red = 66
-green = 255
-blue = 139
-alpha = 255
-
-[[panels.controls.pressed_state.layers]]
-kind = "text"
-text = "fds"
-anchor = "center"
-
-[panels.controls.pressed_state.layers.color]
-red = 255
-green = 255
-blue = 255
-alpha = 255
-
-[[panels.controls]]
-control_id = "control-1784934566343"
-name = "Hello"
-action_bindings = []
-
-[panels.controls.position]
-column = 8
-row = 1
-
-[panels.controls.default_state]
-is_pressed = false
-
-[[panels.controls.default_state.layers]]
-kind = "fill"
-
-[panels.controls.default_state.layers.color]
-red = 89
-green = 89
-blue = 89
-alpha = 255
-
-[[panels.controls.default_state.layers]]
-kind = "text"
-text = "Test"
-anchor = "center"
-
-[panels.controls.default_state.layers.color]
-red = 255
-green = 255
-blue = 255
-alpha = 255
-
-[panels.controls.pressed_state]
-is_pressed = true
-
-[[panels.controls.pressed_state.layers]]
-kind = "fill"
-
-[panels.controls.pressed_state.layers.color]
-red = 66
-green = 255
-blue = 139
-alpha = 255
-
-[[panels.controls.pressed_state.layers]]
-kind = "text"
-text = "fds"
-anchor = "center"
-
-[panels.controls.pressed_state.layers.color]
-red = 255
-green = 255
-blue = 255
-alpha = 255
-
-[[panels.controls]]
-control_id = "control-1784934566996"
-name = "Hello"
-action_bindings = []
-
-[panels.controls.position]
-column = 9
-row = 1
-
-[panels.controls.default_state]
-is_pressed = false
-
-[[panels.controls.default_state.layers]]
-kind = "fill"
-
-[panels.controls.default_state.layers.color]
-red = 89
-green = 89
-blue = 89
-alpha = 255
-
-[[panels.controls.default_state.layers]]
-kind = "text"
-text = "Test"
-anchor = "center"
-
-[panels.controls.default_state.layers.color]
-red = 255
-green = 255
-blue = 255
-alpha = 255
-
-[panels.controls.pressed_state]
-is_pressed = true
-
-[[panels.controls.pressed_state.layers]]
-kind = "fill"
-
-[panels.controls.pressed_state.layers.color]
-red = 66
-green = 255
-blue = 139
-alpha = 255
-
-[[panels.controls.pressed_state.layers]]
-kind = "text"
-text = "fds"
-anchor = "center"
-
-[panels.controls.pressed_state.layers.color]
-red = 255
-green = 255
-blue = 255
-alpha = 255
-
-[[panels.controls]]
-control_id = "control-1784934567273"
-name = "Hello"
-action_bindings = []
-
-[panels.controls.position]
-column = 9
-row = 0
-
-[panels.controls.default_state]
-is_pressed = false
-
-[[panels.controls.default_state.layers]]
-kind = "fill"
-
-[panels.controls.default_state.layers.color]
-red = 89
-green = 89
-blue = 89
-alpha = 255
-
-[[panels.controls.default_state.layers]]
-kind = "text"
-text = "Test"
-anchor = "center"
-
-[panels.controls.default_state.layers.color]
-red = 255
-green = 255
-blue = 255
-alpha = 255
-
-[panels.controls.pressed_state]
-is_pressed = true
-
-[[panels.controls.pressed_state.layers]]
-kind = "fill"
-
-[panels.controls.pressed_state.layers.color]
-red = 66
-green = 255
-blue = 139
-alpha = 255
-
-[[panels.controls.pressed_state.layers]]
-kind = "text"
-text = "fds"
-anchor = "center"
-
-[panels.controls.pressed_state.layers.color]
-red = 255
-green = 255
-blue = 255
-alpha = 255
-
-[[panels.controls]]
-control_id = "control-1784934568744"
-name = "Hello"
-action_bindings = []
-
-[panels.controls.position]
-column = 15
-row = 1
-
-[panels.controls.default_state]
-is_pressed = false
-
-[[panels.controls.default_state.layers]]
-kind = "fill"
-
-[panels.controls.default_state.layers.color]
-red = 89
-green = 89
-blue = 89
-alpha = 255
-
-[[panels.controls.default_state.layers]]
-kind = "text"
-text = "Test"
-anchor = "center"
-
-[panels.controls.default_state.layers.color]
-red = 255
-green = 255
-blue = 255
-alpha = 255
-
-[panels.controls.pressed_state]
-is_pressed = true
-
-[[panels.controls.pressed_state.layers]]
-kind = "fill"
-
-[panels.controls.pressed_state.layers.color]
-red = 66
-green = 255
-blue = 139
-alpha = 255
-
-[[panels.controls.pressed_state.layers]]
-kind = "text"
-text = "fds"
-anchor = "center"
-
-[panels.controls.pressed_state.layers.color]
-red = 255
-green = 255
-blue = 255
-alpha = 255
-
-[[panels.controls]]
-control_id = "control-1784934569006"
-name = "Hello"
-action_bindings = []
-
-[panels.controls.position]
-column = 10
-row = 0
-
-[panels.controls.default_state]
-is_pressed = false
-
-[[panels.controls.default_state.layers]]
-kind = "fill"
-
-[panels.controls.default_state.layers.color]
-red = 89
-green = 89
-blue = 89
-alpha = 255
-
-[[panels.controls.default_state.layers]]
-kind = "text"
-text = "Test"
-anchor = "center"
-
-[panels.controls.default_state.layers.color]
-red = 255
-green = 255
-blue = 255
-alpha = 255
-
-[panels.controls.pressed_state]
-is_pressed = true
-
-[[panels.controls.pressed_state.layers]]
-kind = "fill"
-
-[panels.controls.pressed_state.layers.color]
-red = 66
-green = 255
-blue = 139
-alpha = 255
-
-[[panels.controls.pressed_state.layers]]
-kind = "text"
-text = "fds"
-anchor = "center"
-
-[panels.controls.pressed_state.layers.color]
-red = 255
-green = 255
-blue = 255
-alpha = 255
-
-[[panels.controls]]
-control_id = "control-1784934569539"
-name = "Hello"
-action_bindings = []
-
-[panels.controls.position]
-column = 10
-row = 1
-
-[panels.controls.default_state]
-is_pressed = false
-
-[[panels.controls.default_state.layers]]
-kind = "fill"
-
-[panels.controls.default_state.layers.color]
-red = 89
-green = 89
-blue = 89
-alpha = 255
-
-[[panels.controls.default_state.layers]]
-kind = "text"
-text = "Test"
-anchor = "center"
-
-[panels.controls.default_state.layers.color]
-red = 255
-green = 255
-blue = 255
-alpha = 255
-
-[panels.controls.pressed_state]
-is_pressed = true
-
-[[panels.controls.pressed_state.layers]]
-kind = "fill"
-
-[panels.controls.pressed_state.layers.color]
-red = 66
-green = 255
-blue = 139
-alpha = 255
-
-[[panels.controls.pressed_state.layers]]
-kind = "text"
-text = "fds"
-anchor = "center"
-
-[panels.controls.pressed_state.layers.color]
-red = 255
-green = 255
-blue = 255
-alpha = 255
-
-[[panels.controls]]
-control_id = "control-1784934571106"
-name = "Hello"
-action_bindings = []
-
-[panels.controls.position]
-column = 14
-row = 1
-
-[panels.controls.default_state]
-is_pressed = false
-
-[[panels.controls.default_state.layers]]
-kind = "fill"
-
-[panels.controls.default_state.layers.color]
-red = 89
-green = 89
-blue = 89
-alpha = 255
-
-[[panels.controls.default_state.layers]]
-kind = "text"
-text = "Test"
-anchor = "center"
-
-[panels.controls.default_state.layers.color]
-red = 255
-green = 255
-blue = 255
-alpha = 255
-
-[panels.controls.pressed_state]
-is_pressed = true
-
-[[panels.controls.pressed_state.layers]]
-kind = "fill"
-
-[panels.controls.pressed_state.layers.color]
-red = 66
-green = 255
-blue = 139
-alpha = 255
-
-[[panels.controls.pressed_state.layers]]
-kind = "text"
-text = "fds"
-anchor = "center"
-
-[panels.controls.pressed_state.layers.color]
-red = 255
-green = 255
-blue = 255
-alpha = 255
-
-[[panels.controls]]
-control_id = "control-1784934573049"
-name = "Hello"
-
-[panels.controls.position]
-column = 15
-row = 0
-
-[panels.controls.default_state]
-is_pressed = false
-
-[[panels.controls.default_state.layers]]
-kind = "fill"
-
-[panels.controls.default_state.layers.color]
-red = 89
-green = 89
-blue = 89
-alpha = 255
-
-[[panels.controls.default_state.layers]]
-kind = "text"
-text = "Test"
-anchor = "center"
-
-[panels.controls.default_state.layers.color]
-red = 255
-green = 255
-blue = 255
-alpha = 255
-
-[panels.controls.pressed_state]
-is_pressed = true
-
-[[panels.controls.pressed_state.layers]]
-kind = "fill"
-
-[panels.controls.pressed_state.layers.color]
-red = 66
-green = 255
-blue = 139
-alpha = 255
-
-[[panels.controls.pressed_state.layers]]
-kind = "text"
-text = "fds"
-anchor = "center"
-
-[panels.controls.pressed_state.layers.color]
 red = 255
 green = 255
 blue = 255
@@ -900,398 +801,37 @@ gesture = "press"
 [[panels.controls.action_bindings.actions]]
 type = "open_subpanel"
 panel_id = "studio-panel-5"
-placement = "bottom_start"
-offset_columns = 1
-offset_rows = 1
+placement = "bottom_end"
+offset_columns = 0
+offset_rows = 0
 
 [[panels.controls]]
-control_id = "control-1784934574789"
-name = "Hello"
+control_id = "control-1785507224003"
+name = "Channel name"
 action_bindings = []
 
 [panels.controls.position]
-column = 13
-row = 0
+column = 0
+row = 2
 
 [panels.controls.default_state]
 is_pressed = false
 
 [[panels.controls.default_state.layers]]
-kind = "fill"
+kind = "text"
+text = "$(discord.default:channel_name)"
+anchor = "center"
+font_size = 24
 
 [panels.controls.default_state.layers.color]
-red = 89
-green = 89
-blue = 89
-alpha = 255
-
-[[panels.controls.default_state.layers]]
-kind = "text"
-text = "Test"
-anchor = "center"
-
-[panels.controls.default_state.layers.color]
-red = 255
-green = 255
-blue = 255
-alpha = 255
-
-[panels.controls.pressed_state]
-is_pressed = true
-
-[[panels.controls.pressed_state.layers]]
-kind = "fill"
-
-[panels.controls.pressed_state.layers.color]
-red = 66
-green = 255
-blue = 139
-alpha = 255
-
-[[panels.controls.pressed_state.layers]]
-kind = "text"
-text = "fds"
-anchor = "center"
-
-[panels.controls.pressed_state.layers.color]
 red = 255
 green = 255
 blue = 255
 alpha = 255
 
 [[panels.controls]]
-control_id = "control-1784934576499"
-name = "Hello"
-action_bindings = []
-
-[panels.controls.position]
-column = 12
-row = 1
-
-[panels.controls.default_state]
-is_pressed = false
-
-[[panels.controls.default_state.layers]]
-kind = "fill"
-
-[panels.controls.default_state.layers.color]
-red = 89
-green = 89
-blue = 89
-alpha = 255
-
-[[panels.controls.default_state.layers]]
-kind = "text"
-text = "Test"
-anchor = "center"
-
-[panels.controls.default_state.layers.color]
-red = 255
-green = 255
-blue = 255
-alpha = 255
-
-[panels.controls.pressed_state]
-is_pressed = true
-
-[[panels.controls.pressed_state.layers]]
-kind = "fill"
-
-[panels.controls.pressed_state.layers.color]
-red = 66
-green = 255
-blue = 139
-alpha = 255
-
-[[panels.controls.pressed_state.layers]]
-kind = "text"
-text = "fds"
-anchor = "center"
-
-[panels.controls.pressed_state.layers.color]
-red = 255
-green = 255
-blue = 255
-alpha = 255
-
-[[panels.controls]]
-control_id = "control-1784934578591"
-name = "Hello"
-action_bindings = []
-
-[panels.controls.position]
-column = 11
-row = 1
-
-[panels.controls.default_state]
-is_pressed = false
-
-[[panels.controls.default_state.layers]]
-kind = "fill"
-
-[panels.controls.default_state.layers.color]
-red = 89
-green = 89
-blue = 89
-alpha = 255
-
-[[panels.controls.default_state.layers]]
-kind = "text"
-text = "Test"
-anchor = "center"
-
-[panels.controls.default_state.layers.color]
-red = 255
-green = 255
-blue = 255
-alpha = 255
-
-[panels.controls.pressed_state]
-is_pressed = true
-
-[[panels.controls.pressed_state.layers]]
-kind = "fill"
-
-[panels.controls.pressed_state.layers.color]
-red = 66
-green = 255
-blue = 139
-alpha = 255
-
-[[panels.controls.pressed_state.layers]]
-kind = "text"
-text = "fds"
-anchor = "center"
-
-[panels.controls.pressed_state.layers.color]
-red = 255
-green = 255
-blue = 255
-alpha = 255
-
-[[panels.controls]]
-control_id = "control-1784934580196"
-name = "Hello"
-action_bindings = []
-
-[panels.controls.position]
-column = 11
-row = 0
-
-[panels.controls.default_state]
-is_pressed = false
-
-[[panels.controls.default_state.layers]]
-kind = "fill"
-
-[panels.controls.default_state.layers.color]
-red = 89
-green = 89
-blue = 89
-alpha = 255
-
-[[panels.controls.default_state.layers]]
-kind = "text"
-text = "Test"
-anchor = "center"
-
-[panels.controls.default_state.layers.color]
-red = 255
-green = 255
-blue = 255
-alpha = 255
-
-[panels.controls.pressed_state]
-is_pressed = true
-
-[[panels.controls.pressed_state.layers]]
-kind = "fill"
-
-[panels.controls.pressed_state.layers.color]
-red = 66
-green = 255
-blue = 139
-alpha = 255
-
-[[panels.controls.pressed_state.layers]]
-kind = "text"
-text = "fds"
-anchor = "center"
-
-[panels.controls.pressed_state.layers.color]
-red = 255
-green = 255
-blue = 255
-alpha = 255
-
-[[panels.controls]]
-control_id = "control-1784934581711"
-name = "Hello"
-action_bindings = []
-
-[panels.controls.position]
-column = 12
-row = 0
-
-[panels.controls.default_state]
-is_pressed = false
-
-[[panels.controls.default_state.layers]]
-kind = "fill"
-
-[panels.controls.default_state.layers.color]
-red = 89
-green = 89
-blue = 89
-alpha = 255
-
-[[panels.controls.default_state.layers]]
-kind = "text"
-text = "Test"
-anchor = "center"
-
-[panels.controls.default_state.layers.color]
-red = 255
-green = 255
-blue = 255
-alpha = 255
-
-[panels.controls.pressed_state]
-is_pressed = true
-
-[[panels.controls.pressed_state.layers]]
-kind = "fill"
-
-[panels.controls.pressed_state.layers.color]
-red = 66
-green = 255
-blue = 139
-alpha = 255
-
-[[panels.controls.pressed_state.layers]]
-kind = "text"
-text = "fds"
-anchor = "center"
-
-[panels.controls.pressed_state.layers.color]
-red = 255
-green = 255
-blue = 255
-alpha = 255
-
-[[panels.controls]]
-control_id = "control-1784934584321"
-name = "Hello"
-action_bindings = []
-
-[panels.controls.position]
-column = 13
-row = 1
-
-[panels.controls.default_state]
-is_pressed = false
-
-[[panels.controls.default_state.layers]]
-kind = "fill"
-
-[panels.controls.default_state.layers.color]
-red = 89
-green = 89
-blue = 89
-alpha = 255
-
-[[panels.controls.default_state.layers]]
-kind = "text"
-text = "Test"
-anchor = "center"
-
-[panels.controls.default_state.layers.color]
-red = 255
-green = 255
-blue = 255
-alpha = 255
-
-[panels.controls.pressed_state]
-is_pressed = true
-
-[[panels.controls.pressed_state.layers]]
-kind = "fill"
-
-[panels.controls.pressed_state.layers.color]
-red = 66
-green = 255
-blue = 139
-alpha = 255
-
-[[panels.controls.pressed_state.layers]]
-kind = "text"
-text = "fds"
-anchor = "center"
-
-[panels.controls.pressed_state.layers.color]
-red = 255
-green = 255
-blue = 255
-alpha = 255
-
-[[panels.controls]]
-control_id = "control-1784934585859"
-name = "Hello"
-action_bindings = []
-
-[panels.controls.position]
-column = 14
-row = 0
-
-[panels.controls.default_state]
-is_pressed = false
-
-[[panels.controls.default_state.layers]]
-kind = "fill"
-
-[panels.controls.default_state.layers.color]
-red = 89
-green = 89
-blue = 89
-alpha = 255
-
-[[panels.controls.default_state.layers]]
-kind = "text"
-text = "Test"
-anchor = "center"
-
-[panels.controls.default_state.layers.color]
-red = 255
-green = 255
-blue = 255
-alpha = 255
-
-[panels.controls.pressed_state]
-is_pressed = true
-
-[[panels.controls.pressed_state.layers]]
-kind = "fill"
-
-[panels.controls.pressed_state.layers.color]
-red = 66
-green = 255
-blue = 139
-alpha = 255
-
-[[panels.controls.pressed_state.layers]]
-kind = "text"
-text = "fds"
-anchor = "center"
-
-[panels.controls.pressed_state.layers.color]
-red = 255
-green = 255
-blue = 255
-alpha = 255
-
-[[panels.controls]]
-control_id = "control-1785010644368"
-name = "Key 25"
+control_id = "control-1785507225270"
+name = "Control 19"
 action_bindings = []
 
 [panels.controls.position]
@@ -1311,44 +851,19 @@ blue = 0
 alpha = 255
 
 [[panels.controls.default_state.layers]]
-kind = "image"
-image = "$(discord.default:channel_members_0_avatar)"
-fit = "cover"
+kind = "text"
+text = ""
 anchor = "center"
-scale_percent = 100
-
-[[panels.controls]]
-control_id = "control-1785010667558"
-name = "Key 27"
-action_bindings = []
-
-[panels.controls.position]
-column = 2
-row = 1
-
-[panels.controls.default_state]
-is_pressed = false
-
-[[panels.controls.default_state.layers]]
-kind = "fill"
 
 [panels.controls.default_state.layers.color]
-red = 0
-green = 0
-blue = 0
+red = 255
+green = 255
+blue = 255
 alpha = 255
 
-[[panels.controls.default_state.layers]]
-kind = "image"
-image = "$(discord.default:channel_members_2_avatar)"
-fit = "cover"
-anchor = "center"
-scale_percent = 100
-
 [[panels.controls]]
-control_id = "control-1785010674308"
-name = "Key 26"
-action_bindings = []
+control_id = "control-1785507225578"
+name = "LEDBOARD"
 
 [panels.controls.position]
 column = 1
@@ -1368,19 +883,46 @@ alpha = 255
 
 [[panels.controls.default_state.layers]]
 kind = "image"
-image = "$(discord.default:channel_members_1_avatar)"
-fit = "cover"
-anchor = "center"
-scale_percent = 100
+image = "mdi:grid"
+fit = "contain"
+anchor = "top_center"
+scale_percent = 50
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "LEDBOARD"
+anchor = "bottom_center"
+font_size = 14
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "border"
+color = "$(hass.default:light.wled_2.color)"
+width = 5
+
+[[panels.controls.action_bindings]]
+gesture = "press"
+
+[[panels.controls.action_bindings.actions]]
+type = "invoke_integration"
+integration_id = "hass.default"
+action_name = "light.toggle"
+
+[panels.controls.action_bindings.actions.parameters]
+entity_id = "light.wled_2"
 
 [[panels.controls]]
-control_id = "control-1785012043590"
-name = "Key 28"
-action_bindings = []
+control_id = "control-1785507227850"
+name = "5 minute timer"
 
 [panels.controls.position]
-column = 3
-row = 1
+column = 1
+row = 0
 
 [panels.controls.default_state]
 is_pressed = false
@@ -1396,19 +938,123 @@ alpha = 255
 
 [[panels.controls.default_state.layers]]
 kind = "image"
-image = "$(discord.default:channel_members_3_avatar)"
-fit = "cover"
-anchor = "center"
-scale_percent = 100
+image = "mdi:timer-sand"
+fit = "contain"
+anchor = "top_center"
+scale_percent = 50
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "$(system.default:timer)"
+anchor = "bottom_center"
+font_size = 21
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls.action_bindings]]
+gesture = "press"
+
+[[panels.controls.action_bindings.actions]]
+type = "invoke_integration"
+integration_id = "system.default"
+action_name = "start_timer"
+
+[panels.controls.action_bindings.actions.parameters]
+duration_seconds = 300
 
 [[panels.controls]]
-control_id = "control-1785012059392"
-name = "Key 29"
+control_id = "control-1785507228210"
+name = "10 minute timer"
+
+[panels.controls.position]
+column = 2
+row = 0
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 0
+green = 0
+blue = 0
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "image"
+image = "mdi:timer-sand"
+fit = "contain"
+anchor = "top_center"
+scale_percent = 50
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "$(system.default:timer)"
+anchor = "bottom_center"
+font_size = 21
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls.action_bindings]]
+gesture = "press"
+
+[[panels.controls.action_bindings.actions]]
+type = "invoke_integration"
+integration_id = "system.default"
+action_name = "start_timer"
+
+[panels.controls.action_bindings.actions.parameters]
+duration_seconds = 600
+
+[[panels.controls]]
+control_id = "control-1785507228540"
+name = "Control 26"
 action_bindings = []
 
 [panels.controls.position]
 column = 4
-row = 1
+row = 0
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 0
+green = 0
+blue = 0
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = ""
+anchor = "center"
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls]]
+control_id = "control-1785507228915"
+name = "15 minute timer"
+
+[panels.controls.position]
+column = 3
+row = 0
 
 [panels.controls.default_state]
 is_pressed = false
@@ -1424,18 +1070,85 @@ alpha = 255
 
 [[panels.controls.default_state.layers]]
 kind = "image"
-image = "$(discord.default:channel_members_4_avatar)"
-fit = "cover"
-anchor = "center"
-scale_percent = 100
+image = "mdi:timer-sand"
+fit = "contain"
+anchor = "top_center"
+scale_percent = 50
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "$(system.default:timer)"
+anchor = "bottom_center"
+font_size = 21
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls.action_bindings]]
+gesture = "press"
+
+[[panels.controls.action_bindings.actions]]
+type = "invoke_integration"
+integration_id = "system.default"
+action_name = "start_timer"
+
+[panels.controls.action_bindings.actions.parameters]
+duration_seconds = 900
 
 [[panels.controls]]
-control_id = "control-1785012070373"
-name = "Key 30"
+control_id = "control-1785507230610"
+name = "Weekday"
 action_bindings = []
 
 [panels.controls.position]
-column = 5
+column = 7
+row = 0
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 0
+green = 0
+blue = 0
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "$(system.default:weekday)"
+anchor = "center_start"
+font_size = 19
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "$(system.default:date)"
+anchor = "bottom_start"
+font_size = 19
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls]]
+control_id = "control-1785507231015"
+name = "Sleep or wake screen"
+
+[panels.controls.position]
+column = 7
 row = 1
 
 [panels.controls.default_state]
@@ -1452,13 +1165,94 @@ alpha = 255
 
 [[panels.controls.default_state.layers]]
 kind = "image"
-image = "$(discord.default:channel_members_5_avatar)"
-fit = "cover"
-anchor = "center"
-scale_percent = 100
+image = "mdi:monitor"
+fit = "contain"
+anchor = "top_center"
+scale_percent = 40
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "$(missiond.default:screen_state)"
+anchor = "bottom_center"
+font_size = 21
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "border"
+color = "$(missiond.default:screen_color)"
+width = 5
+
+[[panels.controls.action_bindings]]
+gesture = "press"
+
+[[panels.controls.action_bindings.actions]]
+type = "invoke_integration"
+integration_id = "missiond.default"
+action_name = "toggle_screen"
+
+[panels.controls.action_bindings.actions.parameters]
 
 [[panels.controls]]
-control_id = "control-1785672233709"
+control_id = "control-1785507231383"
+name = "Sleep"
+
+[panels.controls.position]
+column = 7
+row = 2
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 0
+green = 0
+blue = 0
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "image"
+image = "mdi:power-sleep"
+fit = "contain"
+anchor = "top_center"
+scale_percent = 40
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "Sleep"
+anchor = "bottom_center"
+font_size = 22
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls.action_bindings]]
+gesture = "press"
+
+[[panels.controls.action_bindings.actions]]
+type = "set_surface_display"
+surface_ids = ["network-dock"]
+include_triggering_surface = false
+is_display_off = true
+
+[[panels.controls.action_bindings.actions]]
+type = "set_surface_display"
+surface_ids = ["stream-deck-studio"]
+include_triggering_surface = false
+is_display_off = true
+
+[[panels.controls]]
+control_id = "control-1785507236655"
 name = "Clock"
 action_bindings = []
 
@@ -1483,11 +1277,51 @@ kind = "image"
 image = "mdi:clock-outline"
 fit = "contain"
 anchor = "top_center"
-scale_percent = 40
+scale_percent = 45
 
 [[panels.controls.default_state.layers]]
 kind = "text"
 text = "$(system.default:clock)"
+anchor = "bottom_center"
+font_size = 21
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls]]
+control_id = "control-1785513840443"
+name = "Time to next tab"
+action_bindings = []
+
+[panels.controls.position]
+column = 5
+row = 0
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 0
+green = 0
+blue = 0
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "image"
+image = "mdi:timer-sand"
+fit = "contain"
+anchor = "top_center"
+scale_percent = 40
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "$(missiond.default:next_tab_in)"
 anchor = "bottom_center"
 
 [panels.controls.default_state.layers.color]
@@ -1497,13 +1331,12 @@ blue = 255
 alpha = 255
 
 [[panels.controls]]
-control_id = "control-1785672243947"
-name = "Channel name"
-action_bindings = []
+control_id = "control-1790707382624"
+name = "Prices"
 
 [panels.controls.position]
-column = 1
-row = 0
+column = 4
+row = 1
 
 [panels.controls.default_state]
 is_pressed = false
@@ -1518,9 +1351,17 @@ blue = 0
 alpha = 255
 
 [[panels.controls.default_state.layers]]
+kind = "image"
+image = "mdi:tab"
+fit = "contain"
+anchor = "top_center"
+scale_percent = 40
+
+[[panels.controls.default_state.layers]]
 kind = "text"
-text = "$(discord.default:channel_name)"
-anchor = "center"
+text = "Prices"
+anchor = "bottom_center"
+font_size = 21
 
 [panels.controls.default_state.layers.color]
 red = 255
@@ -1528,14 +1369,84 @@ green = 255
 blue = 255
 alpha = 255
 
+[[panels.controls.default_state.layers]]
+kind = "border"
+color = "$(missiond.default:tabs.indexer-prices.color)"
+width = 5
+
+[[panels.controls.action_bindings]]
+gesture = "press"
+
+[[panels.controls.action_bindings.actions]]
+type = "invoke_integration"
+integration_id = "missiond.default"
+action_name = "activate_tab"
+
+[panels.controls.action_bindings.actions.parameters]
+tab_id = "indexer-prices"
+
 [[panels.controls]]
-control_id = "control-1785672248544"
-name = "Members in channel"
-action_bindings = []
+control_id = "control-1790707390649"
+name = "Uptime"
+
+[panels.controls.position]
+column = 3
+row = 1
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 0
+green = 0
+blue = 0
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "image"
+image = "mdi:tab"
+fit = "contain"
+anchor = "top_center"
+scale_percent = 40
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "Uptime"
+anchor = "bottom_center"
+font_size = 21
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "border"
+color = "$(missiond.default:tabs.homelab-uptime.color)"
+width = 5
+
+[[panels.controls.action_bindings]]
+gesture = "press"
+
+[[panels.controls.action_bindings.actions]]
+type = "invoke_integration"
+integration_id = "missiond.default"
+action_name = "activate_tab"
+
+[panels.controls.action_bindings.actions.parameters]
+tab_id = "homelab-uptime"
+
+[[panels.controls]]
+control_id = "control-1790707412939"
+name = "Overview"
 
 [panels.controls.position]
 column = 2
-row = 0
+row = 1
 
 [panels.controls.default_state]
 is_pressed = false
@@ -1550,9 +1461,17 @@ blue = 0
 alpha = 255
 
 [[panels.controls.default_state.layers]]
+kind = "image"
+image = "mdi:tab"
+fit = "contain"
+anchor = "top_center"
+scale_percent = 40
+
+[[panels.controls.default_state.layers]]
 kind = "text"
-text = "$(discord.default:member_count)"
-anchor = "center"
+text = "Overview"
+anchor = "bottom_center"
+font_size = 17
 
 [panels.controls.default_state.layers.color]
 red = 255
@@ -1560,22 +1479,18 @@ green = 255
 blue = 255
 alpha = 255
 
-[[panels.dials]]
-index = 0
-level = 90
+[[panels.controls.default_state.layers]]
+kind = "border"
+color = "$(missiond.default:tabs.grafana-overview.color)"
+width = 5
 
-[panels.dials.color]
-red = 174
-green = 255
-blue = 0
-alpha = 255
+[[panels.controls.action_bindings]]
+gesture = "press"
 
-[[panels.dials]]
-index = 1
-level = 93
+[[panels.controls.action_bindings.actions]]
+type = "invoke_integration"
+integration_id = "missiond.default"
+action_name = "activate_tab"
 
-[panels.dials.color]
-red = 243
-green = 22
-blue = 22
-alpha = 255
+[panels.controls.action_bindings.actions.parameters]
+tab_id = "grafana-overview"

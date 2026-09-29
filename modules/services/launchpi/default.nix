@@ -16,6 +16,11 @@
           group = "launchpi";
           mode = "0400";
         };
+        launchpi_missiond_admin_key = {
+          owner = "launchpi";
+          group = "launchpi";
+          mode = "0400";
+        };
       };
     };
 
@@ -85,7 +90,7 @@
             display_name = "V3X Mission";
             config = {
               url = "http://0.0.0.0:3000";
-              key.file = config.sops.secrets.missiond_admin_key.path;
+              key.file = config.sops.secrets.launchpi_missiond_admin_key.path;
             };
           };
         };
