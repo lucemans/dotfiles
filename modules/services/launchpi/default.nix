@@ -80,6 +80,14 @@
               scrape_interval_s = 60;
             };
           };
+          "missiond.default" = {
+            enabled = true;
+            display_name = "V3X Mission";
+            config = {
+              url = "http://0.0.0.0:3000";
+              key.file = config.sops.secrets.missiond_admin_key.path;
+            };
+          };
         };
       };
     };
