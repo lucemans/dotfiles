@@ -141,6 +141,8 @@
             "${pkgs.writeText "omp-roles-${entry.name}.yml" (builtins.toJSON {modelRoles = {inherit vision;} // entry.modelRoles;})}"
             "--extension"
             "${./agent-toolsets.ts}"
+            "--extension"
+            "${./github-urls.ts}"
           ];
           # A profile with a catalog leaves --model to the picked entry.
           start = lib.optionals (!(entry ? catalog)) ["--model" "@default"];

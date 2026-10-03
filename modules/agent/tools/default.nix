@@ -3,6 +3,7 @@
     ./options.nix
     ./playwright/default.nix
     ./repo-reader/default.nix
+    ./github-reader/default.nix
     ./nixos/default.nix
   ];
 
@@ -20,6 +21,13 @@
     repo_reader = {
       command = "repo-reader-mcp";
       blurb = "read public repositories";
+    };
+    github_reader = {
+      command = "github-reader-mcp";
+      blurb = "read-only GitHub pull requests, issues, and CI";
+      # A job log downloads from blob storage after the API call, which can
+      # outrun the shared timeout.
+      timeout = 90000;
     };
     eth_data = {
       command = "eth-data-mcp";
@@ -54,7 +62,7 @@
         label = "Base";
         glyph = "";
         color = "248;248;242";
-        servers = ["repo_reader" "nixos" "plan_env" "playwright" "error_menu"];
+        servers = ["repo_reader" "github_reader" "nixos" "plan_env" "playwright" "error_menu"];
       };
       rf = {
         label = "Radio Frequency";

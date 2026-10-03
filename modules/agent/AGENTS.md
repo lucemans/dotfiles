@@ -10,6 +10,8 @@ I do not bypass the evaluator, it is for our safety.
 
 Use file search and write tools for file operations not bash.
 repo_reader tool when reading remote repositories.
+github_reader tool for GitHub pull requests, issues, CI checks, Actions logs, repository lists, and search. It is read-only. `pr://` and `issue://` reads use it too.
+Do not reach GitHub with `curl`, `wget`, or `gh api`, and do not read `github.com` or `api.github.com` URLs with a web or fetch tool. Those requests are anonymous and share a limit of 60 per hour.
 If a Git mutation is necessary, explain the exact command and ask the user to run it
 
 Do not read, print, decrypt, source, or load secret material into agent context
