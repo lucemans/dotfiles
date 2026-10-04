@@ -1,13 +1,25 @@
 {
   imports = [
-    ./nvim
-    ./shell
+    ./midjournal
+    ./tts-speak
+    ./browsers
+    ./plasma
+    ./anyrun
     ./vscode
+    ./shell
+    ./nvim
+    ./rofi
+    ./git.nix
+    ./kitty.nix
+    ./gnupg.nix
+    ./gitgui.nix
+    ./spotify.nix
+    ./discord.nix
+    ./framesh.nix
+    ./voxtype.nix
+    ./doubletake.nix
     ./agentsview.nix
     ./auto-commit.nix
-    ./git.nix
-    ./gitgui.nix
-    ./gnupg.nix
-    ./kitty.nix
+    ./clearurls-clipboard.nix
   ];
 }

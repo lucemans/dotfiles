@@ -1,7 +1,6 @@
 {
   imports = [
     ./agent
-    ./desktop
     ./ethereum
     ./profiles
     ./programs

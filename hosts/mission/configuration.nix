@@ -54,7 +54,7 @@ in {
 
     sops = {
       age.keyFile = "/home/luc/.config/sops/age/keys.txt";
-      defaultSopsFile = ../../secrets/mission.sops.yaml;
+      defaultSopsFile = ../../config/mission.sops.yaml;
     };
 
     programs.niri.enable = true;

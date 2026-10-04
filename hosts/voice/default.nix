@@ -6,7 +6,7 @@
   imports = [
     ./configuration.nix
     ./disko.nix
-    ./hardware-configuration.nix
+    ./hardware.nix
   ];
 
   flake.nixosConfigurations = {

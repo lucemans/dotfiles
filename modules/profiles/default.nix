@@ -1,7 +1,8 @@
 {
   imports = [
-    ./workstation.nix
+    ./gaming.nix
     ./peripheral.nix
+    ./workstation.nix
     ./development.nix
   ];
 }

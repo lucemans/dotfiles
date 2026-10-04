@@ -26,7 +26,7 @@ _: {
         enable = true;
         port = 2222;
         hostKeys = ["/etc/secrets/initrd/ssh_host_ed25519_key"];
-        authorizedKeyFiles = [../../secrets/ssh2.key];
+        authorizedKeyFiles = [../../config/id_ed25519.pub.key];
       };
     };
 

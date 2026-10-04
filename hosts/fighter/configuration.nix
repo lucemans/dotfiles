@@ -77,7 +77,7 @@
 
     sops = {
       age.keyFile = "/var/lib/sops-nix/key.txt";
-      defaultSopsFile = ../../secrets/secrets.sops.yaml;
+      defaultSopsFile = ../../config/fighter.sops.yaml;
     };
 
     users.users.luc = {

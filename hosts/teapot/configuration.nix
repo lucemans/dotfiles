@@ -40,7 +40,7 @@ _: {
 
     sops = {
       age.keyFile = "/home/luc/.config/sops/age/keys.txt";
-      defaultSopsFile = ../../secrets/418.sops.yaml;
+      defaultSopsFile = ../../config/418.sops.yaml;
       secrets = {
         teapot_github_pat = {};
       };

@@ -47,7 +47,7 @@
         # home-manager carries its own sops-nix module and reads none of the
         # system-level configuration, so the key source is repeated here.
         age.keyFile = "/home/luc/.config/sops/age/keys.txt";
-        defaultSopsFile = ../../secrets/secrets.sops.yaml;
+        defaultSopsFile = ../../config/fighter.sops.yaml;
         secrets = {
           ssh-public-key = {
             path = "/home/luc/.ssh/id_ed25519.pub";

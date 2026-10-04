@@ -13,6 +13,8 @@ _: {
         enableWsi = true;
       };
 
+      gamemode.enable = true;
+
       steam = {
         # package = pkgs.steam.override {
         #   extraProfile = ''
@@ -33,6 +35,9 @@ _: {
         protontricks.enable = true;
       };
     };
+
+    # The NVIDIA driver otherwise prunes its shader cache, so DXVK/VKD3D shaders recompile mid-game.
+    environment.sessionVariables.__GL_SHADER_DISK_CACHE_SKIP_CLEANUP = "1";
 
     environment.systemPackages = with pkgs; [
       lutris

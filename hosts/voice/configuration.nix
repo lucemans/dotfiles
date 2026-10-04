@@ -16,7 +16,7 @@ _: {
 
     sops = {
       age.keyFile = "/var/lib/sops-nix/key.txt";
-      defaultSopsFile = ../../secrets/voice.sops.yaml;
+      defaultSopsFile = ../../config/voice.sops.yaml;
       secrets = {
         acme_cloudflare_token = {};
         voice_component = {};

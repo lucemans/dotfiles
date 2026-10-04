@@ -13,7 +13,7 @@
         "networkmanager"
       ];
       openssh.authorizedKeys.keyFiles = [
-        ../../secrets/ssh2.key
+        ../../config/id_ed25519.pub.key
       ];
       packages = with pkgs; [
         tree

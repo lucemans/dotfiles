@@ -5,7 +5,7 @@
 }: {
   imports = [
     ./configuration.nix
-    ./hardware-configuration.nix
+    ./hardware.nix
     ./thermal.nix
   ];
 
