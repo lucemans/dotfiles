@@ -23,7 +23,68 @@
       self.nixosModules.kittySsh
       self.nixosModules.gnupg
       self.nixosModules.fonts
+      inputs.temple.nixosModules.temple
     ];
+    temple = {
+      enable = true;
+      terminal = self.packages.${pkgs.stdenv.hostPlatform.system}.terminal;
+      keybinds = {
+        anyrun = {
+          key = "Alt+R";
+          command = "anyrun";
+        };
+        rofi = {
+          key = "Alt+Shift+R";
+          command = "rofi -show combi";
+        };
+        rofi-vs = {
+          key = "Alt+P";
+          command = "rofi -show vs";
+        };
+        doubletake = {
+          key = "Alt+B";
+          command = "rofi -show doubletake";
+        };
+        voxtype = {
+          key = "Scroll Lock";
+          command = "voxtype record toggle";
+        };
+      };
+      activateLinux = {
+        enable = true;
+        monitors = ["DP-4"];
+      };
+      monitors = [
+        {
+          output = "HDMI-A-2";
+          mode = "1920x1080@60";
+          position = "0x1080";
+          scale = 1;
+        }
+        {
+          output = "DP-4";
+          mode = "1920x1080@60";
+          position = "1920x1080";
+          scale = 1;
+        }
+        {
+          output = "DP-5";
+          mode = "1920x1080@60";
+          position = "1920x0";
+          scale = 1;
+        }
+        {
+          output = "DP-6";
+          mode = "1920x1080@60";
+          position = "3840x1080";
+          scale = 1;
+        }
+      ];
+      bar.monitors = {
+        top = ["DP-5"];
+        bottom = ["DP-4"];
+      };
+    };
 
     home-manager.useGlobalPkgs = true;
     home-manager.useUserPackages = true;

@@ -56,7 +56,7 @@
                 input = ["text" "image"];
                 contextWindow = 1050000;
                 maxTokens = 128000;
-              }) ["gpt-5.6-luna" "gpt-5.6-terra" "gpt-5.6-sol" "gpt-6-luna" "gpt-6-sol" "gpt-6-astra" "claude-opus-5-5"]
+              }) ["gpt-5.6-luna" "gpt-5.6-terra" "gpt-5.6-sol" "gpt-6-luna" "gpt-6-sol" "gpt-6.1-sol" "gpt-6-astra" "claude-opus-5-5"]
               ++ [
                 {
                   id = "kimi-k3-256k";
@@ -167,7 +167,7 @@
           blurb = "OpenAI";
           logo = ../../icons/openai.png;
           modelRoles = {
-            default = "anthropic/gpt-6-sol";
+            default = "anthropic/gpt-6.1-sol";
             inherit tiny;
             smol = "anthropic/gpt-6-luna";
             slow = "anthropic/gpt-6-astra";

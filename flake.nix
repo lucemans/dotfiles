@@ -53,6 +53,10 @@
     deploy-rs.url = "github:serokell/deploy-rs";
     deploy-rs.inputs.nixpkgs.follows = "nixpkgs";
     voxtype.url = "github:peteonrails/voxtype";
+
+    # temple.url = "github:lucemans/v3x-temple";
+    temple.url = "git+file:///home/luc/dev/local/v3x-temple";
+    temple.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs = inputs:

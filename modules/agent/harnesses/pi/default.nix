@@ -16,7 +16,7 @@
               inherit id;
               contextWindow = 1050000;
               maxTokens = 128000;
-            }) ["gpt-5.6-luna" "gpt-5.6-terra" "gpt-5.6-sol" "gpt-6-astra"];
+            }) ["gpt-5.6-luna" "gpt-5.6-terra" "gpt-5.6-sol" "gpt-6-astra" "gpt-6.1-sol"];
           };
           "v3x-inference" = {
             baseUrl = "https://${services.inference.name}/v1";
