@@ -661,7 +661,7 @@ width = 8
 kind = "text"
 text = "Speakers"
 anchor = "bottom_center"
-font_size = 19
+font_size = 18
 
 [panels.controls.default_state.layers.color]
 red = 255
@@ -1123,7 +1123,7 @@ alpha = 255
 kind = "text"
 text = "$(system.default:weekday)"
 anchor = "center_start"
-font_size = 23
+font_size = 14
 
 [panels.controls.default_state.layers.color]
 red = 255
@@ -1135,7 +1135,7 @@ alpha = 255
 kind = "text"
 text = "$(system.default:date)"
 anchor = "bottom_start"
-font_size = 23
+font_size = 21
 
 [panels.controls.default_state.layers.color]
 red = 255
@@ -1145,8 +1145,7 @@ alpha = 255
 
 [[panels.controls]]
 control_id = "control-1785507231015"
-name = "Control 30"
-action_bindings = []
+name = "Sleep or wake screen"
 
 [panels.controls.position]
 column = 7
@@ -1165,15 +1164,38 @@ blue = 0
 alpha = 255
 
 [[panels.controls.default_state.layers]]
+kind = "image"
+image = "mdi:monitor"
+fit = "contain"
+anchor = "top_center"
+scale_percent = 40
+
+[[panels.controls.default_state.layers]]
 kind = "text"
-text = ""
-anchor = "center"
+text = "$(missiond.default:screen_state)"
+anchor = "bottom_center"
+font_size = 22
 
 [panels.controls.default_state.layers.color]
 red = 255
 green = 255
 blue = 255
 alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "border"
+color = "$(missiond.default:screen_color)"
+width = 5
+
+[[panels.controls.action_bindings]]
+gesture = "press"
+
+[[panels.controls.action_bindings.actions]]
+type = "invoke_integration"
+integration_id = "missiond.default"
+action_name = "toggle_screen"
+
+[panels.controls.action_bindings.actions.parameters]
 
 [[panels.controls]]
 control_id = "control-1785507231383"
@@ -1322,3 +1344,166 @@ integration_id = "mpris.default"
 action_name = "play_pause"
 
 [panels.controls.action_bindings.actions.parameters]
+
+[[panels.controls]]
+control_id = "control-1791399145002"
+name = "Prices"
+
+[panels.controls.position]
+column = 4
+row = 1
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 0
+green = 0
+blue = 0
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "image"
+image = "mdi:tab"
+fit = "contain"
+anchor = "top_center"
+scale_percent = 40
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "Prices"
+anchor = "bottom_center"
+font_size = 18
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "border"
+color = "$(missiond.default:tabs.indexer-prices.color)"
+width = 5
+
+[[panels.controls.action_bindings]]
+gesture = "press"
+
+[[panels.controls.action_bindings.actions]]
+type = "invoke_integration"
+integration_id = "missiond.default"
+action_name = "activate_tab"
+
+[panels.controls.action_bindings.actions.parameters]
+tab_id = "indexer-prices"
+
+[[panels.controls]]
+control_id = "control-1791399153447"
+name = "Uptime"
+
+[panels.controls.position]
+column = 3
+row = 1
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 0
+green = 0
+blue = 0
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "image"
+image = "mdi:tab"
+fit = "contain"
+anchor = "top_center"
+scale_percent = 40
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "Uptime"
+anchor = "bottom_center"
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "border"
+color = "$(missiond.default:tabs.homelab-uptime.color)"
+width = 5
+
+[[panels.controls.action_bindings]]
+gesture = "press"
+
+[[panels.controls.action_bindings.actions]]
+type = "invoke_integration"
+integration_id = "missiond.default"
+action_name = "activate_tab"
+
+[panels.controls.action_bindings.actions.parameters]
+tab_id = "homelab-uptime"
+
+[[panels.controls]]
+control_id = "control-1791399159677"
+name = "Overview"
+
+[panels.controls.position]
+column = 2
+row = 1
+
+[panels.controls.default_state]
+is_pressed = false
+
+[[panels.controls.default_state.layers]]
+kind = "fill"
+
+[panels.controls.default_state.layers.color]
+red = 0
+green = 0
+blue = 0
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "image"
+image = "mdi:tab"
+fit = "contain"
+anchor = "top_center"
+scale_percent = 40
+
+[[panels.controls.default_state.layers]]
+kind = "text"
+text = "Overview"
+anchor = "bottom_center"
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
+
+[[panels.controls.default_state.layers]]
+kind = "border"
+color = "$(missiond.default:tabs.grafana-overview.color)"
+width = 5
+
+[[panels.controls.action_bindings]]
+gesture = "press"
+
+[[panels.controls.action_bindings.actions]]
+type = "invoke_integration"
+integration_id = "missiond.default"
+action_name = "activate_tab"
+
+[panels.controls.action_bindings.actions.parameters]
+tab_id = "grafana-overview"

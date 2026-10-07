@@ -1,9 +1,5 @@
 _: {
-  flake.nixosModules.generatorPhysical = {
-    config,
-    lib,
-    ...
-  }: {
+  flake.nixosModules.generatorPhysical = {lib, ...}: {
     boot.initrd.availableKernelModules = [
       "nvme"
       "ahci"

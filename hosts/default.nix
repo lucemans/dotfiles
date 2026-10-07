@@ -1,6 +1,5 @@
 {
   imports = [
-    ./generator
     ./fighter
     ./mission
     ./teapot

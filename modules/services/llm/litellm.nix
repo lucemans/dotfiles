@@ -73,6 +73,15 @@ in {
         general_settings = {
           master_key = "os.environ/LITELLM_MASTER_KEY";
           database_url = "os.environ/DATABASE_URL";
+          # Clef-Flash answers only the TypeSafe System One API, which LiteLLM does
+          # not model, so it is forwarded as is behind the LiteLLM key check.
+          pass_through_endpoints = [
+            {
+              path = "/v1/systemone";
+              target = "http://127.0.0.1:8081/upstream/clef-flash/v1/systemone";
+              methods = ["POST"];
+            }
+          ];
         };
         model_list = [
           {

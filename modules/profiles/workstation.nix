@@ -54,32 +54,6 @@
         enable = true;
         monitors = ["DP-4"];
       };
-      monitors = [
-        {
-          output = "HDMI-A-2";
-          mode = "1920x1080@60";
-          position = "0x1080";
-          scale = 1;
-        }
-        {
-          output = "DP-4";
-          mode = "1920x1080@60";
-          position = "1920x1080";
-          scale = 1;
-        }
-        {
-          output = "DP-5";
-          mode = "1920x1080@60";
-          position = "1920x0";
-          scale = 1;
-        }
-        {
-          output = "DP-6";
-          mode = "1920x1080@60";
-          position = "3840x1080";
-          scale = 1;
-        }
-      ];
       bar.monitors = {
         top = ["DP-5"];
         bottom = ["DP-4"];

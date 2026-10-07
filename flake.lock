@@ -758,11 +758,11 @@
         "rust-overlay": "rust-overlay_7"
       },
       "locked": {
-        "lastModified": 1790372900,
-        "narHash": "sha256-xo4u5HUcuFe911FpraFktKIkc22PyMSArd+CXvBCB6s=",
+        "lastModified": 1791387359,
+        "narHash": "sha256-977PEP1ib8Wj1n8JjIfGgzSfmsdXeYxGDE9vktN5dTg=",
         "owner": "v3xlabs",
         "repo": "missiond",
-        "rev": "78a4ff5f8559f0fc4161e57ebd9ed680986a57a2",
+        "rev": "5b55e67ba694a552d0db5279683c4033496e0467",
         "type": "github"
       },
       "original": {
@@ -1564,11 +1564,11 @@
         "treefmt-nix": "treefmt-nix_4"
       },
       "locked": {
-        "lastModified": 1791329977,
-        "narHash": "sha256-49yc4U/M5/DQVObHPaBC8tvaOqfIP4QU2opV9DWF5Uo=",
+        "lastModified": 1791403561,
+        "narHash": "sha256-0zdyOGg8s19DXGhRf0Volt5FcMtHAI7Rmy++As6XYgY=",
         "ref": "refs/heads/master",
-        "rev": "b9ff3126a7f8404163fb45f291076c20f4ed5de1",
-        "revCount": 7,
+        "rev": "7f4bec67157a448720a68dcf71fb95510e09caa1",
+        "revCount": 9,
         "type": "git",
         "url": "file:///home/luc/dev/local/v3x-temple"
       },
