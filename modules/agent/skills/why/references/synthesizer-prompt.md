@@ -43,7 +43,7 @@ You MUST follow the framework in `references/epistemics.md`. Read it in full bef
 2. **Reconcile overlapping findings.** Multiple investigators may have cited the same PR, ticket, or doc. Merge into a single, authoritative reference.
 3. **Identify contradictions.** If two items of evidence disagree, don't pick one. Surface both.
 4. **Calibrate confidence.** For each claim, identify the evidence and the tier. State Direct claims plainly with a citation. Hedge Inferred claims and explain the inference. Mark Speculative claims explicitly. Put claims with no evidence in the gaps section.
-5. **Verify citations by spot-checking.** Read the codebase and run read-only `git` and `gh` commands to confirm a cited commit, PR, or line says what the investigator claims. Write nothing, and never mutate git state. If you're uncertain a cited item exists, check it. Don't propagate errors.
+5. **Verify citations by spot-checking.** Read the codebase, run read-only `git` commands, and call the read-only `github_reader` tools to confirm a cited commit, PR, or line says what the investigator claims. Write nothing, and never mutate git state. If you're uncertain a cited item exists, check it. Don't propagate errors.
 6. **Don't overreach.** The user will act on your output. Better to leave an open question open than to fill it with a confident-sounding guess.
 
 ## Output Format
@@ -103,7 +103,7 @@ Be specific. "We ran `git log -S 'MAX_RETRIES' --all` and read all three commits
 Bulleted list of what was actually searched, so the user can judge coverage and redirect. One line per angle, including the angles that found nothing. Format:
 
 - **Commit and diff history**: {commands run, number of commits reviewed, date range}. {What surfaced, or "nothing bearing on the question".}
-- **PR and issue discussion**: {PR and issue numbers opened, `gh` searches run}. {What surfaced, or "nothing bearing on the question".}
+- **PR and issue discussion**: {PR and issue numbers opened, `github_reader` searches run}. {What surfaced, or "nothing bearing on the question".}
 - **In-repo prose and tests**: {comment, doc, CHANGELOG, and test searches run}. {What surfaced, or "nothing bearing on the question".}
 - **Pattern origin**: {where the pattern first appears, the commit that introduced it}. Or "not investigated. The target is not an instance of a repeated pattern."
 

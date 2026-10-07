@@ -3,7 +3,7 @@
 ## What this source contains
 
 - Commit history (messages, dates, authors, diffs)
-- PR descriptions, review comments, and discussion threads (via `gh`)
+- PR descriptions, review comments, and discussion threads (via the `github_reader` tool)
 - Inline code comments, TODOs, FIXMEs, deprecation notes
 - ADRs (architectural decision records) if the repo keeps them
 - Tests. Names and assertions often encode the edge cases that motivated a change
@@ -42,12 +42,9 @@ For each substantive commit, pull the PR context:
 ```bash
 # Find the PR number from the merge commit or branch
 git log -1 --format=%B <hash>
-
-# Full PR context: body, review comments, linked issues
-gh pr view <number> --json title,body,author,createdAt,mergedAt,labels,closingIssuesReferences,comments,reviews,files
-
-# The --json reviews and comments fields are where the real signal is
 ```
+
+Then call `github_reader` `get_pull` with `{"repo": "<owner/name>", "number": <number>}`. It returns the body, reviews, comments, and review comments; the reviews and comments are where the real signal is. `get_pull_diff` lists the changed files. `get_issue` reads a linked issue.
 
 Look for out-of-band docs:
 
@@ -86,11 +83,7 @@ git log --oneline --grep='revert' --all
 git log -S '<the guard expression>' --oneline -- <file>
 ```
 
-```bash
-# Issues and PRs that mention the symptom rather than the fix
-gh issue list --state all --search '<error string or symptom>'
-gh pr list --state all --search '<error string or symptom>'
-```
+Then search issues and PRs that mention the symptom rather than the fix with `github_reader` `search`: `{"kind": "issues", "query": "repo:<owner/name> <error string or symptom>"}`, and the same with `"kind": "prs"`.
 
 An issue whose report predates the guard, and whose close references the PR that added it, is the strongest available evidence for defensive code. Fetch the full thread, not the title.
 

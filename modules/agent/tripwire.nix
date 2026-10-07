@@ -30,9 +30,8 @@ let
   ];
 
   # The mutating commands consumed by the tripwire and Claude permissions.
-  # `branch`, `tag`, and `worktree` stay out: the runtime Git shim checks the
-  # read forms of the first two, and the sandbox mounts confine where a
-  # worktree may be written.
+  # `branch`, `tag`, `reflog`, and `worktree` stay out: the runtime Git shim
+  # checks their read forms itself.
   gitMutations = [
     "add"
     "am"
@@ -104,11 +103,23 @@ in {
           echo "git tag only supports listing tags in the agent sandbox" >&2
           exit 1
           ;;
-        worktree)
-          # Containment is enforced by the sandbox mounts rather than by argv:
-          # the only writable destinations are the project and the worktree
-          # base, and the object store stays read-only.
+        reflog)
+          case "''${2:-}" in
+            expire|delete)
+              echo "git reflog only supports reading the reflog in the agent sandbox" >&2
+              exit 1
+              ;;
+          esac
           exec ${pkgs.git}/bin/git --no-optional-locks "''${args[@]}"
+          ;;
+        worktree)
+          # `remove` and `move` change directories in the writable worktree
+          # base, which the read-only git directory does not protect.
+          if [ "''${2:-}" = list ]; then
+            exec ${pkgs.git}/bin/git --no-optional-locks "''${args[@]}"
+          fi
+          echo "git worktree only supports list in the agent sandbox" >&2
+          exit 1
           ;;
         *)
           echo "git ''${1:-<none>} is reserved to the user" >&2

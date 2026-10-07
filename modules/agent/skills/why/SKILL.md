@@ -68,6 +68,7 @@ Before spawning investigators, anchor the investigation in concrete code. You ne
 - The key symbols (function names, class names, constants)
 - An initial commit list. The last few commits touching the target.
 - PR numbers from merge commits (pattern `(#1234)` in the subject line)
+- The rows of the decision log that name the target. Search `$AGENT_TRAIL_DIR/decisions.tsv` for its files, symbols, and area. A row with `by` set to `user` is the only record of a decision made in conversation. Follow its `session` and `evidence` pointers.
 
 Build this inline. It's cheap, and every investigator needs it.
 
@@ -85,11 +86,7 @@ git log --oneline -20 -- <file>
 git log -1 --format=%B <commit>
 ```
 
-Pull PR bodies and discussion via `gh` for any substantive commits:
-
-```bash
-gh pr view <number> --json title,body,author,createdAt,mergedAt,labels,closingIssuesReferences,comments,reviews
-```
+Read PR bodies and discussion for any substantive commits with the `github_reader` tool. `get_pull` with `repo` (`owner/name`) and `number` returns the description, reviews, comments, and review comments. `get_issue` does the same for an issue. `pr://<N>` and `issue://<N>` read through the same tool.
 
 Capture this as seed context (file paths, symbols, commits, PR numbers, linked ticket IDs). Pass it to the investigators so they don't rediscover it.
 
@@ -105,7 +102,7 @@ Spawn 2 to 4 investigators in a single message. Each gets:
 4. The code anchor from Step 2 (file paths, symbols, commit hashes, PR numbers, issue IDs)
 5. The user's original question
 
-Investigators read and report. They never edit a file, and they never mutate git state: no staging, committing, checking out, or branch switching. Reading history is the entire job, and `git log`, `git blame`, `git show`, `git diff`, and the read-only `gh` subcommands cover it.
+Investigators read and report. They never edit a file, and they never mutate git state: no staging, committing, checking out, or branch switching. Reading history is the entire job, and `git log`, `git blame`, `git show`, `git diff`, and the read-only `github_reader` tools cover it.
 
 ### Investigator roster
 
@@ -113,7 +110,7 @@ Spawn the first three by default. Add the fourth when the target looks like an i
 
 1. **Commit and diff history.** `git log --follow`, pickaxe searches with `-S` and `-G`, `git blame`, `git show` on each substantive commit. Best at surfacing *when the shape changed and what changed with it*. The commit that introduced a constant, the commit that reverted an earlier approach, co-changed files that reveal the real unit of work, and commit messages that name an incident or issue. Weakest at motivation: a diff shows the change, rarely the reason.
 
-2. **PR and issue discussion.** `gh pr view` with `--json body,comments,reviews`, `gh issue view`, `gh pr list --search` and `gh issue list --search` on the symptom rather than the fix. Best at surfacing *rationale captured while the change was argued*. PR descriptions that state the problem, review threads debating alternatives, an issue whose report predates the code and whose close references the PR. Usually the richest angle when the repo uses PRs seriously.
+2. **PR and issue discussion.** `github_reader` `get_pull` and `get_issue`, and `search` with `kind` set to `prs` or `issues`, on the symptom rather than the fix. Best at surfacing *rationale captured while the change was argued*. PR descriptions that state the problem, review threads debating alternatives, an issue whose report predates the code and whose close references the PR. Usually the richest angle when the repo uses PRs seriously.
 
 3. **In-repo prose and tests.** Inline comments, TODO and FIXME notes, docstrings, ADRs, README and CHANGELOG entries, and test names and assertions. Best at surfacing *the constraint the author wanted the next reader to know*. A test named for the edge case that forced the branch is direct evidence of motivation; a comment explaining a vendor quirk is often the only record of it.
 
@@ -121,7 +118,7 @@ Spawn the first three by default. Add the fourth when the target looks like an i
 
 ### When the record runs out
 
-There is no ticket tracker, chat archive, observability platform, error tracker, or analytics warehouse in this environment. The repository is the whole record.
+There is no ticket tracker, chat archive, observability platform, error tracker, or analytics warehouse in this environment. The repository and the decision log at `$AGENT_TRAIL_DIR/decisions.tsv` are the whole record.
 
 That is a boundary, not a gap you can close by searching harder, and it changes what a null result means. If the rate limit is 100 and no commit, PR, issue, comment, or test says why, the honest finding is that the reason never reached the repository, not that there was no reason. Say exactly that. A confident "the value appears arbitrary" is the failure mode this skill exists to prevent.
 
@@ -129,7 +126,7 @@ You may answer inline without spawning investigators only when the code anchor f
 
 ## Step 4. Synthesize
 
-Spawn one synthesizer subagent, on the strongest reasoning model available. Its quality check spot-verifies citations against the repository and `gh`, so it needs the same read access as the investigators.
+Spawn one synthesizer subagent, on the strongest reasoning model available. Its quality check spot-verifies citations against the repository and `github_reader`, so it needs the same read access as the investigators.
 
 The synthesizer gets:
 
@@ -168,7 +165,7 @@ Format each line as: `- <Angle>: <what was searched>. <what was found, or "nothi
 Example:
 
 - Commit and diff history: `git log --follow -p backend/retry.ts` (14 commits, 2023-04 to 2025-01), `git log -S 'maxAttempts'`. Found commit `a3f21c0` introducing exponential backoff, message references issue #221.
-- PR and issue discussion: `gh pr view 340`, `gh issue view 221`, `gh issue list --search 'timeout'`. Issue #221 reports upstream 5xx storms; PR #340 review thread debates fixed delay versus backoff and settles on backoff.
+- PR and issue discussion: `get_pull` 340, `get_issue` 221, `search` with `kind: issues` for `timeout`. Issue #221 reports upstream 5xx storms; PR #340 review thread debates fixed delay versus backoff and settles on backoff.
 - In-repo prose and tests: searched comments and tests referencing `retry`, `backoff`, `maxAttempts`. Test `retries until the upstream stops 503ing` names the motivating case; no comment explains the value 5.
 - Pattern origin: not investigated. The retry helper is the only instance in the repo.
 
@@ -191,7 +188,7 @@ When the answer is long enough to be read more than once, or the coverage map ma
 
 ## Reference Files
 
-- `references/code-archaeology.md`. The git and `gh` query vocabulary every investigator works from, including the incident hunt for defensive code. Append it to each investigator prompt.
+- `references/code-archaeology.md`. The git and `github_reader` query vocabulary every investigator works from, including the incident hunt for defensive code. Append it to each investigator prompt.
 - `references/epistemics.md`. Confidence tiers and phrasing guide. The synthesizer must follow it.
 - `references/investigator-prompt.md`. Base prompt template for investigator subagents.
 - `references/synthesizer-prompt.md`. Prompt template for the synthesizer subagent, including the output format.

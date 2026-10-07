@@ -131,6 +131,10 @@ in
         roots+=(--ro-bind "$gitdir" "$gitdir")
       fi
 
+      # Decisions stay on this host, outside the repository. One directory per
+      # primary checkout, so every worktree of a repository shares its trail.
+      trail="$HOME/.local/state/agent/trails/$(printf '%s' "''${primary#/}" | tr / -)"
+      mkdir -p "$trail"
 
       nixcache="$HOME/.local/state/agent/nix-cache"
       mkdir -p "$nixcache" "$HOME/.local/share/opencode" "$HOME/.local/state/opencode" \
@@ -216,6 +220,7 @@ in
         --bind "$HOME/.omp" "$HOME/.omp"
         --ro-bind ${omp.models} "$HOME/.omp/agent/models.yml"
         --bind "$nixcache" "$HOME/.cache/nix"
+        --bind "$trail" "$trail"
         "''${roots[@]}"
         --chdir "$project"
         --setenv HOME "$HOME"
@@ -233,6 +238,7 @@ in
         --setenv PS1 'agent:\w\$ '
         --setenv AGENT_SANDBOX 1
         --setenv OMP_WORKTREE_DIR "$worktrees"
+        --setenv AGENT_TRAIL_DIR "$trail"
 
         --ro-bind /etc/claude-code/managed-settings.json /etc/claude-code/managed-settings.json
         --bind "$HOME/.claude" "$HOME/.claude"

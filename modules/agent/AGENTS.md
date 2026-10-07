@@ -2,9 +2,9 @@
 
 ## Environment
 
-`git`, `gh`, `sops`, `direnv`, `gpg`, `gpg2`, `pgp`, and `gnupg` are strictly forbidden.
+`gh`, `sops`, `direnv`, `gpg`, `gpg2`, `pgp`, and `gnupg` are strictly forbidden.
 Invokation, attempts at bypass, and alternative methods for reaching secret material are off limits.
-Simply using the word "git" inside a "bash" tool use is enough to trigger it.
+Simply using the word "sops" inside a "bash" tool use is enough to trigger it.
 The evaluator warns first but ends operation on repeated violation.
 I do not bypass the evaluator, it is for our safety.
 
@@ -12,6 +12,7 @@ Use file search and write tools for file operations not bash.
 repo_reader tool when reading remote repositories.
 github_reader tool for GitHub pull requests, issues, CI checks, Actions logs, repository lists, and search. It is read-only. `pr://` and `issue://` reads use it too.
 Do not reach GitHub with `curl`, `wget`, or `gh api`, and do not read `github.com` or `api.github.com` URLs with a web or fetch tool. Those requests are anonymous and share a limit of 60 per hour.
+Read-only `git` is available: `status`, `diff`, `log`, `show`, `blame`, `reflog`, `worktree list`, and similar.
 If a Git mutation is necessary, explain the exact command and ask the user to run it
 
 Do not read, print, decrypt, source, or load secret material into agent context
@@ -19,8 +20,7 @@ Leave secret creation, rotation, and updates to the user
 
 ### Files
 
-Use a `.tmp` directory inside the project instead of `/tmp`
-Do not access the home folder, dotfiles are declarative and live in nixos config
+Use a `.tmp` directory inside the project instead of `/tmp`.
 
 `.tmp` has a fixed layout. Each kind of file has one directory that owns it:
 - `.tmp/docs/<slug>/` holds one document, entry point `index.html`, assets beside it
