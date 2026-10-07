@@ -16,6 +16,7 @@ v3x_agent_token: ENC[AES256_GCM,data:YxddOxrd7BItzGYVyxo=,iv:htDl1q85lZrZBjmXLog
 v3x_error_menu_token: ENC[AES256_GCM,data:S1ZEzCVtMhGSDoH646lgNoNVvl7a9t1Cd14Iq9W06TbGXdPjUr59qQk9lrfnN6PX6jh2NIdvBoeXpKRYugPPgwY4k6iSXWM=,iv:p/FMW55GJXqwjdektguusqCH6vz6WKPFD2oi3CBQkew=,tag:BQrwwk8u3cHdRhRxy1BHcw==,type:str]
 google_tts_key: ENC[AES256_GCM,data:bRVP0Lk=,iv:pSSRUPrGt2bY417wwLQ+6sU6vPCMxfG0tP5BWvQLNJc=,tag:9pQ4yxhiXzAQnb+xFXTIog==,type:str]
 github_reader_token: ENC[AES256_GCM,data:8I8/Zd9+rcYMSeOiwASIcQj9FR6OtRvoBOsYbcoUJZP0ZRa4FeZWLr+oi9pHegFJL7E22hYqXykJ3M7E09+Xb56XJZgPKVRVAaV//znV4Yfzi2KrndanhEYziKOZ,iv:TZmIL57uJ8/snZXzegM6rX4+8UQG8qjxgKiuLXOKYr0=,tag:ajbIUH0qVlKceJzbgFmY7g==,type:str]
+v3x_kaneo_token: ENC[AES256_GCM,data:kem3Fy2pWcTFYNMxLEBEOitzS99q8yyvrr/sInfv+Q4=,iv:o9bWL/4t4FqeRxzuxvJNGjHamGVcC0Lov1CTDeY6O7I=,tag:l1NeD5YBhz/scM9gqPddTA==,type:str]
 sops:
     age:
         - enc: |
@@ -27,8 +28,8 @@ sops:
             gvMx1EkgQKFoI7lyHKHv7lu590a0A8fzLy8GLeEIvA652JPiatptxg==
             -----END AGE ENCRYPTED FILE-----
           recipient: age138hwuu082j7xx6vy3u88nw8kjmdjky4sz4gxx9jtpe8gsmwjqdcqp3ddw8
-    lastmodified: "2026-10-03T11:42:53Z"
-    mac: ENC[AES256_GCM,data:lEkso8l7tSKRcjea0RMevsDwqX5rRSvGBA5HyA7MLZ60WWlfROg7GjjcDhbtJ7LEjD8t1z/MYWs7E0FPFjhXygBzRVTiZNKR32K/u7jdb64yfxsBuqFKNWcHq0Psy4XDfBslOCA3Q1klOGM9aYMouO6ljGqC0rRnhWiHxrPXQkE=,iv:Vrr3W3oGbOOA6nihbM2gub2Nrdh0qcC7NQlrUNO3+sM=,tag:aa+MmsgwwRf8u9glyB6k3A==,type:str]
+    lastmodified: "2026-10-08T00:09:12Z"
+    mac: ENC[AES256_GCM,data:0nEK4d8aXCsZLEuPha2SXZxZHgihg/V7beSJmEhJfQ7aZMF+iPs/BBSvVc3IvJ4aCbWuyvTFDgk8fYSTZ+U5yCUdlign5fOmxOOkAdMMB0RSGEeytR6T6mEU/aJ+LjIuPJrL9PtbJyjI2zR9v1SXWSA2wKPb6J864NAjnvvIx2I=,iv:qStj01ueLUpkYKU48TvBOm9mzCMs0rcdQMO+L1ItuVU=,tag:o8I8NuQ90QWQL7gxySwQzQ==,type:str]
     pgp:
         - created_at: "2026-06-22T18:02:27Z"
           enc: |-

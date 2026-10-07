@@ -79,6 +79,13 @@ in {
       upstream = "${hosts.v3x-teapot.address}:8090";
       access = ["f0" "f1" "f2"];
     };
+    tasks = {
+      name = "tasks.${zone}";
+      title = "Tasks";
+      icon = "kaneo";
+      upstream = "${hosts.v3x-teapot.address}:5173";
+      access = [];
+    };
     bit = {
       name = "bit.${zone}";
       title = "Bit";
@@ -185,6 +192,13 @@ in {
       upstream = "10.90.0.11:9117";
       access = [];
     };
+    files = {
+      name = "files.${zone}";
+      title = "Files";
+      icon = "garage";
+      upstream = "${hosts.v3x-teapot.address}:3900";
+      access = [];
+    };
   };
 
   sections = [
@@ -194,7 +208,7 @@ in {
     }
     {
       title = "Tools";
-      services = ["chat" "search" "rss" "inference" "agent" "usage"];
+      services = ["chat" "search" "rss" "tasks" "inference" "agent" "usage"];
     }
     {
       title = "Media";
@@ -205,8 +219,12 @@ in {
       services = ["sinkarr" "linkarr" "showarr" "movarr" "listenarr" "bookarr" "titlarr" "coatarr"];
     }
     {
+      title = "Control Plane";
+      services = ["mission" "grafanaMission" "launchpi"];
+    }
+    {
       title = "Infrastructure";
-      services = ["auth" "bit" "cache" "mission" "grafanaMission" "launchpi"];
+      services = ["auth" "bit" "cache" "files"];
     }
   ];
 }

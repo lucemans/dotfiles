@@ -1,4 +1,6 @@
-{inputs, ...}: {
+{inputs, ...}: let
+  inherit (import ../../network/services.nix) services;
+in {
   imports = [
     ./options.nix
     ./playwright/default.nix
@@ -48,6 +50,11 @@
       bearer = "v3x_error_menu_token";
       blurb = "error.menu projects and jobs";
     };
+    kaneo = {
+      url = "https://${services.tasks.name}/api/mcp";
+      bearer = "v3x_kaneo_token";
+      blurb = "Kaneo tasks and projects";
+    };
     sdrangel = {
       # Served by the SDRangel window on the host, so it connects only while
       # SDRangel runs.
@@ -62,7 +69,7 @@
         label = "Base";
         glyph = "";
         color = "248;248;242";
-        servers = ["repo_reader" "github_reader" "nixos" "plan_env" "playwright" "error_menu"];
+        servers = ["repo_reader" "github_reader" "nixos" "plan_env" "playwright" "error_menu" "kaneo"];
       };
       rf = {
         label = "Radio Frequency";
