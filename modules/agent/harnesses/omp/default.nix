@@ -41,6 +41,11 @@
       // (import ../../subagents).files "omp" ".omp/agent/agents"
       // {
         ".omp/agent/themes/titanium-v3x.json".source = ./titanium-v3x.json;
+        ".omp/agent/commands/sicko.md".text = ''
+          Spawn exactly one `comment-sicko` task. Its assignment is the scope only: $ARGUMENTS
+          With no arguments, the scope is the current uncommitted diff, or the diff against `main` when the tree is clean.
+          Do not restate review criteria, verdict formats, or acceptance rules; the agent carries its own. Relay its report unchanged.
+        '';
       };
 
     agentRuntime.harnesses.omp = let
@@ -75,11 +80,22 @@
             baseUrl = "https://${services.agent.name}";
             api = "anthropic-messages";
             apiKey = "!${pkgs.coreutils}/bin/printenv ANTHROPIC_API_KEY";
-            modelOverrides."claude-fable-5-1".thinking = {
-              mode = "anthropic-adaptive";
-              efforts = ["low" "medium" "high" "xhigh" "max"];
-              supportsDisplay = true;
-            };
+            modelOverrides =
+              {
+                "claude-fable-5-1".thinking = {
+                  mode = "anthropic-adaptive";
+                  efforts = ["low" "medium" "high" "xhigh" "max"];
+                  supportsDisplay = true;
+                };
+              }
+              # Muse rejects a disabled thinking budget, so `off` is not offered.
+              // lib.genAttrs ["muse-wonder-1.0" "muse-wonder-1.0-contributor" "muse-spark-1.3"] (_: {
+                thinking = {
+                  mode = "anthropic-adaptive";
+                  efforts = ["minimal" "low" "medium" "high" "xhigh" "max"];
+                  requiresEffort = true;
+                };
+              });
             discovery.type = "openai-models-list";
             # Discovery lists these without their real context limits or
             # modalities, so both are stated here until the gateway reports

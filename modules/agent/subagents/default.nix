@@ -12,6 +12,7 @@ let
       omp = {
         tools = "read, grep, glob, edit, bash";
         model = "anthropic/claude-haiku-5-5";
+        thinkingLevel = "low";
       };
       opencode = {
         mode = "subagent";
