@@ -149,6 +149,10 @@
             web: [web/hosted]
         task:
           structured: true
+        secrets:
+          enabled: true
+        title:
+          generator: tiny
         searxng:
           endpoint: https://search.v3x.host
         startup:
@@ -180,7 +184,7 @@
           start = lib.optionals (!(entry ? catalog)) ["--model" "@default"];
         };
 
-      tiny = "v3x-inference/v3x-m/nex-n2.5-mini";
+      tiny = "v3x-inference/v3x-m/minicpm5-2b";
       # Answers `read <image>?q=` for a model that takes no images. Unset, OMP
       # falls back to a built-in model the gateway does not route.
       vision = "anthropic/claude-opus-5-5";

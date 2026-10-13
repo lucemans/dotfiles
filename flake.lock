@@ -1542,11 +1542,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1791621213,
-        "narHash": "sha256-CgoIqd+LgrFrjYJ9qAwTivbFW9lN3ilh8xzvJol/zmI=",
+        "lastModified": 1791931770,
+        "narHash": "sha256-O1YbWe5KqaSmha92CZBqMS4kx5vK79gm+VH3Q0VTiG0=",
         "owner": "v3xlabs",
         "repo": "tablet",
-        "rev": "1490b1c6c0b843db94fef8855e0743b20cb9e4c9",
+        "rev": "295b5dd0647dcc847ae1a705b8cebb465d56bc58",
         "type": "github"
       },
       "original": {
