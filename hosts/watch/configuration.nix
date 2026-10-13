@@ -87,7 +87,7 @@ _: {
     sops = {
       age.keyFile = "/persist/var/lib/sops-nix/key.txt";
       age.sshKeyPaths = [];
-      defaultSopsFile = ../../secrets/watch.sops.yaml;
+      defaultSopsFile = ../../config/watch.sops.yaml;
     };
 
     virtualisation.docker.enable = true;

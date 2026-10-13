@@ -64,7 +64,8 @@
                   contextWindow = 256000;
                   maxTokens = 128000;
                 }
-              ];
+              ]
+              ++ map (id: {inherit id;}) ["muse-wonder-1.0" "muse-spark-1.3"];
           };
           v3x-inference = {
             baseUrl = "https://${services.inference.name}/v1";
@@ -197,6 +198,19 @@
             inherit tiny;
             smol = "anthropic/kimi-k3-256k";
             slow = "anthropic/kimi-k3-256k";
+          };
+        }
+        {
+          name = "meta";
+          glyph = "∞";
+          color = "0;129;251";
+          blurb = "Meta";
+          logo = ../../icons/meta.png;
+          modelRoles = {
+            default = "anthropic/muse-wonder-1.0";
+            inherit tiny;
+            smol = "anthropic/muse-spark-1.3";
+            slow = "anthropic/muse-wonder-1.0";
           };
         }
         {
