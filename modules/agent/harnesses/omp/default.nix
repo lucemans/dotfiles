@@ -43,7 +43,7 @@
         ".omp/agent/themes/titanium-v3x.json".source = ./titanium-v3x.json;
         ".omp/agent/commands/sicko.md".text = ''
           Spawn exactly one `comment-sicko` task. Its assignment is the scope only: $ARGUMENTS
-          With no arguments, the scope is the current uncommitted diff, or the diff against `main` when the tree is clean.
+          With no arguments, the scope is the current uncommitted diff, or the diff against `master` when the tree is clean.
           Do not restate review criteria, verdict formats, or acceptance rules; the agent carries its own. Relay its report unchanged.
         '';
       };
@@ -88,7 +88,6 @@
                   supportsDisplay = true;
                 };
               }
-              # Muse rejects a disabled thinking budget, so `off` is not offered.
               // lib.genAttrs ["muse-wonder-1.0" "muse-wonder-1.0-contributor" "muse-spark-1.3"] (_: {
                 thinking = {
                   mode = "anthropic-adaptive";
