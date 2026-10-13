@@ -47,7 +47,8 @@
         };
         voxtype = {
           key = "Scroll Lock";
-          command = "voxtype record toggle";
+          # command = "voxtype record toggle";
+          command = ''sh -c 'voxtype record toggle $([ "$XDG_SESSION_DESKTOP" = temple ] && echo --no-osd)' '';
         };
       };
       activateLinux = {
