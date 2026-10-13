@@ -38,6 +38,7 @@
   in {
     home-manager.users.luc.home.file =
       agents
+      // (import ../../subagents).files "omp" ".omp/agent/agents"
       // {
         ".omp/agent/themes/titanium-v3x.json".source = ./titanium-v3x.json;
       };
