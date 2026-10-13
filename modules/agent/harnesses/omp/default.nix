@@ -6,8 +6,41 @@
     ...
   }: let
     inherit (import ../../../network/services.nix) services;
+
+    # OMP takes a subagent's model from its definition, never from the task
+    # call. A `^model` mention in the prompt covers a general-purpose worker on
+    # any model, so only reviewers are pinned here. Each reuses the bundled
+    # `reviewer` prompt of the pinned OMP, so only the model differs.
+    pinned = {
+      kimi = "anthropic/kimi-k3-256k";
+      muse-wonder = "anthropic/muse-wonder-1.0";
+      muse-spark = "anthropic/muse-spark-1.3";
+    };
+    prompts = "${inputs.omp}/packages/coding-agent/src/prompts/agents";
+    reviewer = builtins.readFile "${prompts}/reviewer.md";
+    reviewerFields = [
+      "name: reviewer\n"
+      "description: \"Code review specialist for quality/security analysis\"\n"
+      "model: \"@slow\"\n"
+    ];
+    agents =
+      lib.concatMapAttrs (name: model: {
+        ".omp/agent/agents/${name}-reviewer.md".text = assert lib.assertMsg (lib.all (field: lib.hasInfix field reviewer) reviewerFields)
+        "omp: the bundled reviewer.md frontmatter changed, update reviewerFields";
+          builtins.replaceStrings reviewerFields [
+            "name: ${name}-reviewer\n"
+            "description: ${builtins.toJSON "Code review specialist for quality/security analysis on ${model}"}\n"
+            "model: ${builtins.toJSON model}\n"
+          ]
+          reviewer;
+      })
+      pinned;
   in {
-    home-manager.users.luc.home.file.".omp/agent/themes/titanium-v3x.json".source = ./titanium-v3x.json;
+    home-manager.users.luc.home.file =
+      agents
+      // {
+        ".omp/agent/themes/titanium-v3x.json".source = ./titanium-v3x.json;
+      };
 
     agentRuntime.harnesses.omp = let
       mcp = {
@@ -93,31 +126,12 @@
         providers:
           maxInFlightRequests:
             anthropic: 3
-          webSearchOrder: [searxng]
-          webSearchExclude:
-            - perplexity
-            - gemini
-            - anthropic
-            - codex
-            - xai
-            - zai
-            - exa
-            - tinyfish
-            - jina
-            - kagi
-            - tavily
-            - firecrawl
-            - brave
-            - kimi
-            - parallel
-            - synthetic
-            - ollama
-            - startpage
-            - duckduckgo
-            - ecosia
-            - google
-            - mojeek
-            - public
+        # The `web` role itself sits in each profile's role overlay.
+        retry:
+          fallbackChains:
+            web: [web/hosted]
+        task:
+          structured: true
         searxng:
           endpoint: https://search.v3x.host
         startup:
@@ -139,7 +153,7 @@
             "--config"
             "${settings}"
             "--config"
-            "${pkgs.writeText "omp-roles-${entry.name}.yml" (builtins.toJSON {modelRoles = {inherit vision;} // entry.modelRoles;})}"
+            "${pkgs.writeText "omp-roles-${entry.name}.yml" (builtins.toJSON {modelRoles = {inherit vision web;} // entry.modelRoles;})}"
             "--extension"
             "${./agent-toolsets.ts}"
             "--extension"
@@ -153,6 +167,8 @@
       # Answers `read <image>?q=` for a model that takes no images. Unset, OMP
       # falls back to a built-in model the gateway does not route.
       vision = "anthropic/claude-opus-5-5";
+      # Our SearXNG first, then the session model's own hosted search.
+      web = "web/searxng";
     in {
       glyph = "󰚩";
       color = "189;147;249";

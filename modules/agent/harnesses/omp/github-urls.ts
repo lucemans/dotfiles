@@ -16,6 +16,9 @@ type ToolCall = { name: string; arguments: Record<string, unknown> };
 
 const schemes: Scheme[] = ["pr", "issue"];
 
+const promptDoc =
+  "`issue://<N>` / `pr://<N>` (`<owner>/<repo>/<N>` for other repos): GitHub issue/PR; bare: recent; `?state=&limit=&author=&label=`. PR diff: `pr://<N>/diff` (files), `/diff/<i>`, `/diff/all`.";
+
 const positive = (text: string | undefined): number | undefined =>
   text !== undefined && /^[1-9]\d*$/.test(text) ? Number(text) : undefined;
 
@@ -116,12 +119,13 @@ const resolve = async (scheme: Scheme, url: InternalUrl, context?: ResolveContex
 export default function (): void {
   const router = InternalUrlRouter.instance();
   for (const scheme of schemes) {
-    // The spread keeps OMP's own fields, such as the spec newer releases
-    // require, and the handler's resolve replaces the gh-backed one.
+    // The spread keeps OMP's own fields, such as `spec`. It drops prototype
+    // methods, and OMP's own `promptDoc` lists these schemes only when `gh`
+    // is on PATH, so both are supplied here.
     router.register({
       ...router.getHandler(scheme),
       scheme,
-      immutable: true,
+      promptDoc: scheme === "issue" ? () => promptDoc : undefined,
       resolve: (url: InternalUrl, context?: ResolveContext) => resolve(scheme, url, context),
     });
   }
