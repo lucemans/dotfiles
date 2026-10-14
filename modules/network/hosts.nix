@@ -42,6 +42,11 @@ in {
       address = "100.127.10.3";
       group = "f1";
     };
+    v3x-b4 = {
+      publicKey = "N4RizZYS3xH9hElskFUH5Ho9/w3Y/79vBnim1d3P9io=";
+      address = "100.127.10.4";
+      group = "f1";
+    };
     v3x-line = {
       publicKey = "O7FY5DfLXXLqpJqV2M8axT5a8lC6QUaGHP+sH9stWDY=";
       address = "100.127.10.10";
