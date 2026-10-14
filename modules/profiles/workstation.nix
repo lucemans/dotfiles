@@ -153,6 +153,8 @@
 
       obs-studio
       vlc
+
+      libreoffice-qt
     ];
 
     # https://wiki.nixos.org/wiki/Chromium#Enabling_native_Wayland_support
