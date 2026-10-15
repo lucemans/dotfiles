@@ -181,6 +181,18 @@ in {
             };
           }
           {
+            model_name = "v3x-m/zeta-2.1";
+            litellm_params = {
+              api_base = "https://ollama.v3x.sh/v1";
+              model = "openai/zeta-2.1";
+              api_key = "local";
+            };
+            model_info = {
+              input_cost_per_token = 0.00000002;
+              output_cost_per_token = 0.00000002;
+            };
+          }
+          {
             model_name = "v3x-m/sweep-next-edit-v2-7b";
             litellm_params = {
               api_base = "https://ollama.v3x.sh/v1";
@@ -190,6 +202,18 @@ in {
             model_info = {
               input_cost_per_token = 0.00000002;
               output_cost_per_token = 0.00000002;
+            };
+          }
+          {
+            model_name = "v3x-m/muse-glimmer-30b";
+            litellm_params = {
+              api_base = "https://ollama.v3x.sh/v1";
+              model = "openai/muse-glimmer-30b";
+              api_key = "local";
+            };
+            model_info = {
+              input_cost_per_token = 0.00000020;
+              output_cost_per_token = 0.00000020;
             };
           }
           {
