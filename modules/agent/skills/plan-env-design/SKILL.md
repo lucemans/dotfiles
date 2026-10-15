@@ -89,6 +89,12 @@ Simultaneous variations of one screen get their own slugs, `myproject-home-v1` a
 `myproject-home-v2`, one push each, with the intent comment at the top of each saying how
 that one differs.
 
+**After a pick.** When the reader picks a variation, push a settled revision. With one
+slug per variation, revise the winner's slug and leave the others as they are. With one
+slug and a tab bar, the winner becomes the first tab, which is the default, and the other
+variations move to a dimmed `Not chosen` group at the end of the bar. Delete nothing: the
+reader can change their mind.
+
 A direction that wins is written fresh in the repository, under the project's own rules,
 framework, tokens and components. The mockup is never pasted in as the implementation. It
 has no states, no keyboard handling, no responsive behaviour you verified, and it

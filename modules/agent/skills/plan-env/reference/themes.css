@@ -2,7 +2,7 @@
    a colour is, never what a component does. Link it third, after document.css
    and code.css, so it overrides the tokens both of them read.
 
-   The default theme is black, it lives in document.css, and it needs no
+   The default theme is round, it lives in document.css, and it needs no
    attribute and no block here. A document opts into another one with
    <html lang="en" data-theme="ink">.
 
@@ -10,11 +10,41 @@
    its own theme, in light and in dark. Each block states its lowest pair.
    Recompute all three surfaces before you change a value. */
 
-/* Off-white and near-black. The same ladder as the default, one step in from
-   the ends, for a reader who finds true black too hard.
+/* True black ground, no colour cast. The plan-env default before round.
+   Lowest pair: --ink-faint on --sunk, 4.55 light and 4.86 dark. --code-bg
+   equals --sunk on purpose: a code fill and a sunk surface sit at the same
+   depth, and two greys one step apart read as a mistake. */
+[data-theme="black"] {
+  --bg: light-dark(#ffffff, #000000);
+  --panel: light-dark(#fafafa, #0a0a0a);
+  --sunk: light-dark(#f2f2f2, #171717);
+  --code-bg: light-dark(#f2f2f2, #171717);
+  --raised-hover: light-dark(#e8e8e8, #232323);
+  --rule: light-dark(#ededed, #2e2e2e);
+  --guide: light-dark(#d4d4d4, #3d3d3d);
+  --ink: light-dark(#171717, #ededed);
+  --ink-soft: light-dark(#666666, #a1a1a1);
+  --ink-faint: light-dark(#6e6e6e, #858585);
+
+  --accent: light-dark(#1f5fd8, #8ab0ff);
+  --accent-soft: light-dark(#1f5fd816, #8ab0ff24);
+  --pos: light-dark(#15703f, #5fc98d);
+  --pos-soft: light-dark(#15703f16, #5fc98d24);
+  --neg: light-dark(#b02318, #ff8f85);
+  --neg-soft: light-dark(#b0231816, #ff8f8524);
+  --warn: light-dark(#8a5300, #e8b866);
+  --warn-soft: light-dark(#8a530016, #e8b86624);
+  --note: light-dark(#0c6673, #5fcede);
+  --note-soft: light-dark(#0c667316, #5fcede24);
+  --move: light-dark(#6a3cbd, #bba0f5);
+  --move-soft: light-dark(#6a3cbd16, #bba0f524);
+}
+
+/* Off-white and near-black. The same ladder as black, one step in from the
+   ends, for a reader who finds true black too hard. Its hues are round's.
    Lowest pair: --ink-faint on --sunk, 4.57 light. Dark lowest is 4.94.
-   --ink-faint is one step darker than the default in light, because on
-   #efefef the default #6e6e6e falls to 4.43. */
+   --ink-faint is one step darker than black's in light, because on
+   #efefef black's #6e6e6e falls to 4.43. */
 [data-theme="neutral"] {
   --bg: light-dark(#f7f7f7, #0c0c0d);
   --panel: light-dark(#ffffff, #151517);
@@ -63,9 +93,9 @@
 
 /* The macOS ladder, for a document that sits beside native windows. Light
    runs white to grey, dark runs grey to lighter grey, which is the opposite
-   direction to the default. --warn, --note and --move keep the default
-   values, because the system ships no counterpart for them; the lowest of
-   those three is --warn on --sunk in light, 5.36.
+   direction to black. --warn, --note and --move keep round's values,
+   because the system ships no counterpart for them; the lowest of those
+   three is --note on --sunk in light, 4.61, and --move on --sunk in dark, 4.98.
    Lowest pair: --neg on --sunk, 4.56 light. Dark lowest is 4.72.
    --ink-faint is one step darker than the system value in light, because on
    #ececee the system #6e6e73 falls to 4.30. */

@@ -1,89 +1,99 @@
-/* plan-env snippet component. Inline verbatim into the document stylesheet,
-   after document.css. Requires its tokens: --panel --sunk --code-bg --rule
-   --mono --ink-soft --ink-faint --accent --accent-soft --pos --pos-soft
-   --neg --neg-soft.
+/* plan-env snippet component. Link it second, after document.css, whose
+   tokens it reads: --code-bg --raised-hover --mono --ink-soft --ink-faint
+   --accent-soft --pos --pos-soft --neg --neg-soft --radius-control
+   --fs-body --fs-small.
 
    One component covers every code-shaped block: a quoted snippet, a terminal
-   exchange, and a proposed file change. They share one header row, so they
-   read as the same thing wherever they appear. */
+   exchange, and a proposed file change. Each reads as a file: a mono path
+   header, then the lines on the raised ground, with a marker gutter on a
+   diff and real line numbers when the figure is numbered. */
 
 .snippet {
-  --code-fs: .765rem;
-  --code-lh: 1.62;
-  --code-pad: .75rem;
-  --gutter-w: 2.4rem;
+  --code-fs: var(--fs-body, .875rem);
+  --code-lh: 1.6;
+  --code-pad: .85rem;
+  --gutter-w: 2.6rem;
+  --mark-w: 0px;
+  --num-w: 0px;
 
   display: grid; grid-template-columns: minmax(0, 1fr) auto;
-  background: var(--code-bg); margin: 0 0 1rem; font-family: var(--mono);
+  background: var(--code-bg); border-radius: var(--radius-control, .5rem); overflow: hidden;
+  margin: 0 0 1rem; font-family: var(--mono);
 }
 
-/* The caption is one element. The language tag on the right is drawn from
-   data-lang on the figure, so there is no second element to get out of order
-   and no second place for the language to disagree with itself. */
+/* The caption is the path header. The language tag on the right is drawn
+   from data-lang on the figure, so there is no second element to get out of
+   order and no second place for the language to disagree with itself. */
 .snippet figcaption {
   grid-column: 1; grid-row: 1;
-  font-size: .71rem; color: var(--ink-soft); padding: .36rem var(--code-pad);
+  font-family: var(--mono); font-size: var(--fs-small, .75rem); color: var(--ink-soft);
+  padding: .5rem var(--code-pad);
   min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .snippet::after {
   content: attr(data-lang); grid-column: 2; grid-row: 1; align-self: center;
-  font-size: .66rem; color: var(--ink-faint); padding: .36rem var(--code-pad) .36rem 0;
+  font-size: var(--fs-small, .75rem); color: var(--ink-soft); padding: .5rem var(--code-pad) .5rem 0;
 }
 
 .snippet pre {
   grid-column: 1 / -1; margin: 0; background: none; overflow-x: auto;
-  font-size: var(--code-fs); line-height: var(--code-lh); padding: .55rem 0;
-  border-top: 1px solid var(--rule);
+  font-size: var(--code-fs); line-height: var(--code-lh); padding: .5rem 0;
+  border-top: 1px solid var(--raised-hover);
+  counter-reset: ln var(--from, 0);
 }
-.snippet pre > code { display: block; background: none; padding: 0 var(--code-pad); font-size: 1em; }
-.snippet pre + pre { border-top: 1px dashed var(--rule); }
+.snippet pre > code { display: block; background: none; padding: 0 var(--code-pad); font-size: 1em; border-radius: 0; }
+.snippet pre + pre { border-top: 1px dashed var(--raised-hover); }
 
 /* Shiki output, dual theme via CSS variables (defaultColor: false). Syntax
    colour belongs to the language, not to the document's hue vocabulary. */
-.snippet pre.shiki { padding: .55rem 0; }
+.snippet pre.shiki { padding: .5rem 0; }
 .snippet pre.shiki > code { padding: 0; }
 .shiki, .shiki span { color: var(--shiki-light); background-color: transparent; }
 @media (prefers-color-scheme: dark) {
   .shiki, .shiki span { color: var(--shiki-dark); }
 }
-.shiki .line { display: inline-block; width: 100%; padding: 0 var(--code-pad); }
+.shiki .line { display: inline-block; width: 100%; min-height: 1lh; padding: 0 var(--code-pad); }
 .shiki .line:empty::before { content: "\00a0"; }
 
 /* Notation effects */
 .shiki .line.highlighted { background: var(--accent-soft); }
-.shiki .line.diff.add { background: var(--pos-soft); box-shadow: inset 2px 0 var(--pos); }
-.shiki .line.diff.remove { background: var(--neg-soft); box-shadow: inset 2px 0 var(--neg); }
-.shiki .line.highlighted.error { background: var(--neg-soft); box-shadow: inset 2px 0 var(--neg); }
-.shiki .line.highlighted.warning { background: var(--accent-soft); box-shadow: inset 2px 0 var(--accent); }
+.shiki .line.highlighted.error { background: var(--neg-soft); }
+.shiki .line.highlighted.warning { background: var(--accent-soft); }
 .shiki .highlighted-word { background: var(--accent-soft); outline: 1px solid var(--accent); padding: 0 .15em; }
-.shiki.has-focused .line:not(.focused) { opacity: .4; transition: opacity 150ms; }
+.shiki.has-focused .line:not(.focused) { opacity: .4; }
 .snippet:hover .shiki.has-focused .line { opacity: 1; }
-@media (prefers-reduced-motion: reduce) {
-  .shiki.has-focused .line:not(.focused), .snippet:hover .shiki.has-focused .line { transition: none; }
-}
 
-/* Line numbers: class "numbered" on the figure. Width from --gutter-w. */
-.snippet.numbered .shiki code { counter-reset: ln; }
-.snippet.numbered .shiki .line::before {
-  counter-increment: ln; content: counter(ln);
-  display: inline-block; width: var(--gutter-w); padding-right: .8rem;
-  text-align: right; color: var(--ink-faint);
+/* The gutter. A diff line and a numbered line each reserve their columns on
+   the left, and the number and the marker sit in them, outside the text, so
+   a copied line carries neither. */
+.snippet.is-diff { --mark-w: 1.6ch; }
+.snippet.numbered { --num-w: var(--gutter-w); }
+.snippet.is-diff pre > *, .snippet .shiki .line {
+  position: relative;
+  padding-left: calc(var(--code-pad) + var(--num-w) + var(--mark-w));
+}
+.snippet.numbered pre > *, .snippet.numbered .shiki .line { counter-increment: ln; }
+.snippet.numbered pre > *::before, .snippet.numbered .shiki .line::before {
+  content: counter(ln); position: absolute; left: 0; width: calc(var(--num-w) + .25rem);
+  text-align: right; color: var(--ink-faint); user-select: none;
+}
+.snippet.is-diff pre > *::after, .snippet.is-diff .shiki .line.diff::after {
+  position: absolute; left: calc(var(--code-pad) + var(--num-w) - .2ch);
+  font-weight: 600; user-select: none;
 }
 
 /* Terminal: class "is-terminal" on the figure. The $ comes from CSS and is
-   never part of the text, so a copied command stays runnable. The command and
-   the output carry the gutter themselves. Nothing else supplies it: code.js
-   colours a command where it stands rather than replacing the pre, so no
-   .line arrives, and a samp is not a code element. */
+   never part of the text, so a copied command stays runnable. */
 .snippet.is-terminal .cmds code { display: block; background: none; padding: 0 var(--code-pad); font-size: 1em; }
 .snippet.is-terminal .cmds code::before { content: "$ "; color: var(--ink-faint); }
 .snippet.is-terminal samp { display: block; padding: 0 var(--code-pad); font-family: var(--mono); }
 
 /* Proposed file change: class "is-diff" on the figure. Hand written, one
    <ins>, <del> or <span> per line. These rules draw it with scripts off; with
-   code.js the lines become .line.diff.add and .line.diff.remove above. Same
-   header as every other snippet, which is the point of folding it in here. */
-.snippet.is-diff pre > * { display: block; padding: 0 var(--code-pad); white-space: pre; }
-.snippet.is-diff ins { text-decoration: none; background: var(--pos-soft); box-shadow: inset 2px 0 var(--pos); }
-.snippet.is-diff del { text-decoration: none; background: var(--neg-soft); box-shadow: inset 2px 0 var(--neg); }
+   code.js the lines become .line.diff.add and .line.diff.remove. */
+.snippet.is-diff pre > * { display: block; padding-right: var(--code-pad); white-space: pre; }
+.snippet.is-diff ins, .shiki .line.diff.add { text-decoration: none; background: var(--pos-soft); }
+.snippet.is-diff del, .shiki .line.diff.remove { text-decoration: none; background: var(--neg-soft); }
+.snippet.is-diff ins::after, .snippet.is-diff .shiki .line.diff.add::after { content: "+"; color: var(--pos); }
+.snippet.is-diff del::after, .snippet.is-diff .shiki .line.diff.remove::after { content: "-"; color: var(--neg); }
 .snippet.is-diff pre > span { color: var(--ink-soft); }

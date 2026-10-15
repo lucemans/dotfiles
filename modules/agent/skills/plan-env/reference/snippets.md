@@ -76,7 +76,10 @@ the change, and Shiki highlights the lines as the file's own language. Writing
 </figure>
 ```
 
-**Line numbers.** Add class `numbered`, only when the prose refers to line positions.
+**Line numbers.** Add class `numbered` to show the file's own line numbers in the gutter.
+Set `--from` on the figure to the number before the first line, so a diff of lines 17 to
+20 carries `style="--from: 16"`. Without `--from` the count starts at 1, which is right
+only for a whole file. A diff draws its `+` and `-` marks in the gutter either way.
 
 **Program output with colour.** `data-lang="ansi"`, keeping the raw escape codes.
 

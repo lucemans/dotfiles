@@ -1,132 +1,210 @@
-/* plan-env document component stylesheet. Inline verbatim into the page.
-   Pair it with code.css when the page carries code snippets; code.css needs
-   the tokens defined here. themes.css comes third, because it overrides
-   those tokens. Full width by design: nothing centers, nothing caps, and
-   --rail is the only fixed measurement on the page.
+/* plan-env document stylesheet, in the round language. Link it first, then
+   code.css when the page carries snippets, then themes.css when it opts into
+   another palette. themes.css redeclares tokens only.
 
-   Nothing on this page has a border-radius, and no surface is drawn with a
-   closed outline. Surfaces separate by fill, by hairline, and by space. */
+   The page is a slate canvas. The rail sits on it at the left edge, with no
+   fill. Content sits on the canvas or in a few white .block surfaces that
+   group it. Nothing inside a block is a surface of its own: sections split by
+   space and a hairline, and tables, code and trees sit one level up on the
+   raised token. Radius comes from two tokens only. Three type sizes: 18px
+   title, 14px body, 12px labels, and nothing smaller. */
 
 :root {
   color-scheme: light dark;
-  /* True black ground, no colour cast. Every text token below reaches AA on
-     all three surfaces of its own theme, so a faint caption on --sunk is as
-     readable as body text on --bg. The lowest pair is --ink-faint on --sunk,
-     4.55 light and 4.86 dark. Recompute all three surfaces before you change
-     any value here. themes.css redeclares these tokens and nothing else. */
-  --bg: light-dark(#ffffff, #000000);
-  --panel: light-dark(#fafafa, #0a0a0a);
-  --sunk: light-dark(#f2f2f2, #171717);
-  /* Same value as --sunk on purpose. A code fill and a sunk surface sit at
-     the same depth, and two greys one step apart read as a mistake. */
-  --code-bg: light-dark(#f2f2f2, #171717);
-  --rule: light-dark(#ededed, #2e2e2e);
-  --guide: light-dark(#d4d4d4, #3d3d3d);
-  --ink: light-dark(#171717, #ededed);
-  --ink-soft: light-dark(#666666, #a1a1a1);
-  --ink-faint: light-dark(#6e6e6e, #858585);
+  /* Canvas, surface, raised. Every text token reaches AA on all three in its
+     own scheme. The lowest pair is --ink-faint on --sunk, 4.71 light. Light
+     --ink-faint is one step darker than slate-500, which falls to 4.12 on
+     --sunk. Recompute all three surfaces before you change a value. */
+  --bg: light-dark(#f8fafc, #000000);
+  --panel: light-dark(#ffffff, #141416);
+  --sunk: light-dark(#ebeff4, #1c1c20);
+  --code-bg: light-dark(#ebeff4, #1c1c20);
+  --raised-hover: light-dark(#dfe5ec, #27272a);
+  --rule: light-dark(#e2e8f0, #27272a);
+  --guide: light-dark(#cbd5e1, #3f3f45);
+  --ink: light-dark(#0f172a, #f4f4f5);
+  --ink-soft: light-dark(#475569, #d4d4d8);
+  --ink-faint: light-dark(#5b6b80, #a1a1a6);
 
   /* Six hues. Each means one thing on the page, and the meaning is named
-     where the reader first meets it. */
-  --accent: light-dark(#1f5fd8, #8ab0ff);   /* change, proposal, modified */
-  --accent-soft: light-dark(#1f5fd816, #8ab0ff24);
-  --pos: light-dark(#15703f, #5fc98d);      /* done, passing, added */
-  --pos-soft: light-dark(#15703f16, #5fc98d24);
-  --neg: light-dark(#b02318, #ff8f85);      /* must fix, failing, removed */
-  --neg-soft: light-dark(#b0231816, #ff8f8524);
-  --warn: light-dark(#8a5300, #e8b866);     /* open, needs a decision */
-  --warn-soft: light-dark(#8a530016, #e8b86624);
-  --note: light-dark(#0c6673, #5fcede);     /* context, no action */
-  --note-soft: light-dark(#0c667316, #5fcede24);
-  --move: light-dark(#6a3cbd, #bba0f5);     /* renamed or moved */
-  --move-soft: light-dark(#6a3cbd16, #bba0f524);
+     where the reader first meets it. Amber is open and nothing else; a
+     modified file is the change hue, never amber or red. */
+  --accent: light-dark(#0369a1, #38bdf8);      /* change, proposal, modified */
+  --accent-soft: light-dark(#e0f2fe, #082f4966);
+  --pos: light-dark(#047857, #34d399);         /* done, passing, added */
+  --pos-soft: light-dark(#d1fae5, #022c2266);
+  /* red-50: line numbers on a removed line fall to 4.45 on red-100. */
+  --neg: light-dark(#b91c1c, #f87171);         /* must fix, failing, removed */
+  --neg-soft: light-dark(#fef2f2, #450a0a66);
+  --warn: light-dark(#92400e, #fbbf24);        /* open, needs a decision */
+  --warn-soft: light-dark(#fffbeb, #451a0366);
+  --note: light-dark(#5b6b80, #a1a1a6);        /* context, no action */
+  --note-soft: light-dark(#ebeff4, #1c1c20);
+  --move: light-dark(#6d28d9, #a78bfa);        /* renamed or moved */
+  --move-soft: light-dark(#ede9fe, #2e106566);
 
   --h: var(--accent);
   --h-soft: var(--accent-soft);
+  --h-500: #78787d;
 
+  --fs-title: 1.125rem;
+  --fs-body: .875rem;
+  --fs-small: .75rem;
+  --radius-panel: .875rem;
+  --radius-control: .5rem;
+  --block-pad: 1.75rem;
   --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
-  --pad: clamp(1rem, 2.5vw, 3rem);
-  --rail: 18rem;
+  --pad: clamp(1rem, 3vw, 3.5rem);
+  --rail: 15rem;
+  --scroll: calc(var(--planenv-chrome-h, 0px) + 1.25rem);
+
+  /* The viewer's chrome and answer card take the page palette from these. */
+  --planenv-chrome-bg: var(--panel);
+  --planenv-chrome-ink: var(--ink);
+  --planenv-chrome-line: var(--rule);
+  --planenv-chrome-accent: var(--ink);
+  --planenv-q-bg: var(--panel);
+  --planenv-q-ink: var(--ink);
+  --planenv-q-line: var(--guide);
+  --planenv-q-accent: var(--ink);
+  --planenv-q-open: var(--warn);
+  --planenv-q-on: var(--pos);
 }
 
 /* Put one of these on the element that carries the meaning. Every component
-   below reads --h and --h-soft from it, so a chip, a rail group, a counts
-   number and a tree row all take their colour from the same class. */
-.hue-plan, .mod  { --h: var(--accent); --h-soft: var(--accent-soft); }
-.hue-done, .add  { --h: var(--pos);    --h-soft: var(--pos-soft); }
-.hue-stop, .del  { --h: var(--neg);    --h-soft: var(--neg-soft); }
-.hue-open        { --h: var(--warn);   --h-soft: var(--warn-soft); }
-.hue-info        { --h: var(--note);   --h-soft: var(--note-soft); }
-.hue-move, .move { --h: var(--move);   --h-soft: var(--move-soft); }
+   below reads --h, --h-soft and --h-500 from it, so a chip, a reference, a
+   dot, a rail entry and a tree row all take their colour from one class. */
+.hue-plan, .mod  { --h: var(--accent); --h-soft: var(--accent-soft); --h-500: #0ea5e9; }
+.hue-done, .add  { --h: var(--pos);    --h-soft: var(--pos-soft);    --h-500: #10b981; }
+.hue-stop, .del  { --h: var(--neg);    --h-soft: var(--neg-soft);    --h-500: #ef4444; }
+.hue-open        { --h: var(--warn);   --h-soft: var(--warn-soft);   --h-500: #f59e0b; }
+.hue-info        { --h: var(--note);   --h-soft: var(--note-soft);   --h-500: #78787d; }
+.hue-move, .move { --h: var(--move);   --h-soft: var(--move-soft);   --h-500: #8b5cf6; }
 
 * { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; }
 body {
   margin: 0; background: var(--bg); color: var(--ink);
   font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
-  font-size: 17px; line-height: 1.65; overflow-x: hidden;
+  font-size: var(--fs-body); line-height: 1.6; overflow-x: hidden;
 }
+:target { scroll-margin-top: var(--scroll); }
 
-/* Layout. One column narrow, rail plus content wide, full width at both. */
-.page { display: grid; grid-template-columns: 1fr; gap: 2rem; padding: 2rem var(--pad) 5rem; }
-@media (min-width: 70rem) {
-  /* minmax(0, 1fr), not 1fr: a min-content floor would let a wide table push
-     the column past the viewport instead of scrolling inside .tablewrap. */
-  .page { grid-template-columns: var(--rail) minmax(0, 1fr); gap: 3rem; padding-top: 3rem; }
+/* Type. Three sizes. Small labels are uppercase with tracking. */
+h1 { font-size: var(--fs-title); font-weight: 600; line-height: 1.3; letter-spacing: -.01em; margin: 0; }
+h2, h3 { font-size: var(--fs-body); font-weight: 600; margin: 0 0 .75rem; }
+h4, th, nav.toc strong, details.earlier > summary b {
+  font-size: var(--fs-small); font-weight: 500; letter-spacing: .05em;
+  text-transform: uppercase; color: var(--ink-faint);
 }
-main { min-width: 0; }
-section { margin: 0 0 2.8rem; }
-
-h1 { font-size: 1.9rem; line-height: 1.2; margin: 0 0 .6rem; letter-spacing: -.015em; }
-h2 { font-size: 1.15rem; margin: 0 0 .9rem; padding-bottom: .4rem; border-bottom: 1px solid var(--rule); }
-h3 { font-size: 1rem; margin: 0; }
-h4 { font-family: var(--mono); font-size: .76rem; font-weight: 500; color: var(--ink-faint); margin: 1.2rem 0 .35rem; }
-p { margin: 0 0 .75rem; }
+h4 { margin: 1.2rem 0 .35rem; }
+p { margin: 0 0 .75rem; max-width: 75ch; }
 ul, ol { margin: 0 0 .75rem; padding-left: 1.2rem; }
 li { margin: .2rem 0; }
 li::marker { color: var(--ink-faint); }
-a { color: var(--accent); text-underline-offset: 2px; }
+a { color: var(--ink); text-decoration-color: var(--guide); text-underline-offset: 2px; }
+a:hover { text-decoration-color: var(--ink); }
 hr { border: 0; border-top: 1px solid var(--rule); margin: 2rem 0 1rem; }
-code { font-family: var(--mono); font-size: .84em; background: var(--code-bg); padding: .08em .32em; }
+code { font-family: var(--mono); font-size: 1em; background: var(--sunk); border-radius: .3rem; padding: .05em .35em; }
 
-.lede { font-size: 1.05rem; color: var(--ink-soft); }
+.lede { color: var(--ink-soft); }
 .soft { color: var(--ink-soft); }
-.ok { color: var(--pos); font-weight: 600; }
-.bad { color: var(--neg); font-weight: 600; }
-.meta, .where { font-family: var(--mono); font-size: .76rem; color: var(--ink-faint); }
-.where { word-break: break-word; }
+.ok { color: var(--pos); font-weight: 500; }
+.bad { color: var(--neg); font-weight: 500; }
+.meta, .rev { font-size: var(--fs-small); color: var(--ink-faint); }
+.where { font-family: var(--mono); font-size: var(--fs-small); color: var(--ink-faint); word-break: break-word; }
+/* The revision line sits under the h1. One quiet line, never a section. */
+.rev { margin: .2rem 0 .9rem; }
 
-/* Citations. The mono label is the marker, so the bullet goes. Entries
-   separate by space: a hairline between two one line entries reads as a
-   table, and a source list is not a table. */
+/* Citations. The label is the marker, so the bullet goes. */
 ul.sources { list-style: none; margin: 0 0 1rem; padding: 0; }
 ul.sources li { margin: 0 0 .6rem; }
-ul.sources li:last-child { margin-bottom: 0; }
-ul.sources b { display: block; font-family: var(--mono); font-size: .72rem; font-weight: 500; color: var(--ink-faint); }
+ul.sources b { display: block; font-family: var(--mono); font-size: var(--fs-small); font-weight: 500; color: var(--ink-faint); }
 
-/* Contents rail. One hue per group, matching the chips of the items it
-   lists. The group name and the ID carry the colour; nothing else does. */
-nav.toc { font-size: .85rem; }
+/* Layout. One column narrow. Wide, the rail hugs the left edge and the space
+   goes to the content. */
+.page { display: grid; grid-template-columns: 1fr; gap: 2rem; padding: calc(var(--planenv-chrome-h, 0px) + 2rem) var(--pad) 5rem; }
 @media (min-width: 70rem) {
-  nav.toc { position: sticky; top: 2rem; align-self: start; max-height: calc(100vh - 4rem); overflow-y: auto; }
+  /* minmax(0, 1fr), not 1fr: a min-content floor would let a wide table push
+     the column past the viewport instead of scrolling inside .tablewrap. */
+  .page { grid-template-columns: var(--rail) minmax(0, 1fr); gap: 3.5rem; padding-left: 1.5rem; }
 }
-nav.toc > div { margin-bottom: 1.2rem; }
-nav.toc strong { display: block; font-family: var(--mono); font-weight: 500; font-size: .78rem; color: var(--h); margin-bottom: .3rem; }
+main { min-width: 0; align-self: start; }
+main > section { margin: 0 0 2.5rem; }
+
+/* Block. A white surface on the canvas that groups related sections. A few
+   per page, never one per section and never one for everything. Content may
+   also sit on the canvas with no block. */
+.block { background: var(--panel); border-radius: var(--radius-panel); padding: var(--block-pad); margin: 0 0 1.5rem; }
+.block > section { margin: 0; }
+.block > section + section { border-top: 1px solid var(--rule); padding-top: 1.5rem; margin-top: 1.5rem; }
+.block section > :last-child, .panel > :last-child { margin-bottom: 0; }
+
+/* An open decision, the one tinted thing on the page. Inside a block it
+   bleeds to the block edges; the last one takes the block's bottom corners.
+   On the canvas it is a tinted block of its own. */
+section.open { background: var(--warn-soft); border-radius: var(--radius-panel); padding: 1.25rem var(--block-pad); }
+.block > section.open {
+  border-top: 0; border-radius: 0;
+  margin: 1.5rem calc(var(--block-pad) * -1) 0; padding: 1.25rem var(--block-pad);
+}
+.block > section.open + section.open { margin-top: 0; border-top: 1px solid light-dark(#fde68a, #451a03); }
+.block > section.open:last-child {
+  margin-bottom: calc(var(--block-pad) * -1);
+  border-radius: 0 0 var(--radius-panel) var(--radius-panel);
+}
+section.open code { background: light-dark(#fef3c7, #451a03); }
+.open-head { display: flex; align-items: center; gap: .6rem; margin: 0 0 .5rem; }
+.open-head h2, .open-head h3 { margin: 0; }
+.open-head .tag { font-size: var(--fs-small); font-weight: 500; color: var(--warn); }
+
+/* Panel. One discrete unit the reader accepts or rejects, as a surface on
+   the canvas. Never inside a block, never nested. */
+.panel { background: var(--panel); border-radius: var(--radius-panel); padding: 1.25rem var(--block-pad); margin: 0 0 1rem; }
+.panel:target { background: var(--h-soft); }
+.panel > header, .item > header { display: flex; gap: .6rem; align-items: center; margin-bottom: .6rem; }
+.panel > header h3, .item > header h2, .item > header h3 { flex: 1 1 auto; margin: 0; }
+
+/* Contents rail. On the canvas, no fill. The current content is the first,
+   unlabelled group. The folded revision is a dimmed group under its own
+   label. */
+nav.toc { font-size: var(--fs-body); }
+@media (min-width: 70rem) {
+  nav.toc {
+    position: sticky; top: calc(var(--planenv-chrome-h, 0px) + 2rem); align-self: start;
+    max-height: calc(100vh - var(--planenv-chrome-h, 0px) - 4rem); overflow-y: auto;
+  }
+}
+nav.toc > div { margin-bottom: 1.25rem; }
+nav.toc strong { display: block; margin: 0 0 .35rem .5rem; }
 nav.toc ol { list-style: none; margin: 0; padding: 0; }
 nav.toc li { margin: 0; }
-/* flex-start, not the default stretch: on a two line entry a stretched em is a
-   tall box with its glyph at the top, which reads as a misaligned chip. The em
-   is a square of its own and centres its own text, like .chip does. */
-nav.toc a { display: flex; align-items: flex-start; gap: .5rem; color: var(--ink-soft); text-decoration: none; line-height: 1.35; padding: .12rem .35rem .12rem 0; }
-nav.toc a:hover { color: var(--h); background: var(--h-soft); }
-nav.toc em {
-  display: inline-flex; align-items: center; justify-content: center;
-  flex: 0 0 auto; width: 1.35rem; height: 1.35rem;
-  font-family: var(--mono); font-size: .68rem; font-style: normal; line-height: 1;
-  color: var(--h); background: var(--h-soft);
+nav.toc a {
+  display: flex; align-items: center; gap: .55rem; padding: .32rem .5rem;
+  border-radius: var(--radius-control); color: var(--ink-soft); text-decoration: none; line-height: 1.35;
 }
-nav.toc a.tab-link { padding: .22rem .45rem; }
-nav.toc a.tab-link:hover { background: var(--h-soft); color: var(--h); }
+nav.toc a .rl { flex: 1 1 auto; }
+nav.toc a:hover { background: var(--sunk); color: var(--ink); }
+nav.toc a[aria-current] { background: var(--sunk); color: var(--ink); font-weight: 500; }
+nav.toc a .dot { margin: 0 .3rem 0 .35rem; }
+nav.toc a:not(:has(.dot, em))::before { content: ""; width: 1.1rem; flex: 0 0 auto; }
+nav.toc em {
+  flex: 0 0 auto; min-width: 1.1rem; font-style: normal;
+  font-size: var(--fs-small); font-weight: 600; color: var(--h);
+}
+nav.toc .r-tag { font-size: var(--fs-small); font-weight: 500; color: var(--warn); }
+nav.toc .r-n { font-size: var(--fs-small); color: var(--ink-faint); font-variant-numeric: tabular-nums; }
+nav.toc .history { border-top: 1px solid var(--rule); padding-top: 1.1rem; }
+nav.toc .history a { color: var(--ink-faint); padding-top: .24rem; padding-bottom: .24rem; }
+nav.toc .history a:hover { color: var(--ink); }
+nav.toc a.tab-link { padding: .32rem .5rem; }
+
+/* Status meter at the top of the rail: one segmented bar, then one line. */
+.meter { padding: 0 .5rem; margin: 0 0 1.5rem; }
+.meter .track { display: flex; gap: 2px; height: .375rem; border-radius: 999px; overflow: hidden; background: var(--sunk); }
+.meter .track span { background: var(--h-500); }
+.meter p { display: flex; flex-wrap: wrap; gap: .2rem .7rem; margin: .5rem 0 0; font-size: var(--fs-small); color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+.meter p span { display: inline-flex; align-items: center; gap: .35rem; }
 
 /* Tabbed pages. A .tab-link in the rail swaps which .tab shows. With no
    fragment in the URL every panel stays visible, so the page still reads top
@@ -135,70 +213,101 @@ nav.toc a.tab-link:hover { background: var(--h-soft); color: var(--h); }
 .tabs:has(> .tab:target) > .tab { display: none; }
 .tabs:has(> .tab:target) > .tab:target { display: block; }
 
-/* Counts strip. Hairlines come from the gap, never from a border on every
-   child, and there is no outer frame. */
-.counts {
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-  gap: 1px; background: var(--rule); margin: 1.6rem 0 2.6rem;
+/* The fold. A follow-up or settled revision puts the earlier revision in one
+   closed details.earlier after the current content: a row on the canvas,
+   aligned with block text, with a Show control. Opened, the earlier revision
+   reads on the canvas with no block around it. */
+details.earlier { margin: 2.5rem 0 0; padding: 0 var(--block-pad); }
+details.earlier > summary { list-style: none; cursor: pointer; display: flex; align-items: center; gap: 1rem; }
+details.earlier > summary::-webkit-details-marker { display: none; }
+details.earlier > summary .sum { flex: 1 1 auto; display: flex; flex-direction: column; gap: .15rem; }
+details.earlier > summary .sum span { color: var(--ink-soft); }
+details.earlier > summary::after {
+  content: "Show"; flex: 0 0 auto; font-size: var(--fs-small); font-weight: 500; color: var(--ink-soft);
+  background: var(--sunk); border-radius: var(--radius-control); padding: .4rem .8rem;
 }
-.counts div { background: var(--panel); padding: .55rem .8rem; }
-.counts b { display: block; font-size: 1.5rem; font-weight: 500; line-height: 1.2; font-variant-numeric: tabular-nums; color: var(--h); }
-.counts span { font-family: var(--mono); font-size: .72rem; color: var(--ink-faint); }
+details.earlier[open] > summary::after { content: "Hide"; }
+details.earlier > summary:hover::after { background: var(--raised-hover); color: var(--ink); }
+details.earlier > section { margin: 2.75rem 0 0; }
+details.earlier > section:first-of-type { margin-top: 2rem; }
 
-/* Square ID chip. A hue fill, not an outline. */
+/* Chip, reference, badge, dot. Each takes its hue from --h. A reference is
+   the inline form of a chip: an ID in prose that links to its item. */
 .chip {
-  display: inline-flex; align-items: center; justify-content: center;
-  width: 1.9rem; height: 1.9rem; flex: 0 0 auto;
-  font-family: var(--mono); font-size: .72rem; font-weight: 600; line-height: 1;
+  display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto;
+  min-width: 1.75rem; padding: .15rem .45rem; border-radius: .375rem;
+  font-size: var(--fs-small); font-weight: 600; line-height: 1.4;
   color: var(--h); background: var(--h-soft);
 }
-.badge { font-family: var(--mono); font-size: .72rem; color: var(--h); background: var(--h-soft); padding: .1rem .4rem; }
+.ref {
+  display: inline-block; font-size: var(--fs-small); font-weight: 600; line-height: 1.5;
+  color: var(--h); background: var(--h-soft); border-radius: .3rem;
+  padding: 0 .4em; text-decoration: none; white-space: nowrap; vertical-align: .05em;
+}
+.ref:hover { background: var(--h); color: var(--panel); }
+.badge { font-size: var(--fs-small); font-weight: 500; color: var(--h); background: var(--h-soft); border-radius: .375rem; padding: .1rem .45rem; }
+.dot { display: inline-block; flex: 0 0 auto; width: .45rem; height: .45rem; border-radius: 999px; background: var(--h-500); }
 
-/* Tables. The wrapper owns the scroll. Row hairlines do the separating. */
-.tablewrap { overflow-x: auto; background: var(--panel); margin: 0 0 1rem; }
-table { border-collapse: collapse; width: 100%; font-size: .85rem; }
-th, td { text-align: left; padding: .42rem .7rem; border-bottom: 1px solid var(--rule); vertical-align: top; }
-th { font-size: .8rem; font-weight: 500; color: var(--ink-soft); background: var(--sunk); }
-/* --code-bg equals --sunk in every theme, so an inline code span in a table
-   head would carry no fill at all. It takes the panel behind it instead. */
-th code { background: var(--panel); }
+/* Counts strip. Raised tiles, one key number each. */
+.counts { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: .75rem; margin: 0 0 1.5rem; }
+.counts div { background: var(--sunk); border-radius: var(--radius-control); padding: .8rem 1rem; }
+.counts b { display: block; font-size: var(--fs-title); font-weight: 600; line-height: 1.3; font-variant-numeric: tabular-nums; color: var(--ink); }
+.counts span { font-size: var(--fs-small); color: var(--ink-faint); }
+
+/* Tables. No ground of their own: they sit on the block or the canvas. The
+   wrapper owns the scroll. Row hairlines do the separating. */
+.tablewrap { overflow-x: auto; margin: 0 0 1.25rem; }
+table { border-collapse: collapse; width: 100%; font-size: var(--fs-body); }
+th, td { text-align: left; padding: .55rem .75rem; border-bottom: 1px solid var(--rule); vertical-align: top; }
+th:first-child, td:first-child { padding-left: 0; }
+th code { text-transform: none; letter-spacing: 0; }
 tbody tr:last-child td { border-bottom: 0; }
-td.id { font-family: var(--mono); font-size: .76rem; white-space: nowrap; color: var(--h); }
+td.id { font-size: var(--fs-small); font-weight: 600; white-space: nowrap; color: var(--h); }
 td.id a { color: var(--h); text-decoration: none; }
-td.sz { font-family: var(--mono); font-size: .72rem; color: var(--ink-faint); white-space: nowrap; }
+td.sz, td.num { font-size: var(--fs-small); color: var(--ink-faint); white-space: nowrap; font-variant-numeric: tabular-nums; }
 tr:target { background: var(--accent-soft); }
 
-/* Screenshot. The image is the evidence, so no fill and no frame compete
-   with it. The caption carries the same weight as any other .meta line. */
+/* Decided ledger. One row per decision: the ID and the decision, the answer
+   with the weight, the status as a dot and a word. No header row. */
+ul.ledger { list-style: none; margin: 0; padding: 0; }
+ul.ledger > li {
+  display: grid; grid-template-columns: minmax(12rem, 17rem) 1fr 9rem; gap: .25rem 1.5rem;
+  align-items: center; padding: .6rem 0; border-top: 1px solid var(--rule); margin: 0;
+}
+ul.ledger > li:first-child { border-top: 0; padding-top: 0; }
+.lg-dec { display: flex; align-items: center; gap: .6rem; color: var(--ink-soft); }
+.lg-ans { font-weight: 600; color: var(--ink); }
+.lg-ans.is-soft { font-weight: 400; color: var(--ink-faint); }
+.lg-st { display: inline-flex; align-items: center; gap: .45rem; font-size: var(--fs-small); font-weight: 500; color: var(--ink-soft); }
+.lg-why { grid-column: 2 / -1; font-size: var(--fs-small); color: var(--ink-faint); }
+@media (max-width: 62rem) { ul.ledger > li { grid-template-columns: 1fr; } .lg-why { grid-column: 1; } }
+
+/* Proportion bar: a raised track, rounded, with one -500 fill. */
+.pbar { display: block; height: .375rem; border-radius: 999px; background: var(--sunk); overflow: hidden; min-width: 6rem; margin-top: .55rem; }
+.pbar i { display: block; height: 100%; border-radius: 999px; background: var(--h-500); }
+
+/* Screenshot. The image is the evidence, so no fill and no frame. */
 figure.shot { margin: 0 0 1.2rem; }
-figure.shot img { display: block; width: 100%; height: auto; }
-figure.shot figcaption { font-family: var(--mono); font-size: .76rem; color: var(--ink-faint); margin-top: .4rem; }
+figure.shot img { display: block; width: 100%; height: auto; border-radius: var(--radius-control); }
+figure.shot figcaption { font-size: var(--fs-small); color: var(--ink-faint); margin-top: .4rem; }
 
-/* Item list. Hairlines from the grid gap. */
-.list { display: grid; gap: 1px; background: var(--rule); }
-.list > article { background: var(--panel); padding: .8rem .9rem; scroll-margin-top: 1.5rem; }
+/* Item list. Rows split by hairlines, on whatever is behind them. */
+.list > article { padding: .8rem 0; scroll-margin-top: var(--scroll); }
+.list > article + article { border-top: 1px solid var(--rule); }
 .list > article:target { background: var(--h-soft); }
-.list header { display: flex; gap: .7rem; align-items: center; margin-bottom: .35rem; }
+.list header { display: flex; gap: .6rem; align-items: center; margin-bottom: .35rem; }
 .list p { margin: 0 0 .4rem; }
-.list p:last-of-type { margin-bottom: .35rem; }
 
-/* Panel. One discrete unit the reader acts on. A fill, nothing more: the
-   chip inside it already carries the kind and its hue. Never nested. */
-.panel { background: var(--panel); padding: 1.1rem 1.2rem .9rem; margin: 0 0 1rem; scroll-margin-top: 1.5rem; }
-.panel:target { background: var(--h-soft); }
-.panel > header { display: flex; gap: .7rem; align-items: center; margin-bottom: .45rem; }
-.panel > header h3 { flex: 1 1 auto; }
-
-/* Two things compared side by side inside one panel. */
+/* Two things compared side by side. */
 .split { display: grid; grid-template-columns: 1fr; gap: 0 2rem; margin: .6rem 0 .9rem; }
 @media (min-width: 56rem) { .split { grid-template-columns: 1fr 1fr; } }
 .split h4 { margin-top: 0; }
 .split section { margin: 0 0 .8rem; }
 
 /* Status legend, for a tree or any hue binding. */
-.legend { display: flex; flex-wrap: wrap; gap: .1rem 1.4rem; font-family: var(--mono); font-size: .74rem; color: var(--ink-soft); margin: 0 0 .6rem; }
+.legend { display: flex; flex-wrap: wrap; gap: .1rem 1.4rem; font-size: var(--fs-small); color: var(--ink-soft); margin: 0 0 .6rem; }
 .legend > span { display: inline-flex; align-items: center; gap: .45rem; }
-.legend i { font-style: normal; width: 1.6rem; height: 1.1rem; background: var(--h-soft); }
+.legend i { font-style: normal; width: 1.6rem; height: 1.1rem; border-radius: .25rem; background: var(--h-soft); }
 
 /* ---------------------------------------------------------------------
    File tree and file tree diff.
@@ -213,7 +322,7 @@ figure.shot figcaption { font-family: var(--mono); font-size: .76rem; color: var
    See tree.md for the markup and the rules.
    --------------------------------------------------------------------- */
 .tree {
-  --fs: .79rem;
+  --fs: var(--fs-body);
   --row-h: 1.52rem;
   --icon-w: 1.15rem;
   --col-gap: .34rem;
@@ -223,7 +332,7 @@ figure.shot figcaption { font-family: var(--mono); font-size: .76rem; color: var
   --icon-c: calc(var(--col-gap) + var(--icon-w) / 2);
 
   font-family: var(--mono); font-size: var(--fs); line-height: var(--row-h);
-  background: var(--panel); padding: .85rem .7rem .9rem .75rem;
+  background: var(--sunk); border-radius: var(--radius-control); padding: .85rem .7rem .9rem .75rem;
   overflow: hidden;   /* clips the band bleed; not a scroller */
   margin: 0 0 1rem;
 }
@@ -250,7 +359,7 @@ figure.shot figcaption { font-family: var(--mono); font-size: .76rem; color: var
 .tree .row::before { content: ""; }   /* holds column 1 at zero width */
 .tree .ic { width: var(--icon-w); height: var(--icon-w); }
 .tree .nm { white-space: nowrap; }
-.tree .note { color: var(--ink-faint); font-size: .92em; padding-left: 1.2rem; white-space: nowrap; text-align: right; }
+.tree .note { color: var(--ink-faint); font-size: 1em; padding-left: 1.2rem; white-space: nowrap; text-align: right; }
 .tree .say { display: none; }
 .tree .was { color: var(--move); }
 .tree .row.rest { color: var(--ink-faint); font-style: italic; }
@@ -286,6 +395,6 @@ figure.shot figcaption { font-family: var(--mono); font-size: .76rem; color: var
 .tree.gutter .note { padding-left: 1.2rem; padding-right: .9rem; }
 .tree.gutter .say {
   display: block; border-left: 1px solid var(--rule); padding-left: .85rem;
-  color: var(--ink-faint); font-size: .92em;
+  color: var(--ink-faint); font-size: 1em;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
