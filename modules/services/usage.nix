@@ -4,12 +4,14 @@
 
     sops = {
       secrets.watch_metered_usage_token.mode = "0400";
+      secrets.watch_metered_usage_read_token.mode = "0400";
 
       templates.watch_metered_usage_env = {
         mode = "0400";
         restartUnits = ["metered-usage.service"];
         content = ''
           METERED_USAGE_TOKEN=${config.sops.placeholder.watch_metered_usage_token}
+          METERED_USAGE_READ_TOKEN=${config.sops.placeholder.watch_metered_usage_read_token}
           CLIPROXY_MANAGEMENT_KEY=${config.sops.placeholder.watch_cliproxy_management_password}
         '';
       };

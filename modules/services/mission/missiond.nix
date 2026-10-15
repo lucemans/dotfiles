@@ -87,6 +87,10 @@
             name = "Storage";
             url = "http://127.0.0.1:3001/d/storage/?kiosk&autofitpanels";
           };
+          usage = {
+            name = "Usage";
+            url = "http://127.0.0.1:3001/d/metered-usage/?kiosk&autofitpanels";
+          };
 
           front-door = {
             rtsp.file = config.sops.secrets.rtsp_front_door.path;
@@ -152,7 +156,7 @@
           interval = "1m";
           hold = "5m";
           is_default = true;
-          tabs = ["grafana-overview" "homelab-uptime" "indexer-prices" "storage"];
+          tabs = ["grafana-overview" "homelab-uptime" "indexer-prices" "storage" "usage"];
         };
       };
     };

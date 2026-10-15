@@ -1,9 +1,33 @@
-{
-  flake.nixosModules.missionGrafana = {pkgs, ...}: let
+let
+  inherit (import ../../network/hosts.nix) hosts;
+in {
+  flake.nixosModules.missionGrafana = {
+    config,
+    pkgs,
+    ...
+  }: let
     missionDashboards = import ./dashboards {inherit pkgs;};
+    meteredUsage = "http://${hosts.v3x-watch.address}:3000";
+    # grafana.com republished the 4.1.0 zip after nixpkgs pinned its hash.
+    infinity = pkgs.grafanaPlugins.yesoreyeram-infinity-datasource.overrideAttrs (old: {
+      src = pkgs.fetchurl {
+        inherit (old.src) name url;
+        hash = "sha256-E3CBS3xVqdBJq4ylHaFmX75INZjI0fk6RX4yYNL1IhI=";
+      };
+    });
   in {
+    sops.secrets.metered_usage_read_token = {
+      owner = "grafana";
+      mode = "0400";
+      restartUnits = ["grafana.service"];
+    };
+
     services.grafana = {
       enable = true;
+      declarativePlugins = [
+        pkgs.grafanaPlugins.prometheus
+        infinity
+      ];
       settings = {
         server = {
           http_addr = "0.0.0.0";
@@ -35,6 +59,17 @@
               uid = "point-prometheus";
               access = "proxy";
               url = "http://10.0.0.54:9090";
+            }
+            {
+              name = "Metered Usage";
+              type = "yesoreyeram-infinity-datasource";
+              uid = "metered-usage";
+              url = "${meteredUsage}/api";
+              jsonData = {
+                auth_method = "bearerToken";
+                allowedHosts = [meteredUsage];
+              };
+              secureJsonData.bearerToken = "$__file{${config.sops.secrets.metered_usage_read_token.path}}";
             }
           ];
         };

@@ -1,6 +1,7 @@
 watch_cliproxy_api_key: ENC[AES256_GCM,data:7tw55t1JVES3CnB1DIY=,iv:NiLgcC0f22TMGsHrOHwPUH3tUOpeKrzAj8ZcAE58RRo=,tag:vUDcA34C33tKoJWmOrEGTg==,type:str]
 watch_cliproxy_management_password: ENC[AES256_GCM,data:qtktzPKzfeSBk1XrCuU=,iv:qJJkyAEPDSbMhlDS+zdXTbrKtR/66NeTsX6p2eZRIlc=,tag:IYxJXYun+onrqu6a+42z9g==,type:str]
 watch_metered_usage_token: ENC[AES256_GCM,data:cmv+mCcsv2ol/clgWekruTIFZwWRg2nVt8Ytx44AdCb2tqbokM6QqXc+CdgZOxtnDdNIgeoJeJ9xBhT6Z8J6Og==,iv:jZ+KntQ9Cms0tAhEv0YHPpK6nZVdL8rTf9VD73L6fTQ=,tag:ABcaQv4LtSRqLZxi6yfpag==,type:str]
+watch_metered_usage_read_token: ENC[AES256_GCM,data:ktGbxn9LE4BBX1bB1Nb8ar/4TJQdvNWHOsp15OqxDhE5ZzUUHRsYMuUw57RcAceLMfWPCP1f9ZyiN05tpofi8A==,iv:4mWrQjrkA9qfsT69+Kbn5mFfYVVCym0kuv48HfdwiOE=,tag:oSgcciX8V13dwJXc5Yd/yQ==,type:str]
 sops:
     age:
         - enc: |
@@ -30,8 +31,8 @@ sops:
             a/ii62xwg9X/wjErrQ39TdgUcMDKeN7rCh/hXOVk5ZmUatI/ewJybQ==
             -----END AGE ENCRYPTED FILE-----
           recipient: age1n7jujacv5qkqnsp45pl69wppun0j5exntvzg9nk5q88unal70ynq60wm9u
-    lastmodified: "2026-09-23T01:15:55Z"
-    mac: ENC[AES256_GCM,data:Osmwoy4tVYA5798LZtoMniTNAu7pANFbggT3NS9vFffgu5Vcc+KkbVhlqR8ArBpZzCUF3AJ8SW8haoMf8MD1MowntjT4+EIq+7VrYWK6NpgHT4E5Z8v0CwcVIyrt93Xk4qHnsBpMWfmWOERQs5i9aJ1320HpVdeVCLDwLqSjw9o=,iv:fqtp4PfN5V/6ZXKnyMfRm3LO4S3qVgVzZ/1rAeBZj7Y=,tag:bXR8dGDe4d7fYmTKo/WoNQ==,type:str]
+    lastmodified: "2026-10-15T21:08:27Z"
+    mac: ENC[AES256_GCM,data:FNJd+mISDTgTmHM5feic9l0JB8/hwQ9HvJSTxhKQBWvAYkFOUhur8DqPZJb05TCPl/cIeB6D+Bnw++Xf5d4Gg+m5IDxjt67qi4W2qeJg5bWRwVgv1Ah9JY92ycOP9omLMdkwg+WHDZDvV1Mxnp5hRIVord5o4TXFEqmZxRbPbDw=,iv:Bm0Ed1Z73V2OOtZ80qEfhU3qoV1vMbDNv2zF9isi5pA=,tag:oITuVUza0Ds1sGkmLHPwJA==,type:str]
     pgp:
         - created_at: "2026-09-11T13:51:59Z"
           enc: |-
