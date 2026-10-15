@@ -321,25 +321,10 @@ in {
           prev.pythonPackagesExtensions
           ++ [
             (pythonPackages: super: {
-              langfuse = super.langfuse.overridePythonAttrs (old: {
-                pythonRelaxDeps = (old.pythonRelaxDeps or []) ++ ["wrapt"];
-              });
               litellm = let
-                expression = pythonPackages.buildPythonPackage rec {
-                  pname = "expression";
-                  version = "5.6.0";
-                  pyproject = true;
-                  src = pythonPackages.fetchPypi {
-                    inherit pname version;
-                    hash = "sha256-RU9v4Tg0cZSkPH+HjZWO/puEucx3DkYgEMelLhgFgGU=";
-                  };
-                  build-system = [pythonPackages.poetry-core];
-                  dependencies = [pythonPackages.typing-extensions];
-                  pythonImportsCheck = ["expression"];
-                };
                 proxyExtras = pythonPackages.buildPythonPackage {
                   pname = "litellm-proxy-extras";
-                  version = "0.4.86";
+                  version = "0.4.97";
                   pyproject = true;
                   src = super.litellm.src;
                   sourceRoot = "source/litellm-proxy-extras";
@@ -374,7 +359,7 @@ in {
                 });
               in
                 (super.litellm.override {prisma = prismaPython;}).overridePythonAttrs (old: {
-                  dependencies = (old.dependencies or []) ++ [expression proxyExtras];
+                  dependencies = (old.dependencies or []) ++ [proxyExtras];
                   makeWrapperArgs =
                     (old.makeWrapperArgs or [])
                     ++ [
