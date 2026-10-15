@@ -5,34 +5,41 @@
     pkgs,
     ...
   }: let
-    llama-cpp = pkgs.llama-cpp.override {cudaSupport = true;};
+    # /v1/systemone and the clef architecture first ship in v0.6.0, gemma-embedding2 in v0.7.0.
+    # Faster builds: one CPU variant for the i7-12700K, no tests.
+    llama-cpp =
+      (pkgs.llama-cpp.override {
+        cudaSupport = true;
+        cpuArchDynamicDispatch = false;
+      }).overrideAttrs (old: {
+        version = "0.7.0";
+        # The nixpkgs patch is a backport that v0.7.0 already contains.
+        patches = [];
+        npmDepsHash = "sha256-hqYzdp1FwPhYkBP278fQXgY9NCKB6Q3P6Gko7BfP0m0=";
+        src = pkgs.fetchFromGitHub {
+          owner = "ggml-org";
+          repo = "llama.cpp";
+          tag = "v0.7.0";
+          hash = "sha256-pEDYgI3AMTU+cekvRX7NNt5wddznydQSNuerswvEpsA=";
+        };
+        cmakeFlags =
+          old.cmakeFlags
+          ++ map (flag: lib.cmakeBool flag true) [
+            "GGML_SSE42"
+            "GGML_AVX"
+            "GGML_F16C"
+            "GGML_FMA"
+            "GGML_AVX2"
+            "GGML_BMI2"
+            "GGML_AVX_VNNI"
+          ]
+          ++ [
+            # qwen3.6 runs a q8_0 KV cache, the other models f16.
+            (lib.cmakeFeature "GGML_CUDA_FA_QUANTS" "q8_0-q8_0;f16-f16")
+          ];
+        doCheck = false;
+      });
     llama-server = lib.getExe' llama-cpp "llama-server";
-    # Stock llama.cpp rejects the PQ2_0 and PTQ1_0 tensor types that Bonsai ships.
-    llama-cpp-prism = llama-cpp.overrideAttrs {
-      src = pkgs.fetchFromGitHub {
-        owner = "PrismML-Eng";
-        repo = "llama.cpp";
-        tag = "prism-b10743-adfffbe";
-        hash = "sha256-SNBAC+dNTwQxpGmKyG7i/8eqCNg6985DXtqGbzWgwFA=";
-      };
-    };
-    llama-server-prism = lib.getExe' llama-cpp-prism "llama-server";
-    bonsai-2-27b = pkgs.fetchurl {
-      url = "https://huggingface.co/prism-ml/Ternary-Bonsai-2-27B-gguf/resolve/b072e1d3b35a0a630cece372c2127528e0994386/Ternary-Bonsai-2-27B-PQ2_0.gguf";
-      sha256 = "3907dc1658db1f78a9826bf8d5bcb8dc65db0d466388937af57f2294fae62ec1";
-    };
-    # /v1/systemone and the clef architecture first ship in v0.6.0.
-    llama-cpp-clef = llama-cpp.overrideAttrs {
-      version = "0.6.0";
-      npmDepsHash = "sha256-a17M+L3nLdRnN6WMB6imPFmwqG2g8uv+gwN0XTAUrf8=";
-      src = pkgs.fetchFromGitHub {
-        owner = "ggml-org";
-        repo = "llama.cpp";
-        tag = "v0.6.0";
-        hash = "sha256-l6l6JIlIVTaVC6xh5M4fRHFtXsweQuugtkNTWHcZZF4=";
-      };
-    };
-    llama-server-clef = lib.getExe' llama-cpp-clef "llama-server";
     clef-flash = pkgs.fetchurl {
       url = "https://huggingface.co/ggml-org/Clef-Flash-GGUF/resolve/4a192915ef971886004b5b13294f2b4c7a7fc39d/Clef-Flash-Q4_K_M.gguf";
       sha256 = "fd3e90605e8103307dca37cb5a8cdb036267e2fe3cb2d908d80a8ceb9ec0638c";
@@ -41,8 +48,14 @@
       url = "https://huggingface.co/ggml-org/Clef-Flash-GGUF/resolve/4a192915ef971886004b5b13294f2b4c7a7fc39d/mmproj-Clef-Flash-Q8_0.gguf";
       sha256 = "3fbc646617c56c35ba48e06f0fbe8693a83bde49eb31e2a3bf59ba0a308c9e25";
     };
+    embeddinggemma-2 = pkgs.fetchurl {
+      url = "https://huggingface.co/ggml-org/embeddinggemma-2-GGUF/resolve/bfcd298762cc34d0357ece5ebdd31791a3a374d8/embeddinggemma-2-Q8_0.gguf";
+      sha256 = "2188ac1deca4b77dffefd603c2776a9d76d9d74ec01841392982ebb840b09135";
+    };
   in {
     nixpkgs.config.allowUnfree = true;
+    # The RTX 3080 Ti.
+    nixpkgs.config.cudaCapabilities = ["8.6"];
 
     hardware.graphics.enable = true;
     services.xserver.videoDrivers = ["nvidia"];
@@ -91,29 +104,11 @@
             ttl = 900;
             concurrencyLimit = 10;
           };
-          "bonsai-2-27b" = {
-            cmd = ''
-              ${llama-server-prism} \
-                --port ${"\${PORT}"} \
-                --model ${bonsai-2-27b} \
-                --alias bonsai-2-27b \
-                --ctx-size 65536 \
-                --flash-attn on \
-                --cache-type-k q8_0 \
-                --cache-type-v q8_0 \
-                --jinja \
-                --temp 1.0 --top-p 0.95 --top-k 20 --min-p 0.05 \
-                --parallel 1 \
-                --no-webui
-            '';
-            ttl = 900;
-            concurrencyLimit = 10;
-          };
           # A decision model: it serves only /v1/systemone, reached through
           # /upstream/clef-flash/v1/systemone. The whole prompt must fit in one ubatch.
           "clef-flash" = {
             cmd = ''
-              ${llama-server-clef} \
+              ${llama-server} \
                 --port ${"\${PORT}"} \
                 --model ${clef-flash} \
                 --mmproj ${clef-flash-mmproj} \
@@ -127,6 +122,23 @@
             '';
             ttl = 900;
           };
+          # A non-causal model embeds each input in one ubatch, so the ubatch
+          # size caps the input length.
+          "embeddinggemma-2" = {
+            cmd = ''
+              ${llama-server} \
+                --port ${"\${PORT}"} \
+                --model ${embeddinggemma-2} \
+                --alias embeddinggemma-2 \
+                --embeddings \
+                --ctx-size 8192 \
+                --batch-size 8192 \
+                --ubatch-size 8192 \
+                --parallel 1 \
+                --no-webui
+            '';
+            ttl = 900;
+          };
         };
 
         groups.local-gpu = {
@@ -134,9 +146,16 @@
           exclusive = true;
           members = [
             "qwen3.6-35b-a3b"
-            "bonsai-2-27b"
             "clef-flash"
           ];
+        };
+
+        # persistent stops a local-gpu swap from unloading the embedding model.
+        groups.embedding = {
+          swap = false;
+          exclusive = false;
+          persistent = true;
+          members = ["embeddinggemma-2"];
         };
       };
     };

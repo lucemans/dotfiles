@@ -92,8 +92,21 @@ in {
               api_key = "local";
             };
             model_info = {
+              mode = "embedding";
               input_cost_per_token = 0.00000005;
               output_cost_per_token = 0.00000005;
+            };
+          }
+          {
+            model_name = "v3x-t/embeddinggemma-2";
+            litellm_params = {
+              model = "openai/embeddinggemma-2";
+              api_base = "http://127.0.0.1:8081/v1";
+              api_key = "local";
+            };
+            model_info = {
+              mode = "embedding";
+              input_cost_per_token = 0.00000005;
             };
           }
           {
@@ -104,18 +117,7 @@ in {
               api_key = "local";
             };
             model_info = {
-              input_cost_per_token = 0.00000020;
-              output_cost_per_token = 0.00000020;
-            };
-          }
-          {
-            model_name = "v3x-t/bonsai-2-27b";
-            litellm_params = {
-              model = "openai/bonsai-2-27b";
-              api_base = "http://127.0.0.1:8081/v1";
-              api_key = "local";
-            };
-            model_info = {
+              mode = "chat";
               input_cost_per_token = 0.00000020;
               output_cost_per_token = 0.00000020;
             };
@@ -152,6 +154,7 @@ in {
               api_key = "local";
             };
             model_info = {
+              mode = "chat";
               input_cost_per_token = 0.00000020;
               output_cost_per_token = 0.00000020;
             };
@@ -164,6 +167,7 @@ in {
               api_key = "local";
             };
             model_info = {
+              mode = "chat";
               input_cost_per_token = 0.00000018;
               output_cost_per_token = 0.00000020;
             };
@@ -176,6 +180,7 @@ in {
               api_key = "local";
             };
             model_info = {
+              mode = "chat";
               input_cost_per_token = 0.00000020;
               output_cost_per_token = 0.00000020;
             };
@@ -188,6 +193,7 @@ in {
               api_key = "local";
             };
             model_info = {
+              mode = "completion";
               input_cost_per_token = 0.00000002;
               output_cost_per_token = 0.00000002;
             };
@@ -200,6 +206,7 @@ in {
               api_key = "local";
             };
             model_info = {
+              mode = "completion";
               input_cost_per_token = 0.00000002;
               output_cost_per_token = 0.00000002;
             };
@@ -212,6 +219,7 @@ in {
               api_key = "local";
             };
             model_info = {
+              mode = "chat";
               input_cost_per_token = 0.00000020;
               output_cost_per_token = 0.00000020;
             };
@@ -224,6 +232,7 @@ in {
               api_key = "local";
             };
             model_info = {
+              mode = "chat";
               input_cost_per_token = 0.00000020;
               output_cost_per_token = 0.00000020;
             };
@@ -236,6 +245,7 @@ in {
               api_key = "local";
             };
             model_info = {
+              mode = "chat";
               input_cost_per_token = 0.00000010;
               output_cost_per_token = 0.00000010;
             };
@@ -248,6 +258,7 @@ in {
               api_key = "local";
             };
             model_info = {
+              mode = "chat";
               input_cost_per_token = 0.00000010;
               output_cost_per_token = 0.00000010;
             };
@@ -260,6 +271,7 @@ in {
               api_key = "local";
             };
             model_info = {
+              mode = "chat";
               input_cost_per_token = 0.00000005;
               output_cost_per_token = 0.00000005;
             };
@@ -272,6 +284,7 @@ in {
               api_key = "local";
             };
             model_info = {
+              mode = "chat";
               input_cost_per_token = 0.00000020;
               output_cost_per_token = 0.00000020;
             };
@@ -280,20 +293,24 @@ in {
             model_name = "openai/gpt-5.6-luna";
             litellm_params.model = "openrouter/openai/gpt-5.6-luna";
             model_info.base_model = "gpt-5.6-luna";
+            model_info.mode = "chat";
           }
           {
             model_name = "openai/gpt-6-luna";
             litellm_params.model = "openrouter/openai/gpt-6-luna";
             model_info.base_model = "gpt-6-luna";
+            model_info.mode = "chat";
           }
           {
             model_name = "openai/gpt-oss-120b";
             litellm_params.model = "openrouter/openai/gpt-oss-120b";
             model_info.base_model = "openai/gpt-oss-120b";
+            model_info.mode = "chat";
           }
           {
             model_name = "z-ai/glm-5.3-flash";
             model_info.base_model = "z-ai/glm-5.3-flash";
+            model_info.mode = "chat";
             litellm_params = {
               model = "openrouter/z-ai/glm-5.3-flash";
               provider = {
@@ -312,6 +329,7 @@ in {
               model = "openai/jonatan";
               api_key = "os.environ/ZEROPARAMS_API_KEY";
             };
+            model_info.mode = "chat";
           }
           {
             model_name = "openrouter/*";
