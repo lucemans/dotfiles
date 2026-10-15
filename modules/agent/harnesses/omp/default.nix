@@ -43,7 +43,7 @@
         ".omp/agent/themes/titanium-v3x.json".source = ./titanium-v3x.json;
         ".omp/agent/commands/sicko.md".text = ''
           Spawn exactly one `comment-sicko` task. Its assignment is the scope only: $ARGUMENTS
-          With no arguments, the scope is the current uncommitted diff, or the diff against `master` when the tree is clean.
+          With no arguments, pass an empty scope; the agent finds the uncommitted diff, or the last commit when the tree is clean.
           Do not restate review criteria, verdict formats, or acceptance rules; the agent carries its own. Relay its report unchanged.
         '';
       };

@@ -6,11 +6,11 @@ let
     comment-sicko = {
       description = "A deranged comment-hater that savors deletion and condemns workaround code.";
       claude = {
-        tools = "Read, Grep, Glob, Edit, Bash";
+        tools = "Read, Edit, Bash";
         model = "haiku";
       };
       omp = {
-        tools = "read, grep, glob, edit, bash";
+        tools = "read, edit, bash";
         model = "anthropic/claude-haiku-5-5";
         thinkingLevel = "low";
       };
