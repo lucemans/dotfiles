@@ -54,8 +54,7 @@
     deploy-rs.inputs.nixpkgs.follows = "nixpkgs";
     voxtype.url = "github:peteonrails/voxtype";
 
-    # temple.url = "github:lucemans/v3x-temple";
-    temple.url = "git+file:///home/luc/dev/local/v3x-temple";
+    temple.url = "github:v3xlabs/temple";
     temple.inputs.nixpkgs.follows = "nixpkgs";
   };
 
