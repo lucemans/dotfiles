@@ -1,7 +1,6 @@
 {self, ...}: {
   flake.nixosModules.peripheral = {pkgs, ...}: {
     imports = [
-      # self.nixosModules.plasma
       self.nixosModules.environment
       self.nixosModules.nix
     ];
