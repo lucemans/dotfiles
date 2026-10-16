@@ -180,6 +180,8 @@
             "${./github-urls.ts}"
             "--extension"
             "${./git-hint.ts}"
+            "--extension"
+            "${./code-blocks.ts}"
           ];
           # A profile with a catalog leaves --model to the picked entry.
           start = lib.optionals (!(entry ? catalog)) ["--model" "@default"];
