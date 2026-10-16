@@ -161,7 +161,8 @@
         symbolPreset: nerd
       '';
 
-      # A profile is a role map. A fresh session starts on the profile's
+      # A profile is a role map, and may pin subagent models through
+      # `agentModelOverrides`. A fresh session starts on the profile's
       # default model; a resumed one keeps the model it recorded, which is
       # also how `agent` finds the profile that owns a session. The toolsets
       # extension records the session's toolsets the same way.
@@ -173,7 +174,8 @@
             "--config"
             "${settings}"
             "--config"
-            "${pkgs.writeText "omp-roles-${entry.name}.yml" (builtins.toJSON {modelRoles = {inherit vision web;} // entry.modelRoles;})}"
+            "${pkgs.writeText "omp-roles-${entry.name}.yml" (builtins.toJSON ({modelRoles = {inherit vision web;} // entry.modelRoles;}
+                  // lib.optionalAttrs (entry ? agentModelOverrides) {task.agentModelOverrides = entry.agentModelOverrides;}))}"
             "--extension"
             "${./agent-toolsets.ts}"
             "--extension"
@@ -226,6 +228,7 @@
             smol = "anthropic/claude-opus-5-5";
             slow = "anthropic/claude-fable-5-1";
           };
+          agentModelOverrides.sonic = "anthropic/claude-haiku-5-5";
         }
         {
           name = "kimi";
