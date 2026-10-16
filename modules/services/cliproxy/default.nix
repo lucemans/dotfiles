@@ -1,7 +1,37 @@
 _: {
-  flake.nixosModules.cliproxy = {config, ...}: let
+  flake.nixosModules.cliproxy = {
+    config,
+    lib,
+    pkgs,
+    ...
+  }: let
     port = 8317;
     stateDir = "/var/lib/cli-proxy-api";
+
+    cliproxyapi = pkgs.cliproxyapi.overrideAttrs (finalAttrs: _: {
+      version = "8.0.31";
+      src = pkgs.fetchFromGitHub {
+        owner = "router-for-me";
+        repo = "CLIProxyAPI";
+        tag = "v${finalAttrs.version}";
+        hash = "sha256-mI5hxiaJnfykI53DgHy2VDmqJKOYqnMso7Pr/KYhhNM=";
+      };
+      vendorHash = "sha256-r3yWkdMcM40G9jV7MxW/qNv3E9WrHavFilW24quEf+8=";
+      patches = [./meta-terminal-cancel.patch];
+    });
+
+    image = pkgs.dockerTools.buildLayeredImage {
+      name = "cliproxy";
+      tag = cliproxyapi.version;
+      config = {
+        Cmd = [(lib.getExe cliproxyapi)];
+        WorkingDir = "/CLIProxyAPI";
+        Env = [
+          "SSL_CERT_FILE=${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt"
+          "ZONEINFO=${pkgs.tzdata}/share/zoneinfo"
+        ];
+      };
+    };
   in {
     sops = {
       secrets = {
@@ -60,7 +90,8 @@ _: {
       backend = "docker";
 
       containers.cliproxy = {
-        image = "eceasy/cli-proxy-api:v8.0.31";
+        image = "${image.imageName}:${image.imageTag}";
+        imageFile = image;
 
         extraOptions = ["--network=host"];
 

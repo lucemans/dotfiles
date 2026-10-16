@@ -15,7 +15,7 @@
     ./kaneo.nix
     ./garage.nix
     ./attic.nix
-    ./cliproxy.nix
+    ./cliproxy
     ./usage.nix
   ];
 }
