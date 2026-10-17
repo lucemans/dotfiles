@@ -94,6 +94,15 @@ in {
         # Render and inspect parts from code; the 3D modeling MCPs join here.
         packages = [pkgs.openscad-unstable pkgs.f3d];
       };
+      kettle-dev = {
+        label = "Kettle dev";
+        glyph = "⇄";
+        color = "189;147;249";
+        # Kettle Runner gives each run its own network namespace through pasta,
+        # which opens /dev/net/tun; nftables and dnsmasq run inside that namespace.
+        packages = [pkgs.passt pkgs.nftables pkgs.dnsmasq pkgs.bubblewrap];
+        devices = ["/dev/net/tun"];
+      };
     };
   };
 }
