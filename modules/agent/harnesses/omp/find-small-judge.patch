@@ -1,0 +1,83 @@
+diff --git a/packages/coding-agent/CHANGELOG.md b/packages/coding-agent/CHANGELOG.md
+--- a/packages/coding-agent/CHANGELOG.md
++++ b/packages/coding-agent/CHANGELOG.md
+@@ -6,6 +6,10 @@
+ 
+ - Added `discovery.ownedBy` to filter `openai-models-list` and `proxy` catalogs by `owned_by`, so one gateway can provide separate vendor providers without explicit model lists.
+ - Added `discovery.authoritative` so a configured provider lists only the rows its discovery returned, hiding the bundled roster of a built-in provider id such as `openai`.
++
++### Changed
++
++- Halved `find` judgment batches (32 files per filename request, 9 KB sketch and 16 KB verification state) so each request stays near 5k tokens and fits an 8k-context judge such as self-hosted Clef, and raised the `find` timeout from 20 s to 90 s for a judge that answers one request at a time.
+ 
+ ## [18.10.4] - 2026-10-13
+ 
+diff --git a/packages/coding-agent/src/tools/jfind/cascade.ts b/packages/coding-agent/src/tools/jfind/cascade.ts
+--- a/packages/coding-agent/src/tools/jfind/cascade.ts
++++ b/packages/coding-agent/src/tools/jfind/cascade.ts
+@@ -26,8 +26,8 @@
+ 
+ /** Requests in flight per dispatched phase. */
+ const PARALLEL = 16;
+-/** Files per filename-ranking request. */
+-const NAME_BATCH = 64;
++/** Files per filename-ranking request; 64 files reach about 10k tokens, past an 8k-context judge. */
++const NAME_BATCH = 32;
+ /** Lexically ranked files that receive a filename judgment. */
+ const CANDIDATES = 128;
+ /** Files whose content is read and sketched. */
+@@ -46,12 +46,12 @@
+ const THRESHOLD = 0.2;
+ /** Bytes of a file read for windowing. */
+ const READ_LIMIT = 4 * 1024 * 1024;
+-/** Sketch state budget per request; sized so cards stay well inside the judge's context. */
+-const SKETCH_STATE_BYTES = 18_000;
++/** Sketch state budget per request; sized so cards stay inside an 8k-context judge. */
++const SKETCH_STATE_BYTES = 9_000;
+ /** Hard cap on sketch cards per request. */
+ const SKETCH_CARDS_MAX = 48;
+-/** Passage state budget per verification request, tags included. */
+-const VERIFY_STATE_BYTES = 24 * 1024;
++/** Passage state budget per verification request, tags included; two windows fit an 8k-context judge. */
++const VERIFY_STATE_BYTES = 16 * 1024;
+ /** Wall-clock budget for the native lexical scan. */
+ const SCAN_TIMEOUT_MS = 30_000;
+ /** Distinct failure messages retained for the report. */
+diff --git a/packages/coding-agent/src/tools/jfind/index.ts b/packages/coding-agent/src/tools/jfind/index.ts
+--- a/packages/coding-agent/src/tools/jfind/index.ts
++++ b/packages/coding-agent/src/tools/jfind/index.ts
+@@ -34,8 +34,11 @@
+ /** Line ranges shown per hit in the model-facing text, strongest first. */
+ const RANGES_SHOWN = 3;
+ 
+-/** Wall-clock budget for one `find` call; a stalled judge fails instead of blocking the turn. */
+-const FIND_TIMEOUT_MS = 20_000;
++/**
++ * Wall-clock budget for one `find` call; a stalled judge fails instead of blocking the turn.
++ * A self-hosted judge on one GPU answers a ~5k-token request in about 1.7 s, one at a time.
++ */
++const FIND_TIMEOUT_MS = 90_000;
+ 
+ /**
+  * Resolve `find.enabled` for a session: `auto` enables `find` only when the
+diff --git a/packages/coding-agent/test/tools/jfind.test.ts b/packages/coding-agent/test/tools/jfind.test.ts
+--- a/packages/coding-agent/test/tools/jfind.test.ts
++++ b/packages/coding-agent/test/tools/jfind.test.ts
+@@ -218,7 +218,7 @@
+ 	it("verifies only sketched passages, reports merged ranges, and runs waves in parallel", async () => {
+ 		const dir = await fs.mkdtemp(path.join(os.tmpdir(), "jfind-cascade-"));
+ 		try {
+-			// 72 files, so two 64-question filename batches (> 128 would be truncated).
++			// 72 files, so three 32-question filename batches (> 128 would be truncated).
+ 			for (let i = 0; i < 70; i++) {
+ 				await Bun.write(path.join(dir, "pkg", `filler${i}.ts`), `export const filler${i} = ${i};\n`);
+ 			}
+@@ -260,7 +260,7 @@
+ 			// Wave 1 judged every listed file by name; wave 3 verified only the routed sketch.
+ 			const nameRequests = judge.requests.filter(request => "tree" in stateOf(request));
+ 			const verifyRequests = judge.requests.filter(request => "file" in stateOf(request));
+-			expect(nameRequests).toHaveLength(2);
++			expect(nameRequests).toHaveLength(3);
+ 			expect(verifyRequests).toHaveLength(1);
+ 			expect(Object.keys(verifyRequests[0]!.questions)).toEqual(["p00"]);
+ 			expect(result.stats.judged).toBe(72);

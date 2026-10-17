@@ -121,6 +121,9 @@
                 --no-webui
             '';
             ttl = 900;
+            # Above the default 10: one `find` keeps 16 judgments in flight, and
+            # llama-server queues them on its single slot.
+            concurrencyLimit = 32;
           };
           # A non-causal model embeds each input in one ubatch, so the ubatch
           # size caps the input length.
@@ -137,7 +140,7 @@
                 --parallel 1 \
                 --no-webui
             '';
-            ttl = 900;
+            # No ttl: a cold load takes over a minute, longer than Mnemopi's 30 s request timeout.
           };
         };
 

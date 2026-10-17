@@ -99,6 +99,9 @@
         content = ''
           ANTHROPIC_AUTH_TOKEN="${config.sops.placeholder.v3x_agent_token}"
           ANTHROPIC_API_KEY="${config.sops.placeholder.v3x_agent_token}"
+          MNEMOPI_EMBEDDING_API_KEY="${config.sops.placeholder.v3x_inference_token}"
+          # Mnemopi knows the dimension of its built-in models only; others default to 384.
+          MNEMOPI_EMBEDDING_DIM=768
         '';
       };
 

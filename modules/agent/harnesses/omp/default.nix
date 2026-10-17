@@ -216,13 +216,25 @@
         marketplace:
           autoUpdate: "off"
         symbolPreset: nerd
+        generate_image:
+          enabled: true
+        features:
+          unexpectedStopDetection: smart
+        memory:
+          backend: mnemopi
+        # MNEMOPI_EMBEDDING_API_KEY and MNEMOPI_EMBEDDING_DIM come from the
+        # sandbox environment: these settings take neither a command nor the dimension.
+        mnemopi:
+          scoping: per-project-tagged
+          embeddingModel: v3x-t/embeddinggemma-2
+          embeddingApiUrl: https://${services.inference.name}/v1
       '';
 
       # A profile is a role map, and may pin subagent models through
-      # `agentModelOverrides`. A fresh session starts on the profile's
-      # default model; a resumed one keeps the model it recorded, which is
-      # also how `agent` finds the profile that owns a session. The toolsets
-      # extension records the session's toolsets the same way.
+      # `agentModelOverrides` and add `settings` to its overlay. A fresh session
+      # starts on the profile's default model; a resumed one keeps the model it
+      # recorded, which is also how `agent` finds the profile that owns a
+      # session. The toolsets extension records the session's toolsets the same way.
       profile = entry:
         entry
         // {
@@ -231,8 +243,8 @@
             "--config"
             "${settings}"
             "--config"
-            "${pkgs.writeText "omp-roles-${entry.name}.yml" (builtins.toJSON ({modelRoles = {inherit vision web;} // entry.modelRoles;}
-                  // lib.optionalAttrs (entry ? agentModelOverrides) {task.agentModelOverrides = entry.agentModelOverrides;}))}"
+            "${pkgs.writeText "omp-roles-${entry.name}.yml" (builtins.toJSON (lib.recursiveUpdate ({modelRoles = {inherit vision web judge memory;} // entry.modelRoles;}
+                  // lib.optionalAttrs (entry ? agentModelOverrides) {task.agentModelOverrides = entry.agentModelOverrides;}) (entry.settings or {})))}"
             "--extension"
             "${./agent-toolsets.ts}"
             "--extension"
@@ -252,13 +264,17 @@
       vision = "anthropic/claude-opus-5-5";
       # Our SearXNG first, then the session model's own hosted search.
       web = "web/searxng";
+      # A decision model: native judgments for `find`, stop detection and TTSR.
+      judge = "v3x-inference/clef-flash";
+      # Mnemopi's fact extraction; the `tiny` fallback is too small for it.
+      memory = "openai/gpt-6-luna";
     in {
       glyph = "󰚩";
       color = "189;147;249";
       blurb = "Oh My Pi";
       logo = ../../icons/omp.png;
       package = inputs.omp.packages.${pkgs.stdenv.hostPlatform.system}.default.overrideAttrs (old: {
-        patches = (old.patches or []) ++ [./discovery-owned-by.patch];
+        patches = (old.patches or []) ++ [./discovery-owned-by.patch ./find-small-judge.patch];
       });
       inherit models mcp;
       profiles = map profile [
@@ -326,6 +342,24 @@
             inherit tiny;
             smol = "v3x-inference/v3x-t/qwen3.6-35b-a3b";
             slow = "v3x-inference/v3x-m/qwen3.8-27b";
+            # On the other host, so it does not swap clef-flash off teapot's GPU.
+            memory = "v3x-inference/v3x-m/qwen3.6-35b-a3b";
+            # No local model takes images; this makes image questions fail instead of leaving.
+            vision = "@default";
+          };
+          # No automatic call leaves our hosts. With the gateway providers off, a
+          # subagent pinned to a cloud model fails, so those run on local roles.
+          # Image generation and describing pasted images need cloud models. A
+          # per-project bank keeps memories out of the global bank that cloud
+          # sessions recall.
+          agentModelOverrides =
+            lib.mapAttrs' (name: _: lib.nameValuePair "${name}-reviewer" "@slow") pinned
+            // {comment-sicko = "@smol";};
+          settings = {
+            disabledProviders = ["openai" "anthropic" "moonshot" "meta"];
+            generate_image.enabled = false;
+            images.describeForTextModels = false;
+            mnemopi.scoping = "per-project";
           };
         }
         {
