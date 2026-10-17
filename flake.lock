@@ -716,11 +716,11 @@
         "rust-overlay": "rust-overlay_6"
       },
       "locked": {
-        "lastModified": 1792234381,
-        "narHash": "sha256-McXOVmhkO44KpXiJZrH27SE/txx6Lhkpyqe0CVdckx0=",
+        "lastModified": 1792255952,
+        "narHash": "sha256-CuTzljenDyEfEGAxmG/SPGM+XbTBp8Uwyv2mrBy0jUM=",
         "owner": "v3xlabs",
         "repo": "metered-usage",
-        "rev": "da2663a76d8338f3add4eed618369a19a85a527f",
+        "rev": "f7dd86f16a14487664467ab6062b37256b05373b",
         "type": "github"
       },
       "original": {
