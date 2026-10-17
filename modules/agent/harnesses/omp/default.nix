@@ -12,9 +12,9 @@
     # any model, so only reviewers are pinned here. Each reuses the bundled
     # `reviewer` prompt of the pinned OMP, so only the model differs.
     pinned = {
-      kimi = "anthropic/kimi-k3-256k";
-      muse-wonder = "anthropic/muse-wonder-1.0";
-      muse-spark = "anthropic/muse-spark-1.3";
+      kimi = "moonshot/kimi-k3-256k";
+      muse-wonder = "meta/muse-wonder-1.0";
+      muse-spark = "meta/muse-spark-1.3";
     };
     prompts = "${inputs.omp}/packages/coding-agent/src/prompts/agents";
     reviewer = builtins.readFile "${prompts}/reviewer.md";
@@ -74,47 +74,76 @@
           )
           config.agentRuntime.servers;
       };
+      gateway = {
+        baseUrl = "https://${services.agent.name}";
+        api = "anthropic-messages";
+        apiKey = "!${pkgs.coreutils}/bin/printenv ANTHROPIC_API_KEY";
+        auth = "apiKey";
+      };
       models = pkgs.writeText "omp-models.yml" (builtins.toJSON {
         providers = {
-          anthropic = {
-            baseUrl = "https://${services.agent.name}";
-            api = "anthropic-messages";
-            apiKey = "!${pkgs.coreutils}/bin/printenv ANTHROPIC_API_KEY";
-            modelOverrides =
-              {
-                "claude-fable-5-1".thinking = {
-                  mode = "anthropic-adaptive";
-                  efforts = ["low" "medium" "high" "xhigh" "max"];
-                  supportsDisplay = true;
-                };
-              }
-              // lib.genAttrs ["muse-wonder-1.0" "muse-wonder-1.0-contributor" "muse-spark-1.3"] (_: {
-                thinking = {
-                  mode = "anthropic-adaptive";
-                  efforts = ["minimal" "low" "medium" "high" "xhigh" "max"];
-                  requiresEffort = true;
-                };
-              });
-            discovery.type = "openai-models-list";
-            # Discovery lists these without their real context limits or
-            # modalities, so both are stated here until the gateway reports
-            # them. A model without `image` input gets image metadata only.
-            models =
-              map (id: {
-                inherit id;
+          openai = gateway // {
+            discovery = {
+              type = "openai-models-list";
+              ownedBy = ["openai"];
+              authoritative = true;
+            };
+            # CLIProxyAPI lists these as chat rows but serves them on its OpenAI image route.
+            models = map (id: {
+              inherit id;
+              api = "openai-images";
+              baseUrl = "${gateway.baseUrl}/v1";
+            }) ["gpt-image-1.5" "gpt-image-2" "gpt-image-2.5" "gpt-image-2.5-flare" "gpt-image-2.5-sunburst"];
+            modelOverrides = lib.genAttrs ["gpt-5.6-luna" "gpt-5.6-terra" "gpt-5.6-sol" "gpt-6-luna" "gpt-6-sol" "gpt-6.1-sol" "gpt-6-astra"] (_: {
+              input = ["text" "image"];
+              contextWindow = 1050000;
+              maxTokens = 128000;
+            });
+          };
+          anthropic = gateway // {
+            discovery = {
+              type = "openai-models-list";
+              ownedBy = ["anthropic"];
+              authoritative = true;
+            };
+            modelOverrides = {
+              "claude-opus-5-5" = {
                 input = ["text" "image"];
                 contextWindow = 1050000;
                 maxTokens = 128000;
-              }) ["gpt-5.6-luna" "gpt-5.6-terra" "gpt-5.6-sol" "gpt-6-luna" "gpt-6-sol" "gpt-6.1-sol" "gpt-6-astra" "claude-opus-5-5"]
-              ++ [
-                {
-                  id = "kimi-k3-256k";
-                  input = ["text" "image"];
-                  contextWindow = 256000;
-                  maxTokens = 128000;
-                }
-              ]
-              ++ map (id: {inherit id;}) ["muse-wonder-1.0" "muse-spark-1.3"];
+              };
+              "claude-fable-5-1".thinking = {
+                mode = "anthropic-adaptive";
+                efforts = ["low" "medium" "high" "xhigh" "max"];
+                supportsDisplay = true;
+              };
+            };
+          };
+          moonshot = gateway // {
+            discovery = {
+              type = "openai-models-list";
+              ownedBy = ["moonshot"];
+              authoritative = true;
+            };
+            modelOverrides."kimi-k3-256k" = {
+              input = ["text" "image"];
+              contextWindow = 256000;
+              maxTokens = 128000;
+            };
+          };
+          meta = gateway // {
+            discovery = {
+              type = "openai-models-list";
+              ownedBy = ["meta"];
+              authoritative = true;
+            };
+            modelOverrides = lib.genAttrs ["muse-wonder-1.0" "muse-wonder-1.0-contributor" "muse-spark-1.3"] (_: {
+              thinking = {
+                mode = "anthropic-adaptive";
+                efforts = ["minimal" "low" "medium" "high" "xhigh" "max"];
+                requiresEffort = true;
+              };
+            });
           };
           v3x-inference = {
             baseUrl = "https://${services.inference.name}/v1";
@@ -122,6 +151,31 @@
             apiKey = "!${pkgs.coreutils}/bin/cat ${lib.escapeShellArg config.sops.secrets.v3x_inference_token.path}";
             authHeader = true;
             discovery.type = "litellm";
+            # LiteLLM discovery drops non-chat modes, so those rows are declared here.
+            models = [
+              {
+                id = "v3x-t/embeddinggemma-2";
+                api = "openai-embeddings";
+              }
+              {
+                id = "v3x-m/qwen3-embedding-0.6b";
+                api = "openai-embeddings";
+              }
+              {
+                id = "v3x-t/piper";
+                api = "openai-speech";
+              }
+              {
+                id = "v3x-t/qwen3-tts";
+                api = "openai-speech";
+              }
+              {
+                # The LiteLLM pass-through to llama-swap's clef-flash, outside its model list.
+                id = "clef-flash";
+                api = "typesafe";
+                baseUrl = "https://${services.inference.name}";
+              }
+            ];
           };
         };
       });
@@ -141,7 +195,10 @@
           enabled: false
         providers:
           maxInFlightRequests:
+            openai: 3
             anthropic: 3
+            moonshot: 3
+            meta: 3
         # The `web` role itself sits in each profile's role overlay.
         retry:
           fallbackChains:
@@ -200,7 +257,9 @@
       color = "189;147;249";
       blurb = "Oh My Pi";
       logo = ../../icons/omp.png;
-      package = inputs.omp.packages.${pkgs.stdenv.hostPlatform.system}.default;
+      package = inputs.omp.packages.${pkgs.stdenv.hostPlatform.system}.default.overrideAttrs (old: {
+        patches = (old.patches or []) ++ [./discovery-owned-by.patch];
+      });
       inherit models mcp;
       profiles = map profile [
         {
@@ -210,10 +269,10 @@
           blurb = "OpenAI";
           logo = ../../icons/openai.png;
           modelRoles = {
-            default = "anthropic/gpt-6.1-sol";
+            default = "openai/gpt-6.1-sol";
             inherit tiny;
-            smol = "anthropic/gpt-6-luna";
-            slow = "anthropic/gpt-6-astra";
+            smol = "openai/gpt-6-luna";
+            slow = "openai/gpt-6-astra";
           };
         }
         {
@@ -237,10 +296,10 @@
           blurb = "Moonshot";
           logo = ../../icons/kimi.png;
           modelRoles = {
-            default = "anthropic/kimi-k3-256k";
+            default = "moonshot/kimi-k3-256k";
             inherit tiny;
-            smol = "anthropic/kimi-k3-256k";
-            slow = "anthropic/kimi-k3-256k";
+            smol = "moonshot/kimi-k3-256k";
+            slow = "moonshot/kimi-k3-256k";
           };
         }
         {
@@ -250,10 +309,10 @@
           blurb = "Meta";
           logo = ../../icons/meta.png;
           modelRoles = {
-            default = "anthropic/muse-wonder-1.0";
+            default = "meta/muse-wonder-1.0";
             inherit tiny;
-            smol = "anthropic/muse-spark-1.3";
-            slow = "anthropic/muse-wonder-1.0";
+            smol = "meta/muse-spark-1.3";
+            slow = "meta/muse-wonder-1.0";
           };
         }
         {
@@ -280,8 +339,8 @@
           # instead.
           modelRoles = {
             inherit tiny;
-            smol = "anthropic/gpt-6-luna";
-            slow = "anthropic/gpt-6-astra";
+            smol = "openai/gpt-6-luna";
+            slow = "openai/gpt-6-astra";
           };
           # LiteLLM is the authority, not OpenRouter's public catalog: a
           # model absent from the proxy cannot be routed, so it must not be

@@ -1,0 +1,353 @@
+diff --git a/docs/models.md b/docs/models.md
+--- a/docs/models.md
++++ b/docs/models.md
+@@ -172,6 +172,8 @@
+ - `auth`: `apiKey` (default), `none`, or `oauth`. `none` and `oauth` waive the custom-provider `apiKey` requirement, but `oauth` does not create credentials or register a login flow. It forces OAuth-style request shaping; a usable credential must come from stored auth, environment, or a configured key. Custom `anthropic-messages` models also use OAuth-style shaping when `auth` is omitted; set `auth: apiKey` for plain API-key shaping.
+ - `discovery.type`: `ollama`, `llama.cpp`, `lm-studio`, `openai-models-list`, `proxy`, `litellm`, or `apple-foundation-models`. Apple's transport is registered implicitly on supported Macs; `apple-foundation-models` is not an allowed `api` value in this YAML schema.
+ - `discovery.injectV1`: optional boolean, default `true`, for `openai-models-list`. Set `false` to fetch the model list from `{baseUrl}/models` without injecting `/v1` — for gateways that root their OpenAI-compatible surface at a versioned path (e.g. `https://api.opper.ai/v3/compat`) where the forced `/v1/models` returns a different, smaller model list. Query strings in `baseUrl` are ignored, matching the default mode.
++- `discovery.ownedBy`: optional non-empty array of non-empty strings for `openai-models-list` and `proxy`. Keep only rows whose `owned_by` matches one of these owners, case-insensitively. Rows with a missing or non-string `owned_by` are excluded when the filter is set. Omit it to keep all rows. Matching rows retain the configured provider id and transport behavior.
++- `discovery.authoritative`: optional boolean, default `false`. Set `true` to list only the rows this provider's discovery returned: bundled catalog rows under the same provider id are hidden unless discovery returned their id, of every kind. Bundled metadata still enriches the returned rows, and explicit `models` entries still apply. Until the first discovery succeeds or a cache exists, the provider lists only its explicit `models`.
+ - `transport`: `pi-native` only. When set, every model under that provider is sent to an `omp auth-gateway` compatible `baseUrl` via `POST /v1/pi/stream`; `apiKey` is the gateway bearer.
+ - `imageInputDecoder`: `stb` only. Set this on a custom model or `modelOverrides` entry when the serving backend uses an STB-compatible image decoder that cannot accept WebP; OMP converts attached and historical WebP images before provider dispatch.
+ - `tokenizer`: opt into a specific embedded local tokenizer when a proxy's model id is ambiguous or noncanonical. Allowed values: `claude-v3`, `claude-v47`, `claude-v5`, `claude-v5-sonnet`, `qwen3`, `deepseek-v3`, `kimi-k2`, `glm5`, and `o200k` (OpenAI GPT-5 and later). Omit it to use catalog identity policy; unknown models retain the fast local estimate.
+@@ -207,6 +209,45 @@
+ - `discovery.timeoutMs` overrides that provider's runtime HTTP probe timeout in milliseconds. It must be a positive finite number.
+ - Without an override, Ollama and llama.cpp loopback probes use short endpoint-specific budgets (150–250 ms); remote/LAN probes use 10 s. Generic model-list and proxy probes default to 10 s.
+ - `discovery` requires provider-level `api`, except `discovery.type: proxy` (per-model wire auto-detected).
++
++To split one gateway's model list between providers without maintaining model ids:
++
++```yaml
++providers:
++  openai:
++    baseUrl: https://gateway.example.com
++    apiKey: GATEWAY_API_KEY
++    api: anthropic-messages
++    discovery:
++      type: openai-models-list
++      ownedBy: [openai]
++  anthropic:
++    baseUrl: https://gateway.example.com
++    apiKey: GATEWAY_API_KEY
++    api: anthropic-messages
++    discovery:
++      type: openai-models-list
++      ownedBy: [anthropic]
++```
++
++Use the wire API the gateway serves, independently of `owned_by`. `proxy` still
++selects each model's API from `supported_endpoint_types`; the owner filter does
++not change routing. Multiple owners can share a provider. Disjoint owner lists
++prevent the same discovery row from appearing under multiple providers.
++
++Set `discovery` explicitly on every provider in this layout. A `baseUrl` override
++alone can activate built-in endpoint discovery, which does not apply `ownedBy`
++and can import the gateway's entire model list, including with a `/v1` URL.
++Explicit discovery skips that built-in discovery path. Filtered caches are
++separate from unfiltered caches and from other owner lists.
++
++The filter applies only to discovered rows. Built-in catalog models and explicit
++`models` entries still merge as before, so a provider id that matches a built-in
++provider (`openai`, `anthropic`) also lists that provider's bundled roster. Set
++`discovery.authoritative: true` to list only what the gateway advertises. Use
++`modelOverrides` for metadata fixes without adding models that the gateway does
++not advertise.
++
+ 
+ ### Remote compaction
+ 
+diff --git a/packages/coding-agent/CHANGELOG.md b/packages/coding-agent/CHANGELOG.md
+--- a/packages/coding-agent/CHANGELOG.md
++++ b/packages/coding-agent/CHANGELOG.md
+@@ -1,6 +1,11 @@
+ # Changelog
+ 
+ ## [Unreleased]
++
++### Added
++
++- Added `discovery.ownedBy` to filter `openai-models-list` and `proxy` catalogs by `owned_by`, so one gateway can provide separate vendor providers without explicit model lists.
++- Added `discovery.authoritative` so a configured provider lists only the rows its discovery returned, hiding the bundled roster of a built-in provider id such as `openai`.
+ 
+ ## [18.10.4] - 2026-10-13
+ 
+diff --git a/packages/coding-agent/src/config/models-config-schema-bundle.ts b/packages/coding-agent/src/config/models-config-schema-bundle.ts
+--- a/packages/coding-agent/src/config/models-config-schema-bundle.ts
++++ b/packages/coding-agent/src/config/models-config-schema-bundle.ts
+@@ -316,6 +316,12 @@
+ 	const ProviderDiscoverySchema = type({
+ 		type: '"ollama" | "llama.cpp" | "lm-studio" | "openai-models-list" | "proxy" | "litellm" | "apple-foundation-models"',
+ 		"timeoutMs?": "number",
++		"ownedBy?": "string[]",
++		/**
++		 * Hide every row of this provider id that discovery did not return,
++		 * bundled catalog rows included. Explicit `models` entries still apply.
++		 */
++		"authoritative?": "boolean",
+ 		/**
+ 		 * Defaults to `true`. Set `false` to fetch the model list from
+ 		 * `{baseUrl}/models` without injecting `/v1` — for gateways that root
+@@ -327,6 +333,14 @@
+ 	}).narrow((value, ctx) => {
+ 		if (value.injectV1 !== undefined && value.type !== "openai-models-list") {
+ 			return ctx.mustBe("injectV1 only on openai-models-list discovery");
++		}
++		if (value.ownedBy !== undefined) {
++			if (value.type !== "openai-models-list" && value.type !== "proxy") {
++				return ctx.mustBe("ownedBy only on openai-models-list or proxy discovery");
++			}
++			if (value.ownedBy.length === 0 || value.ownedBy.some(owner => owner.trim().length === 0)) {
++				return ctx.mustBe("ownedBy a non-empty array of non-empty owner strings");
++			}
+ 		}
+ 		if (
+ 			value.timeoutMs !== undefined &&
+diff --git a/packages/coding-agent/src/config/model-discovery.ts b/packages/coding-agent/src/config/model-discovery.ts
+--- a/packages/coding-agent/src/config/model-discovery.ts
++++ b/packages/coding-agent/src/config/model-discovery.ts
+@@ -900,6 +900,7 @@
+ 				return (await res.json()) as {
+ 					data?: Array<{
+ 						id?: string;
++						owned_by?: unknown;
+ 						max_model_len?: unknown;
+ 						context_length?: unknown;
+ 						limits?: unknown;
+@@ -923,9 +924,11 @@
+ 	const models = payload.data ?? [];
+ 	const references = getBundledModelReferenceIndex();
+ 	const specs: ModelSpec<Api>[] = [];
++	const owners = providerConfig.discovery.ownedBy?.map(owner => owner.toLowerCase());
+ 	for (const item of models) {
+ 		const id = item.id;
+ 		if (!id) continue;
++		if (owners && (typeof item.owned_by !== "string" || !owners.includes(item.owned_by.toLowerCase()))) continue;
+ 		if (providerConfig.discovery.type === "litellm" && !isSelectableLiteLLMModelMode(item.mode)) continue;
+ 		const nativeMetadataForModel = nativeMetadata?.get(id);
+ 		// Thin OpenAI-compatible proxies frequently omit `context_length`/
+@@ -1125,7 +1128,13 @@
+ 			}
+ 			headers = h;
+ 			return (await res.json()) as {
+-				data?: Array<{ id?: string; name?: string; supported_endpoint_types?: string[]; context_length?: number }>;
++				data?: Array<{
++					id?: string;
++					owned_by?: unknown;
++					name?: string;
++					supported_endpoint_types?: string[];
++					context_length?: number;
++				}>;
+ 			};
+ 		});
+ 	const apiKey = await ctx.getBearerApiKeyResolver(providerConfig.provider);
+@@ -1134,9 +1143,11 @@
+ 		: await attempt(baseHeaders);
+ 	const items = payload.data ?? [];
+ 	const discovered: Model<Api>[] = [];
++	const owners = providerConfig.discovery.ownedBy?.map(owner => owner.toLowerCase());
+ 	for (const item of items) {
+ 		const id = item.id;
+ 		if (!id) continue;
++		if (owners && (typeof item.owned_by !== "string" || !owners.includes(item.owned_by.toLowerCase()))) continue;
+ 		const endpoints = item.supported_endpoint_types ?? [];
+ 		const api: Api | undefined = endpoints.includes("anthropic")
+ 			? "anthropic-messages"
+diff --git a/packages/coding-agent/src/config/model-registry.ts b/packages/coding-agent/src/config/model-registry.ts
+--- a/packages/coding-agent/src/config/model-registry.ts
++++ b/packages/coding-agent/src/config/model-registry.ts
+@@ -1178,10 +1178,24 @@
+ 		if (this.#runtimeAuthoritativeProviders.size > 0) {
+ 			resolvedDefaults = dropProviderModels(resolvedDefaults, this.#runtimeAuthoritativeProviders, { kind: "chat" });
+ 		}
+-		return this.#mergeResolvedModels(
+-			resolvedDefaults,
+-			selectProviderModels(this.#runtimeDiscoveredModels, providerFilter),
++		return this.#dropUndiscoveredRows(
++			this.#mergeResolvedModels(
++				resolvedDefaults,
++				selectProviderModels(this.#runtimeDiscoveredModels, providerFilter),
++			),
+ 		);
++	}
++
++	/** Rows of a `discovery.authoritative` provider survive only when its discovery returned their id. */
++	#dropUndiscoveredRows(models: Model<Api>[]): Model<Api>[] {
++		const discoveredIds = new Map<string, Set<string>>();
++		for (const providerConfig of this.#discoverableProviders) {
++			if (providerConfig.discovery.authoritative) discoveredIds.set(providerConfig.provider, new Set());
++		}
++		if (discoveredIds.size === 0) return models;
++		for (const model of this.#cachedDiscoverableModels) discoveredIds.get(model.provider)?.add(model.id);
++		for (const model of this.#runtimeDiscoveredModels) discoveredIds.get(model.provider)?.add(model.id);
++		return models.filter(model => discoveredIds.get(model.provider)?.has(model.id) ?? true);
+ 	}
+ 
+ 	/**
+@@ -1987,6 +2001,9 @@
+ 		if (providerConfig.discovery.type === "ollama") {
+ 			return resolveOllamaModelCacheProviderId(providerConfig.provider, providerConfig.baseUrl);
+ 		}
++		const ownerCacheSuffix = providerConfig.discovery.ownedBy
++			? `:owned-by:${JSON.stringify([...new Set(providerConfig.discovery.ownedBy.map(owner => owner.toLowerCase()))].sort())}`
++			: "";
+ 		if (providerConfig.discovery.type === "openai-models-list") {
+ 			// context-v3 invalidates rows cached before server-advertised input
+ 			// modalities were parsed from `/v1/models`; warm v2 rows pinned
+@@ -1995,8 +2012,8 @@
+ 			// cached from the `/v1`-injected URL can hold a different (smaller)
+ 			// model set and must never satisfy a bare provider's cache read.
+ 			return providerConfig.discovery.injectV1 === false
+-				? `${providerConfig.provider}:openai-models-list-bare-context-v3`
+-				: `${providerConfig.provider}:openai-models-list-context-v3`;
++				? `${providerConfig.provider}:openai-models-list-bare-context-v3${ownerCacheSuffix}`
++				: `${providerConfig.provider}:openai-models-list-context-v3${ownerCacheSuffix}`;
+ 		}
+ 		if (providerConfig.discovery.type === "litellm") {
+ 			// rich-v5 invalidates rows written before discovery filtered known
+@@ -2004,7 +2021,7 @@
+ 			// package's `litellm:rich-vN` namespace whenever mapping behavior changes.
+ 			return `${providerConfig.provider}:litellm-rich-v5`;
+ 		}
+-		return providerConfig.provider;
++		return `${providerConfig.provider}${ownerCacheSuffix}`;
+ 	}
+ 
+ 	#isDiscoveryCacheOlderThanModelsConfig(cacheUpdatedAt: number): boolean {
+diff --git a/packages/coding-agent/test/model-discovery.test.ts b/packages/coding-agent/test/model-discovery.test.ts
+--- a/packages/coding-agent/test/model-discovery.test.ts
++++ b/packages/coding-agent/test/model-discovery.test.ts
+@@ -15,6 +15,7 @@
+ import { CODEX_CLIENT_VERSION } from "@oh-my-pi/pi-catalog/wire/codex";
+ import {
+ 	discoverLiteLLMModels,
++	discoverModelsByProviderType,
+ 	discoverOllamaModels,
+ 	discoverOpenAIModelsList,
+ 	discoveryProbeTimeoutMs,
+@@ -1963,6 +1964,126 @@
+ 		expect(ProviderDiscoverySchema.allows({ type: "lm-studio", injectV1: false })).toBe(false);
+ 		expect(ProviderDiscoverySchema.allows({ type: "proxy", injectV1: false })).toBe(false);
+ 	});
++
++	test("ProviderDiscoverySchema validates ownedBy and its discovery protocols", () => {
++		for (const type of ["openai-models-list", "proxy"]) {
++			expect(ProviderDiscoverySchema.allows({ type, ownedBy: ["OpenAI", "anthropic"] })).toBe(true);
++			for (const ownedBy of [[], [""], [" "], [1], "openai"]) {
++				expect(ProviderDiscoverySchema.allows({ type, ownedBy })).toBe(false);
++			}
++		}
++		for (const type of ["ollama", "llama.cpp", "lm-studio", "litellm", "apple-foundation-models"]) {
++			expect(ProviderDiscoverySchema.allows({ type, ownedBy: ["openai"] })).toBe(false);
++		}
++	});
++
++	const ownerDiscoveryTypes: Array<"openai-models-list" | "proxy"> = ["openai-models-list", "proxy"];
++	for (const type of ownerDiscoveryTypes) {
++		test(`${type} filters owned_by case-insensitively without changing provider or routing`, async () => {
++			const models = await discoverModelsByProviderType(
++				{
++					provider: "vendor-gateway",
++					api: "anthropic-messages",
++					baseUrl: "https://gateway.example/v1",
++					discovery: { type, ownedBy: ["OpEnAi", "META"] },
++				},
++				{
++					fetch: async input => {
++						expect(String(input)).toBe("https://gateway.example/v1/models");
++						return Response.json({
++							data: [
++								{ id: "first", owned_by: "OPENAI", supported_endpoint_types: ["openai"] },
++								{ id: "second", owned_by: "meta" },
++								{ id: "other", owned_by: "anthropic" },
++								{ id: "missing" },
++								{ id: "invalid", owned_by: 42 },
++								{ id: "null", owned_by: null },
++							],
++						});
++					},
++					getBearerApiKeyResolver: async () => undefined,
++				},
++			);
++			expect(models.map(model => [model.provider, model.id, model.api])).toEqual([
++				["vendor-gateway", "first", type === "proxy" ? "openai-completions" : "anthropic-messages"],
++				["vendor-gateway", "second", "anthropic-messages"],
++			]);
++		});
++
++		test(`${type} retains all owners when ownedBy is omitted`, async () => {
++			const models = await discoverModelsByProviderType(
++				{
++					provider: "vendor-gateway",
++					api: "anthropic-messages",
++					discovery: { type },
++				},
++				{
++					fetch: async () => Response.json({ data: [{ id: "first", owned_by: "openai" }, { id: "missing" }] }),
++					getBearerApiKeyResolver: async () => undefined,
++				},
++			);
++			expect(models.map(model => model.id)).toEqual(["first", "missing"]);
++		});
++
++		test(`${type} separates owner-filtered caches from unfiltered and other owners`, async () => {
++			const fetch: FetchImpl = async () =>
++				Response.json({
++					data: [
++						{ id: "first", owned_by: "openai" },
++						{ id: "second", owned_by: "meta" },
++					],
++				});
++			const scenarios = [
++				{ ownedBy: undefined, expected: ["first", "second"] },
++				{ ownedBy: ["openai"], expected: ["first"] },
++				{ ownedBy: ["meta"], expected: ["second"] },
++				{ ownedBy: ["unknown"], expected: [] },
++			];
++			for (const { ownedBy, expected } of scenarios) {
++				writeRawModelsJson({
++					"vendor-gateway": {
++						baseUrl: "https://gateway.example/v1",
++						api: "anthropic-messages",
++						auth: "none",
++						discovery: { type, ownedBy },
++					},
++				});
++				fs.utimesSync(modelsJsonPath, new Date(0), new Date(0));
++				const registry = new ModelRegistry(authStorage, modelsJsonPath, { fetch, cacheDbPath });
++				await registry.refreshDiscoverableProviders(["vendor-gateway"], "online-if-uncached");
++				expect(getModelsForProvider(registry, "vendor-gateway").map(model => model.id)).toEqual(expected);
++			}
++		});
++
++		test(`${type} authoritative discovery hides bundled rows of a built-in provider id`, async () => {
++			const fetch: FetchImpl = async () => Response.json({ data: [{ id: "gpt-6-luna" }, { id: "gateway-only" }] });
++			for (const authoritative of [false, true]) {
++				writeRawModelsJson({
++					openai: {
++						baseUrl: "https://gateway.example/v1",
++						api: "anthropic-messages",
++						auth: "none",
++						discovery: { type, authoritative },
++						models: [{ id: "explicit-row" }],
++					},
++				});
++				fs.utimesSync(modelsJsonPath, new Date(0), new Date(0));
++				const registry = new ModelRegistry(authStorage, modelsJsonPath, { fetch, cacheDbPath });
++				await registry.refreshDiscoverableProviders(["openai"], "online-if-uncached");
++				const ids = registry
++					.getAll("all")
++					.filter(model => model.provider === "openai")
++					.map(model => model.id);
++				if (authoritative) {
++					expect(ids.toSorted()).toEqual(["explicit-row", "gateway-only", "gpt-6-luna"]);
++				} else {
++					expect(ids).toContain("text-embedding-3-small");
++					expect(ids).toContain("gateway-only");
++				}
++			}
++		});
++	}
++
+ 	test("llama.cpp discovery marks per-model architecture image modalities as vision-capable", async () => {
+ 		const fetchMock: FetchImpl = async input => {
+ 			const url = String(input);
