@@ -28,12 +28,39 @@
     boot.lanzaboote = {
       enable = true;
       pkiBundle = "/var/lib/sbctl";
+      configurationLimit = 10;
     };
 
     zramSwap.enable = true;
     boot.kernel.sysctl = {
       "vm.swappiness" = 180;
       "vm.page-cluster" = 0;
+    };
+
+    systemd.oomd.enableUserSlices = true;
+
+    nix.gc.options = "--delete-older-than 14d";
+    nix.optimise.automatic = true;
+    nix.daemonCPUSchedPolicy = "batch";
+    nix.daemonIOSchedClass = "idle";
+
+    services.btrfs.autoScrub.enable = true;
+
+    services.smartd = {
+      enable = true;
+      notifications = {
+        x11.enable = false;
+        systembus-notify.enable = true;
+      };
+    };
+
+    fileSystems."/".options = ["compress=zstd"];
+    fileSystems."/home".options = ["compress=zstd"];
+    fileSystems."/nix".options = ["compress=zstd" "noatime"];
+
+    services.scx = {
+      enable = true;
+      scheduler = "scx_bpfland";
     };
 
     networking.hostName = "v3x-fighter";
@@ -59,6 +86,7 @@
       package = config.boot.kernelPackages.nvidiaPackages.latest;
     };
     hardware.enableRedistributableFirmware = true;
+    hardware.nvidia-container-toolkit.enable = true;
     services.printing.enable = true;
 
     services.tailscale = {
@@ -67,6 +95,7 @@
 
     services.avahi = {
       enable = true;
+      nssmdns4 = true;
     };
 
     programs.calls.enable = true;
@@ -79,6 +108,7 @@
     virtualisation.docker = {
       enable = true;
       storageDriver = "btrfs";
+      autoPrune.enable = true;
     };
 
     sops = {
@@ -161,7 +191,8 @@
       };
     };
 
-    # services.fstrim.enable = true;
+    services.fstrim.enable = true;
+
     # services.angrr = {
     #   enable = true;
     #   period = "7d";
