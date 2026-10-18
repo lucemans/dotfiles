@@ -30,6 +30,12 @@
       pkiBundle = "/var/lib/sbctl";
     };
 
+    zramSwap.enable = true;
+    boot.kernel.sysctl = {
+      "vm.swappiness" = 180;
+      "vm.page-cluster" = 0;
+    };
+
     networking.hostName = "v3x-fighter";
     networking.networkmanager.enable = true;
 
