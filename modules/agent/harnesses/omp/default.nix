@@ -82,69 +82,77 @@
       };
       models = pkgs.writeText "omp-models.yml" (builtins.toJSON {
         providers = {
-          openai = gateway // {
-            discovery = {
-              type = "openai-models-list";
-              ownedBy = ["openai"];
-              authoritative = true;
-            };
-            # CLIProxyAPI lists these as chat rows but serves them on its OpenAI image route.
-            models = map (id: {
-              inherit id;
-              api = "openai-images";
-              baseUrl = "${gateway.baseUrl}/v1";
-            }) ["gpt-image-1.5" "gpt-image-2" "gpt-image-2.5" "gpt-image-2.5-flare" "gpt-image-2.5-sunburst"];
-            modelOverrides = lib.genAttrs ["gpt-5.6-luna" "gpt-5.6-terra" "gpt-5.6-sol" "gpt-6-luna" "gpt-6-sol" "gpt-6.1-sol" "gpt-6-astra"] (_: {
-              input = ["text" "image"];
-              contextWindow = 1050000;
-              maxTokens = 128000;
-            });
-          };
-          anthropic = gateway // {
-            discovery = {
-              type = "openai-models-list";
-              ownedBy = ["anthropic"];
-              authoritative = true;
-            };
-            modelOverrides = {
-              "claude-opus-5-5" = {
+          openai =
+            gateway
+            // {
+              discovery = {
+                type = "openai-models-list";
+                ownedBy = ["openai"];
+                authoritative = true;
+              };
+              # CLIProxyAPI lists these as chat rows but serves them on its OpenAI image route.
+              models = map (id: {
+                inherit id;
+                api = "openai-images";
+                baseUrl = "${gateway.baseUrl}/v1";
+              }) ["gpt-image-1.5" "gpt-image-2" "gpt-image-2.5" "gpt-image-2.5-flare" "gpt-image-2.5-sunburst"];
+              modelOverrides = lib.genAttrs ["gpt-5.6-luna" "gpt-5.6-terra" "gpt-5.6-sol" "gpt-6-luna" "gpt-6-sol" "gpt-6.1-sol" "gpt-6-astra"] (_: {
                 input = ["text" "image"];
                 contextWindow = 1050000;
                 maxTokens = 128000;
+              });
+            };
+          anthropic =
+            gateway
+            // {
+              discovery = {
+                type = "openai-models-list";
+                ownedBy = ["anthropic"];
+                authoritative = true;
               };
-              "claude-fable-5-1".thinking = {
-                mode = "anthropic-adaptive";
-                efforts = ["low" "medium" "high" "xhigh" "max"];
-                supportsDisplay = true;
+              modelOverrides = {
+                "claude-opus-5-5" = {
+                  input = ["text" "image"];
+                  contextWindow = 1050000;
+                  maxTokens = 128000;
+                };
+                "claude-fable-5-1".thinking = {
+                  mode = "anthropic-adaptive";
+                  efforts = ["low" "medium" "high" "xhigh" "max"];
+                  supportsDisplay = true;
+                };
               };
             };
-          };
-          moonshot = gateway // {
-            discovery = {
-              type = "openai-models-list";
-              ownedBy = ["moonshot"];
-              authoritative = true;
-            };
-            modelOverrides."kimi-k3-256k" = {
-              input = ["text" "image"];
-              contextWindow = 256000;
-              maxTokens = 128000;
-            };
-          };
-          meta = gateway // {
-            discovery = {
-              type = "openai-models-list";
-              ownedBy = ["meta"];
-              authoritative = true;
-            };
-            modelOverrides = lib.genAttrs ["muse-wonder-1.0" "muse-wonder-1.0-contributor" "muse-spark-1.3"] (_: {
-              thinking = {
-                mode = "anthropic-adaptive";
-                efforts = ["minimal" "low" "medium" "high" "xhigh" "max"];
-                requiresEffort = true;
+          moonshot =
+            gateway
+            // {
+              discovery = {
+                type = "openai-models-list";
+                ownedBy = ["moonshot"];
+                authoritative = true;
               };
-            });
-          };
+              modelOverrides."kimi-k3-256k" = {
+                input = ["text" "image"];
+                contextWindow = 256000;
+                maxTokens = 128000;
+              };
+            };
+          meta =
+            gateway
+            // {
+              discovery = {
+                type = "openai-models-list";
+                ownedBy = ["meta"];
+                authoritative = true;
+              };
+              modelOverrides = lib.genAttrs ["muse-wonder-1.0" "muse-wonder-1.0-contributor" "muse-spark-1.3"] (_: {
+                thinking = {
+                  mode = "anthropic-adaptive";
+                  efforts = ["minimal" "low" "medium" "high" "xhigh" "max"];
+                  requiresEffort = true;
+                };
+              });
+            };
           v3x-inference = {
             baseUrl = "https://${services.inference.name}/v1";
             api = "openai-completions";
@@ -244,7 +252,7 @@
             "${settings}"
             "--config"
             "${pkgs.writeText "omp-roles-${entry.name}.yml" (builtins.toJSON (lib.recursiveUpdate ({modelRoles = {inherit vision web judge memory;} // entry.modelRoles;}
-                  // lib.optionalAttrs (entry ? agentModelOverrides) {task.agentModelOverrides = entry.agentModelOverrides;}) (entry.settings or {})))}"
+                    // lib.optionalAttrs (entry ? agentModelOverrides) {task.agentModelOverrides = entry.agentModelOverrides;}) (entry.settings or {})))}"
             "--extension"
             "${./agent-toolsets.ts}"
             "--extension"
