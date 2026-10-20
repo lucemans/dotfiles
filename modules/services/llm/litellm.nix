@@ -332,6 +332,41 @@ in {
             model_info.mode = "chat";
           }
           {
+            model_name = "openrouter/deepseek/deepseek-v4.1-flash";
+            model_info.base_model = "deepseek/deepseek-v4.1-flash";
+            model_info.mode = "chat";
+            litellm_params = {
+              model = "openrouter/deepseek/deepseek-v4.1-flash";
+              # Only route to providers verified to return real tool_calls.
+              provider = {
+                order = [
+                  "baseten"
+                  "deepinfra"
+                ];
+                allow_fallbacks = false;
+              };
+            };
+          }
+          {
+            model_name = "openrouter/deepseek/deepseek-v4.1-flash-1017";
+            model_info.base_model = "deepseek/deepseek-v4.1-flash-1017";
+            model_info.mode = "chat";
+            litellm_params = {
+              model = "openrouter/deepseek/deepseek-v4.1-flash-1017";
+              provider = {
+                order = [
+                  "deepinfra"
+                  "relace"
+                  "inference-net"
+                  "cloudflare"
+                  "deepseek"
+                  "together"
+                ];
+                allow_fallbacks = false;
+              };
+            };
+          }
+          {
             model_name = "openrouter/*";
             litellm_params.model = "openrouter/*";
           }
