@@ -340,9 +340,11 @@ in {
               # Only route to providers verified to return real tool_calls.
               provider = {
                 order = [
+                  "deepinfra/fp8"
                   "baseten"
-                  "deepinfra"
                 ];
+                # The bare BaseTen slug also matches its priority /fast endpoint.
+                ignore = ["baseten/fast"];
                 allow_fallbacks = false;
               };
             };
@@ -355,11 +357,10 @@ in {
               model = "openrouter/deepseek/deepseek-v4.1-flash-1017";
               provider = {
                 order = [
-                  "deepinfra"
+                  "deepinfra/fp8"
                   "relace"
-                  "inference-net"
+                  "inference-net/fp8"
                   "cloudflare"
-                  "deepseek"
                   "together"
                 ];
                 allow_fallbacks = false;
