@@ -36,8 +36,10 @@ _: {
             switch-project: true
 
           routing:
-            strategy: "round-robin"
+            strategy: "fill-first"
             session-affinity: true
+            session-affinity-subagents: true
+            session-affinity-rebind-on: "quota"
 
           logging-to-file: true
           logs-max-total-size-mb: 1024
