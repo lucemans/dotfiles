@@ -337,13 +337,11 @@ in {
             model_info.mode = "chat";
             litellm_params = {
               model = "openrouter/deepseek/deepseek-v4.1-flash";
-              # Only route to providers verified to return real tool_calls.
               provider = {
                 order = [
                   "deepinfra/fp8"
                   "baseten"
                 ];
-                # The bare BaseTen slug also matches its priority /fast endpoint.
                 ignore = ["baseten/fast"];
                 allow_fallbacks = false;
               };
