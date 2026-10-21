@@ -1,7 +1,7 @@
 diff --git a/docs/models.md b/docs/models.md
 --- a/docs/models.md
 +++ b/docs/models.md
-@@ -172,6 +172,8 @@
+@@ -212,6 +212,8 @@
  - `auth`: `apiKey` (default), `none`, or `oauth`. `none` and `oauth` waive the custom-provider `apiKey` requirement, but `oauth` does not create credentials or register a login flow. It forces OAuth-style request shaping; a usable credential must come from stored auth, environment, or a configured key. Custom `anthropic-messages` models also use OAuth-style shaping when `auth` is omitted; set `auth: apiKey` for plain API-key shaping.
  - `discovery.type`: `ollama`, `llama.cpp`, `lm-studio`, `openai-models-list`, `proxy`, `litellm`, or `apple-foundation-models`. Apple's transport is registered implicitly on supported Macs; `apple-foundation-models` is not an allowed `api` value in this YAML schema.
  - `discovery.injectV1`: optional boolean, default `true`, for `openai-models-list`. Set `false` to fetch the model list from `{baseUrl}/models` without injecting `/v1` — for gateways that root their OpenAI-compatible surface at a versioned path (e.g. `https://api.opper.ai/v3/compat`) where the forced `/v1/models` returns a different, smaller model list. Query strings in `baseUrl` are ignored, matching the default mode.
@@ -9,12 +9,11 @@ diff --git a/docs/models.md b/docs/models.md
 +- `discovery.authoritative`: optional boolean, default `false`. Set `true` to list only the rows this provider's discovery returned: bundled catalog rows under the same provider id are hidden unless discovery returned their id, of every kind. Bundled metadata still enriches the returned rows, and explicit `models` entries still apply. Until the first discovery succeeds or a cache exists, the provider lists only its explicit `models`.
  - `transport`: `pi-native` only. When set, every model under that provider is sent to an `omp auth-gateway` compatible `baseUrl` via `POST /v1/pi/stream`; `apiKey` is the gateway bearer.
  - `imageInputDecoder`: `stb` only. Set this on a custom model or `modelOverrides` entry when the serving backend uses an STB-compatible image decoder that cannot accept WebP; OMP converts attached and historical WebP images before provider dispatch.
- - `tokenizer`: opt into a specific embedded local tokenizer when a proxy's model id is ambiguous or noncanonical. Allowed values: `claude-v3`, `claude-v47`, `claude-v5`, `claude-v5-sonnet`, `qwen3`, `deepseek-v3`, `kimi-k2`, `glm5`, and `o200k` (OpenAI GPT-5 and later). Omit it to use catalog identity policy; unknown models retain the fast local estimate.
-@@ -207,6 +209,45 @@
- - `discovery.timeoutMs` overrides that provider's runtime HTTP probe timeout in milliseconds. It must be a positive finite number.
+ - `imageCountBudget`: positive integer. Set this on a custom model or `modelOverrides` entry to state how many images one request to its host may carry. It replaces the catalog budget, which is 5 for a provider no catalog rule names. A gateway in front of a vendor with a higher limit needs it: once a session holds more images than the budget, OMP drops the oldest ones, which changes the cached prompt prefix.
+@@ -249,6 +251,45 @@
  - Without an override, Ollama and llama.cpp loopback probes use short endpoint-specific budgets (150–250 ms); remote/LAN probes use 10 s. Generic model-list and proxy probes default to 10 s.
  - `discovery` requires provider-level `api`, except `discovery.type: proxy` (per-model wire auto-detected).
-+
+ 
 +To split one gateway's model list between providers without maintaining model ids:
 +
 +```yaml
@@ -53,28 +52,29 @@ diff --git a/docs/models.md b/docs/models.md
 +`modelOverrides` for metadata fixes without adding models that the gateway does
 +not advertise.
 +
- 
++
  ### Remote compaction
  
+ `remoteCompaction` is independently sufficient for an override-only provider.
 diff --git a/packages/coding-agent/CHANGELOG.md b/packages/coding-agent/CHANGELOG.md
 --- a/packages/coding-agent/CHANGELOG.md
 +++ b/packages/coding-agent/CHANGELOG.md
-@@ -1,6 +1,11 @@
- # Changelog
+@@ -2,6 +2,11 @@
  
  ## [Unreleased]
-+
+ 
 +### Added
 +
 +- Added `discovery.ownedBy` to filter `openai-models-list` and `proxy` catalogs by `owned_by`, so one gateway can provide separate vendor providers without explicit model lists.
 +- Added `discovery.authoritative` so a configured provider lists only the rows its discovery returned, hiding the bundled roster of a built-in provider id such as `openai`.
++
+ ### Fixed
  
- ## [18.10.4] - 2026-10-13
- 
+ - Fixed subagents spawning at a caller-supplied `effort` (e.g. `hi` → `max`) while `task.enableEffort` is off; the field is now ignored and the agent's configured thinking level (including `:auto`) applies ([#16402](https://github.com/can1357/oh-my-pi/issues/16402))
 diff --git a/packages/coding-agent/src/config/models-config-schema-bundle.ts b/packages/coding-agent/src/config/models-config-schema-bundle.ts
 --- a/packages/coding-agent/src/config/models-config-schema-bundle.ts
 +++ b/packages/coding-agent/src/config/models-config-schema-bundle.ts
-@@ -316,6 +316,12 @@
+@@ -328,6 +328,12 @@
  	const ProviderDiscoverySchema = type({
  		type: '"ollama" | "llama.cpp" | "lm-studio" | "openai-models-list" | "proxy" | "litellm" | "apple-foundation-models"',
  		"timeoutMs?": "number",
@@ -87,11 +87,10 @@ diff --git a/packages/coding-agent/src/config/models-config-schema-bundle.ts b/p
  		/**
  		 * Defaults to `true`. Set `false` to fetch the model list from
  		 * `{baseUrl}/models` without injecting `/v1` — for gateways that root
-@@ -327,6 +333,14 @@
- 	}).narrow((value, ctx) => {
+@@ -340,6 +346,14 @@
  		if (value.injectV1 !== undefined && value.type !== "openai-models-list") {
  			return ctx.mustBe("injectV1 only on openai-models-list discovery");
-+		}
+ 		}
 +		if (value.ownedBy !== undefined) {
 +			if (value.type !== "openai-models-list" && value.type !== "proxy") {
 +				return ctx.mustBe("ownedBy only on openai-models-list or proxy discovery");
@@ -99,21 +98,22 @@ diff --git a/packages/coding-agent/src/config/models-config-schema-bundle.ts b/p
 +			if (value.ownedBy.length === 0 || value.ownedBy.some(owner => owner.trim().length === 0)) {
 +				return ctx.mustBe("ownedBy a non-empty array of non-empty owner strings");
 +			}
- 		}
++		}
  		if (
  			value.timeoutMs !== undefined &&
+ 			(typeof value.timeoutMs !== "number" || value.timeoutMs <= 0 || !Number.isFinite(value.timeoutMs))
 diff --git a/packages/coding-agent/src/config/model-discovery.ts b/packages/coding-agent/src/config/model-discovery.ts
 --- a/packages/coding-agent/src/config/model-discovery.ts
 +++ b/packages/coding-agent/src/config/model-discovery.ts
-@@ -900,6 +900,7 @@
+@@ -906,6 +906,7 @@
  				return (await res.json()) as {
  					data?: Array<{
  						id?: string;
 +						owned_by?: unknown;
  						max_model_len?: unknown;
  						context_length?: unknown;
- 						limits?: unknown;
-@@ -923,9 +924,11 @@
+ 						max_output_tokens?: unknown;
+@@ -933,9 +934,11 @@
  	const models = payload.data ?? [];
  	const references = getBundledModelReferenceIndex();
  	const specs: ModelSpec<Api>[] = [];
@@ -125,7 +125,7 @@ diff --git a/packages/coding-agent/src/config/model-discovery.ts b/packages/codi
  		if (providerConfig.discovery.type === "litellm" && !isSelectableLiteLLMModelMode(item.mode)) continue;
  		const nativeMetadataForModel = nativeMetadata?.get(id);
  		// Thin OpenAI-compatible proxies frequently omit `context_length`/
-@@ -1125,7 +1128,13 @@
+@@ -1146,7 +1149,13 @@
  			}
  			headers = h;
  			return (await res.json()) as {
@@ -140,7 +140,7 @@ diff --git a/packages/coding-agent/src/config/model-discovery.ts b/packages/codi
  			};
  		});
  	const apiKey = await ctx.getBearerApiKeyResolver(providerConfig.provider);
-@@ -1134,9 +1143,11 @@
+@@ -1155,9 +1164,11 @@
  		: await attempt(baseHeaders);
  	const items = payload.data ?? [];
  	const discovered: Model<Api>[] = [];
@@ -155,7 +155,7 @@ diff --git a/packages/coding-agent/src/config/model-discovery.ts b/packages/codi
 diff --git a/packages/coding-agent/src/config/model-registry.ts b/packages/coding-agent/src/config/model-registry.ts
 --- a/packages/coding-agent/src/config/model-registry.ts
 +++ b/packages/coding-agent/src/config/model-registry.ts
-@@ -1178,10 +1178,24 @@
+@@ -1182,12 +1182,26 @@
  		if (this.#runtimeAuthoritativeProviders.size > 0) {
  			resolvedDefaults = dropProviderModels(resolvedDefaults, this.#runtimeAuthoritativeProviders, { kind: "chat" });
  		}
@@ -168,8 +168,8 @@ diff --git a/packages/coding-agent/src/config/model-registry.ts b/packages/codin
 +				selectProviderModels(this.#runtimeDiscoveredModels, providerFilter),
 +			),
  		);
-+	}
-+
+ 	}
+ 
 +	/** Rows of a `discovery.authoritative` provider survive only when its discovery returned their id. */
 +	#dropUndiscoveredRows(models: Model<Api>[]): Model<Api>[] {
 +		const discoveredIds = new Map<string, Set<string>>();
@@ -180,10 +180,12 @@ diff --git a/packages/coding-agent/src/config/model-registry.ts b/packages/codin
 +		for (const model of this.#cachedDiscoverableModels) discoveredIds.get(model.provider)?.add(model.id);
 +		for (const model of this.#runtimeDiscoveredModels) discoveredIds.get(model.provider)?.add(model.id);
 +		return models.filter(model => discoveredIds.get(model.provider)?.has(model.id) ?? true);
- 	}
- 
++	}
++
  	/**
-@@ -1987,6 +2001,9 @@
+ 	 * Entries a discovered model inherits headers and transport from: cached
+ 	 * base models with custom overlays, without earlier discoveries or override
+@@ -1999,6 +2013,9 @@
  		if (providerConfig.discovery.type === "ollama") {
  			return resolveOllamaModelCacheProviderId(providerConfig.provider, providerConfig.baseUrl);
  		}
@@ -193,18 +195,18 @@ diff --git a/packages/coding-agent/src/config/model-registry.ts b/packages/codin
  		if (providerConfig.discovery.type === "openai-models-list") {
  			// context-v3 invalidates rows cached before server-advertised input
  			// modalities were parsed from `/v1/models`; warm v2 rows pinned
-@@ -1995,8 +2012,8 @@
+@@ -2011,8 +2028,8 @@
  			// cached from the `/v1`-injected URL can hold a different (smaller)
  			// model set and must never satisfy a bare provider's cache read.
  			return providerConfig.discovery.injectV1 === false
--				? `${providerConfig.provider}:openai-models-list-bare-context-v3`
--				: `${providerConfig.provider}:openai-models-list-context-v3`;
-+				? `${providerConfig.provider}:openai-models-list-bare-context-v3${ownerCacheSuffix}`
-+				: `${providerConfig.provider}:openai-models-list-context-v3${ownerCacheSuffix}`;
+-				? `${providerConfig.provider}:openai-models-list-bare-context-v4`
+-				: `${providerConfig.provider}:openai-models-list-context-v4`;
++				? `${providerConfig.provider}:openai-models-list-bare-context-v4${ownerCacheSuffix}`
++				: `${providerConfig.provider}:openai-models-list-context-v4${ownerCacheSuffix}`;
  		}
  		if (providerConfig.discovery.type === "litellm") {
  			// rich-v5 invalidates rows written before discovery filtered known
-@@ -2004,7 +2021,7 @@
+@@ -2020,7 +2037,7 @@
  			// package's `litellm:rich-vN` namespace whenever mapping behavior changes.
  			return `${providerConfig.provider}:litellm-rich-v5`;
  		}
@@ -216,7 +218,7 @@ diff --git a/packages/coding-agent/src/config/model-registry.ts b/packages/codin
 diff --git a/packages/coding-agent/test/model-discovery.test.ts b/packages/coding-agent/test/model-discovery.test.ts
 --- a/packages/coding-agent/test/model-discovery.test.ts
 +++ b/packages/coding-agent/test/model-discovery.test.ts
-@@ -15,6 +15,7 @@
+@@ -20,6 +20,7 @@
  import { CODEX_CLIENT_VERSION } from "@oh-my-pi/pi-catalog/wire/codex";
  import {
  	discoverLiteLLMModels,
@@ -224,7 +226,7 @@ diff --git a/packages/coding-agent/test/model-discovery.test.ts b/packages/codin
  	discoverOllamaModels,
  	discoverOpenAIModelsList,
  	discoveryProbeTimeoutMs,
-@@ -1963,6 +1964,126 @@
+@@ -1968,6 +1969,126 @@
  		expect(ProviderDiscoverySchema.allows({ type: "lm-studio", injectV1: false })).toBe(false);
  		expect(ProviderDiscoverySchema.allows({ type: "proxy", injectV1: false })).toBe(false);
  	});

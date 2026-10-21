@@ -1,17 +1,17 @@
 diff --git a/packages/coding-agent/CHANGELOG.md b/packages/coding-agent/CHANGELOG.md
 --- a/packages/coding-agent/CHANGELOG.md
 +++ b/packages/coding-agent/CHANGELOG.md
-@@ -6,6 +6,10 @@
- 
+@@ -7,6 +7,10 @@
  - Added `discovery.ownedBy` to filter `openai-models-list` and `proxy` catalogs by `owned_by`, so one gateway can provide separate vendor providers without explicit model lists.
  - Added `discovery.authoritative` so a configured provider lists only the rows its discovery returned, hiding the bundled roster of a built-in provider id such as `openai`.
-+
+ 
 +### Changed
 +
 +- Halved `find` judgment batches (32 files per filename request, 9 KB sketch and 16 KB verification state) so each request stays near 5k tokens and fits an 8k-context judge such as self-hosted Clef, and raised the `find` timeout from 20 s to 90 s for a judge that answers one request at a time.
++
+ ### Fixed
  
- ## [18.10.4] - 2026-10-13
- 
+ - Fixed subagents spawning at a caller-supplied `effort` (e.g. `hi` → `max`) while `task.enableEffort` is off; the field is now ignored and the agent's configured thinking level (including `:auto`) applies ([#16402](https://github.com/can1357/oh-my-pi/issues/16402))
 diff --git a/packages/coding-agent/src/tools/jfind/cascade.ts b/packages/coding-agent/src/tools/jfind/cascade.ts
 --- a/packages/coding-agent/src/tools/jfind/cascade.ts
 +++ b/packages/coding-agent/src/tools/jfind/cascade.ts
@@ -46,7 +46,7 @@ diff --git a/packages/coding-agent/src/tools/jfind/cascade.ts b/packages/coding-
 diff --git a/packages/coding-agent/src/tools/jfind/index.ts b/packages/coding-agent/src/tools/jfind/index.ts
 --- a/packages/coding-agent/src/tools/jfind/index.ts
 +++ b/packages/coding-agent/src/tools/jfind/index.ts
-@@ -34,8 +34,11 @@
+@@ -41,8 +41,11 @@
  /** Line ranges shown per hit in the model-facing text, strongest first. */
  const RANGES_SHOWN = 3;
  
@@ -63,7 +63,7 @@ diff --git a/packages/coding-agent/src/tools/jfind/index.ts b/packages/coding-ag
 diff --git a/packages/coding-agent/test/tools/jfind.test.ts b/packages/coding-agent/test/tools/jfind.test.ts
 --- a/packages/coding-agent/test/tools/jfind.test.ts
 +++ b/packages/coding-agent/test/tools/jfind.test.ts
-@@ -218,7 +218,7 @@
+@@ -223,7 +223,7 @@
  	it("verifies only sketched passages, reports merged ranges, and runs waves in parallel", async () => {
  		const dir = await fs.mkdtemp(path.join(os.tmpdir(), "jfind-cascade-"));
  		try {
@@ -72,7 +72,7 @@ diff --git a/packages/coding-agent/test/tools/jfind.test.ts b/packages/coding-ag
  			for (let i = 0; i < 70; i++) {
  				await Bun.write(path.join(dir, "pkg", `filler${i}.ts`), `export const filler${i} = ${i};\n`);
  			}
-@@ -260,7 +260,7 @@
+@@ -265,7 +265,7 @@
  			// Wave 1 judged every listed file by name; wave 3 verified only the routed sketch.
  			const nameRequests = judge.requests.filter(request => "tree" in stateOf(request));
  			const verifyRequests = judge.requests.filter(request => "file" in stateOf(request));
