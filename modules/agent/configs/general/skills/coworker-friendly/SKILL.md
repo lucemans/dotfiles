@@ -1,6 +1,6 @@
 ---
 name: coworker-friendly
-description: "(Re)write the document with coworkers and social skills in mind."
+description: "(Re)write the document with coworkers and social skills in mind"
 disable-model-invocation: true
 ---
 

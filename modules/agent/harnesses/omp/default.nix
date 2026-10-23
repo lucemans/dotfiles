@@ -38,7 +38,7 @@
   in {
     home-manager.users.luc.home.file =
       agents
-      // (import ../../subagents).files "omp" ".omp/agent/agents"
+      // (import ../../configs/general/subagents).files "omp" ".omp/agent/agents"
       // {
         ".omp/agent/themes/titanium-v3x.json".source = ./titanium-v3x.json;
         ".omp/agent/commands/sicko.md".text = ''
@@ -280,7 +280,7 @@
       glyph = "󰚩";
       color = "189;147;249";
       blurb = "Oh My Pi";
-      logo = ../../icons/omp.png;
+      logo = ../../../../assets/icons/omp.png;
       package = inputs.omp.packages.${pkgs.stdenv.hostPlatform.system}.default.overrideAttrs (old: {
         patches = (old.patches or []) ++ [./discovery-owned-by.patch ./find-small-judge.patch];
       });
@@ -291,7 +291,7 @@
           glyph = "";
           color = "16;163;127";
           blurb = "OpenAI";
-          logo = ../../icons/openai.png;
+          logo = ../../../../assets/icons/openai.png;
           modelRoles = {
             default = "openai/gpt-6.1-sol";
             inherit tiny;
@@ -304,7 +304,7 @@
           glyph = "󰦣";
           color = "217;119;87";
           blurb = "Anthropic";
-          logo = ../../icons/claude.png;
+          logo = ../../../../assets/icons/claude.png;
           modelRoles = {
             default = "anthropic/claude-opus-5-5";
             inherit tiny;
@@ -318,7 +318,7 @@
           glyph = "";
           color = "248;248;242";
           blurb = "Moonshot";
-          logo = ../../icons/kimi.png;
+          logo = ../../../../assets/icons/kimi.png;
           modelRoles = {
             default = "moonshot/kimi-k3-256k";
             inherit tiny;
@@ -331,7 +331,7 @@
           glyph = "∞";
           color = "0;129;251";
           blurb = "Meta";
-          logo = ../../icons/meta.png;
+          logo = ../../../../assets/icons/meta.png;
           modelRoles = {
             default = "meta/muse-wonder-1.0";
             inherit tiny;
@@ -344,7 +344,7 @@
           glyph = "";
           color = "80;250;123";
           blurb = "v3x-inference";
-          logo = ../../icons/local.png;
+          logo = ../../../../assets/icons/local.png;
           modelRoles = {
             default = "v3x-inference/v3x-m/qwen3.8-27b";
             inherit tiny;
@@ -375,7 +375,7 @@
           glyph = "";
           color = "148;163;184";
           blurb = "OpenRouter";
-          logo = ../../icons/openrouter.png;
+          logo = ../../../../assets/icons/openrouter.png;
           # `default` is deliberately absent: the picked OpenRouter model
           # arrives as --model, so a stale fallback here could silently win
           # instead.

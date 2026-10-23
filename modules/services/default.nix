@@ -1,6 +1,7 @@
 {
   imports = [
     ./uptime
+    ./ethereum
     ./metrics.nix
     ./inference
     ./keyhold

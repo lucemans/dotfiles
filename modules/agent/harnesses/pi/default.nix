@@ -50,7 +50,7 @@
       glyph = "π";
       color = "139;233;253";
       blurb = "pi";
-      logo = ../../icons/pi.png;
+      logo = ../../../../assets/icons/pi.png;
       package = pkgs.pi-coding-agent;
       inherit models settings;
     };

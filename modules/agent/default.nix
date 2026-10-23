@@ -1,8 +1,8 @@
 {inputs, ...}: {
   imports = [
     ./harnesses
+    ./runtime
     ./tools
-    ./tripwire.nix
   ];
 
   flake.nixosModules.agentRuntime = {
@@ -43,7 +43,7 @@
     # so the picker creates worktrees where the sandbox mounts them.
     worktreeBase = ''$HOME/dev/wt/$(basename "$primary")-$(printf '%s' "$primary" | sha256sum | cut -c1-7)'';
 
-    sandbox = import ./runtime.nix {
+    sandbox = import ./runtime/sandbox.nix {
       inherit pkgs lib envFile harnesses worktreeBase;
       toolsets = choices;
       selfpkgs = self.packages.${pkgs.stdenv.hostPlatform.system};
@@ -61,7 +61,7 @@
       ];
     };
 
-    agent = import ./picker.nix {
+    agent = import ./runtime/picker/default.nix {
       inherit pkgs sandbox worktreeBase;
       toolsets = choices;
       # The picker lists harnesses in this order.
@@ -90,7 +90,7 @@
         glyph = "";
         color = "78;170;37";
         blurb = "sandbox shell";
-        logo = ./icons/gnubash.png;
+        logo = ../../assets/icons/gnubash.png;
       };
 
       sops.templates.agent-env = {

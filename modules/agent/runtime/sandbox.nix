@@ -44,9 +44,7 @@
 
   bash = "${pkgs.bashInteractive}/bin/bash";
   cacert = "${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt";
-  herdrRelay =
-    pkgs.writers.writePython3Bin "herdr-relay" {flakeIgnore = ["E501"];}
-    (builtins.readFile ./herdr-relay.py);
+  herdrRelay = selfpkgs.herdr-relay;
 
   # Each sandbox runs its own rootless X server as a client of the host
   # compositor, so X11 apps get windows without reaching the host's X server,

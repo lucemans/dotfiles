@@ -11,12 +11,13 @@
     ...
   }: let
     inherit (import ../../../network/services.nix) services;
+    agentConfigs = import ../../configs;
 
     selfpkgs = self.packages.${pkgs.stdenv.hostPlatform.system};
 
     # A project's own .claude/settings.local.json is writable by whoever works
     # in the project, and managed settings are the only tier that outranks it.
-    # These mirror the prohibitions in AGENTS.md so they cannot be widened from
+    # These mirror the prohibitions in configs/local/SYSTEM.md so they cannot be widened from
     # inside a project. Read-only git stays allowed, as the policy intends.
     gitMutations = map (subcommand: "Bash(git ${subcommand}:*)") self.tripwire.gitMutations;
 
@@ -51,15 +52,12 @@
       mcpServers = lib.getAttrs config.agentRuntime.toolsets.base.servers mcpServers;
     };
 
-    home-manager.users.luc.home.file =
-      ((import ../../skills).files ".claude/skills")
-      // ((import ../../subagents).files "claude" ".claude/agents")
-      // {
-        ".claude/CLAUDE.md" = {
-          source = ../../AGENTS.md;
-          force = true;
-        };
-      };
+    home-manager.users.luc.home.file = agentConfigs.homeFiles pkgs agentConfigs.targets.runtime {
+      harness = "claude";
+      skillsDir = ".claude/skills";
+      agentsDir = ".claude/agents";
+      promptFile = ".claude/CLAUDE.md";
+    };
 
     # The matching token is carried by the agent env file, not by this module.
     sops.secrets.v3x_agent_token.owner = "luc";
@@ -108,7 +106,7 @@
       glyph = "";
       color = "217;119;87";
       blurb = "Claude Code";
-      logo = ../../icons/claude.png;
+      logo = ../../../../assets/icons/claude.png;
       package = selfpkgs.claude-code;
       mcp = {
         path = "/etc/claude-code/managed-mcp.json";
@@ -122,7 +120,7 @@
           glyph = "󰦣";
           color = "217;119;87";
           blurb = "Anthropic";
-          logo = ../../icons/claude.png;
+          logo = ../../../../assets/icons/claude.png;
         }
         {
           name = "gpt";
@@ -136,7 +134,7 @@
           glyph = "";
           color = "16;163;127";
           blurb = "gpt-6.1-sol";
-          logo = ../../icons/openai.png;
+          logo = ../../../../assets/icons/openai.png;
         }
       ];
     };

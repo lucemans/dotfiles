@@ -22,6 +22,7 @@
     config,
     ...
   }: let
+    agentConfigs = import ../../configs;
     opencodeConfig =
       (builtins.fromJSON (builtins.readFile ./opencode.jsonc))
       // {
@@ -69,19 +70,18 @@
     };
 
     home-manager.users.luc.home.file =
-      ((import ../../skills).files ".config/opencode/skills")
-      // ((import ../../subagents).files "opencode" ".config/opencode/agents")
+      agentConfigs.homeFiles pkgs agentConfigs.targets.runtime {
+        harness = "opencode";
+        skillsDir = ".config/opencode/skills";
+        agentsDir = ".config/opencode/agents";
+        promptFile = ".config/opencode/AGENTS.md";
+      }
       // {
         ".config/opencode/opencode.jsonc" = {
           text = builtins.toJSON (opencodeConfig
             // {
               mcp = lib.getAttrs config.agentRuntime.toolsets.base.servers mcpServers;
             });
-          force = true;
-        };
-
-        ".config/opencode/AGENTS.md" = {
-          source = ../../AGENTS.md;
           force = true;
         };
       };
@@ -91,7 +91,7 @@
       glyph = "";
       color = "248;248;242";
       blurb = "OpenCode";
-      logo = ../../icons/opencode.png;
+      logo = ../../../../assets/icons/opencode.png;
       package = self.packages.${pkgs.stdenv.hostPlatform.system}.opencode;
       # The sandbox points OPENCODE_CONFIG here, and OpenCode merges it over the
       # global config, whose servers are only base.

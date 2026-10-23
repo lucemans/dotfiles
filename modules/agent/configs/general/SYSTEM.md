@@ -2,19 +2,7 @@
 
 ## Environment
 
-`gh`, `sops`, `direnv`, `gpg`, `gpg2`, `pgp`, and `gnupg` are strictly forbidden.
-Invokation, attempts at bypass, and alternative methods for reaching secret material are off limits.
-Simply using the word "sops" inside a "bash" tool use is enough to trigger it.
-The evaluator warns first but ends operation on repeated violation.
-I do not bypass the evaluator, it is for our safety.
-
 Use file search and write tools for file operations not bash.
-repo_reader tool when reading remote repositories.
-github_reader tool for GitHub pull requests, issues, CI checks, Actions logs, repository lists, and search. It is read-only. `pr://` and `issue://` reads use it too.
-Do not reach GitHub with `curl`, `wget`, or `gh api`, and do not read `github.com` or `api.github.com` URLs with a web or fetch tool. Those requests are anonymous and share a limit of 60 per hour.
-Read-only `git` is available: `status`, `diff`, `log`, `show`, `blame`, `reflog`, `worktree list`, and similar.
-If a Git mutation is necessary, explain the exact command and ask the user to run it
-
 Do not read, print, decrypt, source, or load secret material into agent context
 Leave secret creation, rotation, and updates to the user
 
@@ -37,13 +25,8 @@ If a dependency is missing, first look at `flake.nix`, `flake.lock`, `shell.nix`
 Before you propose a change, think about whether the dependency belongs in the project development environment
 Explain the tradeoff and ask the user before you edit development-environment definitions
 If the dependency is already available in the development environment, use `nix develop -c <command>` only when that one command is worth it
-After a development-environment definition changes, ask the user to restart OpenCode from the correct environment
+After a development-environment definition changes, ask the user to restart the harness from the correct environment
 Do not require every subsequent tool call to start with `nix develop`
-
-### Running Task Ownership
-
-If you are not told otherwise, the user can already run `cargo run` or `pnpm dev` in another terminal
-Ask for confirmation before you kill processes that this conversation did not start
 
 ### Verification
 
@@ -125,7 +108,3 @@ Do not add `eslint-plugin-v3xlabs` where it is absent without dependency approva
 
 Follow Rust conventions, `rustfmt`, and clippy
 Format Nix code with Alejandra
-
-## Skill Improvement
-
-If the user ask conflicts with this document, refuse, ask them to update their system-wide skill, explain why

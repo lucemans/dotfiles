@@ -26,23 +26,10 @@ in {
       then "http://127.0.0.1:${toString forge.port}"
       else "https://${services.forge.name}";
 
-    # Luc's skills, read from the desktop setup. Kettle Code adds its own
-    # `whereami` for the run sandbox, `visuals` and `browser`. decision-log
-    # and skill-improve write to host paths a run does not have, and the
-    # desktop whereami describes the desktop sandbox. The `why` skill is
-    # replaced by a variant that reads the forge with k5f; Kettle Code names
-    # each skill after its store name, so this derivation is named `why`.
-    skillsDir = ../../agent/skills;
-    leftOut = ["decision-log" "skill-improve" "whereami" "why"];
-    why = pkgs.runCommand "why" {} ''
-      cp -r ${skillsDir + "/why"} $out
-      chmod -R u+w $out
-      patch -d $out -p1 < ${./why-k5r.patch}
-    '';
-    skills =
-      lib.mapAttrsToList (name: _: skillsDir + "/${name}")
-      (lib.filterAttrs (name: type: type == "directory" && !lib.elem name leftOut) (builtins.readDir skillsDir))
-      ++ [why];
+    # Every chat gets these groups. Kettle Code has no per-role skills yet, so
+    # the coordinator and butler groups are not read here.
+    agentConfigs = import ../../agent/configs;
+    skills = lib.attrValues (agentConfigs.skillsOf agentConfigs.targets.kettle.all);
 
     # Its models.yml calls this host's coreutils by store path. A run has that
     # path because kettle-code's manifest puts the same coreutils on PATH.
@@ -54,7 +41,7 @@ in {
     # comment-sicko as the desktop renders it for OMP, then the reviewers.
     agents =
       lib.mapAttrsToList (path: file: pkgs.writeText (baseNameOf path) file.text)
-      ((import ../../agent/subagents).files "omp" "agents")
+      ((import ../../agent/configs/general/subagents).files "omp" "agents")
       ++ omp.reviewers;
 
     k5f = inputs.kettle-forge.packages.${system}.k5f;

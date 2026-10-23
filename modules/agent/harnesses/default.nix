@@ -4,5 +4,6 @@
     ./omp
     ./opencode
     ./pi
+    ./herdr
   ];
 }

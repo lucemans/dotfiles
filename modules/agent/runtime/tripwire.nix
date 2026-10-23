@@ -138,7 +138,7 @@ in {
     };
 
     # A PreToolUse hook. It runs before the permission rules, so it sees the
-    # attempt first and the deny list in ./harnesses/claude stays as the
+    # attempt first and the deny list in ../harnesses/claude stays as the
     # backstop for anything the patterns miss.
     #
     # Each match adds its own tier to the session total, and three ends the
