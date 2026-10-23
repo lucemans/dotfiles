@@ -335,6 +335,7 @@ in {
             model_name = "openrouter/deepseek/deepseek-v4.1-flash";
             model_info.base_model = "deepseek/deepseek-v4.1-flash";
             model_info.mode = "chat";
+            model_info.supports_reasoning = true;
             litellm_params = {
               model = "openrouter/deepseek/deepseek-v4.1-flash";
               provider = {
@@ -351,6 +352,7 @@ in {
             model_name = "openrouter/deepseek/deepseek-v4.1-flash-1017";
             model_info.base_model = "deepseek/deepseek-v4.1-flash-1017";
             model_info.mode = "chat";
+            model_info.supports_reasoning = true;
             litellm_params = {
               model = "openrouter/deepseek/deepseek-v4.1-flash-1017";
               provider = {
