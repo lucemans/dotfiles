@@ -30,6 +30,13 @@
 
     nix.gc.automatic = true;
 
+    # CVE-2026-111943: block both trust paths to compromised eMudhra intermediates.
+    # https://emudhra.we-have-a-problem.com/
+    security.pki.caCertificateBlacklist = [
+      "Comodo AAA Services root"
+      "emSign ECC Root CA - G3"
+    ];
+
     # cache.v3x.host resolves and routes only over the wg0 tunnel.
     nix.settings = {
       substituters = lib.mkIf onTunnel ["https://cache.v3x.host/v3x"];
