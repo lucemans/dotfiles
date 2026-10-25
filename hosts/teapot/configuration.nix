@@ -1,6 +1,7 @@
 _: {
   flake.nixosModules.teapot = {
     self,
+    config,
     pkgs,
     ...
   }: {
@@ -39,6 +40,16 @@ _: {
     networking.networkmanager.enable = true;
     time.timeZone = "Europe/Amsterdam";
     virtualisation.docker.enable = true;
+
+    nixpkgs.config.allowUnfree = true;
+    # The RTX 3080 Ti, Ampere, compute capability 8.6.
+    nixpkgs.config.cudaCapabilities = ["8.6"];
+    hardware.graphics.enable = true;
+    services.xserver.videoDrivers = ["nvidia"];
+    hardware.nvidia = {
+      open = false;
+      package = config.boot.kernelPackages.nvidiaPackages.latest;
+    };
 
     sops = {
       age.keyFile = "/home/luc/.config/sops/age/keys.txt";

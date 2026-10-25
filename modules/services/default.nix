@@ -2,7 +2,7 @@
   imports = [
     ./uptime
     ./metrics.nix
-    ./llm
+    ./inference
     ./keyhold
     ./launchpi
     ./mission
@@ -15,8 +15,6 @@
     ./kaneo.nix
     ./garage.nix
     ./attic.nix
-    ./cliproxy.nix
-    ./usage.nix
     ./immich.nix
     ./backup.nix
   ];

@@ -10,7 +10,7 @@ _: {
     model = "Qwen/Qwen3-TTS-12Hz-1.7B-Base";
     revision = "fd4b254389122332181a7c3db7f27e918eec64e3";
 
-    references = import ../../programs/tts-speak/references.nix pkgs;
+    references = import ../../../programs/tts-speak/references.nix pkgs;
     voices = ["glados" "cave" "ada" "elmo"];
 
     # The upstream qwen3_tts.yaml from v0.30.0, sized for one listener on a

@@ -1,5 +1,5 @@
 _: let
-  inherit (import ../../network/services.nix) services;
+  inherit (import ../../../network/services.nix) services;
 in {
   flake.nixosModules.litellm = {
     inputs,

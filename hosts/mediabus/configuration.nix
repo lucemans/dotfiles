@@ -35,6 +35,8 @@ _: {
     };
 
     nixpkgs.config.allowUnfree = true;
+    # Both RTX A4000 cards are Ampere, compute capability 8.6.
+    nixpkgs.config.cudaCapabilities = ["8.6"];
 
     hardware.graphics.enable = true;
     services.xserver.videoDrivers = ["nvidia"];
