@@ -1,6 +1,7 @@
 {
   imports = [
     ./fighter
+    ./mediabus
     ./mission
     ./teapot
     ./point

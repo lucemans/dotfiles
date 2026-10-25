@@ -64,8 +64,6 @@
       package = config.boot.kernelPackages.nvidiaPackages.latest;
     };
 
-    networking.hosts."10.90.0.11" = ["ollama.v3x.sh"];
-
     systemd.tmpfiles.rules = [
       "d /var/lib/llama-models 0755 root root -"
     ];

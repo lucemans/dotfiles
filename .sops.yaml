@@ -5,6 +5,7 @@ keys:
   - &mission age1qsfltp6cflrem8mzjfkavd3kadz822wcehzpsusky65zmzmcxvvsu94j7r
   - &voice age1qu04wd2esq756kealdsl6ekxqpjr9zn47n7jh0ljzvyekrl095xqge2g34
   - &watch age1d53wuegy7sxah3zws4ljythhrzwpd852uu0tsz47mk2rpa5wk4mq9hjlky
+  - &mediabus age1qxt3zd9233z647ua2kwz37y09tressmcr6vyd4q9pfga3xnggclqeqq8fl
 creation_rules:
   - path_regex: 418.sops.yaml
     key_groups:
@@ -14,6 +15,11 @@ creation_rules:
   - path_regex: mission.sops.yaml
     key_groups:
       - age: [*desktop, *mission]
+        pgp: [*lucpgp]
+    shamir_threshold: 1
+  - path_regex: mediabus.sops.yaml
+    key_groups:
+      - age: [*desktop, *mediabus]
         pgp: [*lucpgp]
     shamir_threshold: 1
   - path_regex: watch.sops.yaml

@@ -199,6 +199,13 @@ in {
       upstream = "${hosts.v3x-teapot.address}:3900";
       access = [];
     };
+    gallery = {
+      name = "gallery.${zone}";
+      title = "Photos";
+      icon = "immich";
+      upstream = "10.90.0.11:2283";
+      access = [];
+    };
   };
 
   sections = [
@@ -212,7 +219,7 @@ in {
     }
     {
       title = "Media";
-      services = ["media" "fmedia" "shelf"];
+      services = ["media" "fmedia" "shelf" "gallery"];
     }
     {
       title = "Shiparr";

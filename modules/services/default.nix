@@ -17,5 +17,7 @@
     ./attic.nix
     ./cliproxy.nix
     ./usage.nix
+    ./immich.nix
+    ./backup.nix
   ];
 }

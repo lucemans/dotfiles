@@ -88,7 +88,7 @@ in {
             model_name = "v3x-m/qwen3-embedding-0.6b";
             litellm_params = {
               model = "openai/qwen3-embedding-0.6b";
-              api_base = "https://ollama.v3x.sh/v1";
+              api_base = "http://10.90.0.11:11434/v1";
               api_key = "local";
             };
             model_info = {
@@ -149,7 +149,7 @@ in {
           {
             model_name = "v3x-m/qwen3.6-35b-a3b";
             litellm_params = {
-              api_base = "https://ollama.v3x.sh/v1";
+              api_base = "http://10.90.0.11:11434/v1";
               model = "openai/qwen3.6-35b-a3b";
               api_key = "local";
             };
@@ -162,7 +162,7 @@ in {
           {
             model_name = "v3x-m/gpt-oss-20b";
             litellm_params = {
-              api_base = "https://ollama.v3x.sh/v1";
+              api_base = "http://10.90.0.11:11434/v1";
               model = "openai/gpt-oss-20b";
               api_key = "local";
             };
@@ -175,7 +175,7 @@ in {
           {
             model_name = "v3x-m/qwen3-coder-30b-a3b";
             litellm_params = {
-              api_base = "https://ollama.v3x.sh/v1";
+              api_base = "http://10.90.0.11:11434/v1";
               model = "openai/qwen3-coder-30b-a3b";
               api_key = "local";
             };
@@ -188,7 +188,7 @@ in {
           {
             model_name = "v3x-m/zeta-2.1";
             litellm_params = {
-              api_base = "https://ollama.v3x.sh/v1";
+              api_base = "http://10.90.0.11:11434/v1";
               model = "openai/zeta-2.1";
               api_key = "local";
             };
@@ -201,7 +201,7 @@ in {
           {
             model_name = "v3x-m/sweep-next-edit-v2-7b";
             litellm_params = {
-              api_base = "https://ollama.v3x.sh/v1";
+              api_base = "http://10.90.0.11:11434/v1";
               model = "openai/sweep-next-edit-v2-7b";
               api_key = "local";
             };
@@ -214,7 +214,7 @@ in {
           {
             model_name = "v3x-m/muse-glimmer-30b";
             litellm_params = {
-              api_base = "https://ollama.v3x.sh/v1";
+              api_base = "http://10.90.0.11:11434/v1";
               model = "openai/muse-glimmer-30b";
               api_key = "local";
             };
@@ -227,7 +227,7 @@ in {
           {
             model_name = "v3x-m/qwen3.8-27b";
             litellm_params = {
-              api_base = "https://ollama.v3x.sh/v1";
+              api_base = "http://10.90.0.11:11434/v1";
               model = "openai/qwen3.8-27b";
               api_key = "local";
             };
@@ -240,7 +240,7 @@ in {
           {
             model_name = "v3x-m/nex-n2.5-mini";
             litellm_params = {
-              api_base = "https://ollama.v3x.sh/v1";
+              api_base = "http://10.90.0.11:11434/v1";
               model = "openai/nex-n2.5-mini";
               api_key = "local";
             };
@@ -253,7 +253,7 @@ in {
           {
             model_name = "v3x-m/nex-n2.5-mini-uncensored";
             litellm_params = {
-              api_base = "https://ollama.v3x.sh/v1";
+              api_base = "http://10.90.0.11:11434/v1";
               model = "openai/nex-n2.5-mini-uncensored";
               api_key = "local";
             };
@@ -266,7 +266,7 @@ in {
           {
             model_name = "v3x-m/minicpm5-2b";
             litellm_params = {
-              api_base = "https://ollama.v3x.sh/v1";
+              api_base = "http://10.90.0.11:11434/v1";
               model = "openai/minicpm5-2b";
               api_key = "local";
             };
@@ -279,7 +279,7 @@ in {
           {
             model_name = "v3x-m/qwen3.8-flash-next";
             litellm_params = {
-              api_base = "https://ollama.v3x.sh/v1";
+              api_base = "http://10.90.0.11:11434/v1";
               model = "openai/qwen3.8-flash-next";
               api_key = "local";
             };

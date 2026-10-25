@@ -56,6 +56,9 @@
 
     temple.url = "github:v3xlabs/temple";
     temple.inputs.nixpkgs.follows = "nixpkgs";
+
+    # `--override-input dotfiles-private path:./nix/private-stub`
+    dotfiles-private.url = "git+ssh://git@127.0.0.1:2222/lucemans/dotfiles-private.git";
   };
 
   outputs = inputs:

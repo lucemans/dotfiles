@@ -27,6 +27,11 @@ in {
       address = "100.127.0.99";
       lan = true;
     };
+    v3x-mediabus = {
+      publicKey = "Dh3rA5kpQF1Zl9x8xXblQRAgX+VFYRcJa7i7daq/4UI=";
+      address = "100.127.0.11";
+      lan = true;
+    };
     v3x-b1 = {
       publicKey = "ClfVgAM5blGyKjubpsboHts5qL5jDOD3gM3S1ZexARo=";
       address = "100.127.10.1";

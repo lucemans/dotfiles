@@ -221,6 +221,22 @@
         "type": "github"
       }
     },
+    "dotfiles-private": {
+      "locked": {
+        "lastModified": 1792966653,
+        "narHash": "sha256-ot5msMDvgCby0KRVDOBdKu/SQP/3xRivOueSzVLlR+0=",
+        "ref": "feat/pirateship",
+        "rev": "2a366b35b8a6d93b91baa4ab64e93bf7c2d3f7c6",
+        "revCount": 10,
+        "type": "git",
+        "url": "ssh://git@127.0.0.1:2222/lucemans/dotfiles-private.git"
+      },
+      "original": {
+        "ref": "feat/pirateship",
+        "type": "git",
+        "url": "ssh://git@127.0.0.1:2222/lucemans/dotfiles-private.git"
+      }
+    },
     "eth-data": {
       "inputs": {
         "flake-utils": "flake-utils",
@@ -1116,6 +1132,7 @@
         "auto-commit": "auto-commit",
         "deploy-rs": "deploy-rs",
         "disko": "disko",
+        "dotfiles-private": "dotfiles-private",
         "eth-data": "eth-data",
         "ethereum-nix": "ethereum-nix",
         "flake-parts": "flake-parts_2",
