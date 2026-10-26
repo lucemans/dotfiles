@@ -24,7 +24,12 @@ let
     names = builtins.filter (name: entries.${name} == "directory") (builtins.attrNames entries);
   in
     if builtins.pathExists dir
-    then builtins.listToAttrs (map (name: {inherit name; value = dir + "/${name}";}) names)
+    then
+      builtins.listToAttrs (map (name: {
+          inherit name;
+          value = dir + "/${name}";
+        })
+        names)
     else {};
 
   # Skill name to its directory.
