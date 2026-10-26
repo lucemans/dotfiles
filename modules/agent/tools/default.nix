@@ -1,6 +1,4 @@
-{inputs, ...}: let
-  inherit (import ../../network/services.nix) services;
-in {
+{inputs, ...}: {
   imports = [
     ./options.nix
     ./playwright/default.nix

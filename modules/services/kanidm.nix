@@ -37,11 +37,12 @@ in {
         groups.librechat_users = {};
         groups.freshrss_users = {};
         groups.litellm_users = {};
+        groups.kettle_forge_users = {};
 
         persons.luc = {
           displayName = "Luc";
           mailAddresses = ["luc@v3x.email"];
-          groups = ["librechat_users" "freshrss_users" "litellm_users"];
+          groups = ["librechat_users" "freshrss_users" "litellm_users" "kettle_forge_users"];
         };
 
         systems.oauth2.librechat = {
@@ -70,6 +71,16 @@ in {
           preferShortUsername = true;
           scopeMaps.freshrss_users = ["openid" "profile" "email"];
         };
+
+        # Its secret is also kettle_forge_oidc_client_secret on the forge's host.
+        systems.oauth2.kettle-forge = {
+          displayName = services.forge.title;
+          originUrl = "https://${services.forge.name}/auth/callback";
+          originLanding = "https://${services.forge.name}";
+          basicSecretFile = config.sops.secrets.teapot_kettle_forge_oauth2_secret.path;
+          preferShortUsername = true;
+          scopeMaps.kettle_forge_users = ["openid" "profile" "email"];
+        };
       };
     };
 
@@ -87,6 +98,10 @@ in {
         mode = "0400";
       };
       teapot_freshrss_oauth2_secret = {
+        owner = "kanidm";
+        mode = "0400";
+      };
+      teapot_kettle_forge_oauth2_secret = {
         owner = "kanidm";
         mode = "0400";
       };

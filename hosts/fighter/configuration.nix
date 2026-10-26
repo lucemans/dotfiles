@@ -20,6 +20,7 @@
       self.nixosModules.keyhold
       self.nixosModules.midjournal
       self.nixosModules.voxtype
+      self.nixosModules.kettleClient
     ];
 
     boot.loader = {

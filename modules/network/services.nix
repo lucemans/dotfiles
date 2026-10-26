@@ -1,6 +1,7 @@
 let
   inherit (import ./topology.nix) hub zone;
   inherit (import ./hosts.nix) hosts;
+  kettle = import ../services/kettle/topology.nix;
 in {
   records = {
     "77.162.232.110" = ["wg.${zone}"];
@@ -99,6 +100,13 @@ in {
       title = "Usage";
       icon = "grafana";
       upstream = "${hosts.v3x-watch.address}:3000";
+      access = [];
+    };
+    forge = {
+      name = "forge.${zone}";
+      title = "Kettle Forge";
+      icon = "kettle-forge";
+      upstream = "${hosts.${kettle.forge.host}.address}:${toString kettle.forge.port}";
       access = [];
     };
     mission = {
@@ -208,7 +216,7 @@ in {
     }
     {
       title = "Tools";
-      services = ["chat" "search" "rss" "inference" "agent" "usage"];
+      services = ["chat" "search" "rss" "inference" "agent" "usage" "forge"];
     }
     {
       title = "Media";

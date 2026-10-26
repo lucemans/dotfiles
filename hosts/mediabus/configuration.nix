@@ -14,13 +14,19 @@ _: {
       self.nixosModules.immich
       self.nixosModules.mediabusInference
       self.nixosModules.backup
+      self.nixosModules.kettleForge
     ];
 
     sops.defaultSopsFile = ../../config/mediabus.sops.yaml;
     v3x.backup = {
       enable = true;
       # Both are btrfs subvolumes, so each is snapshotted before it is read.
-      paths = ["/data" "/var/lib/immich"];
+      paths = [
+        "/data"
+        "/var/lib/immich"
+        # Luc enables this once the forge works, so no broken state is backed up.
+        # "/var/lib/kettle-forge"
+      ];
     };
 
     boot.loader.systemd-boot.enable = true;

@@ -17,6 +17,7 @@
         inputs.sops-nix.nixosModules.sops
         inputs.dotfiles-private.nixosModules.pirateship
         inputs.disko.nixosModules.disko
+        inputs.kettle-forge.nixosModules.default
         self.nixosModules.mediabus
         self.nixosModules.mediabusDisko
         self.nixosModules.mediabusPhysical

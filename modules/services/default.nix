@@ -16,5 +16,6 @@
     ./attic.nix
     ./immich.nix
     ./backup.nix
+    ./kettle
   ];
 }

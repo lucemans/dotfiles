@@ -59,6 +59,12 @@
 
     # `--override-input dotfiles-private path:./nix/private-stub`
     dotfiles-private.url = "git+ssh://git@127.0.0.1:2222/lucemans/dotfiles-private.git";
+
+    # No `follows`: Kettle inputs build with the nixpkgs their projects test.
+    # The forge needs a token for every git read (kettle-forge#31), set in
+    # `http.https://forge.v3x.host/.extraHeader`.
+    # kettle-forge.url = "git+https://forge.v3x.host/v3xlabs/kettle-forge.git?ref=master";
+    kettle-forge.url = "git+file:///home/luc/dev/local/k5-forge?rev=b6b4ce15d37fef721e012ccb2ac93e2a69492cd5";
   };
 
   outputs = inputs:

@@ -1,6 +1,8 @@
 restic_repository: ENC[AES256_GCM,data:tZYs4WJtdN5FTsuDIC5gj2ijSGLxMU6+zRy8wDn81Cb7OyKq1bXVZHIj1ZV+vhjivEY3Nyk9YmYtNWN/fQ==,iv:r/82EmXk189r1B114f1EFBDgzhRcfkhKJdJ381wzbgQ=,tag:hYdW3fR6oH2Ejh0ubUftNA==,type:str]
 restic_password: ENC[AES256_GCM,data:T+1K1RoUUbI=,iv:BEoO7/7luxD+3JpwLZcrKjoJZEZosPARt5eaejMJUD0=,tag:iEdRBp1GUf4kd6cCkW8TVA==,type:str]
 restic_env: ENC[AES256_GCM,data:Biwd8PA8SPyWMBt7kkHNwL1A2KWZu1jQ3iOv2kh/nUOq8QZO1q7w66Q1bOnJDNhtkth0zSJyQh3HNYFgYvttt47hNtagcNOZZ+i7gXTEAlB3Y/bAlWEmRf+LrwU4M29Cgjw=,iv:F2NfLyOUV1C3CtJHp4nh14ilMo0w3lczdo4IieYIq6M=,tag:Sc5mLxQ4u2nksCXe8iFikw==,type:str]
+kettle_forge_oidc_client_secret: ENC[AES256_GCM,data:/c89TLyG5px+X0XO1M8eMoC7EXa4xjU1KN4XXbyZs9KLwaBahEXGdpJeQhTcdTEJVl+Skn2ouwQclmtL69UF7A==,iv:YMx7gZ/olWOZvPjStmuPetnHNVH4pCTR+f1KVEI/KtA=,tag:RWupQf8JZeH566tL9fdjkA==,type:str]
+kettle_forge_github_token: ENC[AES256_GCM,data:o8nT/bPl0f79/ihsUFC3vTXPDfFAunjyhbPgu/+A83cr8hLk+pLSLjPWNeKRaayfzlBPnRNDDDCgTpohqXPmzk/BL55b4QNW4PmE84HpiRQyaqXF/iZlyZimATfQ,iv:1C3y7nHbfMAyBuNIxRJl4yuYGuq8fP7NLS1j61PR3js=,tag:0H1fr5skKqENjB0A8ejAqw==,type:str]
 sops:
     age:
         - enc: |
@@ -21,8 +23,8 @@ sops:
             rUuNeZLrjZWU1XujWysSVoRAlRdMvLvGfune4boDSvQbXP0/1sjsqQ==
             -----END AGE ENCRYPTED FILE-----
           recipient: age1qxt3zd9233z647ua2kwz37y09tressmcr6vyd4q9pfga3xnggclqeqq8fl
-    lastmodified: "2026-10-25T21:54:07Z"
-    mac: ENC[AES256_GCM,data:BV0rrAdOHTYb20Zr0Hl0ySAjh3s0S5HxP9bsSDlZF+fE28UvaV1TC9uagbkVDttGxTEyKY8jXHGzflu1ajPRk3VjdsELXPGzk4Dc6LLO6+9/THjk00NibixFITZOLz63dKj9VvuY9j5n41BgPSsZMmnF6/GkBO81kP4AyUWbc/U=,iv:jcc+cGzlbacTTJQ3e/r7lSCV4qWCRK0Hep1g2/zhMmM=,tag:ncfjNgN25Uhc6ZE8PZwueA==,type:str]
+    lastmodified: "2026-10-26T03:32:39Z"
+    mac: ENC[AES256_GCM,data:DweoEopbdFRyXSCBOYH+aixf8AOp/U1uML/sVDxqs1GPalaHlmbxBx+aPnt8LL1NNFwMn/qtQrUOAipcHP+tFHd6kjT8MXy8koanhdLzWaFCFjI7BPamWLoPOgBZ2iJ6KunL29QFjWezShg9Yl8/Lj6EIXa/4LGw8woEKGiV1hY=,iv:UU2ads5N8q1+Yw0sVKeoLDFGr9nS/x/VhN+OgMF+dkI=,tag:0v/9sniso9joP1vDHRIlrA==,type:str]
     pgp:
         - created_at: "2026-10-25T21:52:25Z"
           enc: |-
