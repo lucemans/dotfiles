@@ -23,16 +23,10 @@ in {
       oidcClientSecretFile = config.sops.secrets.kettle_forge_oidc_client_secret.path;
       githubTokenFile = config.sops.secrets.kettle_forge_github_token.path;
       settings = {
-        # Reached on lo and wg0 only: no firewall port is opened, and wg0
-        # accepts the trusted subnet.
         listen = "0.0.0.0:${toString forge.port}";
-        # The playtest forge's host. Agent commit emails are
-        # `<model>@agents.<host>`, and commits by another host's identity are
-        # flagged `identity_mismatch`.
         host = "forge.localhost";
         web = {
           public_url = "https://${services.forge.name}";
-          # The playtest k5c on fighter stays until its data is moved.
           allowed_origins = [
             "https://${services.code.name}"
             "http://127.0.0.1:3600"

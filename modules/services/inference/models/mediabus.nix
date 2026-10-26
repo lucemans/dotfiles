@@ -33,10 +33,19 @@
           rev = "a483e9e6cbd595906af30beda3187c2663a1118c";
           files."Qwen3.6-35B-A3B-UD-Q4_K_XL.gguf" = "707a55a8a4397ecde44de0c499d3e68c1ad1d240d1da65826b4949d1043f4450";
         };
+        # DFlash2 drafter (inco.ai blog), an auxiliary block-diffusion model.
+        fileArgs."--model-draft" = {
+          repo = "aminya/Qwen3.6-35B-A3B-DFlash2-GGUF";
+          rev = "1e26e3499d865b9d2fc55e019d65b3f0e8ab6846";
+          files."Qwen3.6-35B-A3B-DFlash2-Q8_0.gguf" = "69bc81f5344dfeb67bcfc09277dd9617500fca1823f72e6e08d5df92e73a8b44";
+        };
         args = [
           "--ctx-size 98304"
           "--n-gpu-layers 999"
           "--flash-attn on"
+          "--spec-type draft-dflash"
+          "--spec-draft-n-max 8"
+          "--spec-draft-n-ubatch 512"
           "--cache-type-k q4_0"
           "--cache-type-v q4_0"
           "--jinja"
@@ -50,22 +59,6 @@
         ];
         ttl = 900;
         concurrencyLimit = 2;
-      };
-      "qwen2.5-coder-1.5b" = {
-        weights = {
-          repo = "ggml-org/Qwen2.5-Coder-1.5B-Q8_0-GGUF";
-          rev = "8be1b8a895a84beea772817caaa71eba6b6e0d07";
-          files."qwen2.5-coder-1.5b-q8_0.gguf" = "29871c94d15727a6e243f79a37113d4ae625a6215b5e800bf41a23af2da32832";
-        };
-        args = [
-          "--gpu-layers all"
-          "--ctx-size 16384"
-          "--flash-attn on"
-          "--parallel 5"
-          "--no-prefill-assistant"
-        ];
-        ttl = 300;
-        concurrencyLimit = 5;
       };
       "qwen3-8b-dflash" = {
         weights = {
@@ -211,9 +204,19 @@
           rev = "f1bfb127c64f7072bdd2cad55f258b9c8b2910fe";
           files."Qwen3.8-27B-UD-Q5_K_XL.gguf" = "176a6a3f034e9cdc447c10cd00329fc9b31002e6589b9295f2ad4f1eefe0f6ab";
         };
+        # The repo moved the sidecar into an MTP/ folder after this rev; pin the
+        # current rev for the draft file only.
+        fileArgs."--model-draft" = {
+          repo = "unsloth/Qwen3.8-27B-GGUF";
+          rev = "4ca720788d1e01f1bff70c033e0d0028fd02e502";
+          files."MTP/mtp-Qwen3.8-27B-Q4_0.gguf" = "50d9ce5a6da381bbcfb31061cf73df94a90e6faf8efeddee379a9cb8f1501c6e";
+        };
         args = [
+          "--spec-type draft-mtp"
           "--parallel 2"
           "--flash-attn on"
+          "--spec-draft-n-max 6"
+          "--spec-draft-n-ubatch 512"
         ];
         ttl = 3600;
         concurrencyLimit = 3;
@@ -307,11 +310,20 @@
           };
         };
         alias = null;
+        # The MTP drafter ships at the pinned rev under MTP/.
+        fileArgs."--model-draft" = {
+          repo = "unsloth/Qwen3.8-Flash-Next-GGUF";
+          rev = "38bb39ee97821de2c9009abb7e93950eec396e66";
+          files."MTP/mtp-Qwen3.8-Flash-Next-Q4_K_M.gguf" = "b646ef60eaae2a9ed849e75f15f399629ca22633555e99e809959e95f22a1575";
+        };
         args = [
           "--split-mode layer"
           "--ctx-size 65536"
           "--parallel 1"
           "--flash-attn on"
+          "--spec-type draft-mtp"
+          "--spec-draft-n-max 6"
+          "--spec-draft-n-ubatch 512"
           "--cache-type-k q8_0"
           "--cache-type-v q8_0"
           "--ubatch-size 256"
@@ -330,14 +342,148 @@
           rev = "259605e26a47f2dcc8731ae1aa7305f8047d2c6d";
           files."Altworld_Hemmingway-1-Q4_K_M.gguf" = "c029ba6cc24bc022a65d00e4d81796ff0bd678e371a36c9a7d1119a0acc7085e";
         };
-        alias = null;
+        # The quants carry MTP layers at Q4_0; the drafter needs no extra file.
         args = [
           "--split-mode layer"
           "--parallel 1"
           "--flash-attn on"
+          "--spec-type draft-mtp"
+          "--spec-draft-n-max 6"
           "--jinja"
         ];
         concurrencyLimit = 1;
+      };
+
+      # Flint: Recursive's 39.8B-A2.5B coding-agent MoE, Terminal-Bench 2.1 54.9%,
+      # SWE-bench Verified 74.2%. Needs the b11912 build (FlintForCausalLM #30928).
+      # Q4_K_M keeps the non-expert tensors at Q8_0.
+      "flint-1" = {
+        llama-cpp = "b11912";
+        weights = {
+          repo = "ggml-org/Flint-GGUF";
+          rev = "468307a1b38259e9e4c9d4fe53d4e3b76386572c";
+          files."Flint-Q4_K_M.gguf" = "c3c4d93f9db92627a2fc47ea8fe8c64a094cabd3549db544bcdd2c00e9a9a347";
+        };
+        args = [
+          "--split-mode layer"
+          "--ctx-size 65536"
+          "--flash-attn on"
+          "--jinja"
+          "--parallel 1"
+          "--no-webui"
+        ];
+        ttl = 900;
+        concurrencyLimit = 2;
+      };
+
+      # Nanbeige4.3-33B: dense Llama arch (no new code), 512k context, claims
+      # state-of-the-art agentic performance in the ~30B class. Released Oct 24.
+      "nanbeige4.3-33b" = {
+        weights = {
+          repo = "bartowski/Nanbeige_Nanbeige4.3-33B-GGUF";
+          rev = "9beb68421fdf7be095093a6888325fa2c83ddd38";
+          files."Nanbeige_Nanbeige4.3-33B-Q4_K_M.gguf" = "2cef79855ca47ee6571e166db32a07089e34f3cf78e0397b262d124ddb814c37";
+        };
+        args = [
+          "--split-mode layer"
+          "--ctx-size 65536"
+          "--flash-attn on"
+          "--cache-type-k q8_0"
+          "--cache-type-v q8_0"
+          "--jinja"
+          "--parallel 1"
+          "--no-webui"
+        ];
+        ttl = 900;
+        concurrencyLimit = 2;
+      };
+
+      # Sage-A1.5: Shanghai AI Lab's agentic fine-tune of Qwen3.6-35B-A3B, same
+      # qwen3_5_moe architecture as the workhorse. Q4_K_M fits the A4000 pair.
+      "sage-a1.5" = {
+        weights = {
+          repo = "InternScience/Sage-A1.5-Q4_K_M-GGUF";
+          rev = "10b179b52f2c841030db327627e707d076b4c8cf";
+          files."Sage-A1.5-Q4_K_M.gguf" = "a64fe0bbf936db3eb54f66f142c2b2eee569ade83673649f549a21daef8ca395";
+        };
+        fileArgs."--mmproj".files."Sage-A1.5-mmproj.gguf" = "51cd4410057e8dc4152ca771a726fbfb34856f047e7049018c757d42ddd481f2";
+        args = [
+          "--split-mode layer"
+          "--ctx-size 65536"
+          "--flash-attn on"
+          "--cache-type-k q4_0"
+          "--cache-type-v q4_0"
+          "--jinja"
+          "--parallel 1"
+          "--no-webui"
+        ];
+        ttl = 900;
+        concurrencyLimit = 2;
+      };
+
+      # Spark-X2.6-4B: on-device agent model, 1M context claimed, replaces
+      # MiniCPM5-2B's lane at the same size class. spark2_5 arch since b10828.
+      "spark-x2.6-4b" = {
+        weights = {
+          repo = "XHToken/Spark-X2.6-4B-GGUF";
+          rev = "83b47fda018fd14f51aa63341f78266f628af5a5";
+          files."Spark-X2.6-4B-Q8_0.gguf" = "145c2aa606820663f26ad530b8fc141ed885e2e9ca29f9be7c3bfe8931d58b81";
+        };
+        args = [
+          "--gpu-layers all"
+          "--split-mode none"
+          "--main-gpu 0"
+          "--ctx-size 65536"
+          "--flash-attn on"
+          "--jinja"
+          "--parallel 4"
+          "--no-webui"
+        ];
+        ttl = 3600;
+        concurrencyLimit = 8;
+      };
+
+      # Ternary-Bonsai-2-27B: Qwen3.8-27B retrained at 2-bit ternary weights,
+      # PQ2_0 runs from 7.2 GB on stock llama.cpp. mmproj gives it vision.
+      "bonsai-2-27b" = {
+        weights = {
+          repo = "prism-ml/Ternary-Bonsai-2-27B-gguf";
+          rev = "b072e1d3b35a0a630cece372c2127528e0994386";
+          files."Ternary-Bonsai-2-27B-PQ2_0.gguf" = "3907dc1658db1f78a9826bf8d5bcb8dc65db0d466388937af57f2294fae62ec1";
+        };
+        fileArgs."--mmproj".files."Ternary-Bonsai-2-27B-mmproj-Q8_0.gguf" = "6807ede61d570bb86ba34b756a0fa109edc33668604de867c6ea6d8f1d631903";
+        args = [
+          "--split-mode layer"
+          "--ctx-size 32768"
+          "--flash-attn on"
+          "--jinja"
+          "--parallel 2"
+          "--no-webui"
+        ];
+        ttl = 900;
+        concurrencyLimit = 2;
+      };
+
+      # pplx-decider-flash-v1.2: Perplexity's 4.5B decision model on the same
+      # /v1/systemone API as clef-flash, distilled from the 27B deciders. A second
+      # judge lane on the small card, no llama.cpp code needed (qwen3_5 arch).
+      "pplx-decider-flash" = {
+        weights = {
+          repo = "perplexity-ai/pplx-decider-flash-gguf-v1.2";
+          rev = "2514d5f0b7fbbe1ee1bfec9ffb5801a60289b4cc";
+          files."decider-flash-v1.2-q8_0.gguf" = "ffb27ade8976765b0e6943a0b7f5f3fd0f7042d45ad90256a76d608bcd3942c2";
+        };
+        fileArgs."--mmproj".files."mmproj-decider-flash-v1.2-f16.gguf" = "b2459e42a5f12c9ecbc81742a91cb93b6bbe5082297b4aa9578d453ddcbecfab";
+        args = [
+          "--ctx-size 8192"
+          "--batch-size 8192"
+          "--ubatch-size 8192"
+          "--flash-attn on"
+          "--parallel 1"
+          "--no-webui"
+        ];
+        ttl = 900;
+        concurrencyLimit = 16;
       };
     };
   in {
@@ -386,7 +532,22 @@
         groups.local-gpu = {
           swap = true;
           exclusive = true;
-          members = ["qwen3.6-35b-a3b"];
+          members = [
+            "qwen3.6-35b-a3b"
+            "flint-1"
+            "nanbeige4.3-33b"
+            "sage-a1.5"
+            "bonsai-2-27b"
+          ];
+        };
+
+        groups.smol = {
+          swap = true;
+          exclusive = false;
+          persistent = true;
+          members = [
+            "nex-n2.5-mini"
+          ];
         };
       };
     };

@@ -3,7 +3,8 @@
 # A model that sets no `llama-cpp` gets `default`. To try another version, a fork or a patch,
 # add a chunk to `builds` and name it in the model.
 #
-#   version      what llama.cpp reports as its version
+#   version      what llama.cpp reports as its version; a b-tag checkout is a
+#                dev build that reports "0.7.0-dev", so name the tag instead
 #   src          arguments for fetchFromGitHub
 #   npmDepsHash  of the web UI that llama-server builds
 #   patches      files applied on top, none when left out
@@ -25,6 +26,21 @@ let
       };
       npmDepsHash = "sha256-hqYzdp1FwPhYkBP278fQXgY9NCKB6Q3P6Gko7BfP0m0=";
       # The nixpkgs patch is a backport that v0.7.0 already contains.
+      patches = [];
+    };
+    # Flint (FlintForCausalLM, #30928) and DeepSeek-V4.1-Flash (deepseek41, #31086)
+    # land after v0.7.0, along with fused gate/up MMQ kernels (#29948) and the
+    # MUL_MAT_ID row-skip (#26631) that help the MoE models.
+    "b11912" = {
+      version = "0.7.0-dev";
+      src = {
+        owner = "ggml-org";
+        repo = "llama.cpp";
+        tag = "b11912";
+        hash = "sha256-3EO4Ig6tuXEmtA3rWpgQwFhZo098mTZs51DbveHJTn0=";
+      };
+      # The web UI moved from tools/server/webui to tools/ui, same layout otherwise.
+      npmDepsHash = "sha256-XLtEZsSFdk+2SyfXzBp8HQ2e27PQPpDCn1YjePU1/9w=";
       patches = [];
     };
   };

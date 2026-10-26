@@ -29,7 +29,6 @@ in {
         openFirewall = false;
       };
 
-      # As Luc chose them in the playtest.
       runRetentionDays = 30;
       runBuildOutputHours = 4;
       runUnsettledBuildOutputDays = 14;
@@ -43,9 +42,6 @@ in {
         }
       ];
 
-      # A new database turns `metered_usage` and `litellm_proxy` off, so all
-      # six are listed. metered_usage prices nothing until metered-usage is
-      # connected in Settings.
       prices.sources = ["manual" "harness" "metered_usage" "litellm_proxy" "litellm_public" "openrouter"];
 
       chatTitles = {
@@ -57,12 +53,6 @@ in {
         };
       };
 
-      # No `integrations.forge`: the forge connection stays the one in the
-      # database moved from the playtest. A configured URL or token that
-      # differs from it reconnects, which resets the event cursor and wakes
-      # PR-bound chats again.
-
-      # For its cost map (the `litellm_proxy` price source).
       integrations.litellm = {
         url = "https://${services.inference.name}";
         keyFile = config.sops.secrets.v3x_inference_token.path;

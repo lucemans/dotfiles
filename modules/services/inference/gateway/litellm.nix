@@ -176,6 +176,16 @@ in {
             model_info.mode = "decisions";
           }
           {
+            # A second judge lane: Perplexity's decider-flash speaks the same
+            # System One API, reached through its llama-swap upstream.
+            model_name = "pplx-decider-flash";
+            litellm_params = {
+              model = "hosted_vllm/pplx-decider-flash";
+              api_base = "http://10.90.0.11:11434/upstream/pplx-decider-flash";
+            };
+            model_info.mode = "decisions";
+          }
+          {
             model_name = "v3x-t/piper";
             litellm_params = {
               model = "openai/piper";
@@ -330,10 +340,101 @@ in {
             };
           }
           {
+            model_name = "v3x-m/spark-x2.6-4b";
+            litellm_params = {
+              api_base = "http://10.90.0.11:11434/v1";
+              model = "openai/spark-x2.6-4b";
+              api_key = "local";
+            };
+            model_info = {
+              mode = "chat";
+              input_cost_per_token = 0.00000005;
+              output_cost_per_token = 0.00000005;
+            };
+          }
+          {
             model_name = "v3x-m/qwen3.8-flash-next";
             litellm_params = {
               api_base = "http://10.90.0.11:11434/v1";
               model = "openai/qwen3.8-flash-next";
+              api_key = "local";
+            };
+            model_info = {
+              mode = "chat";
+              input_cost_per_token = 0.00000020;
+              output_cost_per_token = 0.00000020;
+            };
+          }
+          {
+            model_name = "v3x-t/spark-x2.6-4b";
+            litellm_params = {
+              model = "openai/spark-x2.6-4b";
+              api_base = "http://127.0.0.1:8081/v1";
+              api_key = "local";
+            };
+            model_info = {
+              mode = "chat";
+              input_cost_per_token = 0.00000005;
+              output_cost_per_token = 0.00000005;
+            };
+          }
+          {
+            model_name = "v3x-m/flint-1";
+            litellm_params = {
+              api_base = "http://10.90.0.11:11434/v1";
+              model = "openai/flint-1";
+              api_key = "local";
+            };
+            model_info = {
+              mode = "chat";
+              input_cost_per_token = 0.00000020;
+              output_cost_per_token = 0.00000020;
+            };
+          }
+          {
+            model_name = "v3x-m/nanbeige4.3-33b";
+            litellm_params = {
+              api_base = "http://10.90.0.11:11434/v1";
+              model = "openai/nanbeige4.3-33b";
+              api_key = "local";
+            };
+            model_info = {
+              mode = "chat";
+              input_cost_per_token = 0.00000020;
+              output_cost_per_token = 0.00000020;
+            };
+          }
+          {
+            model_name = "v3x-m/sage-a1.5";
+            litellm_params = {
+              api_base = "http://10.90.0.11:11434/v1";
+              model = "openai/sage-a1.5";
+              api_key = "local";
+            };
+            model_info = {
+              mode = "chat";
+              input_cost_per_token = 0.00000020;
+              output_cost_per_token = 0.00000020;
+            };
+          }
+          {
+            model_name = "v3x-m/bonsai-2-27b";
+            litellm_params = {
+              api_base = "http://10.90.0.11:11434/v1";
+              model = "openai/bonsai-2-27b";
+              api_key = "local";
+            };
+            model_info = {
+              mode = "chat";
+              input_cost_per_token = 0.00000010;
+              output_cost_per_token = 0.00000010;
+            };
+          }
+          {
+            model_name = "v3x-m/hemmingway-1";
+            litellm_params = {
+              api_base = "http://10.90.0.11:11434/v1";
+              model = "openai/hemmingway-1";
               api_key = "local";
             };
             model_info = {

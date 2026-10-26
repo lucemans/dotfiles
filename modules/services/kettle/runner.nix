@@ -132,8 +132,7 @@ in {
           searxng.endpoint = "https://${services.search.name}";
           secrets.enabled = true;
           title.generator = "tiny";
-          # First-run answers, as in the playtest: setup done, auto-QA
-          # reports declined.
+
           setupVersion = 2;
           dev.autoqaConsent = "denied";
         };

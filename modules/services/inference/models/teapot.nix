@@ -81,6 +81,25 @@
           "--no-webui"
         ];
       };
+
+      # Spark-X2.6-4B: on-device agent model, 1M context claimed. Q8_0 fits the
+      # card next to the speech server; the tiny title-generator and role move here.
+      "spark-x2.6-4b" = {
+        weights = {
+          repo = "XHToken/Spark-X2.6-4B-GGUF";
+          rev = "83b47fda018fd14f51aa63341f78266f628af5a5";
+          files."Spark-X2.6-4B-Q8_0.gguf" = "145c2aa606820663f26ad530b8fc141ed885e2e9ca29f9be7c3bfe8931d58b81";
+        };
+        args = [
+          "--ctx-size 16384"
+          "--flash-attn on"
+          "--jinja"
+          "--parallel 2"
+          "--no-webui"
+        ];
+        ttl = 600;
+        concurrencyLimit = 4;
+      };
     };
   in {
     systemd.tmpfiles.rules = [
@@ -110,6 +129,7 @@
           members = [
             "qwen3.6-35b-a3b"
             "clef-flash"
+            "spark-x2.6-4b"
           ];
         };
 
