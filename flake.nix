@@ -2,6 +2,7 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     prisma-nixpkgs.url = "github:NixOS/nixpkgs/5ed627539ac84809c78b2dd6d26a5cebeb5ae269";
+    nixpkgs-litellm.url = "github:NixOS/nixpkgs/9efb001ca77459072832ddf26b31e36ea7c6fe46";
     sops-nix.url = "github:Mic92/sops-nix";
     sops-nix.inputs.nixpkgs.follows = "nixpkgs";
     flake-parts.url = "github:hercules-ci/flake-parts";

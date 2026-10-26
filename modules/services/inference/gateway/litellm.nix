@@ -8,8 +8,59 @@ in {
     lib,
     ...
   }: let
-    prisma-engines = inputs.prisma-nixpkgs.legacyPackages.${pkgs.stdenv.hostPlatform.system}.prisma-engines;
-    prisma = inputs.prisma-nixpkgs.legacyPackages.${pkgs.stdenv.hostPlatform.system}.prisma;
+    system = pkgs.stdenv.hostPlatform.system;
+    prisma-engines = inputs.prisma-nixpkgs.legacyPackages.${system}.prisma-engines;
+    prisma = inputs.prisma-nixpkgs.legacyPackages.${system}.prisma;
+    # litellm comes from a pinned newer nixpkgs: the decision routes need
+    # >= 1.104.2 and nixos-unstable lags behind. Its closure is self-contained.
+    litellmPkgs = inputs.nixpkgs-litellm.legacyPackages.${system}.extend (_final: prev: {
+      pythonPackagesExtensions =
+        prev.pythonPackagesExtensions
+        ++ [
+          (pythonPackages: super: {
+            litellm = let
+              prismaPython = super.prisma.overridePythonAttrs (old: {
+                postPatch =
+                  (old.postPatch or "")
+                  + ''
+                    substituteInPlace src/prisma/_config.py \
+                      --replace-fail "default='5.17.0'" "default='5.18.0'" \
+                      --replace-fail "default='393aa359c9ad4a4bb28630fb5613f9c281cde053'" "default='4c784e32044a8a016d99474bd02a3b6123742169'"
+                  '';
+                postInstall =
+                  (old.postInstall or "")
+                  + ''
+                    schema="$TMPDIR/litellm-schema.prisma"
+                    substitute ${super.litellm.src}/schema.prisma "$schema" \
+                      --replace-fail '  provider = "prisma-client-py"' "  provider = \"prisma-client-py\"
+                      output = \"$out/${pythonPackages.python.sitePackages}/prisma\""
+
+                    export PYTHONPATH="$out/${pythonPackages.python.sitePackages}:$PYTHONPATH"
+                    PATH="$out/bin:$PATH" ${lib.getExe' prisma "prisma"} generate --schema="$schema"
+                  '';
+                pythonImportsCheck = (old.pythonImportsCheck or []) ++ ["prisma.client"];
+              });
+            in
+              (super.litellm.override {prisma = prismaPython;}).overridePythonAttrs (old: {
+                makeWrapperArgs =
+                  (old.makeWrapperArgs or [])
+                  ++ [
+                    "--prefix"
+                    "PATH"
+                    ":"
+                    (lib.makeBinPath [prisma])
+                  ];
+                pythonImportsCheck =
+                  (old.pythonImportsCheck or [])
+                  ++ [
+                    "litellm_proxy_extras"
+                    "litellm.proxy._experimental.mcp_server.outbound_credentials.types"
+                    "prisma.client"
+                  ];
+              });
+          })
+        ];
+    });
   in {
     sops.secrets.teapot_litellm_master_key = {
       mode = "0400";
@@ -52,6 +103,7 @@ in {
 
     services.litellm = {
       enable = true;
+      package = litellmPkgs.litellm;
       host = config.v3x.address;
       port = 4000;
       environmentFile = config.sops.templates.teapot_litellm_env.path;
@@ -73,15 +125,6 @@ in {
         general_settings = {
           master_key = "os.environ/LITELLM_MASTER_KEY";
           database_url = "os.environ/DATABASE_URL";
-          # Clef-Flash answers only the TypeSafe System One API, which LiteLLM does
-          # not model, so it is forwarded as is behind the LiteLLM key check.
-          pass_through_endpoints = [
-            {
-              path = "/v1/systemone";
-              target = "http://127.0.0.1:8081/upstream/clef-flash/v1/systemone";
-              methods = ["POST"];
-            }
-          ];
         };
         model_list = [
           {
@@ -121,6 +164,16 @@ in {
               input_cost_per_token = 0.00000020;
               output_cost_per_token = 0.00000020;
             };
+          }
+          {
+            # A decision model: llama-swap serves it on /v1/systemone only. The
+            # hosted_vllm provider posts to <api_base>/v1/systemone.
+            model_name = "clef-flash";
+            litellm_params = {
+              model = "hosted_vllm/clef-flash";
+              api_base = "http://127.0.0.1:8081/upstream/clef-flash";
+            };
+            model_info.mode = "decisions";
           }
           {
             model_name = "v3x-t/piper";
@@ -392,68 +445,5 @@ in {
       # TimeoutStartSec = "2min";
       # };
     };
-
-    nixpkgs.overlays = [
-      (_final: prev: {
-        pythonPackagesExtensions =
-          prev.pythonPackagesExtensions
-          ++ [
-            (pythonPackages: super: {
-              litellm = let
-                proxyExtras = pythonPackages.buildPythonPackage {
-                  pname = "litellm-proxy-extras";
-                  version = "0.4.97";
-                  pyproject = true;
-                  src = super.litellm.src;
-                  sourceRoot = "source/litellm-proxy-extras";
-                  postPatch = ''
-                    rm -rf dist
-                    substituteInPlace pyproject.toml \
-                      --replace-fail "uv_build==0.11.8" "uv_build"
-                  '';
-                  build-system = [pythonPackages.uv-build];
-                  pythonImportsCheck = ["litellm_proxy_extras"];
-                };
-                prismaPython = super.prisma.overridePythonAttrs (old: {
-                  postPatch =
-                    (old.postPatch or "")
-                    + ''
-                      substituteInPlace src/prisma/_config.py \
-                        --replace-fail "default='5.17.0'" "default='5.18.0'" \
-                        --replace-fail "default='393aa359c9ad4a4bb28630fb5613f9c281cde053'" "default='4c784e32044a8a016d99474bd02a3b6123742169'"
-                    '';
-                  postInstall =
-                    (old.postInstall or "")
-                    + ''
-                      schema="$TMPDIR/litellm-schema.prisma"
-                      substitute ${super.litellm.src}/schema.prisma "$schema" \
-                        --replace-fail '  provider = "prisma-client-py"' "  provider = \"prisma-client-py\"
-                        output = \"$out/${pythonPackages.python.sitePackages}/prisma\""
-
-                      export PYTHONPATH="$out/${pythonPackages.python.sitePackages}:$PYTHONPATH"
-                      PATH="$out/bin:$PATH" ${lib.getExe' prisma "prisma"} generate --schema="$schema"
-                    '';
-                  pythonImportsCheck = (old.pythonImportsCheck or []) ++ ["prisma.client"];
-                });
-              in
-                (super.litellm.override {prisma = prismaPython;}).overridePythonAttrs (old: {
-                  dependencies = (old.dependencies or []) ++ [proxyExtras];
-                  makeWrapperArgs =
-                    (old.makeWrapperArgs or [])
-                    ++ [
-                      "--prefix PATH : ${lib.makeBinPath [prisma]}"
-                    ];
-                  pythonImportsCheck =
-                    (old.pythonImportsCheck or [])
-                    ++ [
-                      "litellm_proxy_extras"
-                      "litellm.proxy._experimental.mcp_server.outbound_credentials.types"
-                      "prisma.client"
-                    ];
-                });
-            })
-          ];
-      })
-    ];
   };
 }

@@ -1148,6 +1148,22 @@
         "type": "github"
       }
     },
+    "nixpkgs-litellm": {
+      "locked": {
+        "lastModified": 1793029296,
+        "narHash": "sha256-Dl07tqXy1LiWz5Oj9lHzt+0AzZt6X/drYc0jf5chuu0=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "9efb001ca77459072832ddf26b31e36ea7c6fe46",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "9efb001ca77459072832ddf26b31e36ea7c6fe46",
+        "type": "github"
+      }
+    },
     "nixpkgs-stable": {
       "locked": {
         "lastModified": 1782116945,
@@ -1483,6 +1499,7 @@
         "midjournal": "midjournal",
         "missiond": "missiond",
         "nixpkgs": "nixpkgs_6",
+        "nixpkgs-litellm": "nixpkgs-litellm",
         "omp": "omp",
         "plan-env-md": "plan-env-md",
         "plasma-manager": "plasma-manager",
