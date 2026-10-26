@@ -20,7 +20,6 @@ _: {
       self.nixosModules.mealie
       self.nixosModules.freshrss
       self.nixosModules.kanidm
-      self.nixosModules.kaneo
       self.nixosModules.garage
       self.nixosModules.attic
       self.nixosModules.asterisk

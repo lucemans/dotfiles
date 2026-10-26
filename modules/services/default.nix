@@ -12,7 +12,6 @@
     ./freshrss.nix
     ./vaultwarden.nix
     ./kanidm.nix
-    ./kaneo.nix
     ./garage.nix
     ./attic.nix
     ./immich.nix

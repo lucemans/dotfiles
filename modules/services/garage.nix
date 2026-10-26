@@ -1,6 +1,4 @@
-_: let
-  inherit (import ../network/services.nix) services;
-in {
+_: {
   flake.nixosModules.garage = {
     config,
     lib,
@@ -9,25 +7,6 @@ in {
   }: let
     garage = lib.getExe config.services.garage.package;
     bucket = "kaneo-uploads";
-
-    # The CLI talks to the server over RPC, so the rule is set without an
-    # admin API token. Browsers upload straight to the bucket with presigned
-    # PUTs, which needs this rule for the Kaneo origin.
-    cors = pkgs.writeShellScript "garage-kaneo-cors" ''
-      until ${garage} status >/dev/null 2>&1; do
-        sleep 1
-      done
-      id="$(${garage} json-api GetBucketInfo '{"globalAlias":"${bucket}"}' | ${lib.getExe pkgs.jq} -r .id)"
-      ${garage} json-api UpdateBucket "$(${lib.getExe pkgs.jq} -nc --arg id "$id" '{
-        id: $id,
-        body: {corsRules: [{
-          AllowedOrigin: ["https://${services.tasks.name}"],
-          AllowedMethod: ["GET", "HEAD", "PUT"],
-          AllowedHeader: ["*"],
-          ExposeHeader: ["ETag"]
-        }]}
-      }')" >/dev/null
-    '';
   in {
     sops = {
       secrets = {
@@ -71,7 +50,6 @@ in {
       # set up by hand.
       serviceConfig = {
         ExecStart = lib.mkForce "${garage} server --single-node --default-bucket";
-        ExecStartPost = cors;
       };
     };
   };

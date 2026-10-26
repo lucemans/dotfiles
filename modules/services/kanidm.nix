@@ -37,12 +37,11 @@ in {
         groups.librechat_users = {};
         groups.freshrss_users = {};
         groups.litellm_users = {};
-        groups.kaneo_users = {};
 
         persons.luc = {
           displayName = "Luc";
           mailAddresses = ["luc@v3x.email"];
-          groups = ["librechat_users" "freshrss_users" "litellm_users" "kaneo_users"];
+          groups = ["librechat_users" "freshrss_users" "litellm_users"];
         };
 
         systems.oauth2.librechat = {
@@ -71,15 +70,6 @@ in {
           preferShortUsername = true;
           scopeMaps.freshrss_users = ["openid" "profile" "email"];
         };
-
-        systems.oauth2.kaneo = {
-          displayName = services.tasks.title;
-          originUrl = "https://${services.tasks.name}/api/auth/oauth2/callback/custom";
-          originLanding = "https://${services.tasks.name}";
-          basicSecretFile = config.sops.secrets.teapot_kaneo_oauth2_secret.path;
-          preferShortUsername = true;
-          scopeMaps.kaneo_users = ["openid" "profile" "email"];
-        };
       };
     };
 
@@ -97,10 +87,6 @@ in {
         mode = "0400";
       };
       teapot_freshrss_oauth2_secret = {
-        owner = "kanidm";
-        mode = "0400";
-      };
-      teapot_kaneo_oauth2_secret = {
         owner = "kanidm";
         mode = "0400";
       };

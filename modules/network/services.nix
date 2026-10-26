@@ -79,13 +79,6 @@ in {
       upstream = "${hosts.v3x-teapot.address}:8090";
       access = ["f0" "f1" "f2"];
     };
-    tasks = {
-      name = "tasks.${zone}";
-      title = "Tasks";
-      icon = "kaneo";
-      upstream = "${hosts.v3x-teapot.address}:5173";
-      access = [];
-    };
     bit = {
       name = "bit.${zone}";
       title = "Bit";
@@ -215,7 +208,7 @@ in {
     }
     {
       title = "Tools";
-      services = ["chat" "search" "rss" "tasks" "inference" "agent" "usage"];
+      services = ["chat" "search" "rss" "inference" "agent" "usage"];
     }
     {
       title = "Media";

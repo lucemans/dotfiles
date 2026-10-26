@@ -57,7 +57,6 @@
         # Every harness reads this one itself: omp and Claude through a
         # command, OpenCode through a {file:} reference.
         config.sops.secrets.v3x_error_menu_token.path
-        config.sops.secrets.v3x_kaneo_token.path
         envFile
       ];
     };

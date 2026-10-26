@@ -50,11 +50,6 @@ in {
       bearer = "v3x_error_menu_token";
       blurb = "error.menu projects and jobs";
     };
-    kaneo = {
-      url = "https://${services.tasks.name}/api/mcp";
-      bearer = "v3x_kaneo_token";
-      blurb = "Kaneo tasks and projects";
-    };
     sdrangel = {
       # Served by the SDRangel window on the host, so it connects only while
       # SDRangel runs.
@@ -69,7 +64,7 @@ in {
         label = "Base";
         glyph = "";
         color = "248;248;242";
-        servers = ["repo_reader" "github_reader" "nixos" "plan_env" "playwright" "error_menu" "kaneo"];
+        servers = ["repo_reader" "github_reader" "nixos" "plan_env" "playwright" "error_menu"];
       };
       rf = {
         label = "Radio Frequency";
