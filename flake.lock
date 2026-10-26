@@ -834,11 +834,11 @@
         "nixpkgs": "nixpkgs_4"
       },
       "locked": {
-        "lastModified": 1793030243,
-        "narHash": "sha256-Ne84IhNWY7Y9hb9h9xVTiCR7YNEwTblJNDbuqoF2o2s=",
+        "lastModified": 1793037790,
+        "narHash": "sha256-DDBBrLVVCZ48BpghVkUIhdCxxfsK4ElA5dAMBvyG+HQ=",
         "ref": "refs/heads/master",
-        "rev": "becd16bfef12616ee90f661bb74ed63fef22a6d4",
-        "revCount": 156,
+        "rev": "6da453e1ae88bca95786790ccea3833d9ea395a5",
+        "revCount": 157,
         "type": "git",
         "url": "ssh://git@100.127.0.11:2222/v3xlabs/kettle-forge.git"
       },
