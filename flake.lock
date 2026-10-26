@@ -815,11 +815,11 @@
         "rust-overlay": "rust-overlay_4"
       },
       "locked": {
-        "lastModified": 1793040877,
-        "narHash": "sha256-tMAuJztVD7f/vHKWBBbyhl5dsqgtOEbXuVFs4nPcPu4=",
+        "lastModified": 1793050376,
+        "narHash": "sha256-u0qnwL8OGPb5bIFOzLYP8fPCNPXkqtPUa48bvTGoojw=",
         "ref": "refs/heads/master",
-        "rev": "b92158c8cb5c9c72b2be21fea10afdb08c761fca",
-        "revCount": 593,
+        "rev": "90b7a228ad4ff9a9ebc5238e4aa1716d3a4ebea6",
+        "revCount": 598,
         "type": "git",
         "url": "ssh://git@100.127.0.11:2222/v3xlabs/kettle-code.git"
       },
@@ -834,11 +834,11 @@
         "nixpkgs": "nixpkgs_4"
       },
       "locked": {
-        "lastModified": 1793041616,
-        "narHash": "sha256-KjSxSuhr8P5khZ8ivgvKGXkEDboJpYCU4rXpI1vdUcI=",
+        "lastModified": 1793050397,
+        "narHash": "sha256-feQAFbI2vOIRMJQI9TlffNb5j+oFyV5oqi72JXTY6+A=",
         "ref": "refs/heads/master",
-        "rev": "8bd50f04a8ede076969cbfac53ac6b2d075fce9a",
-        "revCount": 158,
+        "rev": "143cb5e29c7c8a566f47562e928fa073d70c20a6",
+        "revCount": 159,
         "type": "git",
         "url": "ssh://git@100.127.0.11:2222/v3xlabs/kettle-forge.git"
       },

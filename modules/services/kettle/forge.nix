@@ -39,7 +39,10 @@ in {
             "http://${hosts.v3x-fighter.address}:3600"
           ];
         };
-        ssh.listen = "0.0.0.0:${toString forge.sshPort}";
+        ssh = {
+          listen = "0.0.0.0:${toString forge.sshPort}";
+          host = "100.127.0.11";
+        };
         oidc = {
           issuer = "https://${services.auth.name}/oauth2/openid/kettle-forge";
           client_id = "kettle-forge";
