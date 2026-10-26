@@ -1,8 +1,18 @@
 {
+  code = {
+    host = "v3x-mediabus";
+    port = 3600;
+    editorSshPort = 2223;
+  };
+
   forge = {
     host = "v3x-mediabus";
     port = 3500;
-    # The hub's proxy serves HTTPS only, so git over SSH goes to `host` over wg0.
     sshPort = 2222;
+  };
+
+  machines = {
+    fighter = "Pb9atMjsIOT3UpfxRANf3eePArSY65M1cjqPzsRAdKc=";
+    mediabus = "MJfbrN8tc/twFvbBEkG/FVjzbX4+EVviuHkUdozwGmY=";
   };
 }

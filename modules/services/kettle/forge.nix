@@ -32,8 +32,9 @@ in {
         host = "forge.localhost";
         web = {
           public_url = "https://${services.forge.name}";
-          # The playtest k5c on fighter.
+          # The playtest k5c on fighter stays until its data is moved.
           allowed_origins = [
+            "https://${services.code.name}"
             "http://127.0.0.1:3600"
             "http://${hosts.v3x-fighter.address}:3600"
           ];

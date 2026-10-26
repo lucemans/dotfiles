@@ -16,6 +16,7 @@
       modules = [
         inputs.sops-nix.nixosModules.sops
         inputs.lanzaboote.nixosModules.lanzaboote
+        inputs.kettle-code.nixosModules.default
         self.nixosModules.fighter
         self.nixosModules.fighterPhysical
         self.nixosModules.fighterThermal

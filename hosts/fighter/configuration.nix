@@ -21,7 +21,14 @@
       self.nixosModules.midjournal
       self.nixosModules.voxtype
       self.nixosModules.kettleClient
+      self.nixosModules.kettleRunner
     ];
+
+    # fighter shuts down and suspends, unlike an always-on host.
+    services.kettle-runner = {
+      drainTimeout = 300;
+      inhibitSleep = "block";
+    };
 
     boot.loader = {
       efi.canTouchEfiVariables = true;

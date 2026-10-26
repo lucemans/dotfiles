@@ -34,7 +34,7 @@ _: {
         domain = "*.voice.channel";
         extraDomainNames = ["voice.channel"];
         dnsProvider = "cloudflare";
-        extraLegoFlags = ["--dns.propagation-wait=60s"];
+        extraLegoFlags = ["--dns.propagation.wait=60s"];
         credentialFiles.CF_DNS_API_TOKEN_FILE =
           config.sops.secrets.acme_cloudflare_token.path;
         group = "voice-channel-certs";

@@ -65,6 +65,7 @@
     # `http.https://forge.v3x.host/.extraHeader`.
     # kettle-forge.url = "git+https://forge.v3x.host/v3xlabs/kettle-forge.git?ref=master";
     kettle-forge.url = "git+file:///home/luc/dev/local/k5-forge?rev=b6b4ce15d37fef721e012ccb2ac93e2a69492cd5";
+    kettle-code.url = "git+file:///home/luc/dev/local/kettle-code?ref=master";
   };
 
   outputs = inputs:

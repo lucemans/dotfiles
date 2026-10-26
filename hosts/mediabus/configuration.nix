@@ -15,6 +15,8 @@ _: {
       self.nixosModules.mediabusInference
       self.nixosModules.backup
       self.nixosModules.kettleForge
+      self.nixosModules.kettleCode
+      self.nixosModules.kettleRunner
     ];
 
     sops.defaultSopsFile = ../../config/mediabus.sops.yaml;
@@ -24,8 +26,9 @@ _: {
       paths = [
         "/data"
         "/var/lib/immich"
-        # Luc enables this once the forge works, so no broken state is backed up.
+        # Luc enables these once the deployment works, so no broken state is backed up.
         # "/var/lib/kettle-forge"
+        # "/var/lib/kettle-code"
       ];
     };
 

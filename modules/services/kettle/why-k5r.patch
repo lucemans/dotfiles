@@ -1,0 +1,158 @@
+diff --git a/SKILL.md b/SKILL.md
+index f595924..1f08ddd 100644
+--- a/SKILL.md
++++ b/SKILL.md
+@@ -11,7 +11,7 @@ Companion to the `how` skill. `how` answers what the code does and how it works.
+ 
+ ## How this skill works
+ 
+-The repository is the whole searchable record. Commit history, PR and issue discussion, inline comments, tests, ADRs, and CHANGELOG entries are where rationale survives, and each of those holds a different kind of it: a commit says what changed, a PR thread says what was argued, a test name says which edge case forced the shape, a comment says what the author feared. You cannot predict from the question alone which one holds the answer, so the skill works several angles in parallel, then synthesizes with explicit confidence calibration.
++The repository and Kettle Forge are the whole searchable record. Commit history, PR and issue discussion, inline comments, tests, ADRs, and CHANGELOG entries are where rationale survives, and each of those holds a different kind of it: a commit says what changed, a PR thread says what was argued, a test name says which edge case forced the shape, a comment says what the author feared. You cannot predict from the question alone which one holds the answer, so the skill works several angles in parallel, then synthesizes with explicit confidence calibration.
+ 
+ Null results are first-class evidence; report them alongside positive findings. Distinguish two kinds, because they license different conclusions. A search that ran and found nothing tells you the rationale was not written down where you looked. Rationale that only ever existed in conversation is unrecoverable from here, and its absence says nothing about whether the decision was considered. Never let the second look like the first.
+ 
+@@ -68,7 +68,7 @@ Before spawning investigators, anchor the investigation in concrete code. You ne
+ - The key symbols (function names, class names, constants)
+ - An initial commit list. The last few commits touching the target.
+ - PR numbers from merge commits (pattern `(#1234)` in the subject line)
+-- The rows of the decision log that name the target. Search `$AGENT_TRAIL_DIR/decisions.tsv` for its files, symbols, and area. A row with `by` set to `user` is the only record of a decision made in conversation. Follow its `session` and `evidence` pointers.
++- The forge record that names the target: issues and pull requests on Kettle Forge whose title, body, comments or review threads mention its files, symbols or area. A maintainer comment on an issue or a review thread is the only record of a decision made in conversation.
+ 
+ Build this inline. It's cheap, and every investigator needs it.
+ 
+@@ -86,7 +86,7 @@ git log --oneline -20 -- <file>
+ git log -1 --format=%B <commit>
+ ```
+ 
+-Read PR bodies and discussion for any substantive commits with the `github_reader` tool. `get_pull` with `repo` (`owner/name`) and `number` returns the description, reviews, comments, and review comments. `get_issue` does the same for an issue. `pr://<N>` and `issue://<N>` read through the same tool.
++Read PR bodies and discussion for any substantive commits with `k5f`. `k5f pr view <n>` returns the description, reviews, comments and review threads; `k5f issue view <n>` does the same for an issue. `--json` on either gives the full record. In forge text, `github#<n>` names a PR or issue on the repository's GitHub upstream, not forge item `<n>`, so do not pass that number to `k5f`.
+ 
+ Capture this as seed context (file paths, symbols, commits, PR numbers, linked ticket IDs). Pass it to the investigators so they don't rediscover it.
+ 
+@@ -102,7 +102,7 @@ Spawn 2 to 4 investigators in a single message. Each gets:
+ 4. The code anchor from Step 2 (file paths, symbols, commit hashes, PR numbers, issue IDs)
+ 5. The user's original question
+ 
+-Investigators read and report. They never edit a file, and they never mutate git state: no staging, committing, checking out, or branch switching. Reading history is the entire job, and `git log`, `git blame`, `git show`, `git diff`, and the read-only `github_reader` tools cover it.
++Investigators read and report. They never edit a file, and they never mutate git state: no staging, committing, checking out, or branch switching. They never write to the forge either: no comment, review or label. Reading history is the entire job, and `git log`, `git blame`, `git show`, `git diff`, `k5f pr view`, `k5f issue view`, `k5f pr list` and `k5f issue list` cover it.
+ 
+ ### Investigator roster
+ 
+@@ -110,7 +110,7 @@ Spawn the first three by default. Add the fourth when the target looks like an i
+ 
+ 1. **Commit and diff history.** `git log --follow`, pickaxe searches with `-S` and `-G`, `git blame`, `git show` on each substantive commit. Best at surfacing *when the shape changed and what changed with it*. The commit that introduced a constant, the commit that reverted an earlier approach, co-changed files that reveal the real unit of work, and commit messages that name an incident or issue. Weakest at motivation: a diff shows the change, rarely the reason.
+ 
+-2. **PR and issue discussion.** `github_reader` `get_pull` and `get_issue`, and `search` with `kind` set to `prs` or `issues`, on the symptom rather than the fix. Best at surfacing *rationale captured while the change was argued*. PR descriptions that state the problem, review threads debating alternatives, an issue whose report predates the code and whose close references the PR. Usually the richest angle when the repo uses PRs seriously.
++2. **PR and issue discussion.** `k5f pr view` and `k5f issue view`, and `k5f pr list --state all --json` and `k5f issue list --state all --json`, paged with `--limit` and `--cursor` and filtered with `jq` on titles that name the symptom rather than the fix. Best at surfacing *rationale captured while the change was argued*. PR descriptions that state the problem, review threads debating alternatives, an issue whose report predates the code and whose close references the PR. Usually the richest angle when the repo uses PRs seriously.
+ 
+ 3. **In-repo prose and tests.** Inline comments, TODO and FIXME notes, docstrings, ADRs, README and CHANGELOG entries, and test names and assertions. Best at surfacing *the constraint the author wanted the next reader to know*. A test named for the edge case that forced the branch is direct evidence of motivation; a comment explaining a vendor quirk is often the only record of it.
+ 
+@@ -118,7 +118,7 @@ Spawn the first three by default. Add the fourth when the target looks like an i
+ 
+ ### When the record runs out
+ 
+-There is no ticket tracker, chat archive, observability platform, error tracker, or analytics warehouse in this environment. The repository and the decision log at `$AGENT_TRAIL_DIR/decisions.tsv` are the whole record.
++There is no chat archive, observability platform, error tracker, or analytics warehouse in this environment. The repository and Kettle Forge (issues, pull requests, reviews and their threads) are the whole record.
+ 
+ That is a boundary, not a gap you can close by searching harder, and it changes what a null result means. If the rate limit is 100 and no commit, PR, issue, comment, or test says why, the honest finding is that the reason never reached the repository, not that there was no reason. Say exactly that. A confident "the value appears arbitrary" is the failure mode this skill exists to prevent.
+ 
+@@ -126,7 +126,7 @@ You may answer inline without spawning investigators only when the code anchor f
+ 
+ ## Step 4. Synthesize
+ 
+-Spawn one synthesizer subagent, on the strongest reasoning model available. Its quality check spot-verifies citations against the repository and `github_reader`, so it needs the same read access as the investigators.
++Spawn one synthesizer subagent, on the strongest reasoning model available. Its quality check spot-verifies citations against the repository and the forge through `k5f`, so it needs the same read access as the investigators.
+ 
+ The synthesizer gets:
+ 
+@@ -169,7 +169,7 @@ Example:
+ - In-repo prose and tests: searched comments and tests referencing `retry`, `backoff`, `maxAttempts`. Test `retries until the upstream stops 503ing` names the motivating case; no comment explains the value 5.
+ - Pattern origin: not investigated. The retry helper is the only instance in the repo.
+ 
+-Close with the boundary: the repository is the entire searchable record, so rationale that stayed in conversation is unreachable.
++Close with the boundary: the repository and Kettle Forge are the entire searchable record, so rationale that stayed in conversation outside the forge is unreachable.
+ 
+ After the Sources Consulted block, if the user's `why` question is a precursor to actually changing this code, convert the lineage findings into a Preserve / Change / Avoid / Risk constraint set suitable for planning the change.
+ 
+@@ -183,12 +183,12 @@ When the answer is long enough to be read more than once, or the coverage map ma
+ - **Sycophantic agreement**. If the user suggests a reason ("I assume this is for performance?"), treat it as a hypothesis and check the evidence independently, don't just confirm it.
+ - **Skipping the gaps section**. An honest accounting of what you couldn't find out is part of the value.
+ - **Skipping an angle by anticipation**. Deciding up front that "the tests won't say anything" without looking. A null result is a data point; a skipped search is a blind spot.
+-- **Reading a missing record as a settled answer**. Nothing in the repo explains the threshold, so the threshold was arbitrary. That does not follow, and it is the specific error this environment invites, because the repository is the only record there is.
++- **Reading a missing record as a settled answer**. Nothing in the repo or on the forge explains the threshold, so the threshold was arbitrary. That does not follow, and it is the specific error this environment invites, because the repository and the forge are the only record there is.
+ - **Collapsing investigators into one agent**. Each angle has its own query vocabulary and pitfalls; pooling them dilutes the search and makes coverage harder to judge.
+ 
+ ## Reference Files
+ 
+-- `references/code-archaeology.md`. The git and `github_reader` query vocabulary every investigator works from, including the incident hunt for defensive code. Append it to each investigator prompt.
++- `references/code-archaeology.md`. The git and `k5f` query vocabulary every investigator works from, including the incident hunt for defensive code. Append it to each investigator prompt.
+ - `references/epistemics.md`. Confidence tiers and phrasing guide. The synthesizer must follow it.
+ - `references/investigator-prompt.md`. Base prompt template for investigator subagents.
+ - `references/synthesizer-prompt.md`. Prompt template for the synthesizer subagent, including the output format.
+diff --git a/references/code-archaeology.md b/references/code-archaeology.md
+index 84fcac1..c1a250f 100644
+--- a/references/code-archaeology.md
++++ b/references/code-archaeology.md
+@@ -3,7 +3,7 @@
+ ## What this source contains
+ 
+ - Commit history (messages, dates, authors, diffs)
+-- PR descriptions, review comments, and discussion threads (via the `github_reader` tool)
++- PR descriptions, reviews, comments, and review threads (on Kettle Forge, through `k5f`)
+ - Inline code comments, TODOs, FIXMEs, deprecation notes
+ - ADRs (architectural decision records) if the repo keeps them
+ - Tests. Names and assertions often encode the edge cases that motivated a change
+@@ -44,7 +44,7 @@ For each substantive commit, pull the PR context:
+ git log -1 --format=%B <hash>
+ ```
+ 
+-Then call `github_reader` `get_pull` with `{"repo": "<owner/name>", "number": <number>}`. It returns the body, reviews, comments, and review comments; the reviews and comments are where the real signal is. `get_pull_diff` lists the changed files. `get_issue` reads a linked issue.
++Then run `k5f pr view <number>`. It returns the body, reviews, comments and review threads; the reviews and threads are where the real signal is. `k5f pr diff <number> --name-only` lists the changed files. `k5f issue view <number>` reads a linked issue.
+ 
+ Look for out-of-band docs:
+ 
+@@ -83,7 +83,7 @@ git log --oneline --grep='revert' --all
+ git log -S '<the guard expression>' --oneline -- <file>
+ ```
+ 
+-Then search issues and PRs that mention the symptom rather than the fix with `github_reader` `search`: `{"kind": "issues", "query": "repo:<owner/name> <error string or symptom>"}`, and the same with `"kind": "prs"`.
++Then search issues and PRs that mention the symptom rather than the fix: page through `k5f issue list --state all --json` and `k5f pr list --state all --json` with `--limit` and `--cursor`, and filter the titles with `jq` on the error string or symptom. The lists carry no bodies, so open each candidate with `k5f issue view` or `k5f pr view` and read its body and threads.
+ 
+ An issue whose report predates the guard, and whose close references the PR that added it, is the strongest available evidence for defensive code. Fetch the full thread, not the title.
+ 
+diff --git a/references/synthesizer-prompt.md b/references/synthesizer-prompt.md
+index 3341317..f8576c2 100644
+--- a/references/synthesizer-prompt.md
++++ b/references/synthesizer-prompt.md
+@@ -6,7 +6,7 @@ Build the synthesizer's prompt from this template; fill in the placeholders.
+ 
+ You are answering a "why" question about a piece of code by synthesizing findings from multiple investigators who worked different angles on the repository's historical record: commit and diff history, PR and issue discussion, in-repo prose and tests, and the origin of the pattern. Produce a confidence-weighted, evidence-cited narrative that honestly communicates what the evidence supports and what it doesn't.
+ 
+-The repository is the entire searchable record. There is no ticket tracker, chat archive, observability platform, error tracker, or analytics warehouse to fall back on. This matters for calibration: rationale that was never written into a commit, a PR, an issue, or a comment left no trace you can reach. Treat silence as unrecoverable, not as evidence the decision was arbitrary.
++The repository and Kettle Forge (issues, pull requests, reviews and review threads) are the entire searchable record. There is no chat archive, observability platform, error tracker, or analytics warehouse to fall back on. This matters for calibration: rationale that was never written into a commit, a PR, an issue, a review thread or a comment left no trace you can reach. Treat silence as unrecoverable, not as evidence the decision was arbitrary.
+ 
+ ## The Question
+ 
+@@ -43,7 +43,7 @@ You MUST follow the framework in `references/epistemics.md`. Read it in full bef
+ 2. **Reconcile overlapping findings.** Multiple investigators may have cited the same PR, ticket, or doc. Merge into a single, authoritative reference.
+ 3. **Identify contradictions.** If two items of evidence disagree, don't pick one. Surface both.
+ 4. **Calibrate confidence.** For each claim, identify the evidence and the tier. State Direct claims plainly with a citation. Hedge Inferred claims and explain the inference. Mark Speculative claims explicitly. Put claims with no evidence in the gaps section.
+-5. **Verify citations by spot-checking.** Read the codebase, run read-only `git` commands, and call the read-only `github_reader` tools to confirm a cited commit, PR, or line says what the investigator claims. Write nothing, and never mutate git state. If you're uncertain a cited item exists, check it. Don't propagate errors.
++5. **Verify citations by spot-checking.** Read the codebase, run read-only `git` commands, and read the forge with `k5f pr view` and `k5f issue view` to confirm a cited commit, PR, or line says what the investigator claims. Write nothing, never mutate git state, and never write to the forge. If you're uncertain a cited item exists, check it. Don't propagate errors.
+ 6. **Don't overreach.** The user will act on your output. Better to leave an open question open than to fill it with a confident-sounding guess.
+ 
+ ## Output Format
+@@ -103,11 +103,11 @@ Be specific. "We ran `git log -S 'MAX_RETRIES' --all` and read all three commits
+ Bulleted list of what was actually searched, so the user can judge coverage and redirect. One line per angle, including the angles that found nothing. Format:
+ 
+ - **Commit and diff history**: {commands run, number of commits reviewed, date range}. {What surfaced, or "nothing bearing on the question".}
+-- **PR and issue discussion**: {PR and issue numbers opened, `github_reader` searches run}. {What surfaced, or "nothing bearing on the question".}
++- **PR and issue discussion**: {PR and issue numbers opened, `k5f` list commands run and how their output was filtered}. {What surfaced, or "nothing bearing on the question".}
+ - **In-repo prose and tests**: {comment, doc, CHANGELOG, and test searches run}. {What surfaced, or "nothing bearing on the question".}
+ - **Pattern origin**: {where the pattern first appears, the commit that introduced it}. Or "not investigated. The target is not an instance of a repeated pattern."
+ 
+-Close the block by naming the boundary of the record: the repository is the whole searchable history, so any rationale that lived only in conversation is unreachable from here.
++Close the block by naming the boundary of the record: the repository and Kettle Forge are the whole searchable history, so any rationale that lived only in conversation outside the forge is unreachable from here.
+ 
+ ### Confidence Summary
+ 

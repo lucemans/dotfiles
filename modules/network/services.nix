@@ -102,6 +102,13 @@ in {
       upstream = "${hosts.v3x-watch.address}:3000";
       access = [];
     };
+    code = {
+      name = "code.${zone}";
+      title = "Kettle Code";
+      icon = "kettle-code";
+      upstream = "${hosts.${kettle.code.host}.address}:${toString kettle.code.port}";
+      access = [];
+    };
     forge = {
       name = "forge.${zone}";
       title = "Kettle Forge";
@@ -216,7 +223,7 @@ in {
     }
     {
       title = "Tools";
-      services = ["chat" "search" "rss" "inference" "agent" "usage" "forge"];
+      services = ["chat" "search" "rss" "inference" "agent" "usage" "code" "forge"];
     }
     {
       title = "Media";
