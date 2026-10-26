@@ -1,0 +1,3546 @@
+--- a/docs/CONFIGURATION.md
++++ b/docs/CONFIGURATION.md
+@@ -1193,6 +1193,62 @@
+ remote_send_auto_language = true
+ ```
+ 
++### remote_realtime
++
++**Type:** Boolean
++**Default:** `false`
++**Required:** No
++
++Stream audio to a [NeMo-Speech](https://github.com/NVIDIA/NeMo-Speech.cpp) server (`nemo-speech serve`) over its realtime WebSocket and type words at the cursor while you speak. Needs `mode = "remote"`. Audio goes to `<remote_endpoint>/v1/audio/transcriptions/realtime` (`http` becomes `ws`, `https` becomes `wss`). Typing at the cursor while the hotkey is held confuses some compositors, so push-to-talk is promoted to toggle, the same as for the other streaming engines.
++
++A word is typed once the next word has started, because the server can still extend the last word and attach punctuation to it. A word that could begin a multi-word replacement (see `vocabulary_files` and `[text] replacements`) waits until the phrase completes or fails. When you stop, the server's final transcript is compared with what was typed: missing words are appended and a word that really differs is backspaced and retyped. `[text]` replacements, filler-word removal and spoken punctuation apply to streamed text.
++
++If the server is unreachable or fails mid-recording, voxtype shows a notification and keeps the words typed so far. Code that transcribes a finished recording instead of streaming it posts the audio to `/v1/audio/transcriptions` with the same vocabulary.
++
++**Example:**
++```toml
++[whisper]
++mode = "remote"
++remote_endpoint = "http://127.0.0.1:8010"
++remote_realtime = true
++
++[hotkey]
++mode = "toggle"
++```
++
++### vocabulary_files
++
++**Type:** Array of strings
++**Default:** `[]`
++**Required:** No
++
++Vocabulary files for `remote_realtime`, read again at the start of every recording, so an edit applies the next time you start dictating. Later files override earlier ones for the same left-hand side. A missing file is skipped without a message. A leading `~` expands to `$HOME`.
++
++One entry per line, UTF-8. A line starting with `#` is a comment; blank lines are ignored.
++
++```text
++# A term to boost
++Nextcloud
++# A correction: whole-word, case-insensitive. "Nextcloud" is boosted too.
++next cloud => Nextcloud
++```
++
++Boosted terms go to the server as `speech_contexts`. At most 256 phrases are sent; the log says when a list is truncated.
++
++**Example:**
++```toml
++[whisper]
++vocabulary_files = ["/etc/voxtype/vocabulary.txt", "~/.config/voxtype/vocabulary.txt"]
++```
++
++### remote_boost
++
++**Type:** Float
++**Default:** `2.5`
++**Required:** No
++
++Boost score sent with the vocabulary terms. NeMo-Speech's cache-aware RNNT decoder clamps it to 5.0, so voxtype clamps it too; 2 to 3 is typical. `0` turns boosting off while keeping corrections.
++
+ ### whisper_cli_path
+ 
+ **Type:** String
+--- a/src/bin/voxtype_osd_gtk4.rs
++++ b/src/bin/voxtype_osd_gtk4.rs
+@@ -24,7 +24,7 @@
+ use clap::Parser;
+ use gtk4::glib;
+ use gtk4::prelude::*;
+-use gtk4::{Application, ApplicationWindow, DrawingArea};
++use gtk4::{Application, ApplicationWindow, DrawingArea, Label, Orientation};
+ use gtk4_layer_shell::{Edge, KeyboardMode, Layer, LayerShell};
+ 
+ use voxtype::audio::levels::{AudioFrame, FRAME_HZ};
+@@ -417,7 +417,47 @@
+     drawing_area.set_draw_func(move |_area, cr, w, h| {
+         draw(cr, w, h, &palette, &state_for_draw, gain);
+     });
+-    window.set_child(Some(&drawing_area));
++    let content = gtk4::Box::new(Orientation::Vertical, 0);
++    content.append(&drawing_area);
++    let preview = Label::new(None);
++    preview.set_wrap(true);
++    preview.set_wrap_mode(gtk4::pango::WrapMode::WordChar);
++    preview.set_max_width_chars(60);
++    preview.set_lines(3);
++    preview.set_ellipsize(gtk4::pango::EllipsizeMode::Start);
++    preview.add_css_class("voxtype-preview");
++    let preview_css = gtk4::CssProvider::new();
++    preview_css.load_from_data(&format!(
++        ".voxtype-preview {{ background-color: rgb({},{},{}); color: rgb({},{},{}); padding: 8px 12px 12px; }}",
++        (palette.background.r * 255.0) as u8,
++        (palette.background.g * 255.0) as u8,
++        (palette.background.b * 255.0) as u8,
++        (palette.foreground.r * 255.0) as u8,
++        (palette.foreground.g * 255.0) as u8,
++        (palette.foreground.b * 255.0) as u8,
++    ));
++    gtk4::style_context_add_provider_for_display(
++        &gtk4::prelude::WidgetExt::display(&window),
++        &preview_css,
++        gtk4::STYLE_PROVIDER_PRIORITY_APPLICATION,
++    );
++    preview.set_visible(false);
++    preview.set_accessible_role(gtk4::AccessibleRole::Status);
++    content.append(&preview);
++    window.set_child(Some(&content));
++
++    // Tentative hypotheses stay in the OSD; only stable words reach the cursor.
++    let preview_window = window.clone();
++    glib::timeout_add_local(Duration::from_millis(100), move || {
++        let text = if preview_window.is_visible() {
++            voxtype::transcribe::preview::read().unwrap_or_default()
++        } else {
++            String::new()
++        };
++        preview.set_text(&text);
++        preview.set_visible(!text.is_empty());
++        glib::ControlFlow::Continue
++    });
+ 
+     // Click-through: install an empty input region on the window's surface
+     // once it's realized. Until then `realize` hasn't allocated a surface.
+@@ -542,16 +582,13 @@
+     let gap = (w * 0.01).max(2.0);
+     let wave_width = (w - meter_width - gap).max(0.0);
+ 
+-    draw_waveform(cr, 0.0, 0.0, wave_width, h, palette, state, gain);
++    draw_waveform(cr, (0.0, 0.0, wave_width, h), palette, state, gain);
+     draw_peak_meter(cr, wave_width + gap, 0.0, meter_width, h, palette, state);
+ }
+ 
+ fn draw_waveform(
+     cr: &Context,
+-    x: f64,
+-    y: f64,
+-    w: f64,
+-    h: f64,
++    (x, y, w, h): (f64, f64, f64, f64),
+     palette: &Palette,
+     state: &Arc<SharedState>,
+     gain: f64,
+--- a/src/config/default_config.rs
++++ b/src/config/default_config.rs
+@@ -196,6 +196,27 @@
+ # endpoints treat as auto-detect. whisper.cpp's server instead falls back to its
+ # own -l setting (default "en"); enable this so "auto" is sent explicitly.
+ # remote_send_auto_language = true
++#
++# Stream audio over the server's realtime WebSocket and type words while you
++# speak (default: false). Needs mode = "remote" and a NeMo-Speech server
++# (`nemo-speech serve`); audio goes to
++# <remote_endpoint>/v1/audio/transcriptions/realtime (http becomes ws, https
++# becomes wss). Implies the streaming output path, so use hotkey mode "toggle".
++# remote_realtime = true
++#
++# Vocabulary files for the realtime backend, re-read at the start of every
++# recording. Later files override earlier ones for the same left-hand side,
++# missing files are skipped, and a leading ~ expands to $HOME. One entry per
++# line, '#' starts a comment line:
++#   Nextcloud               boost the term "Nextcloud"
++#   next cloud => Nextcloud replace "next cloud" (whole words, any case) with
++#                           "Nextcloud", and boost "Nextcloud"
++# Replacements also apply to streamed text from [text] replacements.
++# vocabulary_files = ["/etc/voxtype/vocabulary.txt", "~/.config/voxtype/vocabulary.txt"]
++#
++# Boost score sent with the vocabulary terms (default: 2.5). The server clamps
++# it to 5.0; 2 to 3 is typical for the streaming model. 0 turns boosting off.
++# remote_boost = 2.5
+ 
+ [output]
+ # Primary output mode: "type" or "clipboard"
+--- a/src/config/root.rs
++++ b/src/config/root.rs
+@@ -154,7 +154,7 @@
+             // which meant push-to-talk users with `[whisper] streaming =
+             // true` never got auto-promoted to toggle mode and could hit
+             // the exact stuck-recording bug this gate exists to prevent.
+-            TranscriptionEngine::Whisper => self.whisper.streaming,
++            TranscriptionEngine::Whisper => self.whisper.streaming_enabled(),
+             TranscriptionEngine::Parakeet => {
+                 self.parakeet.as_ref().map(|p| p.streaming).unwrap_or(false)
+             }
+@@ -181,6 +181,14 @@
+         }
+     }
+ 
++    /// True when a streaming session must stay attached to its output surface
++    /// after the mic closes, because the engine still has a final recognition
++    /// pass to type (sliding-window and realtime Whisper). Other engines drop
++    /// the session on stop so late events never reach whatever has focus.
++    pub fn streaming_needs_final_pass(&self) -> bool {
++        self.engine == TranscriptionEngine::Whisper && self.whisper.streaming_enabled()
++    }
++
+     /// Clone this config with engine-specific overrides for meeting (long-form)
+     /// transcription. Currently:
+     ///
+--- a/src/config/schema.rs
++++ b/src/config/schema.rs
+@@ -405,6 +405,26 @@
+         "Model name to request from the remote endpoint (e.g. whisper-1).",
+     )
+     .for_engine("whisper"),
++    spec(
++        "whisper.remote_realtime",
++        "whisper",
++        "remote_realtime",
++        KeyType::Bool,
++        "Engine",
++        "Remote realtime streaming",
++        "Stream audio to the remote server over its realtime WebSocket and type words while you speak. Needs mode = remote and a NeMo-Speech compatible server.",
++    )
++    .for_engine("whisper"),
++    spec(
++        "whisper.remote_boost",
++        "whisper",
++        "remote_boost",
++        KeyType::Float { min: 0.0, max: 5.0 },
++        "Engine",
++        "Vocabulary boost",
++        "Boost score for vocabulary terms sent to the realtime server. The decoder clamps it to 5; 2 to 3 is typical. Vocabulary files are set in config.toml (whisper.vocabulary_files).",
++    )
++    .for_engine("whisper"),
+     // parakeet
+     spec(
+         "parakeet.model",
+@@ -1642,6 +1662,8 @@
+         "whisper.remote_endpoint" => opt_str(cfg.whisper.remote_endpoint.as_ref()),
+         "whisper.remote_api_key" => opt_str(cfg.whisper.remote_api_key.as_ref()),
+         "whisper.remote_model" => opt_str(cfg.whisper.remote_model.as_ref()),
++        "whisper.remote_realtime" => json!(cfg.whisper.remote_realtime),
++        "whisper.remote_boost" => json!(cfg.whisper.remote_boost),
+         "whisper.gpu_isolation" => json!(cfg.whisper.gpu_isolation),
+         "whisper.on_demand_loading" => json!(cfg.whisper.on_demand_loading),
+         "whisper.flash_attention" => json!(cfg.whisper.flash_attention),
+--- a/src/config/whisper.rs
++++ b/src/config/whisper.rs
+@@ -218,6 +218,25 @@
+     #[serde(default)]
+     pub remote_send_auto_language: bool,
+ 
++    /// Stream audio over a realtime WebSocket instead of posting a finished
++    /// recording (default: false). Only applies when mode = "remote" and the
++    /// server speaks the NeMo-Speech realtime protocol
++    /// (`<remote_endpoint>/v1/audio/transcriptions/realtime`). Words are
++    /// typed while you speak, so this implies the streaming output path.
++    #[serde(default)]
++    pub remote_realtime: bool,
++
++    /// Vocabulary files for the realtime backend, read at the start of every
++    /// recording. Later files override earlier ones; missing files are
++    /// skipped; a leading `~` expands to $HOME.
++    #[serde(default)]
++    pub vocabulary_files: Vec<String>,
++
++    /// Word-boost score sent with the vocabulary terms (default: 2.5).
++    /// NeMo-Speech's cache-aware RNNT decoder clamps it to 5.0.
++    #[serde(default = "default_remote_boost")]
++    pub remote_boost: f32,
++
+     // --- CLI backend settings ---
+     /// Path to whisper-cli binary (optional, searches PATH if not set)
+     /// Used when mode = "cli"
+@@ -252,6 +271,17 @@
+         }
+         WhisperMode::default()
+     }
++
++    /// True when the remote server streams over the realtime WebSocket.
++    pub fn realtime(&self) -> bool {
++        self.remote_realtime && self.effective_mode() == WhisperMode::Remote
++    }
++
++    /// True when recordings take the streaming output path: the sliding-window
++    /// engine (`streaming`) or the realtime WebSocket engine.
++    pub fn streaming_enabled(&self) -> bool {
++        self.streaming || self.realtime()
++    }
+ }
+ 
+ impl Default for WhisperConfig {
+@@ -289,6 +319,9 @@
+             remote_api_key: None,
+             remote_timeout_secs: None,
+             remote_send_auto_language: false,
++            remote_realtime: false,
++            vocabulary_files: Vec::new(),
++            remote_boost: default_remote_boost(),
+             whisper_cli_path: None,
+         }
+     }
+@@ -298,6 +331,10 @@
+     false
+ }
+ 
++fn default_remote_boost() -> f32 {
++    2.5
++}
++
+ fn default_max_loaded_models() -> usize {
+     2 // Primary model + one secondary
+ }
+--- a/src/daemon.rs
++++ b/src/daemon.rs
+@@ -1239,6 +1239,7 @@
+         model_override: Option<String>,
+         track_silence: bool,
+     ) -> bool {
++        crate::transcribe::preview::clear();
+         // Same stale-trigger hazard as start_recording_capture: Streaming is
+         // an is_recording() state, so a leftover cancel file would kill the
+         // session moments after it starts. See #606.
+@@ -1376,13 +1377,16 @@
+                     ..
+                 }
+             );
+-            if file_output {
+-                tracing::info!("Stopping streaming session (file output); closing capture");
++            // These recognizers need their final pass after the mic closes.
++            // Discarding their session here silently loses the unconfirmed tail.
++            let final_pass = self.config.streaming_needs_final_pass();
++            if file_output || final_pass {
++                tracing::info!("Stopping streaming session; draining final recognition pass");
+             } else {
+                 tracing::info!("Stopping streaming session; closing capture and disowning session");
+             }
+             self.stop_streaming_capture(audio_capture).await;
+-            if !file_output {
++            if !file_output && !final_pass {
+                 // Drop the typing surface synchronously so any
+                 // Final/Partial events the backend emits while
+                 // draining its internal buffer reach the event-pump
+@@ -1528,6 +1532,7 @@
+             let _ = h.task.await;
+         }
+         self.stop_streaming_drain_pump();
++        crate::transcribe::preview::clear();
+ 
+         // File-output sessions (`--file=path`) never typed anything as
+         // they went — see the event pump's `file_output` branch — so the
+@@ -1611,6 +1616,7 @@
+         streaming_chain: &mut Option<Vec<Box<dyn TextOutput>>>,
+         notification_body: &str,
+     ) {
++        crate::transcribe::preview::clear();
+         let backend_task = streaming_handle.take().map(|h| {
+             let _ = h.cancel.send(());
+             h.task
+@@ -3172,10 +3178,11 @@
+             tracing::info!("Loading transcription model: {}", self.config.model_name());
+             match self.config.engine {
+                 crate::config::TranscriptionEngine::Whisper => {
+-                    if self.config.whisper.streaming {
++                    if self.config.whisper.streaming_enabled() {
+                         // Streaming needs the transcriber in `transcriber_preloaded`
+                         // so try_start_streaming can find it. The factory returns
+-                        // the sliding-window wrapper when [whisper] streaming = true.
++                        // the sliding-window wrapper for [whisper] streaming = true
++                        // and the WebSocket transcriber for remote_realtime = true.
+                         if self.config.whisper.on_demand_loading {
+                             tracing::warn!(
+                                 "[whisper] streaming requires on_demand_loading = false; \
+@@ -3435,8 +3442,10 @@
+                                 // post-stop flush emission is dropped at
+                                 // the event pump instead of typed.
+                                 // Matches the SIGUSR2 stop path.
+-                                streaming_session = None;
+-                                streaming_chain = None;
++                                if !self.config.streaming_needs_final_pass() {
++                                    streaming_session = None;
++                                    streaming_chain = None;
++                                }
+                             } else if let State::Recording { model_override, .. } = &state {
+                                 let model_override = model_override.clone();
+ 
+@@ -4195,6 +4204,9 @@
+                         State::Streaming { file_output_path: Some(_), .. }
+                     );
+                     match event {
++                        Some(StreamingEvent::Preview { text }) => {
++                            crate::transcribe::preview::publish(&text);
++                        }
+                         Some(StreamingEvent::Partial { text, .. }) => {
+                             if let Some(s) = streaming_session.as_mut() {
+                                 if file_output {
+@@ -4278,6 +4290,7 @@
+                             ).await;
+                         }
+                         Some(StreamingEvent::Ended) | None => {
++                            tracing::info!("Streaming session ended");
+                             self.end_streaming(
+                                 &mut state,
+                                 &mut audio_capture,
+@@ -4603,6 +4616,43 @@
+     use std::fs;
+     use tempfile::TempDir;
+ 
++    #[tokio::test]
++    async fn external_stop_retains_realtime_session_for_final_words() {
++        let mut config = Config::default();
++        config.audio.feedback.enabled = false;
++        config.vad.enabled = false;
++        config.whisper.mode = Some(crate::config::WhisperMode::Remote);
++        config.whisper.remote_realtime = true;
++        let mut daemon = Daemon::new(config, None);
++        let mut state = State::Streaming {
++            started_at: std::time::Instant::now(),
++            model_override: None,
++            partial_buffer: String::new(),
++            finalized_text: String::new(),
++            typed_chars: 0,
++            file_output_path: None,
++        };
++        let mut session = Some(StreamingSession::new());
++        let mut chain = Some(Vec::new());
++        daemon
++            .stop_active_recording(
++                &mut state,
++                &mut None,
++                &mut session,
++                &mut chain,
++                &mut None,
++                &None,
++            )
++            .await;
++        assert!(state.is_streaming(), "drain must continue until Ended");
++        assert!(chain.is_some(), "normal stop must retain the output chain");
++        let session = session
++            .as_mut()
++            .expect("final words need a live output session");
++        session.commit_segment_silent("Keep the final words.");
++        assert_eq!(session.finalized_text(), "Keep the final words.");
++    }
++
+     // Helper to create a test runtime directory and set it up
+     fn with_test_runtime_dir<F, R>(f: F) -> R
+     where
+--- a/src/output/mod.rs
++++ b/src/output/mod.rs
+@@ -512,6 +512,7 @@
+     }
+ 
+     // Try each output method
++    let typing_started = std::time::Instant::now();
+     let mut result = Err(OutputError::AllMethodsFailed);
+     for output in chain {
+         if skip_keystroke_methods && is_keystroke_method(output.name()) {
+@@ -539,6 +540,15 @@
+         }
+     }
+ 
++    let typing_ms = typing_started.elapsed().as_millis();
++    if typing_ms >= 100 {
++        tracing::info!(
++            typing.ms = typing_ms as u64,
++            chars = normalized_text.chars().count(),
++            "Typing was slow"
++        );
++    }
++
+     // Run post-output hook if configured (e.g., reset submap)
+     // Always run this, even on failure, to ensure cleanup
+     if let Some(cmd) = options.post_output_command {
+--- a/src/text/mod.rs
++++ b/src/text/mod.rs
+@@ -147,13 +147,41 @@
+ 
+     /// Process text by applying all enabled transformations
+     pub fn process(&self, text: &str) -> String {
++        self.run(text, true)
++    }
++
++    /// Process text that is one piece of a longer stream.
++    ///
++    /// Same transformations as [`process`](Self::process), except that
++    /// punctuation at the edges of the piece survives filler removal: a comma
++    /// that ends one piece belongs to the text typed before the next piece.
++    pub fn process_fragment(&self, text: &str) -> String {
++        self.run(text, false)
++    }
++
++    /// Phrases that can rewrite several words at once: the configured
++    /// replacement keys, plus spoken punctuation phrases when that is on.
++    /// Keys are lowercase. Callers that process a stream in pieces must not
++    /// split a piece inside one of these phrases.
++    pub fn phrase_keys(&self) -> impl Iterator<Item = &str> {
++        let spoken = if self.spoken_punctuation {
++            SPOKEN_PUNCTUATION
++        } else {
++            &[]
++        }
++        .iter()
++        .map(|(phrase, _)| *phrase);
++        self.replacements.keys().map(String::as_str).chain(spoken)
++    }
++
++    fn run(&self, text: &str, trim_edges: bool) -> String {
+         let mut result = text.to_string();
+ 
+         // Filter filler words first, on the raw transcription. Running before
+         // word_replacements lets users override the default list (e.g. by
+         // mapping "um" to itself) without needing to disable the filter.
+         if self.filter_filler_words {
+-            result = self.apply_filler_filter(&result);
++            result = self.apply_filler_filter(&result, trim_edges);
+         }
+ 
+         // Apply replacements first so phrases containing spoken punctuation words
+@@ -213,54 +241,7 @@
+ 
+         // Order matters: longer phrases first to avoid partial matches
+         // Using word boundaries to avoid replacing parts of words
+-        let punctuation_map: &[(&str, &str)] = &[
+-            // Multi-word phrases first
+-            ("question mark", "?"),
+-            ("exclamation mark", "!"),
+-            ("exclamation point", "!"),
+-            ("open parenthesis", "("),
+-            ("close parenthesis", ")"),
+-            ("open paren", "("),
+-            ("close paren", ")"),
+-            ("open bracket", "["),
+-            ("close bracket", "]"),
+-            ("open brace", "{"),
+-            ("close brace", "}"),
+-            ("at sign", "@"),
+-            ("at symbol", "@"),
+-            ("dollar sign", "$"),
+-            ("percent sign", "%"),
+-            ("plus sign", "+"),
+-            ("equals sign", "="),
+-            ("forward slash", "/"),
+-            ("single quote", "'"),
+-            ("double quote", "\""),
+-            ("new paragraph", "\n\n"),
+-            ("new line", "\n"),
+-            // Single words
+-            ("period", "."),
+-            ("comma", ","),
+-            ("colon", ":"),
+-            ("semicolon", ";"),
+-            ("dash", "-"),
+-            ("hyphen", "-"),
+-            ("underscore", "_"),
+-            ("hash", "#"),
+-            ("hashtag", "#"),
+-            ("percent", "%"),
+-            ("ampersand", "&"),
+-            ("asterisk", "*"),
+-            ("plus", "+"),
+-            ("equals", "="),
+-            ("slash", "/"),
+-            ("backslash", "\\"),
+-            ("pipe", "|"),
+-            ("tilde", "~"),
+-            ("backtick", "`"),
+-            ("tab", "\t"),
+-        ];
+-
+-        for (phrase, symbol) in punctuation_map {
++        for (phrase, symbol) in SPOKEN_PUNCTUATION {
+             result = replace_phrase_case_insensitive(&result, phrase, symbol);
+         }
+ 
+@@ -276,7 +257,7 @@
+     ///   "uh hello"           -> "hello"
+     ///   "I think, uh."       -> "I think."
+     ///   "um uh hello"        -> "hello"
+-    fn apply_filler_filter(&self, text: &str) -> String {
++    fn apply_filler_filter(&self, text: &str, trim_edges: bool) -> String {
+         let Some(re) = &self.filler_re else {
+             return text.to_string();
+         };
+@@ -306,6 +287,10 @@
+         // Collapse multiple spaces left behind to a single space.
+         result = self.filler_space_re.replace_all(&result, " ").into_owned();
+ 
++        if !trim_edges {
++            return result.trim().to_string();
++        }
++
+         // Trim leading/trailing whitespace and dangling connector punctuation
+         // produced when fillers appeared at the start/end of the utterance.
+         result
+@@ -328,6 +313,55 @@
+     }
+ }
+ 
++/// Spoken punctuation phrases and their symbols. Multi-word phrases come
++/// first so that "question mark" wins over a shorter overlapping phrase.
++const SPOKEN_PUNCTUATION: &[(&str, &str)] = &[
++    // Multi-word phrases first
++    ("question mark", "?"),
++    ("exclamation mark", "!"),
++    ("exclamation point", "!"),
++    ("open parenthesis", "("),
++    ("close parenthesis", ")"),
++    ("open paren", "("),
++    ("close paren", ")"),
++    ("open bracket", "["),
++    ("close bracket", "]"),
++    ("open brace", "{"),
++    ("close brace", "}"),
++    ("at sign", "@"),
++    ("at symbol", "@"),
++    ("dollar sign", "$"),
++    ("percent sign", "%"),
++    ("plus sign", "+"),
++    ("equals sign", "="),
++    ("forward slash", "/"),
++    ("single quote", "'"),
++    ("double quote", "\""),
++    ("new paragraph", "\n\n"),
++    ("new line", "\n"),
++    // Single words
++    ("period", "."),
++    ("comma", ","),
++    ("colon", ":"),
++    ("semicolon", ";"),
++    ("dash", "-"),
++    ("hyphen", "-"),
++    ("underscore", "_"),
++    ("hash", "#"),
++    ("hashtag", "#"),
++    ("percent", "%"),
++    ("ampersand", "&"),
++    ("asterisk", "*"),
++    ("plus", "+"),
++    ("equals", "="),
++    ("slash", "/"),
++    ("backslash", "\\"),
++    ("pipe", "|"),
++    ("tilde", "~"),
++    ("backtick", "`"),
++    ("tab", "\t"),
++];
++
+ /// Replace a word/phrase case-insensitively using regex for proper word boundaries
+ fn replace_phrase_case_insensitive(text: &str, from: &str, to: &str) -> String {
+     // Escape regex special characters in the search phrase
+--- a/src/transcribe/mod.rs
++++ b/src/transcribe/mod.rs
+@@ -3,6 +3,7 @@
+ //! Provides transcription via:
+ //! - Local whisper.cpp inference (whisper-rs crate)
+ //! - Remote OpenAI-compatible Whisper API (whisper.cpp server, OpenAI, etc.)
++//! - Remote NeMo-Speech server over a realtime WebSocket (`remote_realtime = true`)
+ //! - CLI subprocess using whisper-cli (fallback for glibc 2.42+ compatibility)
+ //! - Subprocess isolation for GPU memory release
+ //! - Optionally NVIDIA Parakeet via ONNX Runtime (when `parakeet` feature is enabled)
+@@ -16,6 +17,8 @@
+ pub mod cli;
+ #[cfg(feature = "parakeet")]
+ pub mod parakeet_streaming;
++pub mod preview;
++pub mod realtime;
+ pub mod remote;
+ pub mod sliding_window;
+ pub mod soniox;
+@@ -162,6 +165,12 @@
+ pub fn create_transcriber(config: &Config) -> Result<Box<dyn Transcriber>, TranscribeError> {
+     match config.engine {
+         TranscriptionEngine::Whisper => {
++            if config.whisper.realtime() {
++                return Ok(Box::new(realtime::RealtimeTranscriber::new(config)?));
++            }
++            if config.whisper.remote_realtime {
++                tracing::warn!("[whisper] remote_realtime requires mode = \"remote\"; ignoring it");
++            }
+             let transcriber = create_whisper_transcriber(&config.whisper)?;
+             if config.whisper.streaming {
+                 if config.whisper.effective_mode() != WhisperMode::Local {
+@@ -436,6 +445,27 @@
+ mod tests {
+     use super::*;
+ 
++    #[test]
++    fn remote_realtime_creates_a_streaming_transcriber_without_loading_whisper() {
++        let mut config = Config::default();
++        config.whisper.mode = Some(WhisperMode::Remote);
++        config.whisper.remote_endpoint = Some("http://127.0.0.1:8010".to_string());
++        config.whisper.remote_realtime = true;
++        let transcriber = create_transcriber(&config).expect("realtime configuration");
++        assert!(transcriber.as_streaming().is_some());
++    }
++
++    #[test]
++    fn remote_realtime_without_an_endpoint_is_a_config_error() {
++        let mut config = Config::default();
++        config.whisper.mode = Some(WhisperMode::Remote);
++        config.whisper.remote_realtime = true;
++        let error = create_transcriber(&config)
++            .err()
++            .expect("missing endpoint is rejected");
++        assert!(error.to_string().contains("remote_endpoint"), "{error}");
++    }
++
+     /// An old-style config.toml — no `[streaming]` section at all, just the
+     /// per-engine `streaming_*` fields that predate it — must resolve to
+     /// exactly the same `SlidingWindowConfig` it always did. This is the
+--- /dev/null
++++ b/src/transcribe/preview.rs
+@@ -0,0 +1,51 @@
++//! Optional, private runtime-file handoff of tentative text to the GTK OSD.
++
++use std::io::Write;
++use std::os::unix::fs::OpenOptionsExt;
++use std::path::PathBuf;
++
++/// Bound the preview to the most recent text while leaving committed output intact.
++const PREVIEW_CHARS: usize = 400;
++
++fn path() -> Option<PathBuf> {
++    std::env::var_os("VOXTYPE_PREVIEW_FILE").map(PathBuf::from)
++}
++
++/// Publish a hypothesis atomically so GTK never reads a partly written update.
++pub fn publish(text: &str) {
++    let Some(path) = path() else { return };
++    let temporary = path.with_extension("tmp");
++    let text: String = text
++        .chars()
++        .rev()
++        .take(PREVIEW_CHARS)
++        .collect::<Vec<_>>()
++        .into_iter()
++        .rev()
++        .collect();
++    let result = (|| -> std::io::Result<()> {
++        let mut file = std::fs::OpenOptions::new()
++            .create(true)
++            .truncate(true)
++            .write(true)
++            .mode(0o600)
++            .open(&temporary)?;
++        file.write_all(text.as_bytes())?;
++        std::fs::rename(&temporary, &path)
++    })();
++    if let Err(error) = result {
++        tracing::debug!(%error, "Cannot update dictation preview");
++    }
++}
++
++/// Read the current hypothesis without interpreting recognized text as markup.
++pub fn read() -> Option<String> {
++    std::fs::read_to_string(path()?).ok()
++}
++
++/// Remove text at recording boundaries so the next recording starts empty.
++pub fn clear() {
++    if let Some(path) = path() {
++        let _ = std::fs::remove_file(path);
++    }
++}
+--- /dev/null
++++ b/src/transcribe/realtime/mod.rs
+@@ -0,0 +1,166 @@
++//! Streaming transcription against a NeMo-Speech server (`nemo-speech serve`).
++//!
++//! Selected with `[whisper] mode = "remote"` and `remote_realtime = true`.
++//! Audio goes over the server's realtime WebSocket as it is captured, words
++//! are typed as soon as they are complete and settled, and vocabulary files
++//! (re-read at every recording start) boost terms and correct text. Batch
++//! transcription falls back to the server's HTTP endpoint with the same
++//! vocabulary.
++//!
++//! - [`protocol`]: wire messages and the running hypothesis.
++//! - [`stream_text`]: which words to type when, and how to reconcile with the
++//!   server's final transcript. No I/O.
++//! - [`vocabulary`]: the vocabulary file format.
++//! - [`session`]: the socket conversation for one recording.
++
++mod protocol;
++mod session;
++mod stream_text;
++pub mod vocabulary;
++
++#[cfg(test)]
++mod tests;
++
++use std::collections::HashMap;
++use std::path::PathBuf;
++
++use tokio::sync::{mpsc, oneshot};
++
++use self::session::Session;
++use self::stream_text::LiveText;
++use self::vocabulary::Vocabulary;
++use super::remote::RemoteTranscriber;
++use super::streaming::{StreamHandle, StreamingEvent, StreamingTranscriber};
++use super::Transcriber;
++use crate::config::{Config, TextConfig};
++use crate::error::TranscribeError;
++use crate::text::TextProcessor;
++
++/// Events the daemon has not consumed yet. Typing is slower than recognition,
++/// and a full queue stalls audio forwarding, so this is deliberately deep:
++/// 64 events is several seconds of speech at one event per chunk.
++const EVENT_QUEUE: usize = 64;
++
++/// Remote transcriber that streams audio over the realtime WebSocket.
++pub struct RealtimeTranscriber {
++    batch: RemoteTranscriber,
++    url: String,
++    text: TextConfig,
++    language: Option<String>,
++    vocabulary_files: Vec<String>,
++    boost: f32,
++}
++
++impl RealtimeTranscriber {
++    pub fn new(config: &Config) -> Result<Self, TranscribeError> {
++        let batch = RemoteTranscriber::new(&config.whisper)?;
++        let url = protocol::websocket_url(batch.endpoint())?;
++        tracing::info!(
++            realtime.url = %url,
++            vocabulary.files = config.whisper.vocabulary_files.len(),
++            boost = config.whisper.remote_boost,
++            "Configured realtime transcriber"
++        );
++        Ok(Self {
++            batch,
++            url,
++            text: config.text.clone(),
++            language: config.active_language().map(str::to_owned),
++            vocabulary_files: config.whisper.vocabulary_files.clone(),
++            boost: config.whisper.remote_boost,
++        })
++    }
++
++    /// Read the vocabulary files now, so edits apply to the next recording.
++    fn vocabulary(&self) -> Vocabulary {
++        let home: Option<PathBuf> = dirs::home_dir();
++        Vocabulary::load(&self.vocabulary_files, home.as_deref())
++    }
++
++    /// `[text]` options with the vocabulary's corrections added. A correction
++    /// replaces a `[text.replacements]` entry for the same phrase.
++    fn text_config(&self, vocabulary: &Vocabulary) -> TextConfig {
++        let mut replacements: HashMap<String, String> = self
++            .text
++            .replacements
++            .iter()
++            .map(|(from, to)| (from.to_lowercase(), to.clone()))
++            .collect();
++        for correction in vocabulary.corrections() {
++            replacements.insert(correction.from.to_lowercase(), correction.to.clone());
++        }
++        TextConfig {
++            replacements,
++            ..self.text.clone()
++        }
++    }
++}
++
++impl Transcriber for RealtimeTranscriber {
++    /// Batch fallback: post the whole recording to the HTTP endpoint with the
++    /// vocabulary as `speech_contexts`, then apply the vocabulary's corrections.
++    /// The daemon applies `[text]` processing to batch results itself.
++    fn transcribe(&self, samples: &[f32]) -> Result<String, TranscribeError> {
++        let vocabulary = self.vocabulary();
++        let contexts = vocabulary
++            .speech_contexts(self.boost)
++            .map(|contexts| contexts.to_string());
++        let text = self
++            .batch
++            .clone()
++            .with_speech_contexts(contexts)
++            .transcribe(samples)?;
++        let corrections = TextConfig {
++            replacements: vocabulary
++                .corrections()
++                .iter()
++                .map(|correction| (correction.from.to_lowercase(), correction.to.clone()))
++                .collect(),
++            spoken_punctuation: false,
++            smart_auto_submit: false,
++            filter_filler_words: false,
++            ..TextConfig::default()
++        };
++        Ok(TextProcessor::new(&corrections).process(&text))
++    }
++
++    fn as_streaming(&self) -> Option<&dyn StreamingTranscriber> {
++        Some(self)
++    }
++}
++
++impl StreamingTranscriber for RealtimeTranscriber {
++    fn start_stream(
++        &self,
++        samples_rx: mpsc::Receiver<Vec<f32>>,
++    ) -> Result<StreamHandle, TranscribeError> {
++        let vocabulary = self.vocabulary();
++        let processor = TextProcessor::new_for_language(
++            &self.text_config(&vocabulary),
++            self.language.as_deref(),
++        );
++        tracing::info!(
++            vocabulary.terms = vocabulary.boosted().len(),
++            vocabulary.corrections = vocabulary.corrections().len(),
++            "Starting realtime session"
++        );
++        let session = Session {
++            url: self.url.clone(),
++            api_key: self.batch.api_key().map(str::to_owned),
++            update: protocol::session_update(vocabulary.speech_contexts(self.boost)),
++            live: LiveText::new(processor),
++        };
++
++        let (events_tx, events_rx) = mpsc::channel::<StreamingEvent>(EVENT_QUEUE);
++        let (cancel_tx, cancel_rx) = oneshot::channel::<()>();
++        let task = tokio::spawn(async move {
++            session::run(session, samples_rx, events_tx, cancel_rx).await;
++            Ok(())
++        });
++        Ok(StreamHandle {
++            events: events_rx,
++            cancel: cancel_tx,
++            task,
++        })
++    }
++}
+--- /dev/null
++++ b/src/transcribe/realtime/protocol.rs
+@@ -0,0 +1,257 @@
++//! Wire format of the NeMo-Speech realtime transcription WebSocket
++//! (`docs/api.md#websocket-v1audiotranscriptionsrealtime`).
++//!
++//! The server sends `session.created`, accepts one `session.update` before
++//! audio, then binary little-endian PCM16 frames, and finishes on
++//! `input_audio_buffer.commit`. It answers with
++//! `conversation.item.input_audio_transcription.delta` (partials) and
++//! `.completed` (finals), then `input_audio_buffer.committed`.
++
++use serde::Deserialize;
++use serde_json::{json, Value};
++
++use crate::error::TranscribeError;
++
++const REALTIME_PATH: &str = "/v1/audio/transcriptions/realtime";
++
++/// The client message that ends the audio and asks for the final transcript.
++pub const COMMIT: &str = r#"{"type":"input_audio_buffer.commit"}"#;
++
++/// Sample rate voxtype captures at and the models expect.
++pub const SAMPLE_RATE: u32 = 16_000;
++
++/// `http://host:port` to `ws://host:port/v1/audio/transcriptions/realtime`,
++/// `https` to `wss`.
++pub fn websocket_url(endpoint: &str) -> Result<String, TranscribeError> {
++    let base = endpoint.trim_end_matches('/');
++    let rest = if let Some(rest) = base.strip_prefix("https://") {
++        format!("wss://{rest}")
++    } else if let Some(rest) = base.strip_prefix("http://") {
++        format!("ws://{rest}")
++    } else {
++        return Err(TranscribeError::ConfigError(format!(
++            "remote_endpoint must start with http:// or https://, got: {endpoint}"
++        )));
++    };
++    Ok(format!("{rest}{REALTIME_PATH}"))
++}
++
++/// The `session.update` message: PCM rate, punctuation, and word boosting.
++pub fn session_update(speech_contexts: Option<Value>) -> String {
++    let mut session = json!({
++        "sample_rate": SAMPLE_RATE,
++        "automatic_punctuation": true,
++    });
++    if let Some(contexts) = speech_contexts {
++        session["speech_contexts"] = contexts;
++    }
++    json!({ "type": "session.update", "session": session }).to_string()
++}
++
++/// Little-endian PCM16 for a chunk of `f32` samples in [-1, 1].
++pub fn pcm16_le(samples: &[f32]) -> Vec<u8> {
++    let mut bytes = Vec::with_capacity(samples.len() * 2);
++    for sample in samples {
++        // Truncating cast is the conversion: the clamp keeps it in i16 range.
++        let value = (sample.clamp(-1.0, 1.0) * f32::from(i16::MAX)) as i16;
++        bytes.extend_from_slice(&value.to_le_bytes());
++    }
++    bytes
++}
++
++/// A server event this client acts on.
++#[derive(Debug, Clone, PartialEq, Eq)]
++pub enum ServerEvent {
++    /// `session.created` or `session.updated`.
++    Session,
++    /// `...input_audio_transcription.delta`: a partial of the current utterance.
++    Delta(String),
++    /// `...input_audio_transcription.completed`: the utterance is final.
++    Completed(String),
++    /// `input_audio_buffer.committed`: the commit was processed.
++    Committed,
++    /// `error`.
++    Error(String),
++}
++
++#[derive(Deserialize)]
++struct Wire {
++    #[serde(rename = "type")]
++    kind: String,
++    delta: Option<String>,
++    transcript: Option<String>,
++    error: Option<WireError>,
++}
++
++#[derive(Deserialize)]
++struct WireError {
++    message: Option<String>,
++}
++
++/// Parse a text frame. `None` for event types this client has no use for
++/// (`input_audio_buffer.cleared`, anything newer) and for malformed JSON.
++pub fn parse_event(text: &str) -> Option<ServerEvent> {
++    let wire: Wire = serde_json::from_str(text).ok()?;
++    match wire.kind.as_str() {
++        "session.created" | "session.updated" => Some(ServerEvent::Session),
++        "conversation.item.input_audio_transcription.delta" => {
++            Some(ServerEvent::Delta(wire.delta.unwrap_or_default()))
++        }
++        "conversation.item.input_audio_transcription.completed" => {
++            Some(ServerEvent::Completed(wire.transcript.unwrap_or_default()))
++        }
++        "input_audio_buffer.committed" => Some(ServerEvent::Committed),
++        "error" => Some(ServerEvent::Error(
++            wire.error
++                .and_then(|error| error.message)
++                .unwrap_or_else(|| text.to_string()),
++        )),
++        _ => None,
++    }
++}
++
++/// The running text of the current utterance, rebuilt from `delta` events.
++///
++/// The server sends the new suffix when the hypothesis grew, and the whole new
++/// hypothesis when it did not (`http_server.cpp`, `extends_previous`), with
++/// nothing marking which. A delta that starts a new word cannot be a whole
++/// hypothesis; a delta with no leading space that opens with the hypothesis's
++/// own first word is taken as one.
++#[derive(Debug, Default)]
++pub struct Hypothesis {
++    text: String,
++}
++
++impl Hypothesis {
++    pub fn apply(&mut self, delta: &str) -> &str {
++        if self.is_whole_hypothesis(delta) {
++            self.text.clear();
++        }
++        self.text.push_str(delta);
++        &self.text
++    }
++
++    pub fn clear(&mut self) {
++        self.text.clear();
++    }
++
++    fn is_whole_hypothesis(&self, delta: &str) -> bool {
++        let Some(first) = self.text.split_whitespace().next().map(normalized) else {
++            return false;
++        };
++        if first.is_empty() || delta.starts_with(char::is_whitespace) {
++            return false;
++        }
++        delta
++            .split_whitespace()
++            .next()
++            .is_some_and(|word| normalized(word) == first)
++    }
++}
++
++fn normalized(word: &str) -> String {
++    word.trim_matches(|c: char| !c.is_alphanumeric())
++        .to_lowercase()
++}
++
++#[cfg(test)]
++mod tests {
++    use super::*;
++
++    #[test]
++    fn url_swaps_scheme_and_appends_the_realtime_path() {
++        assert_eq!(
++            websocket_url("http://127.0.0.1:8010").expect("url"),
++            "ws://127.0.0.1:8010/v1/audio/transcriptions/realtime"
++        );
++        assert_eq!(
++            websocket_url("https://speech.example.com/").expect("url"),
++            "wss://speech.example.com/v1/audio/transcriptions/realtime"
++        );
++        assert!(websocket_url("ftp://host").is_err());
++    }
++
++    #[test]
++    fn session_update_carries_rate_punctuation_and_contexts() {
++        let plain: Value = serde_json::from_str(&session_update(None)).expect("json");
++        assert_eq!(plain["type"], "session.update");
++        assert_eq!(plain["session"]["sample_rate"], 16_000);
++        assert_eq!(plain["session"]["automatic_punctuation"], true);
++        assert!(plain["session"].get("speech_contexts").is_none());
++
++        let contexts = json!([{ "phrases": ["Nextcloud"], "boost": 2.5 }]);
++        let boosted: Value =
++            serde_json::from_str(&session_update(Some(contexts.clone()))).expect("json");
++        assert_eq!(boosted["session"]["speech_contexts"], contexts);
++    }
++
++    #[test]
++    fn pcm16_is_little_endian_and_clamped() {
++        assert_eq!(
++            pcm16_le(&[0.0, 1.0, -1.0, 2.0]),
++            [0, 0, 0xff, 0x7f, 0x01, 0x80, 0xff, 0x7f]
++        );
++    }
++
++    #[test]
++    fn parses_the_documented_events() {
++        assert_eq!(
++            parse_event(r#"{"type":"session.created","session":{}}"#),
++            Some(ServerEvent::Session)
++        );
++        assert_eq!(
++            parse_event(
++                r#"{"type":"conversation.item.input_audio_transcription.delta","delta":" world"}"#
++            ),
++            Some(ServerEvent::Delta(" world".into()))
++        );
++        assert_eq!(
++            parse_event(
++                r#"{"type":"conversation.item.input_audio_transcription.completed","transcript":"Hello world."}"#
++            ),
++            Some(ServerEvent::Completed("Hello world.".into()))
++        );
++        assert_eq!(
++            parse_event(r#"{"type":"input_audio_buffer.committed"}"#),
++            Some(ServerEvent::Committed)
++        );
++        assert_eq!(
++            parse_event(
++                r#"{"type":"error","error":{"message":"bad rate","type":"invalid_request_error"}}"#
++            ),
++            Some(ServerEvent::Error("bad rate".into()))
++        );
++        assert_eq!(
++            parse_event(r#"{"type":"input_audio_buffer.cleared"}"#),
++            None
++        );
++        assert_eq!(parse_event("not json"), None);
++    }
++
++    #[test]
++    fn deltas_extend_the_hypothesis() {
++        let mut hypothesis = Hypothesis::default();
++        assert_eq!(hypothesis.apply("Hel"), "Hel");
++        assert_eq!(hypothesis.apply("lo"), "Hello");
++        assert_eq!(hypothesis.apply(" wor"), "Hello wor");
++        assert_eq!(hypothesis.apply("ld,"), "Hello world,");
++    }
++
++    #[test]
++    fn a_delta_that_repeats_the_first_word_replaces_the_hypothesis() {
++        let mut hypothesis = Hypothesis::default();
++        hypothesis.apply("hello wor");
++        assert_eq!(hypothesis.apply("Hello, world"), "Hello, world");
++        assert_eq!(hypothesis.apply(" again"), "Hello, world again");
++    }
++
++    #[test]
++    fn a_continuation_of_the_last_word_is_not_a_replacement() {
++        let mut hypothesis = Hypothesis::default();
++        hypothesis.apply("go");
++        // "go" + "ing" must not be mistaken for a restart.
++        assert_eq!(hypothesis.apply("ing"), "going");
++        hypothesis.clear();
++        assert_eq!(hypothesis.apply("so"), "so");
++    }
++}
+--- /dev/null
++++ b/src/transcribe/realtime/session.rs
+@@ -0,0 +1,350 @@
++//! One recording's WebSocket conversation with the server.
++
++use std::time::Duration;
++
++use futures_util::{Sink, SinkExt, StreamExt};
++use tokio::sync::{mpsc, oneshot};
++use tokio::time::Instant;
++use tokio_tungstenite::tungstenite::client::IntoClientRequest;
++use tokio_tungstenite::tungstenite::http::header::{HeaderValue, AUTHORIZATION};
++use tokio_tungstenite::tungstenite::{Error as SocketError, Message};
++use tokio_tungstenite::{MaybeTlsStream, WebSocketStream};
++
++use super::protocol::{self, Hypothesis, ServerEvent};
++use super::stream_text::{Fix, LiveText, Update};
++use crate::error::TranscribeError;
++use crate::transcribe::streaming::{SegmentId, StreamingEvent};
++
++/// Longest wait for the TCP and WebSocket handshake. Audio keeps queueing
++/// while it runs, but the daemon's capture queue holds only about a second, so
++/// a server that has not answered in ten seconds has lost the start of the
++/// recording anyway.
++const CONNECT_TIMEOUT: Duration = Duration::from_secs(10);
++
++/// Longest wait, after the commit, for the final transcript. The server
++/// first finishes audio it has queued, which on a CPU server that runs slower
++/// than real time can take a while; its own socket timeout is 30 s
++/// (`--read-timeout`), so waiting longer than that cannot help.
++const FINAL_TIMEOUT: Duration = Duration::from_secs(20);
++
++type Socket = WebSocketStream<MaybeTlsStream<tokio::net::TcpStream>>;
++
++/// Everything one recording needs, resolved when the recording starts.
++pub struct Session {
++    pub url: String,
++    pub api_key: Option<String>,
++    /// The `session.update` message, with this recording's vocabulary.
++    pub update: String,
++    pub live: LiveText,
++}
++
++/// Why the conversation stopped early.
++enum Stop {
++    /// The daemon dropped the event receiver; there is nobody to tell.
++    ReceiverGone,
++    Failed(TranscribeError),
++}
++
++impl From<TranscribeError> for Stop {
++    fn from(error: TranscribeError) -> Self {
++        Self::Failed(error)
++    }
++}
++
++/// Sends events to the daemon and remembers what the overlay shows.
++struct Output {
++    events: mpsc::Sender<StreamingEvent>,
++    segment: SegmentId,
++    preview: String,
++}
++
++impl Output {
++    async fn send(&self, event: StreamingEvent) -> Result<(), Stop> {
++        self.events
++            .send(event)
++            .await
++            .map_err(|_| Stop::ReceiverGone)
++    }
++
++    /// Type new words and refresh the overlay.
++    async fn update(&mut self, update: Update) -> Result<(), Stop> {
++        if let Some(text) = update.typed {
++            self.send(StreamingEvent::Partial {
++                text,
++                segment_id: self.segment,
++            })
++            .await?;
++        }
++        self.show(update.preview);
++        Ok(())
++    }
++
++    /// Append the tail of a final transcript, or erase and retype where it
++    /// disagrees with what was typed.
++    async fn fix(&mut self, fix: Option<Fix>, preview: String) -> Result<(), Stop> {
++        let segment_id = self.segment;
++        match fix {
++            Some(Fix { backspace: 0, text }) => {
++                self.send(StreamingEvent::Final { text, segment_id })
++                    .await?;
++            }
++            Some(Fix { backspace, text }) => {
++                self.send(StreamingEvent::Replace {
++                    backspace,
++                    text,
++                    segment_id,
++                })
++                .await?;
++            }
++            None => {}
++        }
++        self.show(preview);
++        Ok(())
++    }
++
++    /// The overlay is best effort: a full queue drops the refresh, and the
++    /// next one carries the same text and more.
++    fn show(&mut self, preview: String) {
++        if preview != self.preview {
++            let _ = self.events.try_send(StreamingEvent::Preview {
++                text: preview.clone(),
++            });
++            self.preview = preview;
++        }
++    }
++}
++
++/// Run one recording to its end. Always finishes with `Ended`, after an
++/// `Error` when the conversation failed.
++pub async fn run(
++    session: Session,
++    samples_rx: mpsc::Receiver<Vec<f32>>,
++    events: mpsc::Sender<StreamingEvent>,
++    cancel_rx: oneshot::Receiver<()>,
++) {
++    let mut output = Output {
++        events,
++        segment: 0,
++        preview: String::new(),
++    };
++    match converse(session, samples_rx, &mut output, cancel_rx).await {
++        Ok(()) => {}
++        Err(Stop::ReceiverGone) => return,
++        Err(Stop::Failed(error)) => {
++            if output.send(StreamingEvent::Error(error)).await.is_err() {
++                return;
++            }
++        }
++    }
++    let _ = output.send(StreamingEvent::Ended).await;
++}
++
++async fn converse(
++    mut session: Session,
++    mut samples_rx: mpsc::Receiver<Vec<f32>>,
++    output: &mut Output,
++    mut cancel_rx: oneshot::Receiver<()>,
++) -> Result<(), Stop> {
++    let started = Instant::now();
++
++    // Audio queues while the handshake runs and is replayed once connected.
++    let mut queued: Vec<Vec<f32>> = Vec::new();
++    let mut audio_open = true;
++    let socket = {
++        let handshake = connect(&session.url, session.api_key.as_deref());
++        tokio::pin!(handshake);
++        loop {
++            tokio::select! {
++                biased;
++                _ = &mut cancel_rx => return Ok(()),
++                socket = &mut handshake => break socket?,
++                chunk = samples_rx.recv(), if audio_open => match chunk {
++                    Some(chunk) => queued.push(chunk),
++                    None => audio_open = false,
++                },
++            }
++        }
++    };
++    tracing::debug!(
++        elapsed.ms = started.elapsed().as_millis() as u64,
++        "Realtime session connected"
++    );
++    let (mut write, mut read) = socket.split();
++
++    write
++        .send(Message::Text(session.update.clone()))
++        .await
++        .map_err(network)?;
++    for chunk in queued {
++        send_audio(&mut write, &chunk).await?;
++    }
++
++    let mut hypothesis = Hypothesis::default();
++    let mut deadline: Option<Instant> = None;
++    let mut final_seen = false;
++    let mut first_delta = true;
++    let mut commit_sent: Option<Instant> = None;
++    if !audio_open {
++        write
++            .send(Message::Text(protocol::COMMIT.into()))
++            .await
++            .map_err(network)?;
++        deadline = Some(Instant::now() + FINAL_TIMEOUT);
++        commit_sent = Some(Instant::now());
++    }
++
++    let result: Result<(), Stop> = loop {
++        let timeout = async {
++            match deadline {
++                Some(at) => tokio::time::sleep_until(at).await,
++                None => std::future::pending().await,
++            }
++        };
++        tokio::select! {
++            biased;
++            _ = &mut cancel_rx => {
++                let _ = write.send(Message::Close(None)).await;
++                return Ok(());
++            }
++            () = timeout => {
++                break Err(Stop::Failed(TranscribeError::NetworkError(format!(
++                    "no final transcript {}s after the audio ended",
++                    FINAL_TIMEOUT.as_secs()
++                ))));
++            }
++            chunk = samples_rx.recv(), if audio_open => match chunk {
++                Some(chunk) => {
++                    if let Err(error) = send_audio(&mut write, &chunk).await {
++                        break Err(error.into());
++                    }
++                }
++                None => {
++                    audio_open = false;
++                    if let Err(error) = write.send(Message::Text(protocol::COMMIT.into())).await {
++                        break Err(network(error).into());
++                    }
++                    deadline = Some(Instant::now() + FINAL_TIMEOUT);
++                    commit_sent = Some(Instant::now());
++                    tracing::info!("Realtime: audio ended, commit sent");
++                }
++            },
++            message = read.next() => {
++                let text = match message {
++                    Some(Ok(Message::Text(text))) => text,
++                    Some(Ok(Message::Close(_))) | None => {
++                        break if final_seen {
++                            Ok(())
++                        } else {
++                            Err(Stop::Failed(TranscribeError::NetworkError(
++                                "server closed the connection before the final transcript".into(),
++                            )))
++                        };
++                    }
++                    Some(Ok(_)) => continue,
++                    Some(Err(error)) => break Err(network(error).into()),
++                };
++                let Some(event) = protocol::parse_event(&text) else { continue };
++                match event {
++                    ServerEvent::Session => {}
++                    // The server ticks once per 0.1 s of audio, most with nothing new.
++                    ServerEvent::Delta(delta) if delta.is_empty() => {}
++                    ServerEvent::Delta(delta) => {
++                        if first_delta {
++                            first_delta = false;
++                            tracing::debug!(
++                                elapsed.ms = started.elapsed().as_millis() as u64,
++                                "First partial transcript"
++                            );
++                        }
++                        let update = session.live.hypothesis(hypothesis.apply(&delta));
++                        if let Err(stop) = output.update(update).await {
++                            break Err(stop);
++                        }
++                    }
++                    ServerEvent::Completed(transcript) => {
++                        hypothesis.clear();
++                        let fix = session.live.end_utterance(&transcript);
++                        let preview = session.live.current_preview();
++                        if let Err(stop) = output.fix(fix, preview).await {
++                            break Err(stop);
++                        }
++                        output.segment += 1;
++                        final_seen = !audio_open;
++                        if let Some(sent) = commit_sent {
++                            tracing::info!(
++                                after.commit.ms = sent.elapsed().as_millis() as u64,
++                                "Realtime: final transcript received"
++                            );
++                        }
++                    }
++                    ServerEvent::Committed => {
++                        if let Some(sent) = commit_sent {
++                            tracing::info!(
++                                after.commit.ms = sent.elapsed().as_millis() as u64,
++                                "Realtime: commit confirmed"
++                            );
++                        }
++                        break Ok(());
++                    }
++                    ServerEvent::Error(message) => {
++                        break Err(Stop::Failed(TranscribeError::RemoteError(message)));
++                    }
++                }
++            }
++        }
++    };
++
++    // Whatever ended the conversation, words still held back were spoken.
++    // Type them rather than lose them, then report the failure if there was one.
++    if !session.live.is_empty() {
++        let fix = session.live.end_with_hypothesis();
++        let preview = session.live.current_preview();
++        output.fix(fix, preview).await?;
++    }
++    let _ = write.send(Message::Close(None)).await;
++    result
++}
++
++async fn connect(url: &str, api_key: Option<&str>) -> Result<Socket, TranscribeError> {
++    let mut request = url.into_client_request().map_err(|error| {
++        TranscribeError::ConfigError(format!("invalid realtime endpoint {url}: {error}"))
++    })?;
++    if let Some(key) = api_key {
++        let bearer = HeaderValue::from_str(&format!("Bearer {key}")).map_err(|error| {
++            TranscribeError::ConfigError(format!(
++                "remote_api_key is not a valid header value: {error}"
++            ))
++        })?;
++        request.headers_mut().insert(AUTHORIZATION, bearer);
++    }
++    let (socket, _) =
++        tokio::time::timeout(CONNECT_TIMEOUT, tokio_tungstenite::connect_async(request))
++            .await
++            .map_err(|_| {
++                TranscribeError::NetworkError(format!(
++                    "timed out connecting to {url} after {}s",
++                    CONNECT_TIMEOUT.as_secs()
++                ))
++            })?
++            .map_err(|error| {
++                TranscribeError::NetworkError(format!("cannot connect to {url}: {error}"))
++            })?;
++    Ok(socket)
++}
++
++async fn send_audio<S>(write: &mut S, samples: &[f32]) -> Result<(), TranscribeError>
++where
++    S: Sink<Message, Error = SocketError> + Unpin,
++{
++    if samples.is_empty() {
++        return Ok(());
++    }
++    write
++        .send(Message::Binary(protocol::pcm16_le(samples)))
++        .await
++        .map_err(network)
++}
++
++fn network(error: SocketError) -> TranscribeError {
++    TranscribeError::NetworkError(format!("realtime connection failed: {error}"))
++}
+--- /dev/null
++++ b/src/transcribe/realtime/stream_text/mod.rs
+@@ -0,0 +1,351 @@
++//! Turns the server's running hypothesis into text typed at the cursor.
++//!
++//! Typed text cannot be edited without backspaces, so a word is typed only
++//! once nothing the server can still say will change what it should look like.
++//! This module holds that policy and has no sockets in it.
++//!
++//! # Hold-back policy
++//!
++//! For the current utterance's hypothesis, a word is released (typed) when
++//! all of these hold:
++//!
++//! 1. It is not the last word. The last word is still being spelled.
++//! 2. No run of complete words that ends the hypothesis and starts at this
++//!    word (or earlier) is a proper prefix of a multi-word phrase key. Keys are
++//!    the replacement keys from `[text]` and the vocabulary files, plus the
++//!    spoken punctuation phrases when `spoken_punctuation` is on. With key
++//!    `next cloud`, the words `... next` are held until the next word shows
++//!    whether the phrase completes.
++//! 3. Its text has not been revised (see [`LiveText::hypothesis`]).
++//!
++//! At the end of an utterance everything is released. Released words go
++//! through the same filler, replacement and spoken punctuation processing as
++//! batch output ([`TextProcessor::process_fragment`]).
++//!
++//! When the server's final transcript for the utterance arrives,
++//! [`LiveText::end_utterance`] compares it with what was typed. Words that
++//! agree up to case and edge punctuation stay as typed. A genuine difference
++//! becomes a backspace and a retype from the first typing action that
++//! contained a differing word.
++
++use crate::text::TextProcessor;
++
++/// Characters of typed text kept for the overlay preview. The overlay shows
++/// the last few hundred characters, so older text is dropped.
++const RECENT_CHARS: usize = 512;
++
++/// Punctuation that attaches to the word before it (spoken punctuation output).
++const GLUE_LEFT: &[char] = &[
++    '.', ',', '?', '!', ':', ';', ')', ']', '}', '(', '[', '{', '#', '@', '$',
++];
++
++/// Punctuation that attaches to the word after it.
++const GLUE_RIGHT: &[char] = &['(', '[', '{', '#', '@', '$'];
++
++/// Decides how many leading words of a hypothesis may be typed.
++#[derive(Debug, Clone, Default)]
++pub struct Gate {
++    keys: Vec<Vec<String>>,
++}
++
++impl Gate {
++    /// Build a gate from phrase keys. Single-word keys never need hold-back
++    /// beyond the unfinished last word, so they are dropped.
++    pub fn new<'a>(phrases: impl IntoIterator<Item = &'a str>) -> Self {
++        let keys = phrases
++            .into_iter()
++            .map(|phrase| phrase.split_whitespace().map(normalize).collect::<Vec<_>>())
++            .filter(|key| key.len() > 1)
++            .collect();
++        Self { keys }
++    }
++
++    /// Number of leading words of `words` that can be released. Never less
++    /// than `from`, the count already typed. With `ended` the hypothesis is
++    /// complete and every word is released.
++    pub fn releasable(&self, words: &[String], from: usize, ended: bool) -> usize {
++        if ended {
++            return words.len();
++        }
++        let complete = words.len().saturating_sub(1);
++        for start in from..complete {
++            let tail = &words[start..complete];
++            let could_complete = self.keys.iter().any(|key| {
++                key.len() > tail.len()
++                    && tail
++                        .iter()
++                        .zip(key)
++                        .all(|(word, wanted)| normalize(word) == *wanted)
++            });
++            if could_complete {
++                return start;
++            }
++        }
++        complete.max(from)
++    }
++}
++
++/// A backspace-and-retype that brings typed text in line with the final transcript.
++#[derive(Debug, Clone, PartialEq, Eq)]
++pub struct Fix {
++    /// Characters to erase from the end of the typed text; 0 for a pure append.
++    pub backspace: usize,
++    pub text: String,
++}
++
++/// What one hypothesis update produced.
++#[derive(Debug, Clone, PartialEq, Eq)]
++pub struct Update {
++    /// Text to type now, including its separator.
++    pub typed: Option<String>,
++    /// Everything typed this session plus the held-back words, for the overlay.
++    pub preview: String,
++}
++
++/// Where the cursor stands: what the next piece has to join onto.
++#[derive(Debug, Clone, Copy, Default)]
++struct Cursor {
++    last: Option<char>,
++    /// The last word is a bare opening symbol, so the next piece attaches without a space.
++    glue: bool,
++}
++
++impl Cursor {
++    fn after(self, typed: &str) -> Self {
++        let Some(last) = typed.chars().last() else {
++            return self;
++        };
++        let last_word = typed.split_whitespace().next_back().unwrap_or("");
++        Self {
++            last: Some(last),
++            glue: GLUE_RIGHT.contains(&last) && !has_alphanumeric(last_word),
++        }
++    }
++
++    /// `piece` with the separator that joins it to what is already typed.
++    /// `raw` is the recognized text `piece` was made from. Punctuation that
++    /// processing produced (spoken "period") attaches to the word before it;
++    /// punctuation the server typed itself (".NET", "(maybe)") keeps its space.
++    fn join(self, raw: &str, piece: &str) -> String {
++        let Some(first) = piece.chars().next() else {
++            return String::new();
++        };
++        let generated = GLUE_LEFT.contains(&first) && !raw.starts_with(first);
++        let glues_left = first.is_whitespace() || generated;
++        let after_word = self.last.is_some_and(|c| !c.is_whitespace()) && !self.glue;
++        if after_word && !glues_left {
++            format!(" {piece}")
++        } else {
++            piece.to_string()
++        }
++    }
++}
++
++/// One typing action: the words it covered and how to undo it.
++#[derive(Debug, Clone, Copy)]
++struct Typing {
++    /// Words of the utterance typed up to and including this action.
++    words_end: usize,
++    chars: usize,
++    before: Cursor,
++}
++
++/// Incremental typed output for one recording.
++pub struct LiveText {
++    processor: TextProcessor,
++    gate: Gate,
++    /// Words of the current utterance's latest hypothesis.
++    words: Vec<String>,
++    /// Words of this utterance already typed, as they were when typed.
++    typed: Vec<String>,
++    log: Vec<Typing>,
++    cursor: Cursor,
++    /// Tail of everything typed this session.
++    recent: String,
++    recent_before: String,
++    cursor_before: Cursor,
++}
++
++impl LiveText {
++    pub fn new(processor: TextProcessor) -> Self {
++        let gate = Gate::new(processor.phrase_keys());
++        Self {
++            processor,
++            gate,
++            words: Vec::new(),
++            typed: Vec::new(),
++            log: Vec::new(),
++            cursor: Cursor::default(),
++            recent: String::new(),
++            recent_before: String::new(),
++            cursor_before: Cursor::default(),
++        }
++    }
++
++    /// Feed the full text of the current utterance so far.
++    ///
++    /// If the server revised a word that is already typed, nothing more is
++    /// typed for this utterance until its final transcript arrives: the
++    /// overlay shows the revised text and [`end_utterance`](Self::end_utterance)
++    /// repairs the cursor.
++    pub fn hypothesis(&mut self, text: &str) -> Update {
++        self.words = text.split_whitespace().map(str::to_owned).collect();
++        let diverged = self.diverged();
++        let mut typed = None;
++        if !diverged {
++            let release = self.gate.releasable(&self.words, self.typed.len(), false);
++            if release > self.typed.len() {
++                typed = self.type_through(release);
++            }
++        }
++        Update {
++            typed,
++            preview: self.preview(diverged),
++        }
++    }
++
++    /// The utterance is over and `final_text` is the server's last word on it.
++    /// Returns the text to type or repair, and resets for the next utterance.
++    pub fn end_utterance(&mut self, final_text: &str) -> Option<Fix> {
++        let final_words: Vec<String> = final_text.split_whitespace().map(str::to_owned).collect();
++        let agreed = self
++            .typed
++            .iter()
++            .zip(&final_words)
++            .take_while(|(typed, wanted)| same_word(typed, wanted))
++            .count();
++        let fix = if agreed == self.typed.len() {
++            self.append_tail(&final_words)
++        } else {
++            self.retype_from(agreed, &final_words)
++        };
++        self.words.clear();
++        self.typed.clear();
++        self.log.clear();
++        self.recent_before.clone_from(&self.recent);
++        self.cursor_before = self.cursor;
++        fix
++    }
++
++    /// End the utterance with the latest hypothesis standing in for a final
++    /// transcript, releasing every held-back word.
++    pub fn end_with_hypothesis(&mut self) -> Option<Fix> {
++        let text = self.words.join(" ");
++        self.end_utterance(&text)
++    }
++
++    /// True when the current utterance has no words, typed or held back.
++    pub fn is_empty(&self) -> bool {
++        self.words.is_empty() && self.typed.is_empty()
++    }
++
++    /// Everything typed this session plus the held-back words.
++    pub fn current_preview(&self) -> String {
++        self.preview(self.diverged())
++    }
++
++    fn diverged(&self) -> bool {
++        self.words.len() < self.typed.len()
++            || self
++                .typed
++                .iter()
++                .zip(&self.words)
++                .any(|(typed, now)| !same_word(typed, now))
++    }
++
++    fn preview(&self, diverged: bool) -> String {
++        let (base, cursor, held) = if diverged {
++            (&self.recent_before, self.cursor_before, &self.words[..])
++        } else {
++            (&self.recent, self.cursor, &self.words[self.typed.len()..])
++        };
++        format!("{base}{}", self.render(cursor, held))
++    }
++
++    /// `words` processed like batch output and joined onto `cursor`.
++    fn render(&self, cursor: Cursor, words: &[String]) -> String {
++        let raw = words.join(" ");
++        cursor.join(&raw, &self.processor.process_fragment(&raw))
++    }
++
++    /// Type `words[typed..upto]` as one action.
++    fn type_through(&mut self, upto: usize) -> Option<String> {
++        let from = self.typed.len();
++        let text = self.render(self.cursor, &self.words[from..upto]);
++        self.log.push(Typing {
++            words_end: upto,
++            chars: text.chars().count(),
++            before: self.cursor,
++        });
++        self.typed.extend_from_slice(&self.words[from..upto]);
++        if text.is_empty() {
++            return None;
++        }
++        self.cursor = self.cursor.after(&text);
++        self.push_recent(&text);
++        Some(text)
++    }
++
++    fn append_tail(&mut self, final_words: &[String]) -> Option<Fix> {
++        let text = self.render(self.cursor, &final_words[self.typed.len()..]);
++        if text.is_empty() {
++            return None;
++        }
++        self.cursor = self.cursor.after(&text);
++        self.push_recent(&text);
++        Some(Fix { backspace: 0, text })
++    }
++
++    /// The final transcript differs from typed words from `agreed` on. Erase
++    /// back to the start of the typing action that contains word `agreed` and
++    /// type the final words from there.
++    fn retype_from(&mut self, agreed: usize, final_words: &[String]) -> Option<Fix> {
++        let first = self
++            .log
++            .iter()
++            .position(|typing| typing.words_end > agreed)
++            .expect("a differing typed word lies inside a typing action");
++        let backspace = self.log[first..].iter().map(|typing| typing.chars).sum();
++        let start = first
++            .checked_sub(1)
++            .map_or(0, |previous| self.log[previous].words_end);
++        let before = self.log[first].before;
++        let text = self.render(before, &final_words[start..]);
++        for _ in 0..backspace {
++            self.recent.pop();
++        }
++        self.cursor = before.after(&text);
++        self.push_recent(&text);
++        (backspace > 0 || !text.is_empty()).then_some(Fix { backspace, text })
++    }
++
++    fn push_recent(&mut self, text: &str) {
++        self.recent.push_str(text);
++        let length = self.recent.chars().count();
++        if length > 2 * RECENT_CHARS {
++            let cut = self
++                .recent
++                .char_indices()
++                .nth(length - RECENT_CHARS)
++                .map_or(0, |(index, _)| index);
++            self.recent.drain(..cut);
++        }
++    }
++}
++
++fn has_alphanumeric(word: &str) -> bool {
++    word.chars().any(char::is_alphanumeric)
++}
++
++/// Lowercase with edge punctuation removed, the form words are compared in.
++fn normalize(word: &str) -> String {
++    word.trim_matches(|c: char| !c.is_alphanumeric())
++        .to_lowercase()
++}
++
++fn same_word(a: &str, b: &str) -> bool {
++    normalize(a) == normalize(b)
++}
++
++#[cfg(test)]
++mod tests;
+--- /dev/null
++++ b/src/transcribe/realtime/stream_text/tests.rs
+@@ -0,0 +1,352 @@
++use super::*;
++use crate::config::TextConfig;
++
++fn processor(
++    replacements: &[(&str, &str)],
++    spoken_punctuation: bool,
++    fillers: bool,
++) -> TextProcessor {
++    let config = TextConfig {
++        spoken_punctuation,
++        replacements: replacements
++            .iter()
++            .map(|(from, to)| ((*from).to_string(), (*to).to_string()))
++            .collect(),
++        filter_filler_words: fillers,
++        ..TextConfig::default()
++    };
++    TextProcessor::new(&config)
++}
++
++fn live(replacements: &[(&str, &str)]) -> LiveText {
++    LiveText::new(processor(replacements, false, false))
++}
++
++fn words(text: &str) -> Vec<String> {
++    text.split_whitespace().map(str::to_owned).collect()
++}
++
++/// Feed successive hypotheses and join what was typed, as the cursor would see it.
++fn type_all(live: &mut LiveText, hypotheses: &[&str]) -> String {
++    hypotheses
++        .iter()
++        .filter_map(|hypothesis| live.hypothesis(hypothesis).typed)
++        .collect()
++}
++
++#[test]
++fn gate_never_releases_the_unfinished_last_word() {
++    let gate = Gate::new([]);
++    assert_eq!(gate.releasable(&words("hello wor"), 0, false), 1);
++    assert_eq!(gate.releasable(&words("hello"), 0, false), 0);
++    assert_eq!(gate.releasable(&[], 0, false), 0);
++}
++
++#[test]
++fn gate_holds_a_word_that_starts_a_phrase_key() {
++    let gate = Gate::new(["next cloud"]);
++    // `next` is complete but `cloud` has not started, so the phrase is open.
++    assert_eq!(gate.releasable(&words("I use next cl"), 0, false), 2);
++    // The phrase is complete, so nothing is open any more.
++    assert_eq!(gate.releasable(&words("I use next cloud is"), 0, false), 4);
++    // `next` was followed by something else.
++    assert_eq!(gate.releasable(&words("I use next door is"), 0, false), 4);
++}
++
++#[test]
++fn gate_holds_up_to_key_length_minus_one_words() {
++    let gate = Gate::new(["one two three four"]);
++    assert_eq!(gate.releasable(&words("x one two three"), 0, false), 1);
++    assert_eq!(gate.releasable(&words("x one two three four"), 0, false), 1);
++    assert_eq!(
++        gate.releasable(&words("x one two three four y"), 0, false),
++        5
++    );
++}
++
++#[test]
++fn gate_holds_while_a_longer_key_could_still_match() {
++    let gate = Gate::new(["next cloud", "next cloud server"]);
++    // `next cloud` is complete but `next cloud server` is still possible.
++    assert_eq!(gate.releasable(&words("use next cloud x"), 0, false), 1);
++    assert_eq!(
++        gate.releasable(&words("use next cloud server x"), 0, false),
++        4
++    );
++}
++
++#[test]
++fn gate_compares_words_without_case_or_edge_punctuation() {
++    let gate = Gate::new(["Next Cloud"]);
++    assert_eq!(gate.releasable(&words("use Next, cl"), 0, false), 1);
++}
++
++#[test]
++fn gate_ignores_single_word_keys_and_already_typed_words() {
++    let gate = Gate::new(["rust", "next cloud"]);
++    assert_eq!(gate.releasable(&words("I love rust a lot"), 0, false), 4);
++    // `next` at index 0 was typed already; only later words can be held.
++    assert_eq!(gate.releasable(&words("next cl"), 1, false), 1);
++}
++
++#[test]
++fn gate_releases_everything_when_the_utterance_ended() {
++    let gate = Gate::new(["next cloud"]);
++    assert_eq!(gate.releasable(&words("use next"), 0, true), 2);
++}
++
++#[test]
++fn types_words_as_they_complete() {
++    let mut live = live(&[]);
++    assert_eq!(live.hypothesis("Hello").typed, None);
++    assert_eq!(live.hypothesis("Hello wor").typed.as_deref(), Some("Hello"));
++    assert_eq!(live.hypothesis("Hello world").typed, None);
++    assert_eq!(
++        live.hypothesis("Hello world this").typed.as_deref(),
++        Some(" world")
++    );
++}
++
++#[test]
++fn multi_word_key_matches_across_update_boundaries() {
++    let mut live = live(&[("next cloud", "Nextcloud")]);
++    let typed = type_all(
++        &mut live,
++        &[
++            "I use",
++            "I use next",
++            "I use next cl",
++            "I use next cloud",
++            "I use next cloud for",
++        ],
++    );
++    assert_eq!(typed, "I use Nextcloud");
++    assert_eq!(
++        live.end_utterance("I use next cloud for files."),
++        Some(Fix {
++            backspace: 0,
++            text: " for files.".into()
++        })
++    );
++}
++
++#[test]
++fn held_words_release_when_the_phrase_does_not_complete() {
++    let mut live = live(&[("next cloud", "Nextcloud")]);
++    let typed = type_all(
++        &mut live,
++        &["use next", "use next door", "use next door now"],
++    );
++    assert_eq!(typed, "use next door");
++}
++
++#[test]
++fn preview_shows_typed_and_held_back_text_with_replacements_applied() {
++    let mut live = live(&[("next cloud", "Nextcloud")]);
++    let update = live.hypothesis("I use next cloud");
++    assert_eq!(update.typed.as_deref(), Some("I use"));
++    assert_eq!(update.preview, "I use Nextcloud");
++    assert_eq!(live.current_preview(), "I use Nextcloud");
++}
++
++#[test]
++fn preview_carries_text_from_earlier_utterances() {
++    let mut live = live(&[]);
++    live.hypothesis("First one here");
++    live.end_utterance("First one here.");
++    let update = live.hypothesis("Second");
++    assert_eq!(update.preview, "First one here. Second");
++}
++
++#[test]
++fn final_transcript_appends_the_missing_tail() {
++    let mut live = live(&[]);
++    live.hypothesis("Hello world this");
++    let fix = live.end_utterance("Hello world this is it.").expect("tail");
++    assert_eq!(
++        fix,
++        Fix {
++            backspace: 0,
++            text: " this is it.".into()
++        }
++    );
++}
++
++#[test]
++fn final_transcript_differing_only_in_case_and_punctuation_keeps_typed_words() {
++    let mut live = live(&[]);
++    live.hypothesis("hello world again");
++    // "hello world" stays as typed; only the held-back last word is added.
++    assert_eq!(
++        live.end_utterance("Hello, world again"),
++        Some(Fix {
++            backspace: 0,
++            text: " again".into()
++        })
++    );
++}
++
++#[test]
++fn final_transcript_that_disagrees_erases_and_retypes_from_the_first_difference() {
++    let mut live = live(&[]);
++    assert_eq!(
++        type_all(&mut live, &["I paid twenty three dollars now"]),
++        "I paid twenty three dollars"
++    );
++    // One typing action covered the words, so it is erased as a whole.
++    let fix = live.end_utterance("I paid 23 dollars now").expect("fix");
++    assert_eq!(
++        fix,
++        Fix {
++            backspace: "I paid twenty three dollars".chars().count(),
++            text: "I paid 23 dollars now".into()
++        }
++    );
++}
++
++#[test]
++fn retype_only_erases_the_typing_actions_after_the_agreed_prefix() {
++    let mut live = live(&[]);
++    let first = live.hypothesis("I paid twenty").typed;
++    assert_eq!(first.as_deref(), Some("I paid"));
++    let second = live.hypothesis("I paid twenty three dollars").typed;
++    assert_eq!(second.as_deref(), Some(" twenty three"));
++    let fix = live.end_utterance("I paid 23 dollars").expect("fix");
++    assert_eq!(
++        fix,
++        Fix {
++            backspace: " twenty three".chars().count(),
++            text: " 23 dollars".into()
++        }
++    );
++}
++
++#[test]
++fn final_transcript_shorter_than_typed_text_erases_the_extra_words() {
++    let mut live = live(&[]);
++    live.hypothesis("hello there friend now");
++    let fix = live.end_utterance("hello there").expect("fix");
++    assert_eq!(fix.backspace, "hello there friend".chars().count());
++    assert_eq!(fix.text, "hello there");
++}
++
++#[test]
++fn revised_typed_word_stops_typing_until_the_final_arrives() {
++    let mut live = live(&[]);
++    assert_eq!(type_all(&mut live, &["see the cat sat"]), "see the cat");
++    let update = live.hypothesis("see a cat sat on the");
++    assert_eq!(update.typed, None);
++    assert_eq!(update.preview, "see a cat sat on the");
++    let fix = live
++        .end_utterance("See a cat sat on the mat.")
++        .expect("fix");
++    assert_eq!(fix.backspace, "see the cat".chars().count());
++    assert_eq!(fix.text, "See a cat sat on the mat.");
++}
++
++#[test]
++fn next_utterance_is_separated_by_a_space() {
++    let mut live = live(&[]);
++    live.hypothesis("First sentence here");
++    live.end_utterance("First sentence here.");
++    let typed = type_all(&mut live, &["Second sentence", "Second sentence follows"]);
++    assert_eq!(typed, " Second sentence");
++}
++
++#[test]
++fn empty_final_after_everything_was_typed_is_a_no_op() {
++    let mut live = live(&[]);
++    live.hypothesis("done now");
++    live.end_utterance("done now");
++    assert!(live.is_empty());
++    assert_eq!(live.end_utterance(""), None);
++}
++
++#[test]
++fn end_with_hypothesis_releases_held_back_words() {
++    let mut live = live(&[("next cloud", "Nextcloud")]);
++    live.hypothesis("I use next");
++    let fix = live.end_with_hypothesis().expect("flush");
++    assert_eq!(
++        fix,
++        Fix {
++            backspace: 0,
++            text: " next".into()
++        }
++    );
++}
++
++#[test]
++fn filler_words_are_dropped_and_do_not_leave_gaps() {
++    let mut live = LiveText::new(processor(&[], false, true));
++    let typed = type_all(
++        &mut live,
++        &["so um I", "so um I think uh", "so um I think uh it works"],
++    );
++    assert_eq!(typed, "so I think it");
++    assert_eq!(
++        live.end_utterance("so um I think uh it works"),
++        Some(Fix {
++            backspace: 0,
++            text: " works".into()
++        })
++    );
++}
++
++#[test]
++fn filler_with_attached_comma_keeps_the_comma_of_the_previous_word() {
++    let mut live = LiveText::new(processor(&[], false, true));
++    let typed = type_all(&mut live, &["well, uh, I", "well, uh, I think so"]);
++    assert_eq!(typed, "well, I think");
++}
++
++#[test]
++fn spoken_punctuation_attaches_without_a_space() {
++    let mut live = LiveText::new(processor(&[], true, false));
++    let typed = type_all(
++        &mut live,
++        &["call open paren", "call open paren x close paren done"],
++    );
++    assert_eq!(typed, "call(x)");
++    assert_eq!(
++        live.end_utterance("call open paren x close paren done"),
++        Some(Fix {
++            backspace: 0,
++            text: " done".into()
++        })
++    );
++}
++
++#[test]
++fn spoken_punctuation_phrase_is_held_until_it_completes() {
++    let mut live = LiveText::new(processor(&[], true, false));
++    // `question` could still become "question mark".
++    assert_eq!(
++        live.hypothesis("really question mar").typed.as_deref(),
++        Some("really")
++    );
++    assert_eq!(
++        live.hypothesis("really question mark okay")
++            .typed
++            .as_deref(),
++        Some("?")
++    );
++}
++
++#[test]
++fn punctuation_the_server_typed_keeps_its_space() {
++    let mut live = live(&[]);
++    let typed = type_all(
++        &mut live,
++        &["use .NET", "use .NET and", "use .NET and (maybe) more"],
++    );
++    assert_eq!(typed, "use .NET and (maybe)");
++}
++
++#[test]
++fn recent_text_is_bounded() {
++    let mut live = live(&[]);
++    let long = "word ".repeat(2000);
++    live.hypothesis(&long);
++    assert!(live.current_preview().chars().count() <= 2 * RECENT_CHARS + 16);
++}
+--- /dev/null
++++ b/src/transcribe/realtime/tests.rs
+@@ -0,0 +1,713 @@
++//! End-to-end tests against an in-process mock of the NeMo-Speech WebSocket.
++//! Nothing here touches the network beyond loopback.
++
++use std::future::Future;
++use std::io::{Read, Write};
++use std::net::TcpListener as StdListener;
++use std::time::Duration;
++
++use futures_util::{SinkExt, StreamExt};
++use serde_json::{json, Value};
++use tokio::net::{TcpListener, TcpStream};
++use tokio::task::JoinHandle;
++use tokio_tungstenite::tungstenite::Message;
++use tokio_tungstenite::WebSocketStream;
++
++use super::*;
++use crate::config::WhisperMode;
++
++type Ws = WebSocketStream<TcpStream>;
++
++/// What the mock saw from the client.
++#[derive(Debug, Default)]
++struct Received {
++    update: Option<Value>,
++    audio_bytes: usize,
++}
++
++/// Listen on loopback and run `script` against the first connection.
++async fn serve<F, Fut>(script: F) -> (String, JoinHandle<Received>)
++where
++    F: FnOnce(Ws) -> Fut + Send + 'static,
++    Fut: Future<Output = Received> + Send,
++{
++    let listener = TcpListener::bind("127.0.0.1:0").await.expect("bind");
++    let endpoint = format!("http://{}", listener.local_addr().expect("addr"));
++    let task = tokio::spawn(async move {
++        let (stream, _) = listener.accept().await.expect("accept");
++        let ws = tokio_tungstenite::accept_async(stream)
++            .await
++            .expect("handshake");
++        script(ws).await
++    });
++    (endpoint, task)
++}
++
++async fn say(ws: &mut Ws, event: Value) {
++    ws.send(Message::Text(event.to_string()))
++        .await
++        .expect("send");
++}
++
++fn delta(text: &str) -> Value {
++    json!({"type": "conversation.item.input_audio_transcription.delta", "delta": text})
++}
++
++fn completed(text: &str) -> Value {
++    json!({"type": "conversation.item.input_audio_transcription.completed", "transcript": text})
++}
++
++fn committed() -> Value {
++    json!({"type": "input_audio_buffer.committed"})
++}
++
++/// Read client frames until the commit, recording the session update and audio size.
++async fn until_commit(ws: &mut Ws, received: &mut Received) {
++    while let Some(Ok(message)) = ws.next().await {
++        match message {
++            Message::Binary(bytes) => received.audio_bytes += bytes.len(),
++            Message::Text(text) => {
++                let value: Value = serde_json::from_str(&text).expect("client json");
++                match value["type"].as_str() {
++                    Some("session.update") => received.update = Some(value),
++                    Some("input_audio_buffer.commit") => return,
++                    other => panic!("unexpected client message {other:?}"),
++                }
++            }
++            _ => {}
++        }
++    }
++}
++
++/// Wait for the first audio frame, so deltas follow audio like a real server's.
++async fn until_audio(ws: &mut Ws, received: &mut Received) {
++    while let Some(Ok(message)) = ws.next().await {
++        match message {
++            Message::Binary(bytes) => {
++                received.audio_bytes += bytes.len();
++                return;
++            }
++            Message::Text(text) => {
++                let value: Value = serde_json::from_str(&text).expect("client json");
++                if value["type"] == "session.update" {
++                    received.update = Some(value);
++                }
++            }
++            _ => {}
++        }
++    }
++}
++
++fn config_for(endpoint: &str) -> Config {
++    let mut config = Config::default();
++    config.whisper.mode = Some(WhisperMode::Remote);
++    config.whisper.remote_endpoint = Some(endpoint.to_string());
++    config.whisper.remote_realtime = true;
++    config.text.filter_filler_words = false;
++    config
++}
++
++fn vocabulary_file(text: &str) -> (tempfile::TempDir, String) {
++    let dir = tempfile::tempdir().expect("tempdir");
++    let path = dir.path().join("vocabulary.txt");
++    std::fs::write(&path, text).expect("write vocabulary");
++    let path = path.display().to_string();
++    (dir, path)
++}
++
++/// Stream one second of audio in 10 chunks, end the recording, collect every event.
++async fn record(config: &Config) -> Vec<StreamingEvent> {
++    let transcriber = RealtimeTranscriber::new(config).expect("transcriber");
++    let (tx, rx) = mpsc::channel(64);
++    let handle = transcriber
++        .as_streaming()
++        .expect("streaming")
++        .start_stream(rx)
++        .expect("start");
++    for _ in 0..10 {
++        tx.send(vec![0.1; 1600]).await.expect("audio");
++    }
++    drop(tx);
++    collect(handle).await
++}
++
++async fn collect(mut handle: StreamHandle) -> Vec<StreamingEvent> {
++    let mut events = Vec::new();
++    while let Some(event) = tokio::time::timeout(Duration::from_secs(10), handle.events.recv())
++        .await
++        .expect("events arrive")
++    {
++        let ended = matches!(event, StreamingEvent::Ended);
++        events.push(event);
++        if ended {
++            break;
++        }
++    }
++    handle.task.await.expect("join").expect("task result");
++    events
++}
++
++/// Text at the cursor after the daemon applies the typing events in order.
++fn typed(events: &[StreamingEvent]) -> String {
++    let mut cursor = String::new();
++    for event in events {
++        match event {
++            StreamingEvent::Partial { text, .. } | StreamingEvent::Final { text, .. } => {
++                cursor.push_str(text);
++            }
++            StreamingEvent::Replace {
++                backspace, text, ..
++            } => {
++                for _ in 0..*backspace {
++                    cursor.pop();
++                }
++                cursor.push_str(text);
++            }
++            _ => {}
++        }
++    }
++    cursor
++}
++
++fn previews(events: &[StreamingEvent]) -> Vec<&str> {
++    events
++        .iter()
++        .filter_map(|event| match event {
++            StreamingEvent::Preview { text } => Some(text.as_str()),
++            _ => None,
++        })
++        .collect()
++}
++
++#[tokio::test]
++async fn streams_words_while_audio_arrives_and_appends_the_final_tail() {
++    let (endpoint, server) = serve(|mut ws| async move {
++        let mut received = Received::default();
++        until_audio(&mut ws, &mut received).await;
++        say(&mut ws, delta("Hello")).await;
++        say(&mut ws, delta(" wor")).await;
++        say(&mut ws, delta("ld this")).await;
++        until_commit(&mut ws, &mut received).await;
++        say(&mut ws, completed("Hello world this is it.")).await;
++        say(&mut ws, committed()).await;
++        received
++    })
++    .await;
++
++    let events = record(&config_for(&endpoint)).await;
++
++    assert_eq!(typed(&events), "Hello world this is it.");
++    assert!(matches!(events.last(), Some(StreamingEvent::Ended)));
++    assert!(
++        events
++            .iter()
++            .any(|e| matches!(e, StreamingEvent::Partial { text, .. } if text == "Hello")),
++        "words are typed before the commit: {events:?}"
++    );
++    assert!(
++        events
++            .iter()
++            .any(|e| matches!(e, StreamingEvent::Final { text, .. } if text == " this is it.")),
++        "missing tail arrives as the final: {events:?}"
++    );
++    assert!(!events
++        .iter()
++        .any(|e| matches!(e, StreamingEvent::Replace { .. })));
++    assert_eq!(
++        previews(&events).last().copied(),
++        Some("Hello world this is it.")
++    );
++
++    let received = server.await.expect("server");
++    assert_eq!(received.audio_bytes, 10 * 1600 * 2);
++    let update = received.update.expect("session.update sent before audio");
++    assert_eq!(update["session"]["sample_rate"], 16_000);
++    assert!(update["session"].get("speech_contexts").is_none());
++}
++
++#[tokio::test]
++async fn vocabulary_boosts_terms_and_corrects_across_delta_boundaries() {
++    let (_dir, file) = vocabulary_file("Kowalczyk\nnext cloud => Nextcloud\n");
++    let (endpoint, server) = serve(|mut ws| async move {
++        let mut received = Received::default();
++        until_audio(&mut ws, &mut received).await;
++        say(&mut ws, delta("I use next")).await;
++        say(&mut ws, delta(" cloud")).await;
++        say(&mut ws, delta(" daily")).await;
++        until_commit(&mut ws, &mut received).await;
++        say(&mut ws, completed("I use next cloud daily.")).await;
++        say(&mut ws, committed()).await;
++        received
++    })
++    .await;
++    let mut config = config_for(&endpoint);
++    config.whisper.vocabulary_files = vec![file];
++    config.whisper.remote_boost = 3.0;
++
++    let events = record(&config).await;
++
++    assert_eq!(typed(&events), "I use Nextcloud daily.");
++    let previews = previews(&events);
++    assert!(
++        previews.contains(&"I use Nextcloud"),
++        "overlay shows the corrected held-back text: {previews:?}"
++    );
++    let update = server.await.expect("server").update.expect("update");
++    assert_eq!(
++        update["session"]["speech_contexts"],
++        json!([{ "phrases": ["Kowalczyk", "Nextcloud"], "boost": 3.0 }])
++    );
++}
++
++#[tokio::test]
++async fn text_replacements_from_config_apply_to_streamed_words() {
++    let (endpoint, _server) = serve(|mut ws| async move {
++        let mut received = Received::default();
++        until_audio(&mut ws, &mut received).await;
++        say(&mut ws, delta("I like vox type")).await;
++        say(&mut ws, delta(" a lot")).await;
++        until_commit(&mut ws, &mut received).await;
++        say(&mut ws, completed("I like vox type a lot.")).await;
++        say(&mut ws, committed()).await;
++        received
++    })
++    .await;
++    let mut config = config_for(&endpoint);
++    config
++        .text
++        .replacements
++        .insert("vox type".into(), "voxtype".into());
++
++    let events = record(&config).await;
++
++    assert_eq!(typed(&events), "I like voxtype a lot.");
++}
++
++#[tokio::test]
++async fn vocabulary_correction_beats_a_text_replacement_for_the_same_phrase() {
++    let (_dir, file) = vocabulary_file("next cloud => NextCloud\n");
++    let (endpoint, _server) = serve(|mut ws| async move {
++        let mut received = Received::default();
++        until_audio(&mut ws, &mut received).await;
++        say(&mut ws, delta("go next cloud now")).await;
++        until_commit(&mut ws, &mut received).await;
++        say(&mut ws, completed("go next cloud now.")).await;
++        say(&mut ws, committed()).await;
++        received
++    })
++    .await;
++    let mut config = config_for(&endpoint);
++    config.whisper.vocabulary_files = vec![file];
++    config
++        .text
++        .replacements
++        .insert("Next Cloud".into(), "nextcloud".into());
++
++    let events = record(&config).await;
++
++    assert_eq!(typed(&events), "go NextCloud now.");
++}
++
++#[tokio::test]
++async fn final_transcript_that_disagrees_is_replaced() {
++    let (endpoint, _server) = serve(|mut ws| async move {
++        let mut received = Received::default();
++        until_audio(&mut ws, &mut received).await;
++        say(&mut ws, delta("I paid twenty three dollars now")).await;
++        until_commit(&mut ws, &mut received).await;
++        say(&mut ws, completed("I paid 23 dollars now.")).await;
++        say(&mut ws, committed()).await;
++        received
++    })
++    .await;
++
++    let events = record(&config_for(&endpoint)).await;
++
++    assert_eq!(typed(&events), "I paid 23 dollars now.");
++    assert!(events.iter().any(|e| matches!(
++        e,
++        StreamingEvent::Replace { backspace, .. } if *backspace == "I paid twenty three dollars".chars().count()
++    )));
++}
++
++#[tokio::test]
++async fn endpointed_utterances_are_typed_one_after_another() {
++    let (endpoint, _server) = serve(|mut ws| async move {
++        let mut received = Received::default();
++        until_audio(&mut ws, &mut received).await;
++        say(&mut ws, delta("First one here")).await;
++        say(&mut ws, completed("First one here.")).await;
++        say(&mut ws, delta("Second one")).await;
++        say(&mut ws, delta(" follows")).await;
++        until_commit(&mut ws, &mut received).await;
++        say(&mut ws, completed("Second one follows.")).await;
++        say(&mut ws, committed()).await;
++        received
++    })
++    .await;
++
++    let events = record(&config_for(&endpoint)).await;
++
++    assert_eq!(typed(&events), "First one here. Second one follows.");
++}
++
++#[tokio::test]
++async fn server_error_event_surfaces_and_keeps_the_words_already_heard() {
++    let (endpoint, _server) = serve(|mut ws| async move {
++        let mut received = Received::default();
++        until_audio(&mut ws, &mut received).await;
++        say(&mut ws, delta("Half a sentence")).await;
++        say(
++            &mut ws,
++            json!({"type": "error", "error": {"message": "model unloaded", "type": "server_error"}}),
++        )
++        .await;
++        // A real server keeps listening; closing here would race the error frame.
++        while ws.next().await.is_some() {}
++        received
++    })
++    .await;
++
++    let events = record(&config_for(&endpoint)).await;
++
++    assert_eq!(typed(&events), "Half a sentence");
++    let error = events
++        .iter()
++        .find_map(|event| match event {
++            StreamingEvent::Error(error) => Some(error.to_string()),
++            _ => None,
++        })
++        .expect("error event");
++    assert!(error.contains("model unloaded"), "{error}");
++    assert!(matches!(events.last(), Some(StreamingEvent::Ended)));
++}
++
++#[tokio::test]
++async fn connection_closed_before_the_final_is_an_error_not_silence() {
++    let (endpoint, _server) = serve(|mut ws| async move {
++        let mut received = Received::default();
++        until_audio(&mut ws, &mut received).await;
++        say(&mut ws, delta("Almost there now")).await;
++        until_commit(&mut ws, &mut received).await;
++        drop(ws);
++        received
++    })
++    .await;
++
++    let events = record(&config_for(&endpoint)).await;
++
++    assert_eq!(typed(&events), "Almost there now");
++    let position = |wanted: fn(&StreamingEvent) -> bool| events.iter().position(wanted);
++    let error = position(|e| matches!(e, StreamingEvent::Error(_))).expect("error event");
++    let ended = position(|e| matches!(e, StreamingEvent::Ended)).expect("ended event");
++    assert!(error < ended);
++}
++
++#[tokio::test]
++async fn unreachable_server_reports_an_error_then_ends() {
++    let closed = StdListener::bind("127.0.0.1:0").expect("bind");
++    let endpoint = format!("http://{}", closed.local_addr().expect("addr"));
++    drop(closed);
++
++    let events = record(&config_for(&endpoint)).await;
++
++    assert!(matches!(events.first(), Some(StreamingEvent::Error(_))));
++    assert!(matches!(events.last(), Some(StreamingEvent::Ended)));
++}
++
++#[tokio::test]
++async fn audio_queued_during_the_handshake_is_replayed() {
++    let listener = TcpListener::bind("127.0.0.1:0").await.expect("bind");
++    let endpoint = format!("http://{}", listener.local_addr().expect("addr"));
++    let server = tokio::spawn(async move {
++        let (stream, _) = listener.accept().await.expect("accept");
++        tokio::time::sleep(Duration::from_millis(150)).await;
++        let mut ws = tokio_tungstenite::accept_async(stream)
++            .await
++            .expect("handshake");
++        let mut received = Received::default();
++        until_commit(&mut ws, &mut received).await;
++        say(&mut ws, completed("")).await;
++        say(&mut ws, committed()).await;
++        received
++    });
++
++    let events = record(&config_for(&endpoint)).await;
++
++    assert!(matches!(events.last(), Some(StreamingEvent::Ended)));
++    assert!(!events.iter().any(|e| matches!(e, StreamingEvent::Error(_))));
++    assert_eq!(server.await.expect("server").audio_bytes, 10 * 1600 * 2);
++}
++
++#[tokio::test]
++async fn cancel_ends_the_stream_without_flushing_or_failing() {
++    let (endpoint, server) = serve(|mut ws| async move {
++        let mut received = Received::default();
++        until_audio(&mut ws, &mut received).await;
++        say(&mut ws, delta("Never typed because")).await;
++        // Keep the socket open until the client goes away.
++        while ws.next().await.is_some() {}
++        received
++    })
++    .await;
++    let transcriber = RealtimeTranscriber::new(&config_for(&endpoint)).expect("transcriber");
++    let (tx, rx) = mpsc::channel(64);
++    let mut handle = transcriber
++        .as_streaming()
++        .expect("streaming")
++        .start_stream(rx)
++        .expect("start");
++    tx.send(vec![0.1; 1600]).await.expect("audio");
++    // Wait for the first preview so the cancel lands mid-stream.
++    loop {
++        let event = tokio::time::timeout(Duration::from_secs(10), handle.events.recv())
++            .await
++            .expect("event")
++            .expect("open");
++        if matches!(event, StreamingEvent::Preview { .. }) {
++            break;
++        }
++    }
++    handle.cancel.send(()).expect("cancel");
++    let mut rest = Vec::new();
++    while let Some(event) = handle.events.recv().await {
++        rest.push(event);
++    }
++    handle.task.await.expect("join").expect("result");
++    assert!(
++        matches!(rest.as_slice(), [StreamingEvent::Ended]),
++        "{rest:?}"
++    );
++    server.await.expect("server");
++}
++
++// The handshake callback's error type is the tungstenite-defined `ErrorResponse`.
++#[allow(clippy::result_large_err)]
++#[tokio::test]
++async fn api_key_is_sent_as_a_bearer_header() {
++    use tokio_tungstenite::tungstenite::handshake::server::{Request, Response};
++    let listener = TcpListener::bind("127.0.0.1:0").await.expect("bind");
++    let endpoint = format!("http://{}", listener.local_addr().expect("addr"));
++    let server = tokio::spawn(async move {
++        let (stream, _) = listener.accept().await.expect("accept");
++        let mut authorization = None;
++        let mut ws =
++            tokio_tungstenite::accept_hdr_async(stream, |request: &Request, response: Response| {
++                authorization = request
++                    .headers()
++                    .get("authorization")
++                    .and_then(|value| value.to_str().ok())
++                    .map(str::to_owned);
++                Ok(response)
++            })
++            .await
++            .expect("handshake");
++        let mut received = Received::default();
++        until_commit(&mut ws, &mut received).await;
++        say(&mut ws, committed()).await;
++        authorization
++    });
++    let mut config = config_for(&endpoint);
++    config.whisper.remote_api_key = Some("sekret".into());
++
++    record(&config).await;
++
++    assert_eq!(
++        server.await.expect("server").as_deref(),
++        Some("Bearer sekret")
++    );
++}
++
++/// Serve one HTTP request on loopback and hand back its raw bytes.
++fn http_once(body: &'static str) -> (String, std::thread::JoinHandle<String>) {
++    let listener = StdListener::bind("127.0.0.1:0").expect("bind");
++    let endpoint = format!("http://{}", listener.local_addr().expect("addr"));
++    let thread = std::thread::spawn(move || {
++        let (mut stream, _) = listener.accept().expect("accept");
++        let mut request = Vec::new();
++        let mut buffer = [0u8; 8192];
++        let mut header_end = None;
++        let mut length = 0usize;
++        loop {
++            let read = stream.read(&mut buffer).expect("read");
++            request.extend_from_slice(&buffer[..read]);
++            if header_end.is_none() {
++                if let Some(at) = request.windows(4).position(|w| w == b"\r\n\r\n") {
++                    header_end = Some(at + 4);
++                    let head = String::from_utf8_lossy(&request[..at]).to_lowercase();
++                    length = head
++                        .lines()
++                        .find_map(|line| line.strip_prefix("content-length: "))
++                        .and_then(|value| value.trim().parse().ok())
++                        .unwrap_or(0);
++                }
++            }
++            if let Some(end) = header_end {
++                if request.len() >= end + length {
++                    break;
++                }
++            }
++            assert!(read > 0, "client closed early");
++        }
++        let response = format!(
++            "HTTP/1.1 200 OK\r\ncontent-type: application/json\r\ncontent-length: {}\r\nconnection: close\r\n\r\n{body}",
++            body.len()
++        );
++        stream.write_all(response.as_bytes()).expect("respond");
++        String::from_utf8_lossy(&request).into_owned()
++    });
++    (endpoint, thread)
++}
++
++#[tokio::test]
++async fn batch_fallback_posts_speech_contexts_and_applies_corrections() {
++    let (_dir, file) = vocabulary_file("Kowalczyk\nnext cloud => Nextcloud\n");
++    let (endpoint, request) = http_once(r#"{"text":"we run next cloud"}"#);
++    let mut config = config_for(&endpoint);
++    config.whisper.vocabulary_files = vec![file];
++    let transcriber = RealtimeTranscriber::new(&config).expect("transcriber");
++
++    let text = tokio::task::spawn_blocking(move || transcriber.transcribe(&[0.1; 1600]))
++        .await
++        .expect("join")
++        .expect("transcribe");
++
++    assert_eq!(text, "we run Nextcloud");
++    let request = request.join().expect("request");
++    assert!(
++        request.starts_with("POST /v1/audio/transcriptions "),
++        "{request}"
++    );
++    assert!(request.contains("name=\"speech_contexts\""), "{request}");
++    assert!(
++        request.contains(r#"[{"boost":2.5,"phrases":["Kowalczyk","Nextcloud"]}]"#),
++        "{request}"
++    );
++}
++
++#[test]
++fn realtime_needs_remote_mode() {
++    let mut config = Config::default();
++    config.whisper.remote_realtime = true;
++    assert!(!config.whisper.realtime());
++    assert!(!config.streaming_needs_final_pass());
++    config.whisper.mode = Some(WhisperMode::Remote);
++    assert!(config.whisper.realtime());
++}
++
++#[test]
++fn realtime_selects_the_streaming_path_and_toggle_promotion() {
++    let mut config = Config::default();
++    config.whisper.mode = Some(WhisperMode::Remote);
++    config.whisper.remote_endpoint = Some("http://127.0.0.1:8010".into());
++    assert!(!config.streaming_active());
++
++    config.whisper.remote_realtime = true;
++    assert!(
++        config.streaming_active(),
++        "push-to-talk must promote to toggle"
++    );
++    assert!(config.streaming_needs_final_pass());
++    assert!(config.whisper.streaming_enabled());
++}
++
++/// Streams a WAV file through the real transcriber at real-time pace and
++/// prints when each event arrived. Needs a running `nemo-speech serve`:
++///
++/// ```text
++/// VOXTYPE_LIVE_ENDPOINT=http://127.0.0.1:8010 VOXTYPE_LIVE_WAV=clip.wav \
++///   [VOXTYPE_LIVE_VOCABULARY=vocabulary.txt] \
++///   cargo test --lib live_server -- --ignored --nocapture
++/// ```
++///
++/// The WAV must be 16 kHz mono 16-bit. Run `ffmpeg -i in.flac -ar 16000 -ac 1 out.wav` first.
++#[tokio::test]
++#[ignore = "needs a running nemo-speech server (VOXTYPE_LIVE_ENDPOINT, VOXTYPE_LIVE_WAV)"]
++async fn live_server_streams_a_wav_at_real_time_pace() {
++    use std::time::Instant;
++
++    let endpoint = std::env::var("VOXTYPE_LIVE_ENDPOINT").expect("VOXTYPE_LIVE_ENDPOINT");
++    let wav = std::env::var("VOXTYPE_LIVE_WAV").expect("VOXTYPE_LIVE_WAV");
++    let samples: Vec<f32> = hound::WavReader::open(&wav)
++        .expect("open wav")
++        .samples::<i16>()
++        .map(|sample| f32::from(sample.expect("sample")) / 32768.0)
++        .collect();
++
++    let mut config = config_for(&endpoint);
++    if let Ok(file) = std::env::var("VOXTYPE_LIVE_VOCABULARY") {
++        config.whisper.vocabulary_files = vec![file];
++    }
++    let transcriber = RealtimeTranscriber::new(&config).expect("transcriber");
++    let (tx, rx) = mpsc::channel(64);
++    let started = Instant::now();
++    let mut handle = transcriber
++        .as_streaming()
++        .expect("streaming")
++        .start_stream(rx)
++        .expect("start");
++
++    // The microphone delivers 100 ms of audio every 100 ms.
++    let feeder = tokio::spawn(async move {
++        let mut chunks = 0u32;
++        for chunk in samples.chunks(1600) {
++            chunks += 1;
++            tokio::time::sleep_until(
++                tokio::time::Instant::from_std(started) + Duration::from_millis(100) * chunks,
++            )
++            .await;
++            tx.send(chunk.to_vec()).await.expect("audio");
++        }
++        Instant::now()
++    });
++
++    let mut cursor = String::new();
++    let mut first_typed = None;
++    let mut last_typed = Instant::now();
++    let mut ended = None;
++    while let Some(event) = handle.events.recv().await {
++        let at = started.elapsed().as_secs_f64();
++        match &event {
++            StreamingEvent::Partial { text, .. } | StreamingEvent::Final { text, .. } => {
++                cursor.push_str(text);
++                first_typed.get_or_insert(at);
++                last_typed = Instant::now();
++                println!("[{at:7.3}s] type    {text:?}");
++            }
++            StreamingEvent::Replace {
++                backspace, text, ..
++            } => {
++                for _ in 0..*backspace {
++                    cursor.pop();
++                }
++                cursor.push_str(text);
++                last_typed = Instant::now();
++                println!("[{at:7.3}s] replace -{backspace} {text:?}");
++            }
++            StreamingEvent::Preview { text } => println!("[{at:7.3}s] preview {text:?}"),
++            StreamingEvent::Error(error) => println!("[{at:7.3}s] ERROR   {error}"),
++            StreamingEvent::Ended => {
++                ended = Some(at);
++                println!("[{at:7.3}s] ended");
++                break;
++            }
++        }
++    }
++    let last_audio = feeder.await.expect("feeder");
++    handle.task.await.expect("join").expect("result");
++
++    let audio_secs = last_audio.duration_since(started).as_secs_f64();
++    println!("typed text: {cursor:?}");
++    println!(
++        "first audio sample to first typed word: {:.3}s",
++        first_typed.expect("something was typed")
++    );
++    println!(
++        "last audio sample ({audio_secs:.3}s) to last typing: {:.3}s",
++        last_typed.duration_since(last_audio).as_secs_f64()
++    );
++    println!(
++        "last audio sample to Ended: {:.3}s",
++        ended.expect("stream ended") - audio_secs
++    );
++}
+--- /dev/null
++++ b/src/transcribe/realtime/vocabulary.rs
+@@ -0,0 +1,356 @@
++//! Vocabulary files for the realtime backend.
++//!
++//! One entry per line, UTF-8. A line that starts with `#` is a comment and
++//! blank lines are ignored:
++//!
++//! ```text
++//! Nextcloud                # not a comment: only whole lines can be comments
++//! next cloud => Nextcloud
++//! ```
++//!
++//! `Nextcloud` is a boosted term. `next cloud => Nextcloud` is a correction:
++//! whole-word, case-insensitive replacement of the recognized text, and the
++//! right-hand side is boosted too. A later entry for the same left-hand side
++//! replaces an earlier one, which is how a user file overrides the system file.
++
++use std::path::{Path, PathBuf};
++
++use serde_json::{json, Value};
++
++/// Highest boost the cache-aware RNNT decoder honors. The server clamps a
++/// request score to `asr.decoder.boosting_max_boost`, default 5.0
++/// (docs/asr/configuration.md#word-boosting), so a larger score does nothing.
++pub const MAX_BOOST: f32 = 5.0;
++
++/// Most phrases sent in one session. docs/asr/configuration.md states no
++/// phrase limit for the RNNT decoder; 256 is the cap NeMo-Speech applies to
++/// boosted words in its Flashlight decoder (`kMaxBoostWords`), kept here so a
++/// runaway vocabulary file cannot bloat session setup on any decoder.
++pub const MAX_PHRASES: usize = 256;
++
++/// A whole-word, case-insensitive replacement applied to recognized text.
++#[derive(Debug, Clone, PartialEq, Eq)]
++pub struct Correction {
++    pub from: String,
++    pub to: String,
++}
++
++/// Terms to boost and corrections to apply, merged from vocabulary files.
++#[derive(Debug, Clone, Default, PartialEq, Eq)]
++pub struct Vocabulary {
++    terms: Vec<String>,
++    corrections: Vec<Correction>,
++}
++
++impl Vocabulary {
++    /// Parse one vocabulary file's contents. Unusable lines are skipped with a
++    /// warning that names the line.
++    pub fn parse(text: &str) -> Self {
++        let mut vocabulary = Self::default();
++        for (index, raw) in text.lines().enumerate() {
++            let line = raw.trim();
++            if line.is_empty() || line.starts_with('#') {
++                continue;
++            }
++            match line.split_once("=>") {
++                None => vocabulary.add_term(line),
++                Some((from, to)) => {
++                    let (from, to) = (from.trim(), to.trim());
++                    if from.is_empty() || to.is_empty() {
++                        tracing::warn!(
++                            line.number = index + 1,
++                            "Skipping vocabulary correction with an empty side"
++                        );
++                        continue;
++                    }
++                    vocabulary.add_correction(from, to);
++                }
++            }
++        }
++        vocabulary
++    }
++
++    /// Read and merge vocabulary files in order; later files win. A file that
++    /// does not exist is skipped silently, one that cannot be read is skipped
++    /// with a warning. A leading `~` in a path expands to `home`.
++    pub fn load(paths: &[String], home: Option<&Path>) -> Self {
++        let mut merged = Self::default();
++        for configured in paths {
++            let path = expand_home(configured, home);
++            match std::fs::read_to_string(&path) {
++                Ok(text) => merged.merge(Self::parse(&text)),
++                Err(error) if error.kind() == std::io::ErrorKind::NotFound => {}
++                Err(error) => tracing::warn!(
++                    file.path = %path.display(),
++                    %error,
++                    "Cannot read vocabulary file"
++                ),
++            }
++        }
++        merged
++    }
++
++    /// Fold `later` into `self`: its terms are appended and its corrections
++    /// replace corrections with the same left-hand side.
++    pub fn merge(&mut self, later: Self) {
++        for term in later.terms {
++            self.add_term(&term);
++        }
++        for correction in later.corrections {
++            self.add_correction(&correction.from, &correction.to);
++        }
++    }
++
++    pub fn corrections(&self) -> &[Correction] {
++        &self.corrections
++    }
++
++    /// Every phrase worth boosting: the plain terms, then each correction's
++    /// right-hand side, without duplicates.
++    pub fn boosted(&self) -> Vec<&str> {
++        let mut phrases: Vec<&str> = Vec::with_capacity(self.terms.len() + self.corrections.len());
++        let wanted = self
++            .terms
++            .iter()
++            .map(String::as_str)
++            .chain(self.corrections.iter().map(|c| c.to.as_str()));
++        for phrase in wanted {
++            if !phrases.contains(&phrase) {
++                phrases.push(phrase);
++            }
++        }
++        phrases
++    }
++
++    /// The `speech_contexts` value for a session, or `None` when there is
++    /// nothing to send. The score is clamped to [`MAX_BOOST`] and the phrase
++    /// list to [`MAX_PHRASES`]; both log when they bite.
++    pub fn speech_contexts(&self, boost: f32) -> Option<Value> {
++        if boost <= 0.0 || boost.is_nan() {
++            return None;
++        }
++        let mut phrases = self.boosted();
++        if phrases.is_empty() {
++            return None;
++        }
++        let boost = if boost > MAX_BOOST {
++            tracing::warn!(
++                boost.configured = boost,
++                boost.sent = MAX_BOOST,
++                "remote_boost is above what the server honors; clamping"
++            );
++            MAX_BOOST
++        } else {
++            boost
++        };
++        if phrases.len() > MAX_PHRASES {
++            tracing::warn!(
++                phrases.total = phrases.len(),
++                phrases.sent = MAX_PHRASES,
++                "Vocabulary has more boosted phrases than one session takes; truncating"
++            );
++            phrases.truncate(MAX_PHRASES);
++        }
++        // Three decimals keep an f32 like 2.7 from serializing as 2.700000047...
++        let boost = (f64::from(boost) * 1000.0).round() / 1000.0;
++        Some(json!([{ "phrases": phrases, "boost": boost }]))
++    }
++
++    fn add_term(&mut self, term: &str) {
++        if !self.terms.iter().any(|known| known == term) {
++            self.terms.push(term.to_string());
++        }
++    }
++
++    fn add_correction(&mut self, from: &str, to: &str) {
++        let key = from.to_lowercase();
++        let correction = Correction {
++            from: from.to_string(),
++            to: to.to_string(),
++        };
++        match self
++            .corrections
++            .iter_mut()
++            .find(|known| known.from.to_lowercase() == key)
++        {
++            Some(known) => *known = correction,
++            None => self.corrections.push(correction),
++        }
++    }
++}
++
++/// Expand a leading `~` or `~/` to `home`. Any other path is returned as is,
++/// and so is a `~` path when `home` is unknown.
++pub fn expand_home(path: &str, home: Option<&Path>) -> PathBuf {
++    let Some(home) = home else {
++        return PathBuf::from(path);
++    };
++    if path == "~" {
++        return home.to_path_buf();
++    }
++    match path.strip_prefix("~/") {
++        Some(rest) => home.join(rest),
++        None => PathBuf::from(path),
++    }
++}
++
++#[cfg(test)]
++mod tests {
++    use super::*;
++
++    #[test]
++    fn parses_terms_corrections_comments_and_blanks() {
++        let vocabulary = Vocabulary::parse(
++            "# Names\n\nNextcloud\n  next cloud => Nextcloud  \nC# language\n#not-a-term\n",
++        );
++        assert_eq!(
++            vocabulary.corrections(),
++            [Correction {
++                from: "next cloud".into(),
++                to: "Nextcloud".into()
++            }]
++        );
++        assert_eq!(vocabulary.boosted(), ["Nextcloud", "C# language"]);
++    }
++
++    #[test]
++    fn correction_right_hand_side_is_boosted_once() {
++        let vocabulary =
++            Vocabulary::parse("Nextcloud\nnext cloud => Nextcloud\nnext club => Nextcloud");
++        assert_eq!(vocabulary.boosted(), ["Nextcloud"]);
++        assert_eq!(vocabulary.corrections().len(), 2);
++    }
++
++    #[test]
++    fn empty_sides_are_skipped() {
++        let vocabulary = Vocabulary::parse("=> Nextcloud\nnext cloud =>\n=>");
++        assert!(vocabulary.corrections().is_empty());
++        assert!(vocabulary.boosted().is_empty());
++    }
++
++    #[test]
++    fn only_the_first_arrow_splits_a_line() {
++        let vocabulary = Vocabulary::parse("a => b => c");
++        assert_eq!(vocabulary.corrections()[0].to, "b => c");
++    }
++
++    #[test]
++    fn later_file_overrides_the_same_left_hand_side_case_insensitively() {
++        let mut merged = Vocabulary::parse("Next Cloud => Nextcloud\nKubernetes");
++        merged.merge(Vocabulary::parse(
++            "next cloud => NextCloud\nKubernetes\nTailscale",
++        ));
++        assert_eq!(
++            merged.corrections(),
++            [Correction {
++                from: "next cloud".into(),
++                to: "NextCloud".into()
++            }]
++        );
++        assert_eq!(merged.boosted(), ["Kubernetes", "Tailscale", "NextCloud"]);
++    }
++
++    #[test]
++    fn overridden_correction_is_no_longer_boosted() {
++        let mut merged = Vocabulary::parse("next cloud => Nextcloud");
++        merged.merge(Vocabulary::parse("next cloud => NextCloud"));
++        assert_eq!(merged.boosted(), ["NextCloud"]);
++    }
++
++    #[test]
++    fn speech_contexts_carry_phrases_and_boost() {
++        let vocabulary = Vocabulary::parse("Nextcloud\nKowalczyk");
++        assert_eq!(
++            vocabulary.speech_contexts(2.5),
++            Some(json!([{ "phrases": ["Nextcloud", "Kowalczyk"], "boost": 2.5 }]))
++        );
++    }
++
++    #[test]
++    fn speech_contexts_round_f32_noise_away() {
++        let vocabulary = Vocabulary::parse("Nextcloud");
++        assert_eq!(
++            vocabulary.speech_contexts(2.7),
++            Some(json!([{ "phrases": ["Nextcloud"], "boost": 2.7 }]))
++        );
++    }
++
++    #[test]
++    fn speech_contexts_clamp_boost_to_the_server_limit() {
++        let vocabulary = Vocabulary::parse("Nextcloud");
++        let contexts = vocabulary.speech_contexts(9.0).expect("contexts");
++        assert_eq!(contexts[0]["boost"], json!(f64::from(MAX_BOOST)));
++    }
++
++    #[test]
++    fn speech_contexts_cap_the_phrase_count() {
++        let text: String = (0..MAX_PHRASES + 10)
++            .map(|i| format!("term{i}\n"))
++            .collect();
++        let contexts = Vocabulary::parse(&text)
++            .speech_contexts(2.5)
++            .expect("contexts");
++        assert_eq!(
++            contexts[0]["phrases"].as_array().map(Vec::len),
++            Some(MAX_PHRASES)
++        );
++        assert_eq!(contexts[0]["phrases"][0], json!("term0"));
++    }
++
++    #[test]
++    fn no_terms_or_no_boost_sends_nothing() {
++        assert_eq!(Vocabulary::default().speech_contexts(2.5), None);
++        assert_eq!(Vocabulary::parse("Nextcloud").speech_contexts(0.0), None);
++        assert_eq!(Vocabulary::parse("Nextcloud").speech_contexts(-1.0), None);
++        assert_eq!(
++            Vocabulary::parse("Nextcloud").speech_contexts(f32::NAN),
++            None
++        );
++    }
++
++    #[test]
++    fn home_expansion_handles_tilde_forms() {
++        let home = Path::new("/home/luc");
++        assert_eq!(
++            expand_home("~/.config/voxtype/vocabulary.txt", Some(home)),
++            PathBuf::from("/home/luc/.config/voxtype/vocabulary.txt")
++        );
++        assert_eq!(expand_home("~", Some(home)), PathBuf::from("/home/luc"));
++        assert_eq!(
++            expand_home("/etc/voxtype/vocabulary.txt", Some(home)),
++            PathBuf::from("/etc/voxtype/vocabulary.txt")
++        );
++        assert_eq!(
++            expand_home("~other/x", Some(home)),
++            PathBuf::from("~other/x")
++        );
++        assert_eq!(expand_home("~/x", None), PathBuf::from("~/x"));
++    }
++
++    #[test]
++    fn load_skips_missing_files_and_lets_later_files_win() {
++        let dir = tempfile::tempdir().expect("tempdir");
++        let system = dir.path().join("system.txt");
++        let user = dir.path().join("user.txt");
++        std::fs::write(&system, "Nextcloud\nnext cloud => Nextcloud\n").expect("write system");
++        std::fs::write(&user, "next cloud => NextCloud\n").expect("write user");
++        let paths = [
++            system.display().to_string(),
++            dir.path().join("missing.txt").display().to_string(),
++            user.display().to_string(),
++        ];
++        let vocabulary = Vocabulary::load(&paths, None);
++        assert_eq!(vocabulary.corrections()[0].to, "NextCloud");
++        assert_eq!(vocabulary.boosted(), ["Nextcloud", "NextCloud"]);
++    }
++
++    #[test]
++    fn load_reads_files_fresh_on_every_call() {
++        let dir = tempfile::tempdir().expect("tempdir");
++        let file = dir.path().join("vocabulary.txt");
++        let paths = [file.display().to_string()];
++        assert!(Vocabulary::load(&paths, None).boosted().is_empty());
++        std::fs::write(&file, "Tailscale\n").expect("write");
++        assert_eq!(Vocabulary::load(&paths, None).boosted(), ["Tailscale"]);
++    }
++}
+--- a/src/transcribe/remote.rs
++++ b/src/transcribe/remote.rs
+@@ -14,7 +14,7 @@
+ use ureq::serde_json;
+ 
+ /// Remote transcriber using OpenAI-compatible Whisper API
+-#[derive(Debug)]
++#[derive(Debug, Clone)]
+ pub struct RemoteTranscriber {
+     /// Base endpoint URL (e.g., "http://192.168.1.100:8080")
+     endpoint: String,
+@@ -32,6 +32,8 @@
+     send_auto_language: bool,
+     /// Request timeout
+     timeout: Duration,
++    /// JSON for the `speech_contexts` form field (NeMo-Speech word boosting)
++    speech_contexts: Option<String>,
+ }
+ 
+ impl RemoteTranscriber {
+@@ -110,9 +112,27 @@
+             initial_prompt,
+             send_auto_language: config.remote_send_auto_language,
+             timeout,
++            speech_contexts: None,
+         })
+     }
+ 
++    /// Send `speech_contexts` (a JSON array) with every request. Servers that
++    /// do not know the field ignore it.
++    pub fn with_speech_contexts(mut self, speech_contexts: Option<String>) -> Self {
++        self.speech_contexts = speech_contexts;
++        self
++    }
++
++    /// Base endpoint URL, as configured
++    pub fn endpoint(&self) -> &str {
++        &self.endpoint
++    }
++
++    /// API key from the config or the environment, if any
++    pub fn api_key(&self) -> Option<&str> {
++        self.api_key.as_deref()
++    }
++
+     /// Encode f32 samples to WAV format
+     fn encode_wav(&self, samples: &[f32]) -> Result<Vec<u8>, TranscribeError> {
+         let spec = hound::WavSpec {
+@@ -189,6 +209,16 @@
+             body.extend_from_slice(b"\r\n");
+         }
+ 
++        // Add word-boosting contexts (JSON array, NeMo-Speech extension)
++        if let Some(contexts) = &self.speech_contexts {
++            body.extend_from_slice(format!("--{}\r\n", boundary).as_bytes());
++            body.extend_from_slice(
++                b"Content-Disposition: form-data; name=\"speech_contexts\"\r\n\r\n",
++            );
++            body.extend_from_slice(contexts.as_bytes());
++            body.extend_from_slice(b"\r\n");
++        }
++
+         // Add response_format field
+         body.extend_from_slice(format!("--{}\r\n", boundary).as_bytes());
+         body.extend_from_slice(b"Content-Disposition: form-data; name=\"response_format\"\r\n\r\n");
+@@ -368,6 +398,25 @@
+     }
+ 
+     #[test]
++    fn test_multipart_body_sends_speech_contexts_only_when_set() {
++        let config = WhisperConfig {
++            mode: Some(crate::config::WhisperMode::Remote),
++            remote_endpoint: Some("http://localhost:8080".to_string()),
++            ..Default::default()
++        };
++        let plain = RemoteTranscriber::new(&config).unwrap();
++        let (_boundary, body) = plain.build_multipart_body(&[0u8; 8]);
++        assert!(!String::from_utf8_lossy(&body).contains("speech_contexts"));
++
++        let boosted =
++            plain.with_speech_contexts(Some(r#"[{"phrases":["Nextcloud"],"boost":2.5}]"#.into()));
++        let (_boundary, body) = boosted.build_multipart_body(&[0u8; 8]);
++        assert!(String::from_utf8_lossy(&body).contains(
++            "name=\"speech_contexts\"\r\n\r\n[{\"phrases\":[\"Nextcloud\"],\"boost\":2.5}]\r\n"
++        ));
++    }
++
++    #[test]
+     fn test_multipart_body_omits_language_when_auto() {
+         let config = WhisperConfig {
+             mode: Some(crate::config::WhisperMode::Remote),
+--- a/src/transcribe/sliding_window.rs
++++ b/src/transcribe/sliding_window.rs
+@@ -300,9 +300,16 @@
+                     }
+                     Outcome::Eof => {
+                         // Graceful end: one last flush so no audio is lost.
+-                        if let Some(tail) = session.final_flush() {
+-                            let event = delta_to_event(tail, config.type_partials);
+-                            let _ = runtime.block_on(events_tx.send(event));
++                        match session.final_flush() {
++                            Ok(Some(tail)) => {
++                                let event = delta_to_event(tail, config.type_partials);
++                                let _ = runtime.block_on(events_tx.send(event));
++                            }
++                            Ok(None) => {}
++                            Err(error) => {
++                                let _ =
++                                    runtime.block_on(events_tx.send(StreamingEvent::Error(error)));
++                            }
+                         }
+                         let _ = runtime.block_on(events_tx.send(StreamingEvent::Ended));
+                         return Ok(());
+@@ -676,10 +683,9 @@
+ 
+     /// One last transcription at end-of-recording. Returns the remaining tail
+     /// delta (never cumulative text — the daemon already typed the partials).
+-    fn final_flush(&mut self) -> Option<Delta> {
+-        let final_text = match self.transcribe_buffer() {
+-            Ok(Some(t)) => t,
+-            _ => return None,
++    fn final_flush(&mut self) -> Result<Option<Delta>, TranscribeError> {
++        let Some(final_text) = self.transcribe_buffer()? else {
++            return Ok(None);
+         };
+ 
+         if self.config.revision_mode {
+@@ -704,7 +710,7 @@
+                     Some(guess.split_whitespace().map(str::to_owned).collect())
+                 }
+             });
+-            return tail.and_then(|t| self.reconcile_revision(t));
++            return Ok(tail.and_then(|t| self.reconcile_revision(t)));
+         }
+ 
+         let full_emitted = self.full_text_parts.join(" ");
+@@ -712,7 +718,7 @@
+         let delta = extract_new_text(&already_emitted, &final_text);
+         let delta = delta.trim().to_string();
+         let delta = dedupe_against_emitted(&full_emitted, &delta);
+-        if delta.is_empty() {
++        Ok(if delta.is_empty() {
+             None
+         } else {
+             // `delta` has no leading space (see `on_tick`); separate it from
+@@ -724,7 +730,7 @@
+             };
+             self.full_text_parts.push(delta);
+             Some(Delta::Append(typed))
+-        }
++        })
+     }
+ }
+ 
+@@ -1136,6 +1142,7 @@
+ 
+         let delta = session
+             .final_flush()
++            .expect("final transcription succeeds")
+             .expect("must fall back to a guess instead of silently giving up");
+ 
+         assert_eq!(
+@@ -1538,6 +1545,38 @@
+     }
+ 
+     #[tokio::test]
++    async fn final_flush_reports_worker_failure_before_ending() {
++        struct FailedWorker;
++        impl Transcriber for FailedWorker {
++            fn transcribe(&self, _samples: &[f32]) -> Result<String, TranscribeError> {
++                Err(TranscribeError::NetworkError(
++                    "worker unavailable".to_string(),
++                ))
++            }
++        }
++        let mut config = streaming_config();
++        config.interval_s = 60.0;
++        let engine = SlidingWindowStreamingTranscriber::new(Arc::new(FailedWorker), config);
++        let (tx, rx) = mpsc::channel(1);
++        let mut handle = engine.start_stream(rx).expect("start stream");
++        tx.send(loud_samples(1.5)).await.expect("feed audio");
++        drop(tx);
++        assert!(matches!(
++            handle.events.recv().await,
++            Some(StreamingEvent::Error(_))
++        ));
++        assert!(matches!(
++            handle.events.recv().await,
++            Some(StreamingEvent::Ended)
++        ));
++        handle
++            .task
++            .await
++            .expect("join worker")
++            .expect("stream ends cleanly");
++    }
++
++    #[tokio::test]
+     async fn session_emits_stable_deltas_then_final_flush_and_ended() {
+         let events = run_session(streaming_config()).await;
+ 
+--- a/src/transcribe/soniox.rs
++++ b/src/transcribe/soniox.rs
+@@ -1434,6 +1434,7 @@
+                 StreamingEvent::Replace {
+                     backspace, text, ..
+                 } => ("Replace", format!("-{}+{}", backspace, text)),
++                StreamingEvent::Preview { text } => ("Preview", text.clone()),
+                 StreamingEvent::Ended => ("Ended", String::new()),
+                 StreamingEvent::Error(e) => ("Error", e.to_string()),
+             })
+--- a/src/transcribe/streaming.rs
++++ b/src/transcribe/streaming.rs
+@@ -64,6 +64,9 @@
+ /// is not needed in normal use.
+ #[derive(Debug)]
+ pub enum StreamingEvent {
++    /// Tentative window text for the OSD only. Never commit this at the cursor.
++    Preview { text: String },
++
+     /// In-progress text for a segment. May be revised by later partials
+     /// or superseded by a `Final` event with the same `segment_id`.
+     Partial { text: String, segment_id: SegmentId },
