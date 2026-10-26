@@ -8,7 +8,7 @@ in {
     users.users.luc.packages = [
       inputs.kettle-code.packages.${system}.k5c-cli
       inputs.kettle-code.packages.${system}.k5c-desktop
-      inputs.kettle-forge.packages.${system}.k5f
+      inputs.kettle-forge.packages.${system}.kettle-forge
     ];
 
     home-manager.users.luc = {

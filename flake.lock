@@ -817,16 +817,15 @@
       "locked": {
         "lastModified": 1793020066,
         "narHash": "sha256-rJWd1h/rbU8JNMmUQUSoQdu0jg9Sig9LYfcu9f+m+A0=",
-        "ref": "master",
+        "ref": "refs/heads/master",
         "rev": "8802132c42faaaed51bbd9d4bd0d5bdc9cd40023",
         "revCount": 576,
         "type": "git",
-        "url": "file:///home/luc/dev/local/kettle-code"
+        "url": "ssh://git@100.127.0.11:2222/v3xlabs/kettle-code.git"
       },
       "original": {
-        "ref": "master",
         "type": "git",
-        "url": "file:///home/luc/dev/local/kettle-code"
+        "url": "ssh://git@100.127.0.11:2222/v3xlabs/kettle-code.git"
       }
     },
     "kettle-forge": {
@@ -835,18 +834,17 @@
         "nixpkgs": "nixpkgs_4"
       },
       "locked": {
-        "lastModified": 1792771938,
-        "narHash": "sha256-U40XVTlgd3/Z9YwWmRq1XdFRknPIM2kocEgwHsMH9Lw=",
+        "lastModified": 1793030243,
+        "narHash": "sha256-Ne84IhNWY7Y9hb9h9xVTiCR7YNEwTblJNDbuqoF2o2s=",
         "ref": "refs/heads/master",
-        "rev": "b6b4ce15d37fef721e012ccb2ac93e2a69492cd5",
-        "revCount": 139,
+        "rev": "becd16bfef12616ee90f661bb74ed63fef22a6d4",
+        "revCount": 156,
         "type": "git",
-        "url": "file:///home/luc/dev/local/k5-forge"
+        "url": "ssh://git@100.127.0.11:2222/v3xlabs/kettle-forge.git"
       },
       "original": {
-        "rev": "b6b4ce15d37fef721e012ccb2ac93e2a69492cd5",
         "type": "git",
-        "url": "file:///home/luc/dev/local/k5-forge"
+        "url": "ssh://git@100.127.0.11:2222/v3xlabs/kettle-forge.git"
       }
     },
     "koi": {
