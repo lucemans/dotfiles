@@ -444,6 +444,19 @@ in {
             };
           }
           {
+            model_name = "v3x-m/humanizer-12b";
+            litellm_params = {
+              api_base = "http://10.90.0.11:11434/v1";
+              model = "openai/humanizer-12b";
+              api_key = "local";
+            };
+            model_info = {
+              mode = "chat";
+              input_cost_per_token = 0.00000020;
+              output_cost_per_token = 0.00000020;
+            };
+          }
+          {
             model_name = "openai/gpt-5.6-luna";
             litellm_params.model = "openrouter/openai/gpt-5.6-luna";
             model_info.base_model = "gpt-5.6-luna";

@@ -485,6 +485,53 @@
         ttl = 900;
         concurrencyLimit = 16;
       };
+
+      # Humanizer-12B: Gemma 4 text-completion model that rewrites a draft so it does not
+      # read like a language model. Pinned to the second A4000, so it stays loaded next to
+      # qwen2.5-coder-7b-fim on the first. The Q4_K_M file is the quantization-aware one:
+      # within noise of bf16 on the task, and 5 GB smaller than Q8_0, which buys the f16
+      # KV cache and a 512-token ubatch instead of a layer split across PCIe.
+      "humanizer-12b" = {
+        name = "Humanizer 12B";
+        env = ["CUDA_VISIBLE_DEVICES=1"];
+        weights = {
+          repo = "jialinyyzz/humanizer-GGUF";
+          rev = "d9c6be435fe29e6e96dc42f4c3cc185e06ae3eac";
+          files."humanizer-12b-Q4_K_M.gguf" = "2229574dec5178629575ee4a153dfee7d9e924ab997d0ad9d2ac622b67e44834";
+        };
+        args = [
+          "--gpu-layers all"
+          "--split-mode none"
+          "--main-gpu 0"
+          "--flash-attn on"
+          # Trained and evaluated at 8k. Its sliding-window layers cap their own cache at
+          # 1024 tokens, so an f16 KV cache costs about 2.6 GiB at 8k.
+          "--ctx-size 8192"
+          "--batch-size 2048"
+          "--ubatch-size 512"
+          "--parallel 1"
+          # A rewrite reuses the draft's numbers, names and quotes, so ngram speculation
+          # drafts them out of the context. It is lossless: the sampled tokens do not change.
+          "--spec-type ngram-mod,ngram-simple"
+          "--spec-ngram-simple-size-n 12"
+          "--spec-ngram-simple-size-m 16"
+          "--spec-ngram-mod-n-match 24"
+          "--spec-ngram-mod-n-min 8"
+          "--spec-ngram-mod-n-max 16"
+          # The file's chat template builds instr + draft + sep from the last user message,
+          # and its stored defaults are the sampling below.
+          "--jinja"
+          "--temp 1.0"
+          "--top-p 0.95"
+          "--top-k 0"
+          "--min-p 0"
+          "--repeat-penalty 1.0"
+          "--n-predict 2048"
+          "--no-webui"
+        ];
+        ttl = 900;
+        concurrencyLimit = 2;
+      };
     };
   in {
     systemd.tmpfiles.rules = [
