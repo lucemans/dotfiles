@@ -64,11 +64,25 @@ in {
             api = "openai-images";
             baseUrl = "${gateway.baseUrl}/v1";
           }) ["gpt-image-1.5" "gpt-image-2" "gpt-image-2.5" "gpt-image-2.5-flare" "gpt-image-2.5-sunburst"];
-          modelOverrides = lib.genAttrs ["gpt-5.6-luna" "gpt-5.6-terra" "gpt-5.6-sol" "gpt-6-luna" "gpt-6-sol" "gpt-6.1-sol" "gpt-6-astra"] (_: {
-            input = ["text" "image"];
-            contextWindow = 1050000;
-            maxTokens = 128000;
-          });
+          modelOverrides =
+            lib.genAttrs ["gpt-5.6-luna" "gpt-5.6-terra" "gpt-5.6-sol" "gpt-6-luna" "gpt-6-sol" "gpt-6.1-sol" "gpt-6-astra"] (_: {
+              input = ["text" "image"];
+              contextWindow = 1050000;
+              maxTokens = 128000;
+            })
+            // {
+              "gpt-6.1-terra" = {
+                input = ["text" "image"];
+                contextWindow = 1050000;
+                maxTokens = 128000;
+                reasoning = true;
+                thinking = {
+                  mode = "effort";
+                  efforts = ["low" "medium" "high" "xhigh" "max"];
+                };
+                compat.supportsReasoningEffort = true;
+              };
+            };
         };
       anthropic =
         gateway

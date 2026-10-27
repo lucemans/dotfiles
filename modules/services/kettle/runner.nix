@@ -119,6 +119,7 @@ in {
           compaction.modelThresholds = {
             "anthropic/claude-opus-5-5" = "f300000";
             "openai/gpt-6.1-sol" = "f250000";
+            "openai/gpt-6.1-terra" = "f250000";
           };
           providers.maxInFlightRequests = {
             anthropic = 3;
