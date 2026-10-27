@@ -66,6 +66,14 @@ _: {
           "/var/lib/cli-proxy-api"
           "/var/lib/docker"
           "/var/lib/nixos"
+          {
+            directory = "/var/lib/private/metered-usage";
+            user = "-";
+            group = "-";
+            mode = "0700";
+            configureParent = true;
+            parent.mode = "0700";
+          }
           "/var/lib/sbctl"
           "/var/lib/systemd"
           "/var/lib/vaultwarden"
