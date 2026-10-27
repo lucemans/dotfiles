@@ -130,6 +130,22 @@ in {
       upstream = "${hosts.v3x-mission.address}:3001";
       access = [];
     };
+    llamaTeapot = {
+      name = "llama-t.${zone}";
+      title = "Llama Teapot";
+      icon = "llama-swap";
+      upstream = "127.0.0.1:8081";
+      path = "/ui";
+      access = [];
+    };
+    llamaMediabus = {
+      name = "llama-m.${zone}";
+      title = "Llama Mediabus";
+      icon = "llama-swap";
+      upstream = "${hosts.v3x-mediabus.address}:11434";
+      path = "/ui";
+      access = [];
+    };
     launchpi = {
       name = "launchpi.${zone}";
       title = "LaunchPi";
@@ -235,7 +251,7 @@ in {
     }
     {
       title = "Control Plane";
-      services = ["mission" "grafanaMission" "launchpi"];
+      services = ["mission" "grafanaMission" "launchpi" "llamaTeapot" "llamaMediabus"];
     }
     {
       title = "Infrastructure";
