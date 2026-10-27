@@ -1,7 +1,7 @@
 {
   lib,
   inputs,
-  self,
+  kittyWrapperModule,
   ...
 }: {
   perSystem = {
@@ -12,7 +12,7 @@
     packages.terminal =
       (inputs.wrappers.wrapperModules.kitty.apply {
         inherit pkgs;
-        imports = [self.wrappersModules.kitty];
+        imports = [kittyWrapperModule];
         shell = lib.getExe self'.packages.environment;
       }).wrapper;
 

@@ -1,4 +1,4 @@
-{
+{tripwire, ...}: {
   perSystem = {pkgs, ...}: {
     packages.claude-code = pkgs.claude-code;
   };
@@ -19,7 +19,7 @@
     # in the project, and managed settings are the only tier that outranks it.
     # These mirror the prohibitions in configs/local/SYSTEM.md so they cannot be widened from
     # inside a project. Read-only git stays allowed, as the policy intends.
-    gitMutations = map (subcommand: "Bash(git ${subcommand}:*)") self.tripwire.gitMutations;
+    gitMutations = map (subcommand: "Bash(git ${subcommand}:*)") tripwire.gitMutations;
 
     # Claude has no `enabled` and no `timeout`. Its deferred tool schemas keep an
     # unused server out of the context window.

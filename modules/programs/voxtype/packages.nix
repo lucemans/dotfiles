@@ -2,7 +2,7 @@
   pkgs,
   voxtype,
 }: let
-  upstream = voxtype.packages.${pkgs.system};
+  upstream = voxtype.packages.${pkgs.stdenv.hostPlatform.system};
   upstreamPkgs = import voxtype.inputs.nixpkgs {system = pkgs.stdenv.hostPlatform.system;};
   # Give the patch its own store path so unrelated dotfiles edits do not
   # invalidate the patched UI.

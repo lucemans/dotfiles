@@ -1,4 +1,4 @@
-_: let
+{wallpaper, ...}: let
   inherit (import ../../modules/network/topology.nix) hub;
   inherit (import ../../modules/network/hosts.nix) hosts;
 in {
@@ -76,7 +76,7 @@ in {
     systemd.user.services.swaybg = {
       wantedBy = ["graphical-session.target"];
       partOf = ["graphical-session.target"];
-      serviceConfig.ExecStart = "${pkgs.swaybg}/bin/swaybg -i ${self.wallpaper} -m fill";
+      serviceConfig.ExecStart = "${pkgs.swaybg}/bin/swaybg -i ${wallpaper} -m fill";
     };
 
     systemd.services.mission-display-off.serviceConfig = {

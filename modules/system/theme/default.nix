@@ -94,9 +94,10 @@ let
     };
   };
 in {
-  flake.wallpaper = ./bg.png;
-  flake.startIcon = ./vista.png;
-
-  flake.themes = themes;
-  flake.theme = themes.${themeName};
+  _module.args = {
+    wallpaper = ./bg.png;
+    startIcon = ./vista.png;
+    inherit themes;
+    theme = themes.${themeName};
+  };
 }

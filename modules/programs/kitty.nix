@@ -1,5 +1,5 @@
-{self, ...}: {
-  flake.wrappersModules.kitty = {
+{theme, ...}: {
+  _module.args.kittyWrapperModule = {
     config,
     lib,
     ...
@@ -41,34 +41,34 @@
           "ctrl+shift+t new_tab"
         ];
 
-        background = self.theme.base00;
-        foreground = self.theme.base07;
+        background = theme.base00;
+        foreground = theme.base07;
 
-        cursor = self.theme.base07;
+        cursor = theme.base07;
 
-        selection_foreground = self.theme.base02;
-        selection_background = self.theme.base01;
+        selection_foreground = theme.base02;
+        selection_background = theme.base01;
 
-        active_tab_foreground = self.theme.base0B;
-        active_tab_background = self.theme.base03;
-        inactive_tab_background = self.theme.base01;
+        active_tab_foreground = theme.base0B;
+        active_tab_background = theme.base03;
+        inactive_tab_background = theme.base01;
 
-        color0 = self.theme.base00;
-        color8 = self.theme.base02;
-        color1 = self.theme.base08;
-        color9 = self.theme.base08;
-        color2 = self.theme.base0B;
-        color10 = self.theme.base0B;
-        color3 = self.theme.base0A;
-        color11 = self.theme.base0A;
-        color4 = self.theme.base0D;
-        color12 = self.theme.base0D;
-        color5 = self.theme.base0E;
-        color13 = self.theme.base0E;
-        color6 = self.theme.base0C;
-        color14 = self.theme.base0C;
-        color7 = self.theme.base03;
-        color15 = self.theme.base03;
+        color0 = theme.base00;
+        color8 = theme.base02;
+        color1 = theme.base08;
+        color9 = theme.base08;
+        color2 = theme.base0B;
+        color10 = theme.base0B;
+        color3 = theme.base0A;
+        color11 = theme.base0A;
+        color4 = theme.base0D;
+        color12 = theme.base0D;
+        color5 = theme.base0E;
+        color13 = theme.base0E;
+        color6 = theme.base0C;
+        color14 = theme.base0C;
+        color7 = theme.base03;
+        color15 = theme.base03;
       };
     };
   };

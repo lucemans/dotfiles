@@ -1,4 +1,8 @@
-{self, ...}: {
+{
+  self,
+  theme,
+  ...
+}: {
   perSystem = {pkgs, ...}: let
     mkPlugin = crateName:
       pkgs.rustPlatform.buildRustPackage {
@@ -51,7 +55,7 @@
             "${selfpkgs.anyrun-plugin-github}/lib/libgithub.so"
           ];
         };
-        extraCss = with self.theme; ''
+        extraCss = with theme; ''
           * {
             font-family: "Hack Nerd Font", "Hack", monospace;
             font-size: 14px;

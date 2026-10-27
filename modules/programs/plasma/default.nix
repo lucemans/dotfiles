@@ -1,6 +1,8 @@
 {
   self,
   inputs,
+  startIcon,
+  wallpaper,
   ...
 }: {
   imports = [
@@ -30,7 +32,7 @@
       };
     };
 
-    environment.etc."plasma/start-icon.jpg".source = self.startIcon;
+    environment.etc."plasma/start-icon.jpg".source = startIcon;
 
     home-manager.sharedModules = [
       inputs.plasma-manager.homeModules.plasma-manager
@@ -62,7 +64,7 @@
         };
 
         workspace = {
-          wallpaper = "${self.wallpaper}";
+          wallpaper = "${wallpaper}";
           colorScheme = "BreezeDark";
           theme = "breeze-dark";
           tooltipDelay = 3;
@@ -89,7 +91,7 @@
 
         kscreenlocker = {
           appearance = {
-            inherit (self) wallpaper;
+            inherit wallpaper;
           };
         };
 

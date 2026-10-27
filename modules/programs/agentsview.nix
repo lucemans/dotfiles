@@ -25,7 +25,7 @@
       startupWMClass = "AgentsView";
     };
 
-    appimageContents = pkgs.appimageTools.extractType2 {
+    appimageContents = pkgs.appimageTools.extract {
       pname = desktopPname;
       inherit version;
       src = desktopSrc;

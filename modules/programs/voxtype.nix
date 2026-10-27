@@ -55,8 +55,8 @@
 
       package = lib.mkOption {
         type = lib.types.package;
-        default = voxtype.packages.${pkgs.system}.default;
-        defaultText = lib.literalExpression "inputs.voxtype.packages.\${pkgs.system}.default";
+        default = voxtype.packages.${pkgs.stdenv.hostPlatform.system}.default;
+        defaultText = lib.literalExpression "inputs.voxtype.packages.\${pkgs.stdenv.hostPlatform.system}.default";
         description = ''
           Wrapped voxtype package from the flake:
             default / vulkan / rocm            — Whisper
@@ -185,7 +185,7 @@ in {
         package =
           if nemotron
           then packages.daemon
-          else voxtype.packages.${pkgs.system}.onnx-cuda;
+          else voxtype.packages.${pkgs.stdenv.hostPlatform.system}.onnx-cuda;
         engine =
           if nemotron
           then "whisper"
@@ -244,7 +244,7 @@ in {
           (
             if nemotron
             then packages.osd
-            else voxtype.packages.${pkgs.system}.osd-gtk4
+            else voxtype.packages.${pkgs.stdenv.hostPlatform.system}.osd-gtk4
           )
           pkgs.which
         ];

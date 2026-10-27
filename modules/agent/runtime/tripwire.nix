@@ -56,7 +56,7 @@ let
     "update-ref"
   ];
 in {
-  flake.tripwire = {inherit gitMutations;};
+  _module.args.tripwire = {inherit gitMutations;};
 
   perSystem = {pkgs, ...}: let
     mutations = builtins.concatStringsSep "|" gitMutations;
