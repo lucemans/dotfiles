@@ -815,11 +815,11 @@
         "rust-overlay": "rust-overlay_4"
       },
       "locked": {
-        "lastModified": 1793124965,
-        "narHash": "sha256-QOHo8TprAw93l1YLd1P8sKysVSaZXSVMatAJouV5YVg=",
+        "lastModified": 1793142622,
+        "narHash": "sha256-UT8IHx7bjbjXEqKsBjcYwCbGUwTkyF153KOdPB4OG+Q=",
         "ref": "refs/heads/master",
-        "rev": "26b486cb4ac77c9f3ffb09c23923cb1ddc53b236",
-        "revCount": 649,
+        "rev": "1746a8e2aca01f11ca490455511808a5633dec95",
+        "revCount": 672,
         "type": "git",
         "url": "ssh://git@100.127.0.11:2222/v3xlabs/kettle-code.git"
       },
@@ -920,11 +920,11 @@
         "rust-overlay": "rust-overlay_8"
       },
       "locked": {
-        "lastModified": 1792759056,
-        "narHash": "sha256-GmBgcUu8YRvqGeQCgzz/8BmN+4wVTLKsQ7JKGXex1CM=",
+        "lastModified": 1793142685,
+        "narHash": "sha256-M57URtUexhNhw8aZHLGCmgXzB91GxPIZ2yeXBVWJWGI=",
         "owner": "v3xlabs",
         "repo": "metered-usage",
-        "rev": "0cb88faa127fd257fbb1c2146d303a8766208027",
+        "rev": "7e74a0e4c2eeb4fe5e1f52a8f65d459aacfa61a2",
         "type": "github"
       },
       "original": {
@@ -1057,17 +1057,17 @@
     },
     "nixpkgs-codex": {
       "locked": {
-        "lastModified": 1792502884,
-        "narHash": "sha256-IoNisKcGbUjdd45qCqywGMCYmZ5EnkxezvLII0FWwNA=",
+        "lastModified": 1792761597,
+        "narHash": "sha256-gqAwFZEdRAY9AZObQnQX07xzVrIyQg3wNRC++mjCWhk=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "02c087f3fe673c9e317f206a627cb6b910336dbe",
+        "rev": "63a94b9a878f718c5d00e8887cf17816bc04b5d5",
         "type": "github"
       },
       "original": {
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "02c087f3fe673c9e317f206a627cb6b910336dbe",
+        "rev": "63a94b9a878f718c5d00e8887cf17816bc04b5d5",
         "type": "github"
       }
     },

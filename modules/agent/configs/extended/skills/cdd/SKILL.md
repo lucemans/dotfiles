@@ -15,6 +15,8 @@ Minor ui changes, text adjustment, and such dont need tests, "make sure the tool
 
 **Assert instead of Test**
 Some behaviour needs assertion; "Codex >v1.2.3 behaves like X and hence and such we do Y" leaves a valuable maintainable assertion in english for future agents to grasp, a test that gets removed next 'optimize tests plz' doesn't
+"the syntax highlighter is lazy loaded to optimize performance" instead of a huge test file asserting it does or doesnt exit
+Temporary testing for verification of the behaviour before delivering is curcial, but git should remain temp test free
 
 **Fast Testing**
 Tests should run fast
