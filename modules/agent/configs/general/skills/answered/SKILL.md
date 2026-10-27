@@ -1,6 +1,6 @@
 ---
 name: answered
-description: "User indicating they answered shared doc"
+description: User indicating they answered shared doc
 disable-model-invocation: true
 ---
 

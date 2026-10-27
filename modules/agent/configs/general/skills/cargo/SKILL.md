@@ -1,6 +1,6 @@
 ---
 name: cargo
-description: Rust and Cargo conventions. Use when reading, reviewing, or changing Rust files, Cargo.toml, or a Cargo workspace
+description: Rust and Cargo conventions. Use when reading, reviewing, or changing Rust files, Cargo.toml, or Cargo workspace
 ---
 
 # Cargo

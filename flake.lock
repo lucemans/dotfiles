@@ -815,11 +815,11 @@
         "rust-overlay": "rust-overlay_4"
       },
       "locked": {
-        "lastModified": 1793064681,
-        "narHash": "sha256-7MoEDCoplx0TnU15GGEQEwn8JKcb9fpEKdqmTYMIO3M=",
+        "lastModified": 1793111962,
+        "narHash": "sha256-CU4H5LHDmCc34yLtKy8lnO/ZNmZUs1EdKO0pnVcLITk=",
         "ref": "refs/heads/master",
-        "rev": "8291ee308b3b658a28bca45c61edf26f6c6fd3d1",
-        "revCount": 609,
+        "rev": "552ffee387d9a6c61165c57e3f34a66a0d070a32",
+        "revCount": 631,
         "type": "git",
         "url": "ssh://git@100.127.0.11:2222/v3xlabs/kettle-code.git"
       },
