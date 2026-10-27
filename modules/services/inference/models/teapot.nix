@@ -1,27 +1,12 @@
-{
-  flake.nixosModules.teapotInference = {
-    lib,
-    pkgs,
-    ...
-  }: let
-    engine = import ../engine {inherit lib pkgs;} {
-      # The i7-12700K.
-      cpuFlags = [
-        "GGML_SSE42"
-        "GGML_AVX"
-        "GGML_F16C"
-        "GGML_FMA"
-        "GGML_AVX2"
-        "GGML_BMI2"
-        "GGML_AVX_VNNI"
-      ];
-      # qwen3.6 runs a q8_0 KV cache, the other models f16.
-      flashAttnQuants = "q8_0-q8_0;f16-f16";
-      fetch = "store";
-    };
-
-    served = engine {
+{teapotModels, ...}: {
+  _module.args = {
+    teapotModels = {
       "qwen3.6-35b-a3b" = {
+        litellm.model_info = {
+          input_cost_per_token = 0.0000002;
+          mode = "chat";
+          output_cost_per_token = 0.0000002;
+        };
         weights.path = "/var/lib/llama-models/Qwen3.6-35B-A3B-UD-Q4_K_XL.gguf";
         args = [
           "--ctx-size 131072"
@@ -43,6 +28,10 @@
       # A decision model: it serves only /v1/systemone, reached through
       # /upstream/clef-flash/v1/systemone. The whole prompt must fit in one ubatch.
       "clef-flash" = {
+        litellm.model_name = "clef-flash";
+        litellm.model_info = {
+          mode = "decisions";
+        };
         weights = {
           repo = "ggml-org/Clef-Flash-GGUF";
           rev = "4a192915ef971886004b5b13294f2b4c7a7fc39d";
@@ -67,6 +56,10 @@
       # size caps the input length. No ttl: a cold load takes over a minute,
       # longer than Mnemopi's 30 s request timeout.
       "embeddinggemma-2" = {
+        litellm.model_info = {
+          input_cost_per_token = 0.00000005;
+          mode = "embedding";
+        };
         weights = {
           repo = "ggml-org/embeddinggemma-2-GGUF";
           rev = "bfcd298762cc34d0357ece5ebdd31791a3a374d8";
@@ -85,6 +78,11 @@
       # Spark-X2.6-4B: on-device agent model, 1M context claimed. Q8_0 fits the
       # card next to the speech server; the tiny title-generator and role move here.
       "spark-x2.6-4b" = {
+        litellm.model_info = {
+          input_cost_per_token = 0.00000005;
+          mode = "chat";
+          output_cost_per_token = 0.00000005;
+        };
         weights = {
           repo = "XHToken/Spark-X2.6-4B-GGUF";
           rev = "83b47fda018fd14f51aa63341f78266f628af5a5";
@@ -101,6 +99,30 @@
         concurrencyLimit = 4;
       };
     };
+  };
+
+  flake.nixosModules.teapotInference = {
+    lib,
+    pkgs,
+    ...
+  }: let
+    engine = import ../engine {inherit lib pkgs;} {
+      # The i7-12700K.
+      cpuFlags = [
+        "GGML_SSE42"
+        "GGML_AVX"
+        "GGML_F16C"
+        "GGML_FMA"
+        "GGML_AVX2"
+        "GGML_BMI2"
+        "GGML_AVX_VNNI"
+      ];
+      # qwen3.6 runs a q8_0 KV cache, the other models f16.
+      flashAttnQuants = "q8_0-q8_0;f16-f16";
+      fetch = "store";
+    };
+
+    served = engine teapotModels;
   in {
     systemd.tmpfiles.rules = [
       "d /var/lib/llama-models 0755 root root -"

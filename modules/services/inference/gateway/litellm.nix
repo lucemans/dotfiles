@@ -1,4 +1,8 @@
-_: let
+{
+  teapotModels,
+  mediabusModels,
+  ...
+}: let
   inherit (import ../../../network/services.nix) services;
 in {
   flake.nixosModules.litellm = {
@@ -8,6 +12,56 @@ in {
     lib,
     ...
   }: let
+    backends = {
+      v3x-t = {
+        upstream = services.llamaTeapot.upstream;
+        models = teapotModels;
+      };
+      v3x-m = {
+        upstream = services.llamaMediabus.upstream;
+        models = mediabusModels;
+      };
+    };
+
+    localModels = lib.concatLists (lib.mapAttrsToList (prefix: backend:
+      lib.mapAttrsToList (name: model: let
+        metadata = model.litellm;
+        decision = metadata.model_info.mode == "decisions";
+      in
+        metadata
+        // {
+          model_name = metadata.model_name or "${prefix}/${name}";
+          litellm_params =
+            {
+              model = "${
+                if decision
+                then "hosted_vllm"
+                else "openai"
+              }/${name}";
+              api_base = "http://${backend.upstream}/${
+                if decision
+                then "upstream/${name}"
+                else "v1"
+              }";
+            }
+            // lib.optionalAttrs (!decision) {api_key = "local";}
+            // metadata.litellm_params or {};
+        })
+      (lib.filterAttrs (_: model: model ? litellm) backend.models))
+    backends);
+
+    openrouterModels = lib.mapAttrsToList (name: model:
+      model
+      // {
+        model_name = name;
+        litellm_params =
+          {
+            model = "openrouter/${lib.removePrefix "openrouter/" name}";
+          }
+          // model.litellm_params or {};
+      })
+    (import ../models/openrouter.nix);
+
     system = pkgs.stdenv.hostPlatform.system;
     prisma-engines = inputs.prisma-nixpkgs.legacyPackages.${system}.prisma-engines;
     prisma = inputs.prisma-nixpkgs.legacyPackages.${system}.prisma;
@@ -126,425 +180,53 @@ in {
           master_key = "os.environ/LITELLM_MASTER_KEY";
           database_url = "os.environ/DATABASE_URL";
         };
-        model_list = [
-          {
-            model_name = "v3x-m/qwen3-embedding-0.6b";
-            litellm_params = {
-              model = "openai/qwen3-embedding-0.6b";
-              api_base = "http://10.90.0.11:11434/v1";
-              api_key = "local";
-            };
-            model_info = {
-              mode = "embedding";
-              input_cost_per_token = 0.00000005;
-              output_cost_per_token = 0.00000005;
-            };
-          }
-          {
-            model_name = "v3x-t/embeddinggemma-2";
-            litellm_params = {
-              model = "openai/embeddinggemma-2";
-              api_base = "http://127.0.0.1:8081/v1";
-              api_key = "local";
-            };
-            model_info = {
-              mode = "embedding";
-              input_cost_per_token = 0.00000005;
-            };
-          }
-          {
-            model_name = "v3x-t/qwen3.6-35b-a3b";
-            litellm_params = {
-              model = "openai/qwen3.6-35b-a3b";
-              api_base = "http://127.0.0.1:8081/v1";
-              api_key = "local";
-            };
-            model_info = {
-              mode = "chat";
-              input_cost_per_token = 0.00000020;
-              output_cost_per_token = 0.00000020;
-            };
-          }
-          {
-            # A decision model: llama-swap serves it on /v1/systemone only. The
-            # hosted_vllm provider posts to <api_base>/v1/systemone.
-            model_name = "clef-flash";
-            litellm_params = {
-              model = "hosted_vllm/clef-flash";
-              api_base = "http://127.0.0.1:8081/upstream/clef-flash";
-            };
-            model_info.mode = "decisions";
-          }
-          {
-            # A second judge lane: Perplexity's decider-flash speaks the same
-            # System One API, reached through its llama-swap upstream.
-            model_name = "pplx-decider-flash";
-            litellm_params = {
-              model = "hosted_vllm/pplx-decider-flash";
-              api_base = "http://10.90.0.11:11434/upstream/pplx-decider-flash";
-            };
-            model_info.mode = "decisions";
-          }
-          {
-            model_name = "v3x-t/piper";
-            litellm_params = {
-              model = "openai/piper";
-              api_base = "http://127.0.0.1:8083/v1";
-              api_key = "local";
-            };
-            model_info = {
-              mode = "audio_speech";
-              health_check_voice = "glados-original";
-            };
-          }
-          {
-            model_name = "v3x-t/qwen3-tts";
-            litellm_params = {
-              model = "openai/qwen3-tts";
-              api_base = "http://127.0.0.1:8084/v1";
-              api_key = "local";
-            };
-            model_info = {
-              mode = "audio_speech";
-              health_check_voice = "glados";
-            };
-          }
-          {
-            model_name = "v3x-m/qwen3.6-35b-a3b";
-            litellm_params = {
-              api_base = "http://10.90.0.11:11434/v1";
-              model = "openai/qwen3.6-35b-a3b";
-              api_key = "local";
-            };
-            model_info = {
-              mode = "chat";
-              input_cost_per_token = 0.00000020;
-              output_cost_per_token = 0.00000020;
-            };
-          }
-          {
-            model_name = "v3x-m/gpt-oss-20b";
-            litellm_params = {
-              api_base = "http://10.90.0.11:11434/v1";
-              model = "openai/gpt-oss-20b";
-              api_key = "local";
-            };
-            model_info = {
-              mode = "chat";
-              input_cost_per_token = 0.00000018;
-              output_cost_per_token = 0.00000020;
-            };
-          }
-          {
-            model_name = "v3x-m/qwen3-coder-30b-a3b";
-            litellm_params = {
-              api_base = "http://10.90.0.11:11434/v1";
-              model = "openai/qwen3-coder-30b-a3b";
-              api_key = "local";
-            };
-            model_info = {
-              mode = "chat";
-              input_cost_per_token = 0.00000020;
-              output_cost_per_token = 0.00000020;
-            };
-          }
-          {
-            model_name = "v3x-m/zeta-2.1";
-            litellm_params = {
-              api_base = "http://10.90.0.11:11434/v1";
-              model = "openai/zeta-2.1";
-              api_key = "local";
-            };
-            model_info = {
-              mode = "completion";
-              input_cost_per_token = 0.00000002;
-              output_cost_per_token = 0.00000002;
-            };
-          }
-          {
-            model_name = "v3x-m/sweep-next-edit-v2-7b";
-            litellm_params = {
-              api_base = "http://10.90.0.11:11434/v1";
-              model = "openai/sweep-next-edit-v2-7b";
-              api_key = "local";
-            };
-            model_info = {
-              mode = "completion";
-              input_cost_per_token = 0.00000002;
-              output_cost_per_token = 0.00000002;
-            };
-          }
-          {
-            model_name = "v3x-m/muse-glimmer-30b";
-            litellm_params = {
-              api_base = "http://10.90.0.11:11434/v1";
-              model = "openai/muse-glimmer-30b";
-              api_key = "local";
-            };
-            model_info = {
-              mode = "chat";
-              input_cost_per_token = 0.00000020;
-              output_cost_per_token = 0.00000020;
-            };
-          }
-          {
-            model_name = "v3x-m/qwen3.8-27b";
-            litellm_params = {
-              api_base = "http://10.90.0.11:11434/v1";
-              model = "openai/qwen3.8-27b";
-              api_key = "local";
-            };
-            model_info = {
-              mode = "chat";
-              input_cost_per_token = 0.00000020;
-              output_cost_per_token = 0.00000020;
-            };
-          }
-          {
-            model_name = "v3x-m/nex-n2.5-mini";
-            litellm_params = {
-              api_base = "http://10.90.0.11:11434/v1";
-              model = "openai/nex-n2.5-mini";
-              api_key = "local";
-            };
-            model_info = {
-              mode = "chat";
-              input_cost_per_token = 0.00000010;
-              output_cost_per_token = 0.00000010;
-            };
-          }
-          {
-            model_name = "v3x-m/nex-n2.5-mini-uncensored";
-            litellm_params = {
-              api_base = "http://10.90.0.11:11434/v1";
-              model = "openai/nex-n2.5-mini-uncensored";
-              api_key = "local";
-            };
-            model_info = {
-              mode = "chat";
-              input_cost_per_token = 0.00000010;
-              output_cost_per_token = 0.00000010;
-            };
-          }
-          {
-            model_name = "v3x-m/minicpm5-2b";
-            litellm_params = {
-              api_base = "http://10.90.0.11:11434/v1";
-              model = "openai/minicpm5-2b";
-              api_key = "local";
-            };
-            model_info = {
-              mode = "chat";
-              input_cost_per_token = 0.00000005;
-              output_cost_per_token = 0.00000005;
-            };
-          }
-          {
-            model_name = "v3x-m/spark-x2.6-4b";
-            litellm_params = {
-              api_base = "http://10.90.0.11:11434/v1";
-              model = "openai/spark-x2.6-4b";
-              api_key = "local";
-            };
-            model_info = {
-              mode = "chat";
-              input_cost_per_token = 0.00000005;
-              output_cost_per_token = 0.00000005;
-            };
-          }
-          {
-            model_name = "v3x-m/qwen3.8-flash-next";
-            litellm_params = {
-              api_base = "http://10.90.0.11:11434/v1";
-              model = "openai/qwen3.8-flash-next";
-              api_key = "local";
-            };
-            model_info = {
-              mode = "chat";
-              input_cost_per_token = 0.00000020;
-              output_cost_per_token = 0.00000020;
-            };
-          }
-          {
-            model_name = "v3x-t/spark-x2.6-4b";
-            litellm_params = {
-              model = "openai/spark-x2.6-4b";
-              api_base = "http://127.0.0.1:8081/v1";
-              api_key = "local";
-            };
-            model_info = {
-              mode = "chat";
-              input_cost_per_token = 0.00000005;
-              output_cost_per_token = 0.00000005;
-            };
-          }
-          {
-            model_name = "v3x-m/flint-1";
-            litellm_params = {
-              api_base = "http://10.90.0.11:11434/v1";
-              model = "openai/flint-1";
-              api_key = "local";
-            };
-            model_info = {
-              mode = "chat";
-              input_cost_per_token = 0.00000020;
-              output_cost_per_token = 0.00000020;
-            };
-          }
-          {
-            model_name = "v3x-m/nanbeige4.3-33b";
-            litellm_params = {
-              api_base = "http://10.90.0.11:11434/v1";
-              model = "openai/nanbeige4.3-33b";
-              api_key = "local";
-            };
-            model_info = {
-              mode = "chat";
-              input_cost_per_token = 0.00000020;
-              output_cost_per_token = 0.00000020;
-            };
-          }
-          {
-            model_name = "v3x-m/sage-a1.5";
-            litellm_params = {
-              api_base = "http://10.90.0.11:11434/v1";
-              model = "openai/sage-a1.5";
-              api_key = "local";
-            };
-            model_info = {
-              mode = "chat";
-              input_cost_per_token = 0.00000020;
-              output_cost_per_token = 0.00000020;
-            };
-          }
-          {
-            model_name = "v3x-m/bonsai-2-27b";
-            litellm_params = {
-              api_base = "http://10.90.0.11:11434/v1";
-              model = "openai/bonsai-2-27b";
-              api_key = "local";
-            };
-            model_info = {
-              mode = "chat";
-              input_cost_per_token = 0.00000010;
-              output_cost_per_token = 0.00000010;
-            };
-          }
-          {
-            model_name = "v3x-m/hemmingway-1";
-            litellm_params = {
-              api_base = "http://10.90.0.11:11434/v1";
-              model = "openai/hemmingway-1";
-              api_key = "local";
-            };
-            model_info = {
-              mode = "chat";
-              input_cost_per_token = 0.00000020;
-              output_cost_per_token = 0.00000020;
-            };
-          }
-          {
-            model_name = "v3x-m/humanizer-12b";
-            litellm_params = {
-              api_base = "http://10.90.0.11:11434/v1";
-              model = "openai/humanizer-12b";
-              api_key = "local";
-            };
-            model_info = {
-              mode = "chat";
-              input_cost_per_token = 0.00000020;
-              output_cost_per_token = 0.00000020;
-            };
-          }
-          {
-            model_name = "openai/gpt-5.6-luna";
-            litellm_params.model = "openrouter/openai/gpt-5.6-luna";
-            model_info.base_model = "gpt-5.6-luna";
-            model_info.mode = "chat";
-          }
-          {
-            model_name = "openai/gpt-6-luna";
-            litellm_params.model = "openrouter/openai/gpt-6-luna";
-            model_info.base_model = "gpt-6-luna";
-            model_info.mode = "chat";
-          }
-          {
-            model_name = "openai/gpt-oss-120b";
-            litellm_params.model = "openrouter/openai/gpt-oss-120b";
-            model_info.base_model = "openai/gpt-oss-120b";
-            model_info.mode = "chat";
-          }
-          {
-            model_name = "z-ai/glm-5.3-flash";
-            model_info.base_model = "z-ai/glm-5.3-flash";
-            model_info.mode = "chat";
-            litellm_params = {
-              model = "openrouter/z-ai/glm-5.3-flash";
-              provider = {
-                order = [
-                  "baseten"
-                  "z-ai"
-                ];
-                allow_fallbacks = true;
-              };
-            };
-          }
-          {
-            model_name = "zeroparams/jonatan";
-            litellm_params = {
-              api_base = "https://zeroparams.itdata.nu/v1";
-              model = "openai/jonatan";
-              api_key = "os.environ/ZEROPARAMS_API_KEY";
-            };
-            model_info.mode = "chat";
-          }
-          {
-            model_name = "openrouter/deepseek/deepseek-v4.1-flash";
-            model_info.base_model = "deepseek/deepseek-v4.1-flash";
-            model_info.mode = "chat";
-            model_info.supports_reasoning = true;
-            litellm_params = {
-              model = "openrouter/deepseek/deepseek-v4.1-flash";
-              provider = {
-                order = [
-                  "deepinfra/fp8"
-                  "baseten"
-                ];
-                ignore = ["baseten/fast"];
-                allow_fallbacks = false;
-              };
-            };
-          }
-          {
-            model_name = "openrouter/deepseek/deepseek-v4.1-flash-1017";
-            model_info.base_model = "deepseek/deepseek-v4.1-flash-1017";
-            model_info.mode = "chat";
-            model_info.supports_reasoning = true;
-            litellm_params = {
-              model = "openrouter/deepseek/deepseek-v4.1-flash-1017";
-              provider = {
-                order = [
-                  "deepinfra/fp8"
-                  "relace"
-                  "inference-net/fp8"
-                  "cloudflare"
-                  "together"
-                ];
-                allow_fallbacks = false;
-              };
-            };
-          }
-          {
-            model_name = "openrouter/*";
-            litellm_params.model = "openrouter/*";
-          }
-        ];
+        model_list = let
+          models =
+            localModels
+            ++ [
+              {
+                litellm_params = {
+                  api_base = "http://127.0.0.1:8083/v1";
+                  api_key = "local";
+                  model = "openai/piper";
+                };
+                model_info = {
+                  health_check_voice = "glados-original";
+                  mode = "audio_speech";
+                };
+                model_name = "v3x-t/piper";
+              }
+              {
+                litellm_params = {
+                  api_base = "http://127.0.0.1:8084/v1";
+                  api_key = "local";
+                  model = "openai/qwen3-tts";
+                };
+                model_info = {
+                  health_check_voice = "glados";
+                  mode = "audio_speech";
+                };
+                model_name = "v3x-t/qwen3-tts";
+              }
+              {
+                litellm_params = {
+                  api_base = "https://zeroparams.itdata.nu/v1";
+                  api_key = "os.environ/ZEROPARAMS_API_KEY";
+                  model = "openai/jonatan";
+                };
+                model_info = {
+                  mode = "chat";
+                };
+                model_name = "zeroparams/jonatan";
+              }
+            ]
+            ++ openrouterModels;
+          names = map (model: model.model_name) models;
+        in
+          assert lib.assertMsg (lib.length names == lib.length (lib.unique names)) "LiteLLM public model names must be unique"; models;
         router_settings = {
           routing_strategy = "simple-shuffle";
           num_retries = 1;
-          fallbacks = [
-            {"v3x-m/qwen3.6-35b-a3b" = ["v3x-t/qwen3.6-35b-a3b"];}
-          ];
         };
       };
     };

@@ -1,33 +1,12 @@
-{
-  flake.nixosModules.mediabusInference = {
-    lib,
-    pkgs,
-    ...
-  }: let
-    modelsDir = "/var/lib/llama-models";
-
-    engine = import ../engine {inherit lib pkgs;} {
-      # The Ryzen 9 7900 (Zen 4).
-      cpuFlags = [
-        "GGML_SSE42"
-        "GGML_AVX"
-        "GGML_F16C"
-        "GGML_FMA"
-        "GGML_AVX2"
-        "GGML_BMI2"
-        "GGML_AVX512"
-        "GGML_AVX512_VBMI"
-        "GGML_AVX512_VNNI"
-        "GGML_AVX512_BF16"
-      ];
-      # The models use q4_0, q8_0 or f16 KV caches, with the same type for K and V.
-      flashAttnQuants = "q4_0-q4_0;q8_0-q8_0;f16-f16";
-      fetch = "runtime";
-      dir = modelsDir;
-    };
-
-    served = engine {
+{mediabusModels, ...}: {
+  _module.args = {
+    mediabusModels = {
       "qwen3.6-35b-a3b" = {
+        litellm.model_info = {
+          input_cost_per_token = 0.0000002;
+          mode = "chat";
+          output_cost_per_token = 0.0000002;
+        };
         weights = {
           repo = "unsloth/Qwen3.6-35B-A3B-GGUF";
           rev = "a483e9e6cbd595906af30beda3187c2663a1118c";
@@ -126,6 +105,11 @@
         ];
       };
       "sweep-next-edit-v2-7b" = {
+        litellm.model_info = {
+          input_cost_per_token = 0.00000002;
+          mode = "completion";
+          output_cost_per_token = 0.00000002;
+        };
         weights = {
           repo = "henrik3/sweep-next-edit-v2-7B-GGUF";
           rev = "f88a6bc2316f6b7f9581668ae51909478d13e685";
@@ -145,6 +129,11 @@
         concurrencyLimit = 4;
       };
       "gpt-oss-20b" = {
+        litellm.model_info = {
+          input_cost_per_token = 0.00000018;
+          mode = "chat";
+          output_cost_per_token = 0.0000002;
+        };
         weights = {
           repo = "unsloth/gpt-oss-20b-GGUF";
           rev = "d449b42d93e1c2c7bda5312f5c25c8fb91dfa9b4";
@@ -152,6 +141,11 @@
         };
       };
       "qwen3-coder-30b-a3b" = {
+        litellm.model_info = {
+          input_cost_per_token = 0.0000002;
+          mode = "chat";
+          output_cost_per_token = 0.0000002;
+        };
         weights = {
           repo = "unsloth/Qwen3-Coder-30B-A3B-Instruct-GGUF";
           rev = "b17cb02dd882d5b6ab62fc777ad2995f19668350";
@@ -173,6 +167,11 @@
         concurrencyLimit = 2;
       };
       "muse-glimmer-30b" = {
+        litellm.model_info = {
+          input_cost_per_token = 0.0000002;
+          mode = "chat";
+          output_cost_per_token = 0.0000002;
+        };
         weights = {
           repo = "meta-models/Muse-Glimmer-30B-GGUF";
           rev = "a0532f7263ee67f1e0a5f5c5fdcd50dd62fc9aa4";
@@ -199,6 +198,11 @@
         concurrencyLimit = 1;
       };
       "qwen3.8-27b" = {
+        litellm.model_info = {
+          input_cost_per_token = 0.0000002;
+          mode = "chat";
+          output_cost_per_token = 0.0000002;
+        };
         weights = {
           repo = "unsloth/Qwen3.8-27B-GGUF";
           rev = "f1bfb127c64f7072bdd2cad55f258b9c8b2910fe";
@@ -222,6 +226,11 @@
         concurrencyLimit = 3;
       };
       "nex-n2.5-mini" = {
+        litellm.model_info = {
+          input_cost_per_token = 0.0000001;
+          mode = "chat";
+          output_cost_per_token = 0.0000001;
+        };
         weights = {
           repo = "bartowski/nex-agi_Nex-N2.5-mini-GGUF";
           rev = "0048da1ad2ad33fdcf8b24bc12185cdebfe459d6";
@@ -237,6 +246,11 @@
         concurrencyLimit = 8;
       };
       "minicpm5-2b" = {
+        litellm.model_info = {
+          input_cost_per_token = 0.00000005;
+          mode = "chat";
+          output_cost_per_token = 0.00000005;
+        };
         weights = {
           repo = "bartowski/MiniCPM5-2B-GGUF";
           rev = "31fee0334c4ed9f1e079afe586ba30cb83e0f883";
@@ -252,6 +266,11 @@
         concurrencyLimit = 8;
       };
       "nex-n2.5-mini-uncensored" = {
+        litellm.model_info = {
+          input_cost_per_token = 0.0000001;
+          mode = "chat";
+          output_cost_per_token = 0.0000001;
+        };
         weights = {
           repo = "orcarouter/Nex-N2.5-mini-Uncensored-GGUF";
           rev = "59f36a2cd1e5c64139e271b5b406a014b68109ef";
@@ -266,6 +285,11 @@
         concurrencyLimit = 1;
       };
       "qwen3-embedding-0.6b" = {
+        litellm.model_info = {
+          input_cost_per_token = 0.00000005;
+          mode = "embedding";
+          output_cost_per_token = 0.00000005;
+        };
         weights = {
           repo = "Qwen/Qwen3-Embedding-0.6B-GGUF";
           rev = "370f27d7550e0def9b39c1f16d3fbaa13aa67728";
@@ -282,6 +306,11 @@
         ];
       };
       "zeta-2.1" = {
+        litellm.model_info = {
+          input_cost_per_token = 0.00000002;
+          mode = "completion";
+          output_cost_per_token = 0.00000002;
+        };
         weights = {
           repo = "mradermacher/zeta-2.1-i1-GGUF";
           rev = "92c5ffc501a76d9c92bd04c0022cebfffa461dc8";
@@ -299,6 +328,11 @@
         concurrencyLimit = 2;
       };
       "qwen3.8-flash-next" = {
+        litellm.model_info = {
+          input_cost_per_token = 0.0000002;
+          mode = "chat";
+          output_cost_per_token = 0.0000002;
+        };
         name = "Qwen3.8 Flash Next IQ4 XS";
         weights = {
           repo = "unsloth/Qwen3.8-Flash-Next-GGUF";
@@ -336,6 +370,11 @@
         concurrencyLimit = 4;
       };
       "hemmingway-1" = {
+        litellm.model_info = {
+          input_cost_per_token = 0.0000002;
+          mode = "chat";
+          output_cost_per_token = 0.0000002;
+        };
         name = "Hemmingway 1";
         weights = {
           repo = "bartowski/Altworld_Hemmingway-1-GGUF";
@@ -358,6 +397,11 @@
       # SWE-bench Verified 74.2%. Needs the b11912 build (FlintForCausalLM #30928).
       # Q4_K_M keeps the non-expert tensors at Q8_0.
       "flint-1" = {
+        litellm.model_info = {
+          input_cost_per_token = 0.0000002;
+          mode = "chat";
+          output_cost_per_token = 0.0000002;
+        };
         llama-cpp = "b11912";
         weights = {
           repo = "ggml-org/Flint-GGUF";
@@ -379,6 +423,11 @@
       # Nanbeige4.3-33B: dense Llama arch (no new code), 512k context, claims
       # state-of-the-art agentic performance in the ~30B class. Released Oct 24.
       "nanbeige4.3-33b" = {
+        litellm.model_info = {
+          input_cost_per_token = 0.0000002;
+          mode = "chat";
+          output_cost_per_token = 0.0000002;
+        };
         weights = {
           repo = "bartowski/Nanbeige_Nanbeige4.3-33B-GGUF";
           rev = "9beb68421fdf7be095093a6888325fa2c83ddd38";
@@ -401,6 +450,11 @@
       # Sage-A1.5: Shanghai AI Lab's agentic fine-tune of Qwen3.6-35B-A3B, same
       # qwen3_5_moe architecture as the workhorse. Q4_K_M fits the A4000 pair.
       "sage-a1.5" = {
+        litellm.model_info = {
+          input_cost_per_token = 0.0000002;
+          mode = "chat";
+          output_cost_per_token = 0.0000002;
+        };
         weights = {
           repo = "InternScience/Sage-A1.5-Q4_K_M-GGUF";
           rev = "10b179b52f2c841030db327627e707d076b4c8cf";
@@ -424,6 +478,11 @@
       # Spark-X2.6-4B: on-device agent model, 1M context claimed, replaces
       # MiniCPM5-2B's lane at the same size class. spark2_5 arch since b10828.
       "spark-x2.6-4b" = {
+        litellm.model_info = {
+          input_cost_per_token = 0.00000005;
+          mode = "chat";
+          output_cost_per_token = 0.00000005;
+        };
         weights = {
           repo = "XHToken/Spark-X2.6-4B-GGUF";
           rev = "83b47fda018fd14f51aa63341f78266f628af5a5";
@@ -446,6 +505,11 @@
       # Ternary-Bonsai-2-27B: Qwen3.8-27B retrained at 2-bit ternary weights,
       # PQ2_0 runs from 7.2 GB on stock llama.cpp. mmproj gives it vision.
       "bonsai-2-27b" = {
+        litellm.model_info = {
+          input_cost_per_token = 0.0000001;
+          mode = "chat";
+          output_cost_per_token = 0.0000001;
+        };
         weights = {
           repo = "prism-ml/Ternary-Bonsai-2-27B-gguf";
           rev = "b072e1d3b35a0a630cece372c2127528e0994386";
@@ -468,6 +532,10 @@
       # /v1/systemone API as clef-flash, distilled from the 27B deciders. A second
       # judge lane on the small card, no llama.cpp code needed (qwen3_5 arch).
       "pplx-decider-flash" = {
+        litellm.model_name = "pplx-decider-flash";
+        litellm.model_info = {
+          mode = "decisions";
+        };
         weights = {
           repo = "perplexity-ai/pplx-decider-flash-gguf-v1.2";
           rev = "2514d5f0b7fbbe1ee1bfec9ffb5801a60289b4cc";
@@ -492,6 +560,11 @@
       # within noise of bf16 on the task, and 5 GB smaller than Q8_0, which buys the f16
       # KV cache and a 512-token ubatch instead of a layer split across PCIe.
       "humanizer-12b" = {
+        litellm.model_info = {
+          input_cost_per_token = 0.0000002;
+          mode = "chat";
+          output_cost_per_token = 0.0000002;
+        };
         name = "Humanizer 12B";
         env = ["CUDA_VISIBLE_DEVICES=1"];
         weights = {
@@ -533,6 +606,36 @@
         concurrencyLimit = 2;
       };
     };
+  };
+
+  flake.nixosModules.mediabusInference = {
+    lib,
+    pkgs,
+    ...
+  }: let
+    modelsDir = "/var/lib/llama-models";
+
+    engine = import ../engine {inherit lib pkgs;} {
+      # The Ryzen 9 7900 (Zen 4).
+      cpuFlags = [
+        "GGML_SSE42"
+        "GGML_AVX"
+        "GGML_F16C"
+        "GGML_FMA"
+        "GGML_AVX2"
+        "GGML_BMI2"
+        "GGML_AVX512"
+        "GGML_AVX512_VBMI"
+        "GGML_AVX512_VNNI"
+        "GGML_AVX512_BF16"
+      ];
+      # The models use q4_0, q8_0 or f16 KV caches, with the same type for K and V.
+      flashAttnQuants = "q4_0-q4_0;q8_0-q8_0;f16-f16";
+      fetch = "runtime";
+      dir = modelsDir;
+    };
+
+    served = engine mediabusModels;
   in {
     systemd.tmpfiles.rules = [
       "d ${modelsDir} 0755 root root -"
@@ -557,7 +660,6 @@
 
     services.llama-swap = {
       enable = true;
-      # LiteLLM on teapot reaches this at http://10.90.0.11:11434/v1.
       listenAddress = "0.0.0.0";
       port = 11434;
       openFirewall = true;

@@ -82,7 +82,7 @@
       ++ m.args or []
     );
   in
-    removeAttrs m ["weights" "fileArgs" "args" "llama-cpp" "alias"] // {inherit cmd;};
+    removeAttrs m ["weights" "fileArgs" "args" "llama-cpp" "alias" "litellm"] // {inherit cmd;};
 in {
   swap = lib.mapAttrs entry models;
   files = lib.unique (lib.concatMap (m: lib.concatMap filesOf (sourcesOf m)) (lib.attrValues models));
