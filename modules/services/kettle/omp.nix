@@ -16,6 +16,7 @@
   pinned = {
     kimi = "moonshot/kimi-k3-256k";
     muse-wonder = "meta/muse-wonder-1.0";
+    muse-wonder-full = preferences.meta_wonder_full;
     muse-spark = "meta/muse-spark-1.3";
     opus = preferences.anthropic_opus;
     sol = preferences.openai_sol;
@@ -147,7 +148,7 @@ in {
             ownedBy = ["meta"];
             authoritative = true;
           };
-          modelOverrides = lib.genAttrs ["muse-wonder-1.0" "muse-wonder-1.0-contributor" "muse-spark-1.3"] (_: {
+          modelOverrides = lib.genAttrs ["muse-wonder-1.0" "muse-wonder-1.0-contributor" "muse-wonder-full-1.0" "muse-wonder-full-1.0-contributor" "muse-spark-1.3"] (_: {
             thinking = {
               mode = "anthropic-adaptive";
               efforts = ["minimal" "low" "medium" "high" "xhigh" "max"];

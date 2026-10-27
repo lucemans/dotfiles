@@ -8,4 +8,5 @@
   openai_terra = "openai/gpt-6.1-terra";
   openai_sol = "openai/gpt-6.1-sol";
   openai_astra = "openai/gpt-6-astra";
+  meta_wonder_full = "meta/muse-wonder-full-1.0";
 }

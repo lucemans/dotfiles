@@ -18,6 +18,7 @@ description: Choose a model for work, review, thinking, or fast tasks.
 ## Thinkers, Security, Sanity
 {anthropic_fable}
 {openai_astra}
+{meta_wonder_full}
 
 ## UI/UX Review & Regressions
 {openai_terra}
