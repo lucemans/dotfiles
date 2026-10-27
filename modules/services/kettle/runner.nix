@@ -156,6 +156,14 @@ in {
       # codex gets none.
       harnesses.codex = {
         enable = true;
+        package = pkgs.fetchzip {
+          name = "codex-0.166.0-alpha.2";
+          url = "https://github.com/openai/codex/releases/download/rust-v0.166.0-alpha.2/codex-package-x86_64-unknown-linux-musl.tar.gz";
+          hash = "sha256-n1hqtAaXKeOuCsWmFKcSMnSpwuuy5cs+9lnumHrdMAo=";
+          stripRoot = false;
+          meta.mainProgram = "codex";
+          meta.platforms = ["x86_64-linux"];
+        };
         inherit skills envFiles;
         extraPath = extraPathWithPython;
         extraDeny = ompNetworkDeny;
