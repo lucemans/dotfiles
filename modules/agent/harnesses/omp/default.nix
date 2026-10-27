@@ -11,6 +11,8 @@
     # call. A `^model` mention in the prompt covers a general-purpose worker on
     # any model, so only reviewers are pinned here. Each reuses the bundled
     # `reviewer` prompt of the pinned OMP, so only the model differs.
+    preferences = import ../../configs/model-preferences.nix;
+
     pinned = {
       kimi = "moonshot/kimi-k3-256k";
       muse-wonder = "meta/muse-wonder-1.0";
@@ -301,13 +303,13 @@
       tiny = "v3x-inference/v3x-m/minicpm5-2b";
       # Answers `read <image>?q=` for a model that takes no images. Unset, OMP
       # falls back to a built-in model the gateway does not route.
-      vision = "anthropic/claude-opus-5-5";
+      vision = preferences.anthropic_opus;
       # Our SearXNG first, then the session model's own hosted search.
       web = "web/searxng";
       # A decision model: native judgments for `find`, stop detection and TTSR.
       judge = "v3x-inference/clef-flash";
       # Mnemopi's fact extraction; the `tiny` fallback is too small for it.
-      memory = "openai/gpt-6-luna";
+      memory = preferences.openai_luna;
     in {
       glyph = "󰚩";
       color = "189;147;249";
@@ -325,10 +327,10 @@
           blurb = "OpenAI";
           logo = ../../../../assets/icons/openai.png;
           modelRoles = {
-            default = "openai/gpt-6.1-sol";
+            default = preferences.openai_sol;
             inherit tiny;
-            smol = "openai/gpt-6-luna";
-            slow = "openai/gpt-6-astra";
+            smol = preferences.openai_luna;
+            slow = preferences.openai_astra;
           };
         }
         {
@@ -338,12 +340,12 @@
           blurb = "Anthropic";
           logo = ../../../../assets/icons/claude.png;
           modelRoles = {
-            default = "anthropic/claude-opus-5-5";
+            default = preferences.anthropic_opus;
             inherit tiny;
-            smol = "anthropic/claude-opus-5-5";
-            slow = "anthropic/claude-fable-5-1";
+            smol = preferences.anthropic_opus;
+            slow = preferences.anthropic_fable;
           };
-          agentModelOverrides.sonic = "anthropic/claude-haiku-5-5";
+          agentModelOverrides.sonic = preferences.anthropic_haiku;
         }
         {
           name = "kimi";
@@ -413,8 +415,8 @@
           # instead.
           modelRoles = {
             inherit tiny;
-            smol = "openai/gpt-6-luna";
-            slow = "openai/gpt-6-astra";
+            smol = preferences.openai_luna;
+            slow = preferences.openai_astra;
           };
           # LiteLLM is the authority, not OpenRouter's public catalog: a
           # model absent from the proxy cannot be routed, so it must not be

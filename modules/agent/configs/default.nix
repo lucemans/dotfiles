@@ -18,7 +18,9 @@ let
 
   kettleGroups = role: targets.kettle.all ++ targets.kettle.${role};
 
-  skillsIn = group: let
+  preferences = import ./model-preferences.nix;
+
+  skillsIn = pkgs: group: let
     dir = ./. + "/${group}/skills";
     entries = builtins.readDir dir;
     names = builtins.filter (name: entries.${name} == "directory") (builtins.attrNames entries);
@@ -27,13 +29,29 @@ let
     then
       builtins.listToAttrs (map (name: {
           inherit name;
-          value = dir + "/${name}";
+          value =
+            if group == "extended" && name == "00-model-preferences"
+            then let
+              rendered =
+                builtins.replaceStrings
+                (map (key: "{${key}}") (builtins.attrNames preferences))
+                (builtins.attrValues preferences)
+                (builtins.readFile (dir + "/${name}/SKILL.md"));
+            in
+              assert builtins.length (builtins.split "[{][a-z_]+[}]" rendered) == 1;
+                pkgs.linkFarm name [
+                  {
+                    name = "SKILL.md";
+                    path = pkgs.writeText "SKILL.md" rendered;
+                  }
+                ]
+            else dir + "/${name}";
         })
         names)
     else {};
 
   # Skill name to its directory.
-  skillsOf = groups: builtins.foldl' (found: group: found // skillsIn group) {} groups;
+  skillsOf = pkgs: groups: builtins.foldl' (found: group: found // skillsIn pkgs group) {} groups;
 
   promptFilesOf = groups:
     builtins.filter
@@ -60,7 +78,7 @@ let
         recursive = true;
         force = true;
       };
-    }) (skillsOf groups)))
+    }) (skillsOf pkgs groups)))
     // (import ./general/subagents).files harness agentsDir
     // {
       ${promptFile} = {

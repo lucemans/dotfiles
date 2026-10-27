@@ -26,10 +26,8 @@ in {
       then "http://127.0.0.1:${toString forge.port}"
       else "https://${services.forge.name}";
 
-    # Every chat gets these groups. Kettle Code has no per-role skills yet, so
-    # the coordinator and butler groups are not read here.
     agentConfigs = import ../../agent/configs;
-    skills = lib.attrValues (agentConfigs.skillsOf agentConfigs.targets.kettle.all);
+    preferences = import ../../agent/configs/model-preferences.nix;
 
     # Its models.yml calls this host's coreutils by store path. A run has that
     # path because kettle-code's manifest puts the same coreutils on PATH.
@@ -103,18 +101,24 @@ in {
       # k5r filters by address and port, so runs reach every service the hub's
       # proxy serves to this host: the model gateway, v3x-inference, SearXNG.
       network.allow = ["${hosts.${hub}.address}:443"];
+      kinds = {
+        all.skills = lib.attrValues (agentConfigs.skillsOf pkgs agentConfigs.targets.kettle.all);
+        all.systemPrompt = agentConfigs.promptOf pkgs agentConfigs.targets.kettle.all;
+        coordinator.skills = lib.attrValues (agentConfigs.skillsOf pkgs agentConfigs.targets.kettle.coordinator);
+        coordinator.systemPrompt = agentConfigs.promptOf pkgs agentConfigs.targets.kettle.coordinator;
+      };
 
       # Kettle Code's own OMP (18.11.3 with its patches); these settings render
       # over Kettle Code's run defaults.
       harnesses.omp = {
         enable = true;
-        inherit skills agents;
+        inherit agents;
         settings = {
           modelRoles = {
-            default = "openai/gpt-6-luna:high";
-            tiny = "openai/gpt-6-luna";
-            smol = "anthropic/claude-haiku-5-5";
-            task = "anthropic/claude-sonnet-5-5";
+            default = "${preferences.openai_luna}:high";
+            tiny = preferences.openai_luna;
+            smol = preferences.anthropic_haiku;
+            task = preferences.anthropic_sonnet;
           };
           compaction.modelThresholds = {
             "anthropic/claude-opus-5-5" = "f300000";
@@ -164,7 +168,7 @@ in {
           meta.mainProgram = "codex";
           meta.platforms = ["x86_64-linux"];
         };
-        inherit skills envFiles;
+        inherit envFiles;
         extraPath = extraPathWithPython;
         extraDeny = ompNetworkDeny;
         settings = {
@@ -190,7 +194,7 @@ in {
       # Anthropic models run on OMP or Claude Code, never here.
       harnesses.opencode = {
         enable = true;
-        inherit skills envFiles;
+        inherit envFiles;
         extraPath = extraPathWithPython;
         extraDeny = ompNetworkDeny;
         settings = {
@@ -222,7 +226,7 @@ in {
       harnesses.claude = {
         enable = true;
         inherit (inputs.kettle-code.legacyPackages.${system}.harnesses.claude) package;
-        inherit skills envFiles;
+        inherit envFiles;
         extraPath = extraPathWithPython;
         extraDeny = ompNetworkDeny;
         env = {

@@ -1,4 +1,6 @@
 let
+  preferences = import ../../model-preferences.nix;
+
   # Each subagent's prose lives in ./<name>.md without frontmatter. Claude Code
   # and OpenCode disagree on the frontmatter schema, so the shared fields sit
   # here and the per-harness attrset supplies the rest.
@@ -11,7 +13,7 @@ let
       };
       omp = {
         tools = "read, edit, bash";
-        model = "anthropic/claude-haiku-5-5";
+        model = preferences.anthropic_haiku;
         thinkingLevel = "low";
       };
       opencode = {

@@ -11,12 +11,14 @@
 }: let
   inherit (import ../../network/services.nix) services;
 
+  preferences = import ../../agent/configs/model-preferences.nix;
+
   pinned = {
     kimi = "moonshot/kimi-k3-256k";
     muse-wonder = "meta/muse-wonder-1.0";
     muse-spark = "meta/muse-spark-1.3";
-    opus = "anthropic/claude-opus-5-5";
-    sol = "openai/gpt-6.1-sol";
+    opus = preferences.anthropic_opus;
+    sol = preferences.openai_sol;
   };
   prompts = "${inputs.kettle-code.inputs.oh-my-pi}/packages/coding-agent/src/prompts/agents";
   reviewer = builtins.readFile "${prompts}/reviewer.md";
