@@ -99,10 +99,28 @@ in {
             ownedBy = ["moonshot"];
             authoritative = true;
           };
-          modelOverrides."kimi-k3-256k" = {
-            input = ["text" "image"];
-            contextWindow = 256000;
-            maxTokens = 128000;
+          modelOverrides = let
+            # K3.1 Pro refuses `thinking.type = "disabled"` (400 at the gateway), so
+            # requiresEffort clamps thinking-off to the lowest effort.
+            k31 = name: {
+              inherit name;
+              contextWindow = 1048576;
+              maxTokens = 131072;
+              reasoning = true;
+              thinking = {
+                mode = "anthropic-adaptive";
+                efforts = ["low" "high" "max"];
+                requiresEffort = true;
+              };
+              input = ["text" "image"];
+            };
+          in {
+            "kimi-k3-256k" = {
+              contextWindow = 256000;
+              maxTokens = 128000;
+            };
+            "kimi-k3.1-pro" = k31 "Kimi K3.1 Pro";
+            "kimi-k3.1-pro-highspeed" = k31 "Kimi K3.1 Pro Highspeed";
           };
         };
       meta =
