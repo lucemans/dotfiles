@@ -31,17 +31,20 @@
           lib.versions.major pkgs.ungoogled-chromium.version
         );
       in [
-        (createChromiumExtension {
+        {
           # ublock origin
-          id = "cjpalhdlnbpafiamejdnhcphjbkeiagm";
-          hash = "sha256-VJ1fsew67rnYSg2Z8pqUlMtqYKjNA8Lmk6s5vqMyPBw=";
-          version = "1.71.0";
-        })
+          id = "fkgkibajhfbepljeaefdnfnegdcjomkh";
+          crxPath = pkgs.fetchurl {
+            url = "https://github.com/gorhill/uBlock/releases/download/1.75.0/uBlock0_1.75.0.chromium.crx";
+            hash = "sha256-1ojtPwJi7E+L3NTI9lmHxURMVgrrOHqeAqyh+s36cEY=";
+          };
+          version = "1.75.0";
+        }
         (createChromiumExtension {
           # bitwarden
           id = "nngceckbapebfimnlniiiahkandclblb";
-          hash = "sha256-xRK2iX2ntV6N/PQh/KcK10FoNsKV44B+UtyqvFCvelI=";
-          version = "2026.5.1";
+          hash = "sha256-8v63/EbSVQvvm2mvHMNYrqJrkKlHZF+d4W7BTZKW72k=";
+          version = "2026.10.0";
         })
         (createChromiumExtension {
           # framesh
@@ -52,8 +55,8 @@
         (createChromiumExtension {
           # sponsorblock
           id = "mnjggcdmjocbbbhaepdhchncahnbgone";
-          hash = "sha256-nE5FE3Eo1jG8sT1KYjVl8JRbmAiyhN8IZObHsAIb0wY=";
-          version = "6.1.5";
+          hash = "sha256-VYf+K2qZRhAcoN3nxu/nanVcXuW21uY9/EjH9zbNtP8=";
+          version = "6.1.6";
         })
         (createChromiumExtension {
           # istilldontcareaboutcookies
