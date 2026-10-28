@@ -7,6 +7,8 @@
     imports = [
       self.nixosModules.workstation
       self.nixosModules.git
+      self.nixosModules.wireguard
+      self.nixosModules.dns
     ];
 
     system.stateVersion = "25.05";

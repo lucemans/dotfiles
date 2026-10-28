@@ -13,6 +13,10 @@ in {
       address = "100.127.0.103";
       lan = true;
     };
+    v3x-patch = {
+      publicKey = "VtK/Fz0FGKxPLBTVn7bhhM6eIQpL5mlC1H+c7GE7rGQ=";
+      address = "100.127.0.104";
+    };
     v3x-prototype = {
       publicKey = "cMShVsxa70NeFiN2rInXgedWGXIUwecIEHVUvIj7GEg=";
       address = "100.127.0.69";
