@@ -172,12 +172,16 @@
     };
 
     temple = {
-      activateLinux.monitors = ["DP-4"];
+      activateLinux.monitors = ["DP-1"];
       bar.monitors = {
-        top = ["DP-5"];
-        bottom = ["DP-4"];
+        top = ["DP-2"];
+        bottom = ["DP-1"];
       };
     };
+
+    systemd.services.kettle-runner.serviceConfig.CPUQuota = "1920%";
+    systemd.slices.user.sliceConfig.CPUWeight = 400;
+    systemd.services.kettle-runner.serviceConfig.AllowedCPUs = "0-9,12-21";
 
     users.users.luc = {
       isNormalUser = true;
