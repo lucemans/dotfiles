@@ -11,6 +11,8 @@
     preservation.url = "github:nix-community/preservation";
     disko.url = "github:nix-community/disko";
     disko.inputs.nixpkgs.follows = "nixpkgs";
+    nixos-hardware.url = "github:NixOS/nixos-hardware";
+    nixos-hardware.inputs.nixpkgs.follows = "nixpkgs";
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
     plasma-manager.url = "github:nix-community/plasma-manager";

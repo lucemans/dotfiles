@@ -17,7 +17,6 @@
       self.nixosModules.discord
       self.nixosModules.plasma
       self.nixosModules.rofi
-      self.nixosModules.ttsSpeak
       self.nixosModules.environment
       self.nixosModules.nix
       self.nixosModules.kittySsh
@@ -51,14 +50,7 @@
           command = ''sh -c 'voxtype record toggle $([ "$XDG_SESSION_DESKTOP" = temple ] && echo --no-osd)' '';
         };
       };
-      activateLinux = {
-        enable = true;
-        monitors = ["DP-4"];
-      };
-      bar.monitors = {
-        top = ["DP-5"];
-        bottom = ["DP-4"];
-      };
+      activateLinux.enable = true;
     };
 
     home-manager.useGlobalPkgs = true;
@@ -66,53 +58,16 @@
     home-manager.extraSpecialArgs = {inherit self;};
 
     home-manager.sharedModules = [
-      inputs.sops-nix.homeManagerModules.sops
       self.homeModules.firefox
       self.homeModules.chromium
     ];
 
-    home-manager.users.luc = {config, ...}: {
+    home-manager.users.luc = _: {
       home = {
         username = "luc";
         homeDirectory = "/home/luc";
 
         stateVersion = nixosConfig.system.stateVersion;
-      };
-
-      sops = {
-        # home-manager carries its own sops-nix module and reads none of the
-        # system-level configuration, so the key source is repeated here.
-        age.keyFile = "/home/luc/.config/sops/age/keys.txt";
-        defaultSopsFile = ../../config/fighter.sops.yaml;
-        secrets = {
-          ssh-public-key = {
-            path = "/home/luc/.ssh/id_ed25519.pub";
-            mode = "0644";
-          };
-          ssh-private-key = {
-            path = "/home/luc/.ssh/id_ed25519";
-            mode = "0600";
-          };
-          crates-io-token = {};
-          npm-token = {};
-        };
-        templates = {
-          cargo-credentials = {
-            content = ''
-              [registry]
-              token = "${config.sops.placeholder.crates-io-token}"
-            '';
-            path = "/home/luc/.cargo/credentials.toml";
-            mode = "0600";
-          };
-          npmrc = {
-            content = ''
-              //registry.npmjs.org/:_authToken=${config.sops.placeholder.npm-token}
-            '';
-            path = "/home/luc/.npmrc";
-            mode = "0600";
-          };
-        };
       };
     };
 

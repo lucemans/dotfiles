@@ -42,7 +42,11 @@
       selfpkgs.ethereum-price-plasmoid
     ];
 
-    home-manager.users.luc = {pkgs, ...}: {
+    home-manager.users.luc = {
+      pkgs,
+      lib,
+      ...
+    }: {
       xdg.portal = {
         enable = true;
         extraPortals = [
@@ -54,7 +58,7 @@
       xdg.dataFile."plasma/plasmoids/nl.lucemans.ethereum-price".source = "${selfpkgs.ethereum-price-plasmoid}/share/plasma/plasmoids/nl.lucemans.ethereum-price";
 
       programs.plasma = {
-        enable = true;
+        enable = lib.mkDefault true;
         overrideConfig = true;
 
         input.keyboard = {
