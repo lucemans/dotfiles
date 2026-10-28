@@ -5,10 +5,22 @@
     ...
   }: {
     imports = [
-      self.nixosModules.workstation
-      self.nixosModules.git
       self.nixosModules.wireguard
+      self.nixosModules.nodeMetrics
       self.nixosModules.dns
+      # self.nixosModules.audio
+      self.nixosModules.spotify
+      self.nixosModules.development
+      self.nixosModules.clearurlsClipboard
+      self.nixosModules.workstation
+      # self.nixosModules.ttsSpeak
+      # self.nixosModules.voxtype
+      # self.nixosModules.gaming
+      self.nixosModules.nix
+      self.nixosModules.doubletake
+      # self.nixosModules.keyhold
+      # self.nixosModules.midjournal
+      self.nixosModules.kettleClient
     ];
 
     system.stateVersion = "25.05";
@@ -152,6 +164,11 @@
 
     programs.fish.enable = true;
 
+    sops = {
+      age.keyFile = "/var/lib/sops-nix/key.txt";
+      defaultSopsFile = ../../config/patch.sops.yaml;
+    };
+
     home-manager.backupFileExtension = "backup";
     home-manager.users.luc = {
       programs.plasma.enable = false;
@@ -174,15 +191,8 @@
         cifs-utils
         samba
         mullvad-vpn
-        syncthing
 
-        vscode
-        code-cursor
-        spotify
         gitkraken
-        opencode
-
-        rtl-sdr
 
         rustup
         bacon
@@ -205,7 +215,6 @@
     environment.systemPackages = with pkgs; [
       vim
       wget
-      git
       micro
       firefox-devedition
       gnumake

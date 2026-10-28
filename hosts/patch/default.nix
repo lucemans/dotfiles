@@ -13,6 +13,7 @@
       system = "x86_64-linux";
       specialArgs = {inherit inputs self;};
       modules = [
+        inputs.sops-nix.nixosModules.sops
         inputs.nixos-hardware.nixosModules.framework-16-7040-amd
         self.nixosModules.patch
         self.nixosModules.patchPhysical
