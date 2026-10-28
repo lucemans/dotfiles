@@ -16,6 +16,19 @@ Never write git state. Do not commit, stage, branch, checkout, merge, rebase, st
 Read-only `git` is available: `status`, `diff`, `log`, `show`, `blame`, `reflog`, `worktree list`, and similar.
 If a Git mutation is necessary, explain the exact command and ask the user to run it
 
+### Files
+
+Use a `.tmp` directory inside the project instead of `/tmp`.
+
+`.tmp` has a fixed layout. Each kind of file has one directory that owns it:
+- `.tmp/docs/<slug>/` holds one document, entry point `index.html`, assets beside it
+- `.tmp/screenshots/` holds screenshots
+- `.tmp/images/` holds images, downloaded icons, and conversion or resize scratch space
+- `.tmp/<task>/` holds everything else, one directory per task
+
+Write into the directory that owns the kind. Do not add a sibling of `docs`,
+`screenshots`, or `images` for a kind that one of them already holds
+
 ### Running Task Ownership
 
 If you are not told otherwise, the user can already run `cargo run` or `pnpm dev` in another terminal
