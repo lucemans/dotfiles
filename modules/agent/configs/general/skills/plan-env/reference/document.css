@@ -98,7 +98,7 @@ h4, th, nav.toc strong, details.earlier > summary b {
   text-transform: uppercase; color: var(--ink-faint);
 }
 h4 { margin: 1.2rem 0 .35rem; }
-p { margin: 0 0 .75rem; max-width: 75ch; }
+p { margin: 0 0 .75rem; }
 ul, ol { margin: 0 0 .75rem; padding-left: 1.2rem; }
 li { margin: .2rem 0; }
 li::marker { color: var(--ink-faint); }
@@ -121,13 +121,14 @@ ul.sources { list-style: none; margin: 0 0 1rem; padding: 0; }
 ul.sources li { margin: 0 0 .6rem; }
 ul.sources b { display: block; font-family: var(--mono); font-size: var(--fs-small); font-weight: 500; color: var(--ink-faint); }
 
-/* Layout. One column narrow. Wide, the rail hugs the left edge and the space
-   goes to the content. */
+/* Layout. One column narrow. Wide, a page with a contents rail puts the rail at
+   the left edge and the space goes to the content; a page without one stays a
+   single full-width column. */
 .page { display: grid; grid-template-columns: 1fr; gap: 2rem; padding: calc(var(--planenv-chrome-h, 0px) + 2rem) var(--pad) 5rem; }
 @media (min-width: 70rem) {
   /* minmax(0, 1fr), not 1fr: a min-content floor would let a wide table push
      the column past the viewport instead of scrolling inside .tablewrap. */
-  .page { grid-template-columns: var(--rail) minmax(0, 1fr); gap: 3.5rem; padding-left: 1.5rem; }
+  .page:has(> nav.toc) { grid-template-columns: var(--rail) minmax(0, 1fr); gap: 3.5rem; padding-left: 1.5rem; }
 }
 main { min-width: 0; align-self: start; }
 main > section { margin: 0 0 2.5rem; }

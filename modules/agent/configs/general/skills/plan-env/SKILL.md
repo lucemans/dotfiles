@@ -146,7 +146,7 @@ Name the components before you write any markup, the same way you named the shap
 Upload `reference/document.css` verbatim beside `index.html` and link it. It carries the
 tokens, the layout and every component below. Do not retype it or invent parallel class
 names. Page rules go in a `style` block after the link, and the skeleton is
-`body > div.page > (nav.toc + main)`.
+`body > div.page > (nav.toc + main)`, without `nav.toc` under two screens.
 
 **Surfaces.** The page is a slate canvas. Content sits on the canvas, or in a `.block`,
 a white surface that groups related sections. Use a block where grouping helps the
@@ -182,7 +182,7 @@ variables are the whole interface.
 
 | Class | Use |
 | --- | --- |
-| `.page` | The grid. The rail at the left edge plus content, above 70rem |
+| `.page` | The grid. One full-width column; above 70rem with a `nav.toc`, the rail at the left edge plus content |
 | `.block` | A white surface on the canvas that groups related sections |
 | `section.open`, `.open-head` | An open decision. Tinted; `.open-head` holds its `.chip`, `h2` and a `.tag` reading open |
 | `nav.toc` | Contents rail. One unlabelled `div` for the current content, a `.history` `div` with a `strong` name for a folded revision. Each `a` holds an `em` ID or a `.dot`, a `.rl` label, and a trailing `.r-tag` or `.r-n` |
