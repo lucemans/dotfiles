@@ -106,6 +106,7 @@ in {
         all.systemPrompt = agentConfigs.promptOf pkgs agentConfigs.targets.kettle.all;
         coordinator.skills = lib.attrValues (agentConfigs.skillsOf pkgs agentConfigs.targets.kettle.coordinator);
         coordinator.systemPrompt = agentConfigs.promptOf pkgs agentConfigs.targets.kettle.coordinator;
+        triage.systemPrompt = agentConfigs.promptOf pkgs agentConfigs.targets.kettle.triage;
       };
 
       # Kettle Code's own OMP (18.11.3 with its patches); these settings render
