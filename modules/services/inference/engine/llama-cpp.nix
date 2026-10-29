@@ -12,34 +12,19 @@
 # The CPU flags and the flash-attention KV types depend on the machine, so its model file passes
 # them in.
 let
-  default = "v0.7.0";
+  default = "v0.8.0";
 
   builds = {
-    # /v1/systemone and the clef architecture first ship in v0.6.0, gemma-embedding2 in v0.7.0.
-    "v0.7.0" = {
-      version = "0.7.0";
+    # Flint (FlintForCausalLM, #30928), DeepSeek-V4.1-Flash (deepseek41, #31086) and LFM3 (lfm3)
+    # need at least this release.
+    "v0.8.0" = {
+      version = "0.8.0";
       src = {
         owner = "ggml-org";
         repo = "llama.cpp";
-        tag = "v0.7.0";
-        hash = "sha256-pEDYgI3AMTU+cekvRX7NNt5wddznydQSNuerswvEpsA=";
+        tag = "v0.8.0";
+        hash = "sha256-WQAtD8Hos6fEtgPQId7nZiLGyP4asAMKJYEXZid1nqc=";
       };
-      npmDepsHash = "sha256-hqYzdp1FwPhYkBP278fQXgY9NCKB6Q3P6Gko7BfP0m0=";
-      # The nixpkgs patch is a backport that v0.7.0 already contains.
-      patches = [];
-    };
-    # Flint (FlintForCausalLM, #30928) and DeepSeek-V4.1-Flash (deepseek41, #31086)
-    # land after v0.7.0, along with fused gate/up MMQ kernels (#29948) and the
-    # MUL_MAT_ID row-skip (#26631) that help the MoE models.
-    "b11912" = {
-      version = "0.7.0-dev";
-      src = {
-        owner = "ggml-org";
-        repo = "llama.cpp";
-        tag = "b11912";
-        hash = "sha256-3EO4Ig6tuXEmtA3rWpgQwFhZo098mTZs51DbveHJTn0=";
-      };
-      # The web UI moved from tools/server/webui to tools/ui, same layout otherwise.
       npmDepsHash = "sha256-XLtEZsSFdk+2SyfXzBp8HQ2e27PQPpDCn1YjePU1/9w=";
       patches = [];
     };

@@ -208,8 +208,6 @@
           rev = "f1bfb127c64f7072bdd2cad55f258b9c8b2910fe";
           files."Qwen3.8-27B-UD-Q5_K_XL.gguf" = "176a6a3f034e9cdc447c10cd00329fc9b31002e6589b9295f2ad4f1eefe0f6ab";
         };
-        # The repo moved the sidecar into an MTP/ folder after this rev; pin the
-        # current rev for the draft file only.
         fileArgs."--model-draft" = {
           repo = "unsloth/Qwen3.8-27B-GGUF";
           rev = "4ca720788d1e01f1bff70c033e0d0028fd02e502";
@@ -344,7 +342,6 @@
           };
         };
         alias = null;
-        # The MTP drafter ships at the pinned rev under MTP/.
         fileArgs."--model-draft" = {
           repo = "unsloth/Qwen3.8-Flash-Next-GGUF";
           rev = "38bb39ee97821de2c9009abb7e93950eec396e66";
@@ -381,7 +378,6 @@
           rev = "259605e26a47f2dcc8731ae1aa7305f8047d2c6d";
           files."Altworld_Hemmingway-1-Q4_K_M.gguf" = "c029ba6cc24bc022a65d00e4d81796ff0bd678e371a36c9a7d1119a0acc7085e";
         };
-        # The quants carry MTP layers at Q4_0; the drafter needs no extra file.
         args = [
           "--split-mode layer"
           "--parallel 1"
@@ -393,16 +389,12 @@
         concurrencyLimit = 1;
       };
 
-      # Flint: Recursive's 39.8B-A2.5B coding-agent MoE, Terminal-Bench 2.1 54.9%,
-      # SWE-bench Verified 74.2%. Needs the b11912 build (FlintForCausalLM #30928).
-      # Q4_K_M keeps the non-expert tensors at Q8_0.
       "flint-1" = {
         litellm.model_info = {
           input_cost_per_token = 0.0000002;
           mode = "chat";
           output_cost_per_token = 0.0000002;
         };
-        llama-cpp = "b11912";
         weights = {
           repo = "ggml-org/Flint-GGUF";
           rev = "468307a1b38259e9e4c9d4fe53d4e3b76386572c";
@@ -420,8 +412,6 @@
         concurrencyLimit = 2;
       };
 
-      # Nanbeige4.3-33B: dense Llama arch (no new code), 512k context, claims
-      # state-of-the-art agentic performance in the ~30B class. Released Oct 24.
       "nanbeige4.3-33b" = {
         litellm.model_info = {
           input_cost_per_token = 0.0000002;
@@ -447,8 +437,6 @@
         concurrencyLimit = 2;
       };
 
-      # Sage-A1.5: Shanghai AI Lab's agentic fine-tune of Qwen3.6-35B-A3B, same
-      # qwen3_5_moe architecture as the workhorse. Q4_K_M fits the A4000 pair.
       "sage-a1.5" = {
         litellm.model_info = {
           input_cost_per_token = 0.0000002;
@@ -475,8 +463,6 @@
         concurrencyLimit = 2;
       };
 
-      # Spark-X2.6-4B: on-device agent model, 1M context claimed, replaces
-      # MiniCPM5-2B's lane at the same size class. spark2_5 arch since b10828.
       "spark-x2.6-4b" = {
         litellm.model_info = {
           input_cost_per_token = 0.00000005;
@@ -502,8 +488,34 @@
         concurrencyLimit = 8;
       };
 
-      # Ternary-Bonsai-2-27B: Qwen3.8-27B retrained at 2-bit ternary weights,
-      # PQ2_0 runs from 7.2 GB on stock llama.cpp. mmproj gives it vision.
+      "lfm3-1.7b" = {
+        litellm.model_info = {
+          input_cost_per_token = 0.00000005;
+          mode = "chat";
+          output_cost_per_token = 0.00000005;
+        };
+        weights = {
+          repo = "LiquidAI/LFM3-1.7B-GGUF";
+          rev = "bad5729bba61d076fff20d2548e62526665af215";
+          files."LFM3-1.7B-Q8_0.gguf" = "8f6b24182258205e9e01e21f1f24a1f208c1e8115578825d202ce39976af20b6";
+        };
+        args = [
+          "--gpu-layers all"
+          "--split-mode none"
+          "--main-gpu 0"
+          "--ctx-size 65536"
+          "--flash-attn on"
+          "--jinja"
+          "--temp 0.1"
+          "--top-k 50"
+          "--repeat-penalty 1.1"
+          "--parallel 4"
+          "--no-webui"
+        ];
+        ttl = 3600;
+        concurrencyLimit = 8;
+      };
+
       "bonsai-2-27b" = {
         litellm.model_info = {
           input_cost_per_token = 0.0000001;
@@ -528,9 +540,6 @@
         concurrencyLimit = 2;
       };
 
-      # pplx-decider-flash-v1.2: Perplexity's 4.5B decision model on the same
-      # /v1/systemone API as clef-flash, distilled from the 27B deciders. A second
-      # judge lane on the small card, no llama.cpp code needed (qwen3_5 arch).
       "pplx-decider-flash" = {
         litellm.model_name = "pplx-decider-flash";
         litellm.model_info = {
@@ -554,11 +563,6 @@
         concurrencyLimit = 16;
       };
 
-      # Humanizer-12B: Gemma 4 text-completion model that rewrites a draft so it does not
-      # read like a language model. Pinned to the second A4000, so it stays loaded next to
-      # qwen2.5-coder-7b-fim on the first. The Q4_K_M file is the quantization-aware one:
-      # within noise of bf16 on the task, and 5 GB smaller than Q8_0, which buys the f16
-      # KV cache and a 512-token ubatch instead of a layer split across PCIe.
       "humanizer-12b" = {
         litellm.model_info = {
           input_cost_per_token = 0.0000002;
@@ -577,22 +581,16 @@
           "--split-mode none"
           "--main-gpu 0"
           "--flash-attn on"
-          # Trained and evaluated at 8k. Its sliding-window layers cap their own cache at
-          # 1024 tokens, so an f16 KV cache costs about 2.6 GiB at 8k.
           "--ctx-size 8192"
           "--batch-size 2048"
           "--ubatch-size 512"
           "--parallel 1"
-          # A rewrite reuses the draft's numbers, names and quotes, so ngram speculation
-          # drafts them out of the context. It is lossless: the sampled tokens do not change.
           "--spec-type ngram-mod,ngram-simple"
           "--spec-ngram-simple-size-n 12"
           "--spec-ngram-simple-size-m 16"
           "--spec-ngram-mod-n-match 24"
           "--spec-ngram-mod-n-min 8"
           "--spec-ngram-mod-n-max 16"
-          # The file's chat template builds instr + draft + sep from the last user message,
-          # and its stored defaults are the sampling below.
           "--jinja"
           "--temp 1.0"
           "--top-p 0.95"
@@ -616,7 +614,6 @@
     modelsDir = "/var/lib/llama-models";
 
     engine = import ../engine {inherit lib pkgs;} {
-      # The Ryzen 9 7900 (Zen 4).
       cpuFlags = [
         "GGML_SSE42"
         "GGML_AVX"
@@ -629,7 +626,6 @@
         "GGML_AVX512_VNNI"
         "GGML_AVX512_BF16"
       ];
-      # The models use q4_0, q8_0 or f16 KV caches, with the same type for K and V.
       flashAttnQuants = "q4_0-q4_0;q8_0-q8_0;f16-f16";
       fetch = "runtime";
       dir = modelsDir;
@@ -641,9 +637,6 @@
       "d ${modelsDir} 0755 root root -"
     ];
 
-    # The download runs in the background. `Type=exec` finishes the start job once the
-    # script is running, so neither the boot nor `switch-to-configuration` waits for 279GB.
-    # A model whose file has not arrived yet fails to load until its download finishes.
     systemd.services.llama-models-fetch = {
       description = "Download and verify the llama-swap model files";
       wantedBy = ["multi-user.target"];
@@ -668,7 +661,6 @@
         healthCheckTimeout = 300;
         logLevel = "debug";
         logToStdout = "both";
-        # Unload models after 15 minutes without requests.
         globalTTL = 900;
 
         performance = {
