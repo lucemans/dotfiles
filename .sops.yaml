@@ -38,6 +38,11 @@ creation_rules:
       - age: [*desktop, *patch]
         pgp: [*lucpgp]
     shamir_threshold: 1
+  - path_regex: auth\.sops\.yaml$
+    key_groups:
+      - age: [*desktop, *teapot]
+        pgp: [*lucpgp]
+    shamir_threshold: 1
   - path_regex: .+\.sops\.(yaml|json|env|ini|toml)$
     key_groups:
       - age: [*desktop]

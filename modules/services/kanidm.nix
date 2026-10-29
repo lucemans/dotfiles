@@ -36,9 +36,16 @@ in {
 
         groups.librechat_users = {};
         groups.freshrss_users = {};
-        groups.litellm_users = {};
-        groups.kettle_forge_users = {};
-        groups.ingestarr_users = {};
+        extraJsonFile = config.sops.secrets.kanidm_people.path;
+
+        groups.f0 = {};
+        groups.f1 = {};
+        groups.f2 = {};
+        groups.librechat_users.members = services.chat.access;
+        groups.freshrss_users.members = services.rss.access;
+        groups.litellm_users.members = services.inference.access;
+        groups.kettle_forge_users.members = services.forge.access;
+        groups.ingestarr_users.members = services.ingestarr.access;
 
         persons.luc = {
           displayName = "Luc";
@@ -118,6 +125,13 @@ in {
       teapot_ingestarr_oauth2_secret = {
         owner = "kanidm";
         mode = "0400";
+      };
+      kanidm_people = {
+        sopsFile = ../../config/auth.sops.yaml;
+        key = "people";
+        owner = "kanidm";
+        mode = "0400";
+        restartUnits = ["kanidm.service"];
       };
     };
 

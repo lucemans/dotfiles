@@ -1,0 +1,38 @@
+people: ENC[AES256_GCM,data:fMW1Muwd9tjua1kweRzjOdDUHsqy3Jv8jcx4tWnZSehShhqFbncgkQWpsoqaU90cbbruzkPp3ZNe0CV6OJItIEDzQ7sK40jtGfIrL2lEoMkbZp/64/9o2hjd0y9H3++x1mSMNT5utUG4cYE8IX9DBxZFxVVRXOGTkpuUKIjPmhlcowqQV+kZVDd4yjn2glYdek/iiJuRQ4rsAAJCJEJc6LMEPZolOhxzbTRFVLx9SovJ0SyFupFvJpouPZB8DWN4IlNSCoyyAwd8BEQUQoArAk0aroR92Vu/3wQioz6LfWG+gbwsld/KgWSUwsbuimNogVJdnGEUwt/mfKb7K4TQUwf2rpd4FE+0dNIEKb9s4lhWogCHwIX7wrbvN7evIHdxCIT37/U2clOw5rPmx3FdDwWGtPFAFlMaUtdjaYA22HIi8tBHfXSREy0hsIpanDvXEubr1qzUsjJKiPJf0gZ18E4XhTuwlhap0fMMyCxk1wpoJ34YOdrvO4x7GlMIz2MTXpKtVwgGQS1kU6KVztNQhcVQAXBPUK3g9QtrMfFLYcEo7FzHsDRFOQpoWA5B+u1fCJad+5+hJTtwVMuhYag2nX82mreUizu8gWwA+kkfuZVOouTUL8cr0PPlINESAjZTLyXa/bCzKxtS70wQgAe9W8DdsoOauAZ+nnuHZhoagLrZEsg5E5Bb8rCyhGdc0l7WZo7AvNl6Pcns0tzWANg0FhwH4oj4ZJwR,iv:Kabi6kgh7wG/invWATjFL2trnuSRu4vVm5vS1XmhFS4=,tag:CoBnftEYn+h3VnYxZpS0tQ==,type:str]
+sops:
+    age:
+        - enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBkUnI4b0w2UkY1bnB6V2Fn
+            RzNWK21hRUs1aEhmL1d5dGFsdzk0YVVaQWdNClJCOEVKM3dsZ0FibHhSR2FWSWI4
+            d0t5S3VYelBWQm1PTjRqbmUvUUwvZnMKLS0tIDhGS1g3VmRPSkozem8ycE96RlJC
+            NytCZEVTRmlNc2hEVDBNcTNTTktvR2sK/VnS1YJ650iFnhP6YUU/mNHgYodzdeDX
+            lZAL+xZn0awKQGya2XlPpsoLFS5yAJGTeWLLu8LXNPf4ySEb7xev2Q==
+            -----END AGE ENCRYPTED FILE-----
+          recipient: age138hwuu082j7xx6vy3u88nw8kjmdjky4sz4gxx9jtpe8gsmwjqdcqp3ddw8
+        - enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBsbVNoRGU0VVpnNjBPdlRK
+            bldoQlJPYm43Mmk2Nm5ZM0wrVnZKeGYvdUZvCmhwV1liT0JHa3hjSlRtbTRiSmE4
+            c3FVNHJyZTl2SGk0RHRRT0cxYlQyWUUKLS0tIEduWUFjT0FTOXhleXdoTENSVW1D
+            R1ZUZDR1QzNxOE1BWHhZZzZsQkt0QncKQyGuL/btxarbVOpI4Cvd8ueycPrCWFVN
+            0kCA6ALdApFlFdPzB+2ZvENNYTNnvPWdHF8PfZ5cYw5zi2/YixpuSA==
+            -----END AGE ENCRYPTED FILE-----
+          recipient: age17w63cmtlu9jvh7sr3ru6stn2mkjgcjfksnxcnsxj47akdc88gq6qytsv86
+    lastmodified: "2026-10-29T13:04:58Z"
+    mac: ENC[AES256_GCM,data:Gvh/dFPtp1FDXrD9VKmLbnBMmnwqW3hXDbsXWvCNmbe48wvctjQRbfP6VG/LgUJQoG9itgVj0J5ibUYhjEcKFcxV/na/GlcEZWylaPGK9vaI3JySB2Dsyj2IBX6Hi+wOVBOt1c+6wOi3iH6hZwRYcCj3Oc+6wTfdCr2P2d+9E94=,iv:B6eDj0ixMVknA2mDQzcW1F4XrW+6PpTzi4UhIEWH9YU=,tag:gR7T22935+aPceVoNdh2HA==,type:str]
+    pgp:
+        - created_at: "2026-10-29T12:57:40Z"
+          enc: |-
+            -----BEGIN PGP MESSAGE-----
+
+            hF4Dw1dWckheLOwSAQdAK6dkXQ8gf0zn4/A2NOBnuYwfEgm8lUGO3NrXsn5kvwIw
+            P+LtZ1YTIOhIz6ErPYhVFVof45kfwIBEuTVRebgZ/uj2PsmdJHFVLlthBJz1V0MZ
+            0l4BEY0fOxhUS/bFGcvPLVYIspXbWqHYlWPBTnJ1ZvAQfl97wX57nEglWYYbZpU7
+            R8a6ebMM9rim5ABUSRGRjFDQtTbSoSMJRgRSe0cEFQFJOkHIiJIST1G23WA4zalh
+            =ZnrV
+            -----END PGP MESSAGE-----
+          fp: 716C1889C8EBE5C434C106C4C3575672485E2CEC
+    shamir_threshold: 1
+    unencrypted_suffix: _unencrypted
+    version: 3.13.3

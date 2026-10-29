@@ -105,7 +105,7 @@ in {
     usage = {
       name = "usage.${zone}";
       title = "Usage";
-      icon = "grafana";
+      icon = "metered-usage";
       upstream = "${hosts.v3x-watch.address}:3000";
       access = [];
     };
@@ -245,12 +245,16 @@ in {
       services = ["home" "mealie"];
     }
     {
+      title = "Obtain";
+      services = ["search" "rss" "ingestarr"];
+    }
+    {
       title = "Tools";
-      services = ["chat" "search" "rss" "ingestarr" "inference" "agent" "usage" "code" "forge"];
+      services = ["code" "forge" "chat" "usage" "agent" "inference" "llamaTeapot" "llamaMediabus"];
     }
     {
       title = "Media";
-      services = ["media" "fmedia" "shelf" "gallery"];
+      services = ["media" "gallery" "fmedia" "shelf"];
     }
     {
       title = "Shiparr";
@@ -258,7 +262,7 @@ in {
     }
     {
       title = "Control Plane";
-      services = ["mission" "grafanaMission" "launchpi" "llamaTeapot" "llamaMediabus"];
+      services = ["launchpi" "mission" "grafanaMission"];
     }
     {
       title = "Infrastructure";

@@ -3,7 +3,7 @@ _: {
     services.ingestarr.settings.source = [
       {
         key = "huggingface-trending-text";
-        name = "Hugging Face trending: text";
+        name = "HF Trending LLM";
         kind = "huggingface";
         huggingface = {
           trending = "models";
@@ -13,7 +13,7 @@ _: {
       }
       {
         key = "huggingface-trending-tts";
-        name = "Hugging Face trending: text-to-speech";
+        name = "HF Trending TTS";
         kind = "huggingface";
         huggingface = {
           trending = "models";
@@ -23,7 +23,7 @@ _: {
       }
       {
         key = "huggingface-trending-stt";
-        name = "Hugging Face trending: speech recognition";
+        name = "HF Trending STT";
         kind = "huggingface";
         huggingface = {
           trending = "models";
@@ -33,7 +33,7 @@ _: {
       }
       {
         key = "huggingface-trending-embedding";
-        name = "Hugging Face trending: embedding";
+        name = "HF Trending Embed";
         kind = "huggingface";
         huggingface = {
           trending = "models";
@@ -43,69 +43,69 @@ _: {
       }
       {
         key = "huggingface-ggml-org";
-        name = "Hugging Face ggml-org";
+        name = "HF ggml-org";
         kind = "huggingface";
         icon = "llama-cpp";
         huggingface.author = "ggml-org";
       }
       {
         key = "huggingface-qwen";
-        name = "Hugging Face Qwen";
+        name = "HF Qwen";
         kind = "huggingface";
         huggingface.author = "Qwen";
       }
       {
         key = "huggingface-deepseek-ai";
-        name = "Hugging Face DeepSeek";
+        name = "HF DeepSeek";
         kind = "huggingface";
         icon = "llama-cpp";
         huggingface.author = "deepseek-ai";
       }
       {
         key = "huggingface-openai";
-        name = "Hugging Face OpenAI";
+        name = "HF OpenAI";
         kind = "huggingface";
         huggingface.author = "openai";
       }
       {
         key = "huggingface-cloudflare";
-        name = "Hugging Face Cloudflare";
+        name = "HF Cloudflare";
         kind = "huggingface";
         huggingface.author = "Cloudflare";
       }
       {
         key = "huggingface-google";
-        name = "Hugging Face Google";
+        name = "HF Google";
         kind = "huggingface";
         huggingface.author = "google";
       }
       {
         key = "huggingface-nvidia";
-        name = "Hugging Face Nvidia";
+        name = "HF Nvidia";
         kind = "huggingface";
         huggingface.author = "nvidia";
       }
       {
         key = "huggingface-meta-models";
-        name = "Hugging Face Meta Models";
+        name = "HF Meta Models";
         kind = "huggingface";
         huggingface.author = "meta-models";
       }
       {
         key = "huggingface-meta-llama";
-        name = "Hugging Face Meta Llama";
+        name = "HF Meta Llama";
         kind = "huggingface";
         huggingface.author = "meta-llama";
       }
       {
         key = "huggingface-facebook";
-        name = "Hugging Face Facebook";
+        name = "HF Facebook";
         kind = "huggingface";
         huggingface.author = "facebook";
       }
       {
         key = "huggingface-openbmb";
-        name = "Hugging Face OpenBMB";
+        name = "HF OpenBMB";
         kind = "huggingface";
         huggingface.author = "openbmb";
       }
