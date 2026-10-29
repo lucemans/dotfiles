@@ -828,11 +828,11 @@
         "rust-overlay": "rust-overlay_3"
       },
       "locked": {
-        "lastModified": 1793229776,
-        "narHash": "sha256-6nsnzqISpeSjVBk/s57v7tbFFOVYx/6B7SZuW25/5wg=",
+        "lastModified": 1793235378,
+        "narHash": "sha256-VE6H4l/VXemyVEo49L9QlaNr/plDRjxMaiW9ekMwMMs=",
         "ref": "refs/heads/master",
-        "rev": "4f9c9270f08706868e8a252adabe32341dbcf7c8",
-        "revCount": 67,
+        "rev": "39ef00131e38f64d6516375f3111da27f44996de",
+        "revCount": 71,
         "type": "git",
         "url": "ssh://git@100.127.0.11:2222/v3xlabs/ingestarr.git"
       },
