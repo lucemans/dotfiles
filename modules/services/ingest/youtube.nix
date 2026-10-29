@@ -3,6 +3,7 @@ _: {
     channel = key: name: handle: {
       inherit key name;
       kind = "youtube";
+      interval = "2h";
       youtube = {inherit handle;};
     };
   in {

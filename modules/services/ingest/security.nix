@@ -37,7 +37,7 @@ _: {
         {
           name = "security";
           title = "Security";
-          sources = ["cisa-kev" "nixos-announce" "postgresql-lifecycle" "linux-lifecycle"];
+          sources = ["cisa-kev" "nixos-announce" "nixos-lifecycle" "postgresql-lifecycle" "linux-lifecycle"];
         }
       ];
     };

@@ -1,27 +1,18 @@
 _: {
-  flake.nixosModules.ingestarrHog = _: {
+  flake.nixosModules.ingestarrHog = _: let
+    hog = key: name: org: {
+      inherit key name;
+      kind = "trufflehog";
+      interval = "48h";
+      trufflehog = {
+        orgs = [org];
+      };
+    };
+  in {
     services.ingestarr.settings.source = [
-      {
-        key = "hog-v3xlabs";
-        name = "TruffleHog v3xlabs";
-        kind = "trufflehog";
-        interval = "48h";
-        trufflehog.orgs = ["v3xlabs"];
-      }
-      {
-        key = "hog-openlv";
-        name = "TruffleHog openlv";
-        kind = "trufflehog";
-        interval = "48h";
-        trufflehog.orgs = ["open-lavatory"];
-      }
-      {
-        key = "hog-ensdomains";
-        name = "TruffleHog ensdomains";
-        kind = "trufflehog";
-        interval = "48h";
-        trufflehog.orgs = ["ensdomains"];
-      }
+      (hog "hog-v3xlabs" "TruffleHog v3xlabs" "v3xlabs")
+      (hog "hog-openlv" "TruffleHog openlv" "open-lavatory")
+      (hog "hog-ensdomains" "TruffleHog ensdomains" "ensdomains")
     ];
     services.ingestarr.collections = [
       {

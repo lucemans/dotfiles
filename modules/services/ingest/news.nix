@@ -21,6 +21,12 @@ _: {
           rss.url = "https://blog.ethereum.org/en/feed.xml";
         }
         {
+          key = "ens-blog";
+          name = "ENS Blog";
+          kind = "rss";
+          rss.url = "https://ens.domains/blog/rss.xml";
+        }
+        {
           key = "nixos-announce";
           name = "NixOS announcements";
           kind = "rss";

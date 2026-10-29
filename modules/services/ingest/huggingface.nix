@@ -58,7 +58,6 @@ _: {
         key = "huggingface-deepseek-ai";
         name = "HF DeepSeek";
         kind = "huggingface";
-        icon = "llama-cpp";
         huggingface.author = "deepseek-ai";
       }
       {
