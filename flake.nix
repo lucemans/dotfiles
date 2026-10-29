@@ -65,6 +65,8 @@
 
     kettle-forge.url = "git+ssh://git@100.127.0.11:2222/v3xlabs/kettle-forge.git";
     kettle-code.url = "git+ssh://git@100.127.0.11:2222/v3xlabs/kettle-code.git";
+    ingestarr.url = "git+ssh://git@100.127.0.11:2222/v3xlabs/ingestarr.git";
+    ingestarr.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs = inputs:

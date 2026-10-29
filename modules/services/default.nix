@@ -1,22 +1,23 @@
 {
   imports = [
     ./uptime
-    ./ethereum
-    ./metrics.nix
-    ./inference
-    ./keyhold
-    ./launchpi
+    ./ingest
+    ./kettle
     ./mission
+    ./keyhold
+    ./ethereum
+    ./launchpi
     ./asterisk
-    ./searxng.nix
-    ./mealie.nix
-    ./freshrss.nix
-    ./vaultwarden.nix
-    ./kanidm.nix
-    ./garage.nix
+    ./inference
     ./attic.nix
     ./immich.nix
+    ./garage.nix
+    ./kanidm.nix
     ./backup.nix
-    ./kettle
+    ./mealie.nix
+    ./searxng.nix
+    ./metrics.nix
+    ./freshrss.nix
+    ./vaultwarden.nix
   ];
 }

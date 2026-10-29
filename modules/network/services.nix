@@ -80,6 +80,13 @@ in {
       upstream = "${hosts.v3x-teapot.address}:8090";
       access = ["f0" "f1" "f2"];
     };
+    ingestarr = {
+      name = "ingest.${zone}";
+      title = "Ingest";
+      icon = "ingestarr";
+      upstream = "${hosts.v3x-watch.address}:3100";
+      access = ["f0" "f1" "f2"];
+    };
     bit = {
       name = "bit.${zone}";
       title = "Bit";
@@ -239,7 +246,7 @@ in {
     }
     {
       title = "Tools";
-      services = ["chat" "search" "rss" "inference" "agent" "usage" "code" "forge"];
+      services = ["chat" "search" "rss" "ingestarr" "inference" "agent" "usage" "code" "forge"];
     }
     {
       title = "Media";

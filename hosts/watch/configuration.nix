@@ -13,6 +13,7 @@ _: {
       self.nixosModules.vaultwarden
       self.nixosModules.cliproxy
       self.nixosModules.usage
+      self.nixosModules.ingestarr
     ];
 
     boot.loader.systemd-boot.enable = true;
@@ -66,6 +67,14 @@ _: {
           "/var/lib/cli-proxy-api"
           "/var/lib/docker"
           "/var/lib/nixos"
+          {
+            directory = "/var/lib/private/ingestarr";
+            user = "-";
+            group = "-";
+            mode = "0700";
+            configureParent = true;
+            parent.mode = "0700";
+          }
           {
             directory = "/var/lib/private/metered-usage";
             user = "-";

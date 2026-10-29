@@ -38,11 +38,12 @@ in {
         groups.freshrss_users = {};
         groups.litellm_users = {};
         groups.kettle_forge_users = {};
+        groups.ingestarr_users = {};
 
         persons.luc = {
           displayName = "Luc";
           mailAddresses = ["luc@v3x.email"];
-          groups = ["librechat_users" "freshrss_users" "litellm_users" "kettle_forge_users"];
+          groups = ["librechat_users" "freshrss_users" "litellm_users" "kettle_forge_users" "ingestarr_users"];
         };
 
         systems.oauth2.librechat = {
@@ -81,6 +82,15 @@ in {
           preferShortUsername = true;
           scopeMaps.kettle_forge_users = ["openid" "profile" "email"];
         };
+
+        systems.oauth2.ingestarr = {
+          displayName = services.ingestarr.title;
+          originUrl = "https://${services.ingestarr.name}/auth/callback";
+          originLanding = "https://${services.ingestarr.name}";
+          basicSecretFile = config.sops.secrets.teapot_ingestarr_oauth2_secret.path;
+          preferShortUsername = true;
+          scopeMaps.ingestarr_users = ["openid" "profile" "groups"];
+        };
       };
     };
 
@@ -102,6 +112,10 @@ in {
         mode = "0400";
       };
       teapot_kettle_forge_oauth2_secret = {
+        owner = "kanidm";
+        mode = "0400";
+      };
+      teapot_ingestarr_oauth2_secret = {
         owner = "kanidm";
         mode = "0400";
       };

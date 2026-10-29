@@ -42,6 +42,7 @@ teapot_garage_rpc_secret: ENC[AES256_GCM,data:dQDwDL1KezZANRf9yDV7clvnjSnEWQzSg0
 teapot_garage_kaneo_key_id: ENC[AES256_GCM,data:HkoYg5wz07pC4yh0aHY=,iv:j2pSPf5UAqJ0p8Fa4HM/Yj0YzA5DNAljGSvtX3IcZtY=,tag:KieR1rbJ0mJi5Agyokndbg==,type:str]
 teapot_garage_kaneo_secret_key: ENC[AES256_GCM,data:VKEUvU1tnscCi29BTs6Kveq48VzudJMy04hXi4FhjIfRLQGHrSvWyJNCPGeLEQkrgEQCD09BESwRTK1D2GifGQ==,iv:Ljeq6Tmow9p6ajteepLO6+xhQ1typSima6Ym3T38peI=,tag:pKl874Nj0QqQg6w9KMTl7Q==,type:str]
 teapot_kettle_forge_oauth2_secret: ENC[AES256_GCM,data:mFrIE9ywyoMx9QKtPLEjXP6LRC1H93VMDbarE4+T47XgEUr9nZJpVy6rEAg2LbuaPUocCMjS97EAD16TxUQSKQ==,iv:xjYycm4aSHVHmQmXP0eBqc1gozPuOc9D8w+l6n2lUVw=,tag:p944rP/Q2kBUh5NDEfNJQQ==,type:str]
+teapot_ingestarr_oauth2_secret: ENC[AES256_GCM,data:m2WtGb+lQjFxMUYdwc3NlxdShyJgsI6dpWkPwNQrztAIy+ApCSGYM/V7eSdCqoISbnSbgN9kWI6Kg/1Vx2uQ1g==,iv:xhsmdXXgGVyZfnldXRBnstekN4K/cn4OHz6+MwbTpxQ=,tag:nF2jWR98VF/SMc1BzeuDng==,type:str]
 sops:
     age:
         - enc: |
@@ -62,8 +63,8 @@ sops:
             ofpOY2YovLCzgjR9mmN6nieKANBTHD+TnVWh9IG7Q8lfCNCm6m/00w==
             -----END AGE ENCRYPTED FILE-----
           recipient: age17w63cmtlu9jvh7sr3ru6stn2mkjgcjfksnxcnsxj47akdc88gq6qytsv86
-    lastmodified: "2026-10-26T03:30:36Z"
-    mac: ENC[AES256_GCM,data:TaelJnca6HwVgdNue8TOM4Pn+is6NnKv1fkdibU715a599mru1xPIVLixEhQjgxH1pUKa8ZlUJm9NtH80Fw8SsPREI61kCJEqsZl6v0ZkvLJ0hlroAvOQpteAUylox4w6mM5Y3dETfskqkXGn6NLHfGzFzcbzjGQUb1uZgLXUaw=,iv:/LdhDJXpD6HzDwJljnrnvnUGqT/7i1gz3yCsTpYB734=,tag:do248MwZLPIAoCFXsE3jOw==,type:str]
+    lastmodified: "2026-10-29T00:20:45Z"
+    mac: ENC[AES256_GCM,data:f/NrG652IUNjbRGZqYKzpDabpL7RzSIgoA/RM5LREUwbkVvnSnYSGH0XkjUNLMKcGOUNTxg7pQHj654ZDl2+lgmzQJGyckQ5koAad+8Ujwuj/7a8G0u/RtH1pAxkiVJcw9CVyXj7BIJ6TCp3TBLS+NyQRCqcU3BjWzACoimPwM8=,iv:G46GqViztXfe3VvzSiL//vcJis1/7TqLMlA4TMMOb3s=,tag:kbrdcrBF4copIdWchPwRYA==,type:str]
     pgp:
         - created_at: "2026-07-26T14:43:52Z"
           enc: |-
