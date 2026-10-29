@@ -8,6 +8,7 @@ _: {
     }: {
       inherit key name icon;
       kind = "statuspage";
+      interval = "20m";
       statuspage = {inherit url;};
     };
   in {

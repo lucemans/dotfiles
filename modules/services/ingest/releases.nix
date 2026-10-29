@@ -78,6 +78,13 @@ _: {
           kind = "home-assistant";
           icon = "home-assistant";
         }
+        {
+          key = "kernel-releases";
+          name = "Linux kernel releases";
+          kind = "rss";
+          icon = "linux";
+          rss.url = "https://www.kernel.org/feeds/kdist.xml";
+        }
       ];
 
       collections = [

@@ -57,6 +57,8 @@ in {
         url = "https://${services.inference.name}";
         keyFile = config.sops.secrets.v3x_inference_token.path;
       };
+
+      pasteScan.enable = true;
     };
   };
 }

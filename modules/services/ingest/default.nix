@@ -6,7 +6,13 @@ in {
     ./security.nix
     ./status.nix
     ./news.nix
-    ./ai.nix
+    ./lore.nix
+    ./huggingface.nix
+    ./containers.nix
+    ./packages.nix
+    ./papers.nix
+    ./youtube.nix
+    ./hog.nix
   ];
 
   flake.nixosModules.ingestarr = {
@@ -20,7 +26,13 @@ in {
       self.nixosModules.ingestarrSecurity
       self.nixosModules.ingestarrStatus
       self.nixosModules.ingestarrNews
-      self.nixosModules.ingestarrAi
+      self.nixosModules.ingestarrLore
+      self.nixosModules.ingestarrHuggingface
+      self.nixosModules.ingestarrContainers
+      self.nixosModules.ingestarrPackages
+      self.nixosModules.ingestarrPapers
+      self.nixosModules.ingestarrYoutube
+      self.nixosModules.ingestarrHog
     ];
 
     sops.secrets.ingestarr_oidc_client_secret.restartUnits = ["ingestarr.service"];
