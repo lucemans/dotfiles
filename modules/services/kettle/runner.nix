@@ -62,7 +62,6 @@ in {
         opencode = null;
       }).omp;
     ompNetworkDeny = kettleOmp.networkDeny;
-    inherit (kettleOmp.mcpServers) playwright;
   in {
     sops.secrets = {
       kettle_runner_key.mode = "0400";
@@ -184,7 +183,6 @@ in {
             wire_api = "responses";
           };
           mcp_servers = {
-            playwright = {inherit (playwright) command args;};
             plan_env.command = planEnvCommand;
           };
         };
@@ -207,16 +205,23 @@ in {
             apiKey = "{env:ANTHROPIC_API_KEY}";
           };
           mcp = {
-            playwright = {
-              type = "local";
-              command = [playwright.command] ++ playwright.args;
-            };
             plan_env = {
               type = "local";
               command = [planEnvCommand];
             };
           };
         };
+        files = planEnvConfig;
+      };
+
+      harnesses.muse = {
+        enable = true;
+        inherit envFiles;
+        extraPath = extraPathWithPython;
+        extraDeny = ompNetworkDeny;
+        env.MUSE_API_KEY_ENV = "ANTHROPIC_API_KEY";
+        settings.endpoint_transport.base_url = "https://${services.agent.name}/v1";
+        mcpServers.plan_env.command = planEnvCommand;
         files = planEnvConfig;
       };
 

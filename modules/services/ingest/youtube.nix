@@ -33,6 +33,8 @@ _: {
         (channel "youtube-direwolf20" "Direwolf20" "@direwolf20")
         (channel "youtube-dreydossier" "The Drey Dossier" "@thedreydossier")
         (channel "youtube-eevblog" "EEVblog" "@EEVblog")
+        (channel "youtube-xylafoxlin" "Xyla Foxlin" "@xylafoxlin")
+        (channel "youtube-lubach" "Lubach" "@Lubach_official")
       ];
       collections = [
         {
