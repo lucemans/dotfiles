@@ -40,11 +40,35 @@ _: {
 
     zramSwap = {
       enable = true;
-      memoryMax = 4 * 1024 * 1024 * 1024;
+      memoryPercent = 100;
+    };
+    boot.kernel.sysctl = {
+      "vm.swappiness" = 180;
+      "vm.page-cluster" = 0;
     };
 
+    services.kettle-runner.runCgroups = {
+      enable = true;
+      memoryHigh = 12 * 1024 * 1024 * 1024;
+      memoryMax = 16 * 1024 * 1024 * 1024;
+      pidsMax = 8192;
+      cpuWeight = 50;
+    };
+    systemd.services.kettle-runner.serviceConfig = {
+      MemoryMax = "70%";
+      CPUWeight = 30;
+      IOWeight = 30;
+      OOMScoreAdjust = 500;
+    };
+    systemd.services.kettle-code.serviceConfig = {
+      CPUWeight = 200;
+      IOWeight = 200;
+      OOMScoreAdjust = -900; # k5c goes last
+    };
+    nix.daemonCPUSchedPolicy = "batch";
+    nix.daemonIOSchedClass = "idle";
+
     nixpkgs.config.allowUnfree = true;
-    # Both RTX A4000 cards are Ampere, compute capability 8.6.
     nixpkgs.config.cudaCapabilities = ["8.6"];
 
     hardware.graphics.enable = true;

@@ -20,6 +20,9 @@ Give the user the returned URL.
 screenshot. A push that returns a URL succeeded, and that is the whole check.
 `plan_env_plan_read` reads back what you sent if you need it.
 
+**Do not push seperate plans for variants** Multiple variations of a design by default belong in the same doc,
+use tabs or a toggle to swap between variants, not links to other plan-env docs
+
 ## `reference/document.css` does not apply
 
 Do not upload it, and do not link it. Its class names name the parts of a document

@@ -1,4 +1,4 @@
-## Kettle Code
+## Extended Operating Policy
 
 You are a chat in Kettle Code, an agent harness orchestration platform.
 

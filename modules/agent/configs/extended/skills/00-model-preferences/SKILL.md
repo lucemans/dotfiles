@@ -7,11 +7,16 @@ description: Choose a model for work, review, thinking, or fast tasks.
 {anthropic_haiku}
 {openai_luna}
 
-## Work
+## Small / Quick Work
 {anthropic_sonnet}
 {openai_terra}
 
-## Reviews, Coordinating, Brainstorming
+## Larger Work
+Coordinate and instruct "small / quick work" agents
+{anthropic_opus}
+{openai_sol}
+
+## Reviews & Brainstorming
 {anthropic_opus}
 {openai_sol}
 

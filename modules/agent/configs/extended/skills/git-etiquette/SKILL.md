@@ -18,15 +18,17 @@ A PR title lands as the commit subject when Luc squashes it, so a PR title follo
 5. Only the first letter is a capital. Write pr, ui, cli, api, json, git, nix and omp in lowercase.
 6. No colon, comma, "&", brackets or final period, and no "and" except in the place (`for omp and codex`). Two changes in one title: name the area they share.
 7. No issue or PR number. `Closes #n` goes in the body.
-8. One line.
+8. Be positive, we made an improvement, no need to blame the before.
+9. One line.
 
 | Not this | This |
 |---|---|
-| Show a model card on hover of every model mark | Introduce model hover card in transcript |
+| Show a model card on hover of every model mark | Introduce model hover card on mention in transcript |
 | Keep typed text when sending or picking a completion | Fix text entry completion in composer |
 | Composer: one placeholder for idle and steer, follow-up instead of queued | Update composer placeholder |
 | Record PR landings in atomic git pushes | Implement atomic pr landing records |
-| Fix bare diff previews | Fix bare diff previews in question card |
+| Fix bare diff previews | Improve diff previews in question cards |
+| Fix flaky auth bypass introduced 3 months ago | Improve authentication handling |
 | Introduce update mark | Introduce update mark in sidebar |
 | Introduce sticky picker headings | Introduce sticky headings in model picker |
 | Implement pending message handling | Implement pending messages in composer |
