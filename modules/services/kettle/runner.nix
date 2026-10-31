@@ -4,8 +4,6 @@
   inherit (import ../../network/hosts.nix) hosts;
   inherit (import ../../network/services.nix) services;
 in {
-  # Needs inputs.kettle-code.nixosModules.default, and the machine's public
-  # key in k5c's machines.
   flake.nixosModules.kettleRunner = {
     config,
     lib,
@@ -15,7 +13,6 @@ in {
     inherit (pkgs.stdenv.hostPlatform) system;
     inherit (config.sops) secrets templates;
 
-    # k5r sends its tokens only over TLS or loopback.
     onHost = service: config.networking.hostName == service.host;
     codeUrl =
       if onHost code
@@ -29,14 +26,11 @@ in {
     agentConfigs = import ../../agent/configs;
     preferences = import ../../agent/configs/model-preferences.nix;
 
-    # Its models.yml calls this host's coreutils by store path. A run has that
-    # path because kettle-code's manifest puts the same coreutils on PATH.
     omp = import ./omp.nix {
       inherit inputs lib pkgs;
       inferenceToken = templates.kettle_runner_inference_token.path;
     };
 
-    # comment-sicko as the desktop renders it for OMP, then the reviewers.
     agents =
       lib.mapAttrsToList (path: file: pkgs.writeText (baseNameOf path) file.text)
       ((import ../../agent/configs/general/subagents).files "omp" "agents")
@@ -48,12 +42,11 @@ in {
 
     envFiles = [templates.kettle_runner_agent_env.path];
     extraPath = [k5f planEnv];
-    # Kettle Code's OMP brings python3 itself; the other harnesses get it here.
+
+    # idk man python... why
     extraPathWithPython = extraPath ++ [pkgs.python3];
     planEnvConfig.".config/plan-env-md/config" = secrets.kettle_plan_env_config.path;
 
-    # Kettle Code's OMP DNS deny list (r.jina.ai and the third-party startup
-    # catalogs) and Playwright server, for the other harnesses too.
     kettleOmp =
       (import "${inputs.kettle-code}/nix/harnesses" {
         inherit pkgs;
@@ -97,8 +90,7 @@ in {
         launcherTokenFile = secrets.kettle_runner_launcher_token.path;
       };
       network.defaultMode = "internet";
-      # k5r filters by address and port, so runs reach every service the hub's
-      # proxy serves to this host: the model gateway, v3x-inference, SearXNG.
+
       network.allow = ["${hosts.${hub}.address}:443"];
       kinds = {
         all.skills = lib.attrValues (agentConfigs.skillsOf pkgs agentConfigs.targets.kettle.all);
@@ -108,8 +100,6 @@ in {
         triage.systemPrompt = agentConfigs.promptOf pkgs agentConfigs.targets.kettle.triage;
       };
 
-      # Kettle Code's own OMP (18.11.3 with its patches); these settings render
-      # over Kettle Code's run defaults.
       harnesses.omp = {
         enable = true;
         inherit agents;
@@ -120,11 +110,11 @@ in {
             smol = preferences.anthropic_haiku;
             task = preferences.anthropic_sonnet;
           };
-          compaction.modelThresholds = {
-            "anthropic/claude-opus-5-5" = "f300000";
-            "openai/gpt-6.1-sol" = "f250000";
-            "openai/gpt-6.1-terra" = "f250000";
-          };
+          # compaction.modelThresholds = {
+          #   "anthropic/claude-opus-5-5" = "f300000";
+          #   "openai/gpt-6.1-sol" = "f250000";
+          #   "openai/gpt-6.1-terra" = "f250000";
+          # };
           providers.maxInFlightRequests = {
             anthropic = 3;
             openai = 3;
@@ -145,8 +135,6 @@ in {
           type = "stdio";
           command = planEnvCommand;
         };
-        # Only plan-env's config is secret; models.yml goes through
-        # LoadCredential= all the same.
         files =
           {
             ".omp/agent/models.yml" = "${omp.models}";
@@ -156,8 +144,6 @@ in {
         secretFiles = [templates.kettle_runner_inference_token.path];
       };
 
-      # OMP's sub-agents are Markdown and codex reads `*.toml` role files, so
-      # codex gets none.
       harnesses.codex = {
         enable = true;
         package = pkgs.fetchzip {
@@ -174,8 +160,6 @@ in {
         settings = {
           model_provider = "v3x";
           model = "gpt-6.1-sol";
-          # The model gateway. The key is ANTHROPIC_API_KEY from the agent env
-          # file; the config only names the variable.
           model_providers.v3x = {
             name = "v3x agent gateway";
             base_url = "https://${services.agent.name}/v1";
@@ -186,11 +170,8 @@ in {
             plan_env.command = planEnvCommand;
           };
         };
-        # plan-env's config is secret, so it is a file, not a setting.
         files = planEnvConfig;
       };
-
-      # Anthropic models run on OMP or Claude Code, never here.
       harnesses.opencode = {
         enable = true;
         inherit envFiles;
@@ -225,10 +206,6 @@ in {
         files = planEnvConfig;
       };
 
-      # The package Kettle Code's tests record, built with its own nixpkgs.
-      # Kettle Code pins no models, so the three aliases are pinned here.
-      # claude-agent-acp takes no approval flag; only settings.json turns
-      # permission prompts off.
       harnesses.claude = {
         enable = true;
         inherit (inputs.kettle-code.legacyPackages.${system}.harnesses.claude) package;

@@ -320,17 +320,17 @@
     },
     "dotfiles-private": {
       "locked": {
-        "lastModified": 1792969469,
-        "narHash": "sha256-IQfxTSVHPDRqnjYMhnnQ2Xvf4V/JAPHSxcK4NhNpSjA=",
+        "lastModified": 1793465817,
+        "narHash": "sha256-J7LtnqyDiVB94DW+dC+iZ07FliJdZudP9B9AOEfqrMw=",
         "ref": "refs/heads/master",
-        "rev": "f2ee09d3366e864411055bc3830ab67bdb3849a1",
-        "revCount": 2,
+        "rev": "0f9651687ffbcb309ef637d3cd9d9b251e4bbb80",
+        "revCount": 11,
         "type": "git",
-        "url": "ssh://git@127.0.0.1:2222/lucemans/dotfiles-private.git"
+        "url": "ssh://git@100.127.0.11:2222/lucemans/dotfiles-private.git"
       },
       "original": {
         "type": "git",
-        "url": "ssh://git@127.0.0.1:2222/lucemans/dotfiles-private.git"
+        "url": "ssh://git@100.127.0.11:2222/lucemans/dotfiles-private.git"
       }
     },
     "eth-data": {
@@ -828,11 +828,11 @@
         "rust-overlay": "rust-overlay_3"
       },
       "locked": {
-        "lastModified": 1793304839,
-        "narHash": "sha256-hiqCzYCbtwdCaCH2OyH4MSz1eezNmynfX/rceKKiNII=",
+        "lastModified": 1793416351,
+        "narHash": "sha256-djDzo5d/rBSuQDR19JwGSDOGX6aKnkfqQYDkcuObqiU=",
         "ref": "refs/heads/master",
-        "rev": "b24da3d0590011a143e5814b3132f687cfbd3957",
-        "revCount": 115,
+        "rev": "b82e24983d87d316e2d75fb9242d0ec5092c745d",
+        "revCount": 128,
         "type": "git",
         "url": "ssh://git@100.127.0.11:2222/v3xlabs/ingestarr.git"
       },
@@ -852,11 +852,11 @@
         "rust-overlay": "rust-overlay_5"
       },
       "locked": {
-        "lastModified": 1793396967,
-        "narHash": "sha256-bfuI5ItmwtENYiUvPfjNZ9QdDxZdGD17od9aKq70pa0=",
+        "lastModified": 1793569548,
+        "narHash": "sha256-mRLCYaMCIFtiFkhoPKN8QSxfuf3yfdu0lzhrZKUbmMM=",
         "ref": "refs/heads/master",
-        "rev": "cbb26ca1de842223a1797e1855f05fd5e43fd454",
-        "revCount": 759,
+        "rev": "4144dcf7343454a983c83b63248a59311311ff60",
+        "revCount": 795,
         "type": "git",
         "url": "ssh://git@100.127.0.11:2222/v3xlabs/kettle-code.git"
       },

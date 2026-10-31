@@ -61,7 +61,7 @@
     temple.inputs.nixpkgs.follows = "nixpkgs";
 
     # `--override-input dotfiles-private path:./nix/private-stub`
-    dotfiles-private.url = "git+ssh://git@127.0.0.1:2222/lucemans/dotfiles-private.git";
+    dotfiles-private.url = "git+ssh://git@100.127.0.11:2222/lucemans/dotfiles-private.git";
 
     kettle-forge.url = "git+ssh://git@100.127.0.11:2222/v3xlabs/kettle-forge.git";
     kettle-code.url = "git+ssh://git@100.127.0.11:2222/v3xlabs/kettle-code.git";
