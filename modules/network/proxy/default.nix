@@ -136,6 +136,11 @@ in {
 
     services.caddy = lib.mkIf isHub {
       enable = true;
+      globalConfig = ''
+        servers {
+          strict_sni_host on
+        }
+      '';
       virtualHosts =
         lib.mapAttrs' vhost services
         // {

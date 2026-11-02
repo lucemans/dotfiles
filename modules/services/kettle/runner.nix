@@ -1,7 +1,5 @@
 {inputs, ...}: let
   inherit (import ./topology.nix) code forge;
-  inherit (import ../../network/topology.nix) hub;
-  inherit (import ../../network/hosts.nix) hosts;
   inherit (import ../../network/services.nix) services;
 in {
   flake.nixosModules.kettleRunner = {
@@ -91,7 +89,7 @@ in {
       };
       network.defaultMode = "internet";
 
-      network.allow = ["${hosts.${hub}.address}:443"];
+      network.allow = map (svc: "${svc.name}:443") [services.inference services.agent services.search];
       kinds = {
         all.skills = lib.attrValues (agentConfigs.skillsOf pkgs agentConfigs.targets.kettle.all);
         all.systemPrompt = agentConfigs.promptOf pkgs agentConfigs.targets.kettle.all;
