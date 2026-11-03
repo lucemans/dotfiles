@@ -7,16 +7,10 @@
   }: let
     inherit (import ../../../network/services.nix) services;
 
-    # OMP takes a subagent's model from its definition, never from the task
-    # call. A `^model` mention in the prompt covers a general-purpose worker on
-    # any model, so only reviewers are pinned here. Each reuses the bundled
-    # `reviewer` prompt of the pinned OMP, so only the model differs.
     preferences = import ../../configs/model-preferences.nix;
 
     pinned = {
-      kimi = "moonshot/kimi-k3-256k";
-      muse-wonder = "meta/muse-wonder-1.0";
-      muse-wonder-full = preferences.meta_wonder_full;
+      kimi = preferences.kimi_k3;
       muse-spark = "meta/muse-spark-1.3";
     };
     prompts = "${inputs.omp}/packages/coding-agent/src/prompts/agents";

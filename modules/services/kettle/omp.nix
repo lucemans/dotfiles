@@ -14,10 +14,8 @@
   preferences = import ../../agent/configs/model-preferences.nix;
 
   pinned = {
-    kimi = "moonshot/kimi-k3-256k";
-    muse-wonder = "meta/muse-wonder-1.0";
-    muse-wonder-full = preferences.meta_wonder_full;
-    muse-spark = "meta/muse-spark-1.3";
+    kimi = preferences.kimi_k3;
+    kimi-pro = preferences.kimi_pro;
     opus = preferences.anthropic_opus;
     sol = preferences.openai_sol;
   };
