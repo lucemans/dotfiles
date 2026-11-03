@@ -31,13 +31,20 @@ _: {
           name = "CISA exploited vulnerabilities";
           kind = "cisa-kev";
         }
+        {
+          key = "zero-wire";
+          name = "Cloudflare Zero Wire";
+          kind = "rss";
+          icon = "cloudflare";
+          rss.url = "https://radar.cloudflare.com/security/zero-wire/rss";
+        }
       ];
 
       collections = [
         {
           name = "security";
           title = "Security";
-          sources = ["cisa-kev" "nixos-announce" "nixos-lifecycle" "postgresql-lifecycle" "linux-lifecycle"];
+          sources = ["cisa-kev" "zero-wire" "nixos-announce" "nixos-lifecycle" "postgresql-lifecycle" "linux-lifecycle"];
         }
       ];
     };
