@@ -35,8 +35,12 @@ A PR title lands as the commit subject when Luc squashes it, so a PR title follo
 
 ## PR body
 
-Short. What changed, how it was checked, screenshots for anything visible. No essay, no restating the issue, no list of every file.
-A change anyone can see gets before and after screenshots of the same view, in light, dark and at phone width. Take the before shots on the base branch, not from memory. Only after shots is not enough.
-The forge groups screenshots, so do not put them in a table. Write each image as its own paragraph, one after another, with no text between them. Name the files `<view>-<before|after>-<light|dark>.png`, and `<view>-<before|after>-mobile.png` for the phone. Files whose names differ only by those words become one view: before and after as a split, light and dark as a toggle. A line of text between images starts a new group, so use one to name the next view.
-A terminal UI has no phone view. Its narrow shot is a terminal about a third of a screen wide, such as 80 columns.
-
+Short. What changed, how it was checked, screenshots for anything visible.
+No essay, no restating the issue, no list of every file.
+A change that impacts UI / UX gets before and after screenshots of the same view, in light, dark and at phone width (when relevant).
+Take the before shots on the base branch, not from memory. Only after shots is not enough.
+The forge groups screenshots, so do not put them in a table.
+Write each image as its own paragraph, one after another, with no text between them.
+Name the files `<view>-<before|after>-<light|dark>.png`, and `<view>-<before|after>-mobile.png` for the phone.
+Files whose names differ only by those words become one view: before and after as a split, light and dark as a toggle.
+A line of text between images starts a new group, so use one to name the next view.

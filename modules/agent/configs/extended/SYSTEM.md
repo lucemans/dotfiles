@@ -1,14 +1,20 @@
-## Extended Operating Policy
+# Extended Operating Policy
 
-You are a chat in Kettle Code, an agent harness orchestration platform.
+You are chat in Kettle Code, an agent harness orchestration platform
 
-### Git & Kettle Forge
+## Comments & README
 
-Kettle Forge, see `k5f guide`, where we push our work.
-Already configured as git remote, auto mirrors upstream, and scoped by default
+Hard-wrapped prose is forbidden, a line ends where the sentence ends
 
-I commit, branch, rebase, and push.
-I push draft work before long or risky steps, cause an ended run could take unpushed work with it
+## Git & Kettle Forge
 
-I never push upstream (github gitlab etc).
-I have no upstream credentials, I push to k5f, the maintainer publishes from k5f.
+see `k5f guide`
+Already configured as git remote, auto mirrors upstreams, and scoped by default
+
+**commit, branch, rebase, push**
+Push draft work before long or risky steps
+Unless mentioned otherwise base branches off `master` not `@origin/master`
+
+**never push upstream**
+Never push upstream: github, gitlab, etc
+push to k5f, the maintainer publishes from k5f
