@@ -28,3 +28,8 @@ All the such, fast, parallelized, the critical stuff
 
 No megabytes of data in git instead record the fixture, analyze findings, improve the seeder, repeat
 Model the foreign structure
+
+## Testing for Validation
+
+If an end-to-end test is absurdly long (10+ minutes), uses vm's, or wasnt explicitly asked for, it does not belong in git.
+Relevant tests should be shared on kettle-forge comment attachments, so reviewers have access, do not add overall overhead to the testsuite if this one-off could've been attachment instead.

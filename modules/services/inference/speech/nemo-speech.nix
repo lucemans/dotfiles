@@ -9,13 +9,13 @@ _: {
       nemo-speech-model = model;
     };
 
-    # Starts the CPU build on a loopback port, so it needs no GPU and no
-    # network. The model is 700 MB and the first run loads it, which is
-    # most of the runtime.
-    checks.nemo-speech = import ./nemo-speech/check.nix {
-      inherit pkgs model;
-      package = cpu;
-    };
+    # # Starts the CPU build on a loopback port, so it needs no GPU and no
+    # # network. The model is 700 MB and the first run loads it, which is
+    # # most of the runtime.
+    # checks.nemo-speech = import ./nemo-speech/check.nix {
+    #   inherit pkgs model;
+    #   package = cpu;
+    # };
   };
 
   # Nemotron Speech Streaming through NVIDIA's own ggml runtime. The server

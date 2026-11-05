@@ -7,17 +7,28 @@ description: Luc's commit subject and PR title style. Use before writing a commi
 
 A PR title lands as the commit subject when Luc squashes it, so a PR title follows the same rules as a commit subject.
 
+**commit, branch, rebase, push**
+Push draft work before long or risky steps
+Unless mentioned otherwise base branches off `master` not `@origin/master`
+
+**never push upstream**
+Never push upstream: github, gitlab, etc
+Push to k5f, the maintainer publishes from k5f
+
 ## Subject and PR title
 
-1. Start with one verb: Fix (a bug), Introduce (a new feature; Add also works), Implement (a new mechanism), Improve (better existing behaviour) or Update (changed existing behaviour). Remove or Drop for a deletion.
+1. Start with one verb: Fix (a bug), Introduce (a new feature; Add also works), Implement (a new mechanism), Improve (better existing behaviour) or Update (changed existing behaviour).
+Remove or Drop for a deletion.
 2. After the verb, name what changed as a noun phrase, then where it lives, so the subject makes sense to someone who only reads the log. Not the mechanism, not the reason.
    - The place is a part of the app (`in sidebar`, `in composer`, `in transcript`, `in question card`, `in model picker`, `in settings`, `in side panel`, `in land tui`, `in runner`, `in k5c`), or the harness it is for (`for omp`, `for codex`, `for omp and codex`).
    - Leave the place out only when the noun already says it: `Fix runner restart continuations`, `Introduce codex app-server session`.
 3. At most 8 words and 60 characters.
 4. No article (a, an, the) and no clause word (when, after, until, without).
 5. Only the first letter is a capital. Write pr, ui, cli, api, json, git, nix and omp in lowercase.
-6. No colon, comma, "&", brackets or final period, and no "and" except in the place (`for omp and codex`). Two changes in one title: name the area they share.
-7. No issue or PR number. `Closes #n` goes in the body.
+6. No colon, comma, "&", brackets or final period, and no "and" except in the place (`for omp and codex`).
+Two changes in one title: name the area they share.
+7. No issue or PR number.
+`Closes #n` goes in the body.
 8. Be positive, we made an improvement, no need to blame the before.
 9. One line.
 

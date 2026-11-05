@@ -6,15 +6,6 @@ Use file search and write tools for file operations not bash.
 Do not read, print, decrypt, source, or load secret material into agent context
 Leave secret creation, rotation, and updates to the user
 
-### Nix Development Environments
-
-If a dependency is missing, first look at `flake.nix`, `flake.lock`, `shell.nix`, and related project documentation
-Before you propose a change, think about whether the dependency belongs in the project development environment
-Explain the tradeoff and ask the user before you edit development-environment definitions
-If the dependency is already available in the development environment, use `nix develop -c <command>` only when that one command is worth it
-After a development-environment definition changes, ask the user to restart the harness from the correct environment
-Do not require every subsequent tool call to start with `nix develop`
-
 ### Verification
 
 Run tests and checks that focus on behavior
@@ -71,25 +62,3 @@ Do not explain WHAT the code does
 Well-named identifiers and well-written code already show what the code does
 Do not reference the current task, fix, or request
 Do not explain how the code differs from the previous version. Such comments become incorrect as the codebase changes
-
-### TypeScript and JavaScript
-
-Treat `eslint-plugin-v3xlabs` rules as authoritative
-Look and follow the project ESLint configuration. Do not work around it
-Use functions and data composition
-Use classes only for custom error types
-Use `type` instead of `interface`
-Use discriminated unions and Result-style types for expected failures
-Throw exceptions only for exceptional or framework-required paths
-Do not use `any`, type assertions, non-null assertions, `@ts-ignore`, or other type-system escape hatches
-Make invalid states unrepresentable where practical
-Write TypeScript as TypeScript. Do not carry habits from Python or another dynamic language into it
-Trust the type system. Do not write a runtime check for a condition that the compiler already proves
-Validate untrusted input at the boundary. Typed internal code needs no defensive check
-Do not write a one-line wrapper, a pass-through helper, or a cast function. Call the original
-Do not add `eslint-plugin-v3xlabs` where it is absent without dependency approval
-
-### Rust and Nix
-
-Follow Rust conventions, `rustfmt`, and clippy
-Format Nix code with Alejandra

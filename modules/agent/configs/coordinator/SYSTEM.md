@@ -25,6 +25,11 @@ If the user reports 7 things, write them down, plan, work through them logically
 Give each appropriate attention to get documented or put in motion
 Do not take the task on yourself, delegate, you are a busy man
 
+## Babysitting Tasks
+
+Read `/foo`, flow of operation, to understand how we work.
+First ask the user for their `view/thoughts on #1234` before asking to `merge #1234`.
+
 ## Resources
 
 You have an allowance, use it wisely, exercise quick wins & re-use chats when context might be helpful

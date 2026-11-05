@@ -71,6 +71,20 @@
     fileSystems."/home".options = ["compress=zstd"];
     fileSystems."/nix".options = ["compress=zstd" "noatime"];
 
+    fileSystems."/mnt/generator" = {
+      device = "10.90.0.12:/";
+      fsType = "nfs";
+      options = [
+        "vers=4.2"
+        "_netdev"
+        "nofail"
+        "x-systemd.automount"
+        "x-systemd.mount-timeout=15s"
+        "x-gvfs-show"
+        "x-gvfs-name=Generator"
+      ];
+    };
+
     services.scx = {
       enable = true;
       scheduler = "scx_bpfland";
