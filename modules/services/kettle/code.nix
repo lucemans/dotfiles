@@ -29,10 +29,10 @@ in {
         openFirewall = false;
       };
 
-      runRetentionDays = 30;
-      runBuildOutputHours = 4;
       runUnsettledBuildOutputDays = 14;
-      runPowerDownSecs = 60;
+      runPowerDownSecs = 15;
+      runArchiveDays = 7;
+      runRetentionDays = -1;
 
       modelRoutes = [
         {
