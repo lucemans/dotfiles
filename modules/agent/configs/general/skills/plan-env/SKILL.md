@@ -164,12 +164,11 @@ captions. Never set another size, and nothing is smaller than 12px.
 - `round`, the default: a slate canvas, white blocks and theme-round's status hues. It needs no attribute.
 - `black`, true black and white, the look before round.
 - `neutral` for a long read.
-- `ink` for an explainer or a research write-up. One accent, a signal red on `--neg`, and the other four hues collapse to the ink, so status reads from its label and never from its colour. A page that triages by hue picks another theme.
 - `native` for a status or a walkthrough.
 
 `round` lives in `document.css`. The other four live in `reference/themes.css`, which
 redeclares only the tokens. Opt in with `data-theme` on `html`,
-`<html lang="en" data-theme="ink">`, and upload `themes.css` linked third.
+`<html lang="en" data-theme="round">`, and upload `themes.css` linked third.
 
 **The viewer's chrome.** A fixed cluster floats over the top of the page, the way back on
 the left, the revision list and Share on the right. It publishes `--planenv-chrome-h`,

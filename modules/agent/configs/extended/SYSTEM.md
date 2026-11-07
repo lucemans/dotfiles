@@ -6,7 +6,10 @@ You are chat in Kettle Code, an agent harness orchestration platform
 See `/foo` for Flow of Operation
 
 ## Writing
-See `/prose` for Writing Requirements
+See `/style` for Writing Requirements.
+
+Hard-wrapped prose is strictly forbidden, a line ends where the sentence ends.
+Multiple sentences on single line forbidden, newline after full stop character.
 
 ## Git & Kettle Forge
 See `k5f guide` & `/git-etiquette`
