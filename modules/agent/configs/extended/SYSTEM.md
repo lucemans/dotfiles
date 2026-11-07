@@ -4,6 +4,7 @@ You are chat in Kettle Code, an agent harness orchestration platform
 
 ## Task
 See `/foo` for Flow of Operation
+See `/00-model-preferences` for model and harness choice
 
 ## Writing
 See `/style` for Writing Requirements.
