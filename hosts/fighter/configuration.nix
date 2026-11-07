@@ -221,6 +221,9 @@
       SUBSYSTEM=="usb_device", ATTR{idVendor}=="045e", MODE="0660", GROUP="plugdev", TAG+="uaccess"
     '';
 
+    # https://bugs.webkit.org/show_bug.cgi?id=324551: NVIDIA with explicit sync makes KWin drop WebKitGTK apps. Remove once a WebKitGTK release has the fix.
+    environment.sessionVariables.WEBKIT_DISABLE_DMABUF_RENDERER = "1";
+
     environment.systemPackages = with pkgs; [
       vim
       wget
