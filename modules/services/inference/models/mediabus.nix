@@ -603,6 +603,32 @@
         ttl = 900;
         concurrencyLimit = 2;
       };
+      "arete-27b" = {
+        litellm.model_info = {
+          input_cost_per_token = 0.0000002;
+          mode = "chat";
+          output_cost_per_token = 0.0000002;
+        };
+        weights = {
+          repo = "bartowski/NousResearch_Arete-27B-GGUF";
+          rev = "9762c8502a79bd2b8634735d75f426b9febe092c";
+          files."NousResearch_Arete-27B-Q4_K_M.gguf" = "6f186a1fe0c4f741acb3a35b5df96bc2fc7279651f48500246e56079418f091b";
+        };
+        args = [
+          "--split-mode layer"
+          "--ctx-size 65536"
+          "--flash-attn on"
+          "--jinja"
+          "--parallel 1"
+          "--temp 1.0"
+          "--top-p 0.95"
+          "--top-k 20"
+          "--min-p 0"
+          "--no-webui"
+        ];
+        ttl = 900;
+        concurrencyLimit = 2;
+      };
     };
   };
 
@@ -679,6 +705,7 @@
             "nanbeige4.3-33b"
             "sage-a1.5"
             "bonsai-2-27b"
+            "arete-27b"
           ];
         };
 
