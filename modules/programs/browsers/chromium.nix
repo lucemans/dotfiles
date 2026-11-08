@@ -40,6 +40,15 @@
           };
           version = "1.75.0";
         }
+        {
+          # openlv connect
+          id = "dapplinkbcfogipppfhfpdbipkhhkppo";
+          crxPath = pkgs.fetchurl {
+            url = "https://github.com/open-lavatory/extension/releases/download/v0.0.2/openlv-connect-0.0.2-chrome.crx";
+            hash = "sha256-1cgBORTvPyi2eqD0pEOIKNu5589Hrc7VrmJ6v6ZoljE=";
+          };
+          version = "0.0.2";
+        }
         (createChromiumExtension {
           # bitwarden
           id = "nngceckbapebfimnlniiiahkandclblb";
