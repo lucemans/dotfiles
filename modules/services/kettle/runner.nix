@@ -90,6 +90,7 @@ in {
       network.defaultMode = "internet";
 
       network.allow = map (svc: "${svc.name}:443") [services.inference services.agent services.search];
+      devices.kvm.repos = ["open-lavatory/ecosystem"];
       kinds = {
         all.skills = lib.attrValues (agentConfigs.skillsOf pkgs agentConfigs.targets.kettle.all);
         all.systemPrompt = agentConfigs.promptOf pkgs agentConfigs.targets.kettle.all;

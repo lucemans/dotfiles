@@ -2120,11 +2120,11 @@
         "treefmt-nix": "treefmt-nix_6"
       },
       "locked": {
-        "lastModified": 1792698610,
-        "narHash": "sha256-1vYbDVm80U4lIXWjoM7GRElkNJgPr6YDYhr707ayAWM=",
+        "lastModified": 1794217281,
+        "narHash": "sha256-JBnMCL9v7U8LIpPhTOtVNYwfMZUDxBDSgZqjAN0EZO4=",
         "owner": "v3xlabs",
         "repo": "temple",
-        "rev": "368fa24f128de3a38437d473433ac23ce4a4eba0",
+        "rev": "f8ffbbfb47deb66d2c5f533ba1bb015ab79a8a1e",
         "type": "github"
       },
       "original": {

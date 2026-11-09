@@ -186,10 +186,10 @@
     };
 
     temple = {
-      activateLinux.monitors = ["DP-1"];
+      activateLinux.monitors = ["middle"];
       bar.monitors = {
-        top = ["DP-2"];
-        bottom = ["DP-1"];
+        top = ["top"];
+        bottom = ["middle"];
       };
     };
 
