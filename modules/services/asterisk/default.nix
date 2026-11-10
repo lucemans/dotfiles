@@ -2,6 +2,7 @@
   flake.nixosModules.asterisk = {
     config,
     pkgs,
+    signaling_nets,
     ...
   }: let
     moh = pkgs.runCommand "asterisk-moh-opsound" {} ''
@@ -26,6 +27,17 @@
         "prometheus.conf" = builtins.readFile ./prometheus.conf;
         "rtp.conf" = builtins.readFile ./rtp.conf;
         "logger.conf" = builtins.readFile ./logger.conf;
+        "cdr.conf" = ''
+          [general]
+          enable=yes
+          unanswered=yes
+          congestion=yes
+
+          [csv]
+          accountlogs=no
+          loguniqueid=yes
+          loguserfield=yes
+        '';
         "http.conf" = ''
           [general]
           enabled=yes
@@ -40,6 +52,8 @@
         '';
       };
     };
+
+    systemd.tmpfiles.rules = ["d /var/log/asterisk/cdr-csv 0755 asterisk asterisk -"];
 
     users.users.asterisk.extraGroups = ["caddy"];
     security.acme.certs."v3x.host".reloadServices = ["asterisk.service"];
@@ -64,8 +78,6 @@
       };
     };
 
-    networking.firewall.allowedTCPPorts = [5061];
-
     networking.firewall.extraCommands = let
       sip_sources = [
         "10.0.0.0/24"
@@ -76,6 +88,10 @@
         iptables -A nixos-fw -s ${net} -p udp --dport 5060 -j ACCEPT
         iptables -A nixos-fw -s ${net} -p udp --dport 10000:20000 -j ACCEPT
       '')
-      sip_sources;
+      sip_sources
+      + lib.concatMapStringsSep "\n" (net: ''
+        iptables -A nixos-fw -s ${net} -p tcp --dport 5061 -j ACCEPT
+      '')
+      signaling_nets;
   };
 }

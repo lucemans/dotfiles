@@ -1,4 +1,24 @@
-{config, ...}: {
+{
+  config,
+  lib,
+  ...
+}: let
+  allowedForeignPrefixes = [];
+
+  maxConcurrentCalls = 2;
+  maxCallsPerHour = 20;
+
+  dutchPatterns = [
+    "_+31[1-57]XXXXXXXX"
+    "_+316[1-58]XXXXXXX"
+    "_+318[4578]XXXXXXX"
+  ];
+
+  foreignPatterns = prefix:
+    map (n: "_+${prefix}${lib.concatStrings (lib.replicate n "X")}") (lib.range 4 (15 - lib.stringLength prefix));
+
+  allowedPatterns = dutchPatterns ++ lib.concatMap foreignPatterns allowedForeignPrefixes;
+in {
   sops.secrets = {
     asterisk_p0_number = {
       owner = "asterisk";
@@ -52,7 +72,6 @@
     same => n,TrySystem(${config.system.build.voicemail} "''${FROM}" "''${RECORDING}")
     same => n(done),NoOp()
 
-    ; analog caller ID carries digits only, present dutch national format
     [cid-national]
     exten => _+31X.,1,Set(CALLERID(num)=0''${EXTEN:3})
     same => n,Set(CALLERID(name)=''${CALLERID(num)})
@@ -72,16 +91,38 @@
     exten => 1002,1,Dial(PJSIP/1002,30,m)
     same => n,Hangup()
 
-    ; outbound, dutch national and international prefixes to E.164
     exten => _0X.,1,Goto(trunk-out,+31''${EXTEN:1},1)
     exten => _00X.,1,Goto(trunk-out,+''${EXTEN:2},1)
     exten => _+X.,1,Goto(trunk-out,''${EXTEN},1)
 
     [trunk-out]
-    exten => _+X.,1,NoOp(Outbound ''${EXTEN})
+    exten => _+.,1,Log(WARNING,Outbound call to ''${EXTEN} refused for ''${CALLERID(num)} on ''${CHANNEL})
+    same => n,Set(CDR(userfield)=refused)
+    same => n,Answer()
+    same => n,Playback(ss-noservice)
+    same => n,Hangup()
+    ${lib.concatMapStringsSep "\n" (pattern: "exten => ${pattern},1,Goto(trunk-dial,\${EXTEN},1)") allowedPatterns}
+
+    [trunk-dial]
+    exten => _+X.,1,Set(GROUP()=trunk-out)
+    same => n,GotoIf($[''${GROUP_COUNT(trunk-out)}<=${toString maxConcurrentCalls}]?:busy)
+    same => n,Set(HOUR=''${STRFTIME(''${EPOCH},,%Y%m%d%H)})
+    same => n,GotoIf($["''${DB(trunk-out/hour)}"="''${HOUR}"]?count)
+    same => n,Set(DB(trunk-out/calls)=0)
+    same => n,Set(DB(trunk-out/hour)=''${HOUR})
+    same => n(count),Set(CALLS=$[''${DB(trunk-out/calls)}+1])
+    same => n,GotoIf($[''${CALLS}<=${toString maxCallsPerHour}]?:limited)
+    same => n,Set(DB(trunk-out/calls)=''${CALLS})
+    same => n,NoOp(Outbound ''${EXTEN})
     same => n,Set(CALLERID(num)=+''${P0_NUMBER})
     same => n,Dial(PJSIP/''${EXTEN}@trunk,60)
     same => n,NoOp(DIALSTATUS=''${DIALSTATUS} HANGUPCAUSE=''${HANGUPCAUSE})
     same => n,Hangup()
+    same => n(busy),Log(WARNING,Outbound call to ''${EXTEN} refused for ''${CALLERID(num)}, ${toString maxConcurrentCalls} calls active)
+    same => n,Set(CDR(userfield)=busy)
+    same => n,Busy(3)
+    same => n(limited),Log(WARNING,Outbound call to ''${EXTEN} refused for ''${CALLERID(num)}, ${toString maxCallsPerHour} calls this hour)
+    same => n,Set(CDR(userfield)=rate-limited)
+    same => n,Congestion(3)
   '';
 }

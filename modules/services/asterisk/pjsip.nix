@@ -1,6 +1,20 @@
-{config, ...}: let
+{
+  config,
+  lib,
+  ...
+}: let
   public_ip = "77.162.232.110";
   zone = "v3x.host";
+
+  phone_sources = [
+    "10.0.0.0/24"
+    "10.90.0.0/24"
+    "100.127.0.0/24"
+  ];
+  phone_acl = ''
+    deny=0.0.0.0/0
+    ${lib.concatMapStringsSep "\n" (net: "permit=${net}") phone_sources}
+  '';
 in {
   sops.secrets = {
     asterisk_p1_password = {
@@ -65,6 +79,7 @@ in {
     context=from-internal
     auth=1001-auth
     aors=1001
+    ${phone_acl}
     disallow=all
     allow=ulaw,alaw
     direct_media=no
@@ -89,6 +104,7 @@ in {
     context=from-internal
     auth=1002-auth
     aors=1002
+    ${phone_acl}
     disallow=all
     allow=ulaw,alaw
     direct_media=no
