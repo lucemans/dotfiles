@@ -15,7 +15,12 @@ _: {
       self.nixosModules.usage
       self.nixosModules.ingestarr
       self.nixosModules.mailStore
+      self.nixosModules.backup
     ];
+
+    v3x.backup = {
+      enable = true;
+    };
 
     boot.loader.systemd-boot.enable = true;
     boot.loader.efi.canTouchEfiVariables = true;

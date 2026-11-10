@@ -27,6 +27,11 @@ in {
       ./rspamd.nix
     ];
 
+    v3x.backup = {
+      paths = ["/var/lib/vmail" "/var/lib/postfix/queue" "/var/lib/redis-rspamd"];
+      exclude = ["dovecot.index.cache"];
+    };
+
     sops.secrets = {
       mail_domains = postfixTable;
       mail_mailboxes = senderTable;

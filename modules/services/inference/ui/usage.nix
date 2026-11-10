@@ -17,6 +17,8 @@
       };
     };
 
+    v3x.backup.paths = ["/var/lib/private/metered-usage"];
+
     services.metered-usage = {
       enable = true;
       host = config.v3x.address;

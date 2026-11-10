@@ -37,7 +37,7 @@ in {
 
     sops.secrets.ingestarr_oidc_client_secret.restartUnits = ["ingestarr.service"];
 
-    # v3x.backup.paths = ["/var/lib/private/ingestarr"];
+    v3x.backup.paths = ["/var/lib/private/ingestarr"];
 
     services.ingestarr = {
       enable = true;
