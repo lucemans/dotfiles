@@ -83,6 +83,7 @@ in {
     disallow=all
     allow=ulaw,alaw
     direct_media=no
+    allow_transfer=no
 
     ; overwrite networking shenanigans
     rtp_symmetric=yes
@@ -108,6 +109,7 @@ in {
     disallow=all
     allow=ulaw,alaw
     direct_media=no
+    allow_transfer=no
     rtp_symmetric=yes
     force_rport=yes
     rewrite_contact=yes
