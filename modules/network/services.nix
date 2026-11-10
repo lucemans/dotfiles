@@ -2,10 +2,12 @@ let
   inherit (import ./topology.nix) hub zone;
   inherit (import ./hosts.nix) hosts;
   kettle = import ../services/kettle/topology.nix;
+  mail = import ../services/mail/topology.nix;
 in {
   records = {
     "77.162.232.110" = ["wg.${zone}"];
     ${hosts.${hub}.address} = [zone];
+    ${hosts.${mail.store}.address} = [mail.name];
   };
 
   services = {

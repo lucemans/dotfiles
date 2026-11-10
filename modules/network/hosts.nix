@@ -71,5 +71,9 @@ in {
       address = "100.127.10.12";
       group = "f2";
     };
+    v3x-pink = {
+      publicKey = "RzPKF2SxsBa5r6AiGoRO/RhT0jrifdeawSwSKtGxWyQ=";
+      address = "100.127.10.25";
+    };
   };
 }

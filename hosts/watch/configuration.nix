@@ -14,6 +14,7 @@ _: {
       self.nixosModules.cliproxy
       self.nixosModules.usage
       self.nixosModules.ingestarr
+      self.nixosModules.mailStore
     ];
 
     boot.loader.systemd-boot.enable = true;
@@ -64,6 +65,11 @@ _: {
         ];
         directories = [
           "/etc/secrets"
+          {
+            directory = "/var/lib/acme";
+            user = "acme";
+            group = "acme";
+          }
           "/var/lib/cli-proxy-api"
           "/var/lib/docker"
           "/var/lib/nixos"
@@ -83,9 +89,28 @@ _: {
             configureParent = true;
             parent.mode = "0700";
           }
+          "/var/lib/postfix"
+          {
+            directory = "/var/lib/redis-rspamd";
+            user = "redis-rspamd";
+            group = "redis-rspamd";
+            mode = "0700";
+          }
+          {
+            directory = "/var/lib/rspamd";
+            user = "rspamd";
+            group = "rspamd";
+            mode = "0700";
+          }
           "/var/lib/sbctl"
           "/var/lib/systemd"
           "/var/lib/vaultwarden"
+          {
+            directory = "/var/lib/vmail";
+            user = "vmail";
+            group = "vmail";
+            mode = "0700";
+          }
           "/var/lib/wireguard"
           "/var/log"
         ];

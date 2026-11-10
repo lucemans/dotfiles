@@ -23,6 +23,7 @@ _: {
       self.nixosModules.garage
       self.nixosModules.attic
       self.nixosModules.asterisk
+      self.nixosModules.mailHub
     ];
 
     programs.git = {

@@ -5,6 +5,7 @@
     ./mission
     ./patch
     ./teapot
+    ./pink
     ./point
     ./voice
     ./watch
