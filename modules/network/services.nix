@@ -162,6 +162,13 @@ in {
       upstream = "${hosts.v3x-mission.address}:7778";
       access = [];
     };
+    ntfy = {
+      name = "ntfy.${zone}";
+      title = "Alerts";
+      icon = "ntfy";
+      upstream = "${hosts.v3x-watch.address}:2586";
+      access = [];
+    };
     shelf = {
       name = "shelf.${zone}";
       title = "Shelf";
@@ -264,7 +271,7 @@ in {
     }
     {
       title = "Control Plane";
-      services = ["launchpi" "mission" "grafanaMission"];
+      services = ["launchpi" "mission" "grafanaMission" "ntfy"];
     }
     {
       title = "Infrastructure";

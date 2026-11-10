@@ -19,6 +19,7 @@
     ./metrics.nix
     ./freshrss.nix
     ./vaultwarden.nix
+    ./ntfy.nix
     ./mail
   ];
 }

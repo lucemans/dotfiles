@@ -15,6 +15,7 @@ _: {
       self.nixosModules.usage
       self.nixosModules.ingestarr
       self.nixosModules.mailStore
+      self.nixosModules.ntfy
       self.nixosModules.backup
     ];
 
@@ -88,6 +89,14 @@ _: {
           }
           {
             directory = "/var/lib/private/metered-usage";
+            user = "-";
+            group = "-";
+            mode = "0700";
+            configureParent = true;
+            parent.mode = "0700";
+          }
+          {
+            directory = "/var/lib/private/ntfy-sh";
             user = "-";
             group = "-";
             mode = "0700";
