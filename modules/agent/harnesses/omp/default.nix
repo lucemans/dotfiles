@@ -132,6 +132,11 @@
                   efforts = ["low" "medium" "high" "xhigh" "max"];
                   supportsDisplay = true;
                 };
+                "claude-fable-5-2".thinking = {
+                  mode = "anthropic-adaptive";
+                  efforts = ["low" "medium" "high" "xhigh" "max"];
+                  supportsDisplay = true;
+                };
               };
             };
           moonshot =
