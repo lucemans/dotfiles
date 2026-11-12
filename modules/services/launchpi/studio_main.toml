@@ -1144,8 +1144,8 @@ blue = 255
 alpha = 255
 
 [[panels.controls]]
-control_id = "control-1785507231015"
-name = "Sleep or wake screen"
+control_id = "control-1790800000001"
+name = "Mission"
 
 [panels.controls.position]
 column = 7
@@ -1165,16 +1165,16 @@ alpha = 255
 
 [[panels.controls.default_state.layers]]
 kind = "image"
-image = "mdi:monitor"
+image = "mdi:monitor-dashboard"
 fit = "contain"
 anchor = "top_center"
-scale_percent = 40
+scale_percent = 30
 
 [[panels.controls.default_state.layers]]
 kind = "text"
-text = "$(missiond.default:screen_state)"
-anchor = "bottom_center"
-font_size = 21
+text = "$(missiond.default:tab_name)"
+anchor = "center"
+font_size = 14
 
 [panels.controls.default_state.layers.color]
 red = 255
@@ -1183,19 +1183,26 @@ blue = 255
 alpha = 255
 
 [[panels.controls.default_state.layers]]
-kind = "border"
-color = "$(missiond.default:screen_color)"
-width = 5
+kind = "text"
+text = "$(missiond.default:next_tab_in)"
+anchor = "bottom_center"
+font_size = 22
+
+[panels.controls.default_state.layers.color]
+red = 255
+green = 255
+blue = 255
+alpha = 255
 
 [[panels.controls.action_bindings]]
 gesture = "press"
 
 [[panels.controls.action_bindings.actions]]
-type = "invoke_integration"
-integration_id = "missiond.default"
-action_name = "toggle_screen"
-
-[panels.controls.action_bindings.actions.parameters]
+type = "open_subpanel"
+panel_id = "studio-panel-7"
+placement = "top_end"
+offset_columns = 0
+offset_rows = 1
 
 [[panels.controls]]
 control_id = "control-1785507231383"
@@ -1290,207 +1297,3 @@ red = 255
 green = 255
 blue = 255
 alpha = 255
-
-[[panels.controls]]
-control_id = "control-1785513840443"
-name = "Time to next tab"
-action_bindings = []
-
-[panels.controls.position]
-column = 5
-row = 0
-
-[panels.controls.default_state]
-is_pressed = false
-
-[[panels.controls.default_state.layers]]
-kind = "fill"
-
-[panels.controls.default_state.layers.color]
-red = 0
-green = 0
-blue = 0
-alpha = 255
-
-[[panels.controls.default_state.layers]]
-kind = "image"
-image = "mdi:timer-sand"
-fit = "contain"
-anchor = "top_center"
-scale_percent = 40
-
-[[panels.controls.default_state.layers]]
-kind = "text"
-text = "$(missiond.default:next_tab_in)"
-anchor = "bottom_center"
-
-[panels.controls.default_state.layers.color]
-red = 255
-green = 255
-blue = 255
-alpha = 255
-
-[[panels.controls]]
-control_id = "control-1790707382624"
-name = "Prices"
-
-[panels.controls.position]
-column = 4
-row = 1
-
-[panels.controls.default_state]
-is_pressed = false
-
-[[panels.controls.default_state.layers]]
-kind = "fill"
-
-[panels.controls.default_state.layers.color]
-red = 0
-green = 0
-blue = 0
-alpha = 255
-
-[[panels.controls.default_state.layers]]
-kind = "image"
-image = "mdi:tab"
-fit = "contain"
-anchor = "top_center"
-scale_percent = 40
-
-[[panels.controls.default_state.layers]]
-kind = "text"
-text = "Prices"
-anchor = "bottom_center"
-font_size = 21
-
-[panels.controls.default_state.layers.color]
-red = 255
-green = 255
-blue = 255
-alpha = 255
-
-[[panels.controls.default_state.layers]]
-kind = "border"
-color = "$(missiond.default:tabs.indexer-prices.color)"
-width = 5
-
-[[panels.controls.action_bindings]]
-gesture = "press"
-
-[[panels.controls.action_bindings.actions]]
-type = "invoke_integration"
-integration_id = "missiond.default"
-action_name = "activate_tab"
-
-[panels.controls.action_bindings.actions.parameters]
-tab_id = "indexer-prices"
-
-[[panels.controls]]
-control_id = "control-1790707390649"
-name = "Uptime"
-
-[panels.controls.position]
-column = 3
-row = 1
-
-[panels.controls.default_state]
-is_pressed = false
-
-[[panels.controls.default_state.layers]]
-kind = "fill"
-
-[panels.controls.default_state.layers.color]
-red = 0
-green = 0
-blue = 0
-alpha = 255
-
-[[panels.controls.default_state.layers]]
-kind = "image"
-image = "mdi:tab"
-fit = "contain"
-anchor = "top_center"
-scale_percent = 40
-
-[[panels.controls.default_state.layers]]
-kind = "text"
-text = "Uptime"
-anchor = "bottom_center"
-font_size = 21
-
-[panels.controls.default_state.layers.color]
-red = 255
-green = 255
-blue = 255
-alpha = 255
-
-[[panels.controls.default_state.layers]]
-kind = "border"
-color = "$(missiond.default:tabs.homelab-uptime.color)"
-width = 5
-
-[[panels.controls.action_bindings]]
-gesture = "press"
-
-[[panels.controls.action_bindings.actions]]
-type = "invoke_integration"
-integration_id = "missiond.default"
-action_name = "activate_tab"
-
-[panels.controls.action_bindings.actions.parameters]
-tab_id = "homelab-uptime"
-
-[[panels.controls]]
-control_id = "control-1790707412939"
-name = "Overview"
-
-[panels.controls.position]
-column = 2
-row = 1
-
-[panels.controls.default_state]
-is_pressed = false
-
-[[panels.controls.default_state.layers]]
-kind = "fill"
-
-[panels.controls.default_state.layers.color]
-red = 0
-green = 0
-blue = 0
-alpha = 255
-
-[[panels.controls.default_state.layers]]
-kind = "image"
-image = "mdi:tab"
-fit = "contain"
-anchor = "top_center"
-scale_percent = 40
-
-[[panels.controls.default_state.layers]]
-kind = "text"
-text = "Overview"
-anchor = "bottom_center"
-font_size = 17
-
-[panels.controls.default_state.layers.color]
-red = 255
-green = 255
-blue = 255
-alpha = 255
-
-[[panels.controls.default_state.layers]]
-kind = "border"
-color = "$(missiond.default:tabs.grafana-overview.color)"
-width = 5
-
-[[panels.controls.action_bindings]]
-gesture = "press"
-
-[[panels.controls.action_bindings.actions]]
-type = "invoke_integration"
-integration_id = "missiond.default"
-action_name = "activate_tab"
-
-[panels.controls.action_bindings.actions.parameters]
-tab_id = "grafana-overview"

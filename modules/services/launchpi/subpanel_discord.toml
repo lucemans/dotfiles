@@ -2,7 +2,7 @@ version = 5
 
 [[panels]]
 panel_id = "studio-panel-5"
-name = "TestSubpanel"
+name = "Discord members"
 dials = []
 
 [panels.layout]

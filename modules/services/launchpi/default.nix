@@ -53,8 +53,8 @@
         panels = [
           ./studio_main.toml
           ./xl_main.toml
-          ./xl_test.toml
           ./subpanel_discord.toml
+          ./subpanel_mission.toml
         ];
 
         plugins = {
