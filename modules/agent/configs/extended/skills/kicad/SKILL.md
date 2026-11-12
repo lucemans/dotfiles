@@ -5,6 +5,10 @@ description: Drive KiCad's PCB editor or 3D viewer on a run's desktop with the d
 
 # KiCad on the desktop
 
+Feel free to use computer tools, kicad IPC, or script your way out of it for large things or related pieces.
+
+## Environment
+
 Checked on KiCad 10.0.7, Xvfb 1280x800, Mesa llvmpipe.
 
 - Start KiCad from the run's nixpkgs: `nix shell nixpkgs#kicad -c pcbnew <board>.kicad_pcb &`. KiCad from an older nixpkgs or a project flake cannot load the run's Mesa and shows "Could not use OpenGL" and a blank 3D viewer. The whereami skill says why.
