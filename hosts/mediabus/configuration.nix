@@ -12,6 +12,7 @@ _: {
       self.nixosModules.nodeMetrics
       self.nixosModules.dns
       self.nixosModules.immich
+      self.nixosModules.esphomeBuilder
       self.nixosModules.mediabusInference
       self.nixosModules.backup
       self.nixosModules.kettleForge

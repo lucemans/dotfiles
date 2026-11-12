@@ -10,6 +10,7 @@
     ./asterisk
     ./inference
     ./attic.nix
+    ./esphome-builder.nix
     ./immich.nix
     ./garage.nix
     ./kanidm.nix
