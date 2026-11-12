@@ -62,6 +62,14 @@ in {
       upstream = "10.90.0.11:5055";
       access = ["f0" "f1" "f2"];
     };
+    music = {
+      name = "music.${zone}";
+      title = "Music";
+      icon = "music-assistant";
+      upstream = "${hosts.v3x-mediabus.address}:8095";
+      access = [];
+      lan = ["10.0.0.222"];
+    };
     home = {
       name = "hq53.${zone}";
       title = "Home Assistant";
@@ -264,7 +272,7 @@ in {
     }
     {
       title = "Media";
-      services = ["media" "gallery" "fmedia" "shelf"];
+      services = ["media" "gallery" "fmedia" "music" "shelf"];
     }
     {
       title = "Shiparr";

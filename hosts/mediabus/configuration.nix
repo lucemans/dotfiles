@@ -13,6 +13,7 @@ _: {
       self.nixosModules.dns
       self.nixosModules.immich
       self.nixosModules.esphomeBuilder
+      self.nixosModules.musicAssistant
       self.nixosModules.mediabusInference
       self.nixosModules.backup
       self.nixosModules.kettleForge

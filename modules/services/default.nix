@@ -21,6 +21,7 @@
     ./freshrss.nix
     ./vaultwarden.nix
     ./ntfy.nix
+    ./music-assistant.nix
     ./mail
   ];
 }
