@@ -12,12 +12,15 @@ in {
     isHub = config.networking.hostName == hub;
 
     hubAddress = hosts.${hub}.address;
+    lanAddress = hosts.${hub}.lanAddress;
 
     addressesOf = group:
       lib.mapAttrsToList (_: host: host.address)
       (lib.filterAttrs (_: host: host.group or null == group) hosts);
 
-    allowedFrom = svc: [trusted containers] ++ lib.concatMap addressesOf svc.access;
+    allowedFrom = svc: [trusted containers] ++ lib.concatMap addressesOf svc.access ++ (svc.lan or []);
+
+    lanSources = lib.unique (lib.concatMap (svc: svc.lan or []) (lib.attrValues services));
 
     assets = ./data;
 
@@ -88,7 +91,7 @@ in {
       lib.nameValuePair "https://${svc.name}" {
         useACMEHost = zone;
         extraConfig = ''
-          bind ${hubAddress}
+          bind ${lib.concatStringsSep " " ([hubAddress] ++ lib.optional (svc ? lan) lanAddress)}
 
           route {
             @denied not remote_ip ${lib.concatStringsSep " " (allowedFrom svc)}
@@ -173,10 +176,17 @@ in {
       wants = ["wireguard-wg0.service"];
     };
 
-    networking.firewall.extraCommands = lib.optionalString (isHub && guestFacing != {}) ''
-      iptables -N v3x-guest-allow 2>/dev/null || iptables -F v3x-guest-allow
-      iptables -A v3x-guest-allow -d ${hubAddress} -p tcp -m multiport --dports 80,443 -j ACCEPT
-    '';
+    boot.kernel.sysctl."net.ipv4.ip_nonlocal_bind" = lib.mkIf isHub 1;
+
+    networking.firewall.extraCommands =
+      lib.optionalString (isHub && guestFacing != {}) ''
+        iptables -N v3x-guest-allow 2>/dev/null || iptables -F v3x-guest-allow
+        iptables -A v3x-guest-allow -d ${hubAddress} -p tcp -m multiport --dports 80,443 -j ACCEPT
+      ''
+      + lib.optionalString isHub (lib.concatMapStrings (ip: ''
+          iptables -A nixos-fw -s ${ip} -d ${lanAddress} -p tcp --dport 443 -j ACCEPT
+        '')
+        lanSources);
 
     networking.firewall.extraStopCommands = lib.optionalString (isHub && guestFacing != {}) ''
       iptables -F v3x-guest-allow 2>/dev/null || true

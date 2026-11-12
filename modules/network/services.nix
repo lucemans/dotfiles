@@ -39,6 +39,7 @@ in {
       upstream = "${hosts.v3x-teapot.address}:4000";
       path = "/ui/";
       access = ["f0" "f1" "f2"];
+      lan = ["10.0.0.222"];
     };
     mealie = {
       name = "meals.${zone}";

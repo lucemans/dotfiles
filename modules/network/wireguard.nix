@@ -39,7 +39,7 @@ in {
               inherit (hosts.${hub}) publicKey;
               endpoint =
                 if me.lan or false
-                then hosts.${hub}.lanEndpoint
+                then "${hosts.${hub}.lanAddress}:${toString hubPort}"
                 else hosts.${hub}.endpoint;
               allowedIPs = [subnet];
               persistentKeepalive = 25;

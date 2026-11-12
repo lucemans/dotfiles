@@ -5,7 +5,7 @@ in {
     v3x-teapot = {
       publicKey = "8FDbnPsRkbhl/Req/KfND0pT3+6aoNjohiOiAUlXFGc=";
       endpoint = "wg.${zone}:${toString hubPort}";
-      lanEndpoint = "10.0.0.227:${toString hubPort}";
+      lanAddress = "10.0.0.227";
       address = "100.127.0.127";
     };
     v3x-fighter = {
