@@ -1,6 +1,5 @@
 {
   inputs = {
-    # Native Drama 3 runtime; pinned independently of the model weights.
     audiocpp-src = {
       url = "github:0xShug0/audio.cpp/eeeca9e88b42509707486efb37bb5edb3b1ca48e";
       flake = false;
