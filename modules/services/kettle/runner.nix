@@ -91,6 +91,29 @@ in {
 
       network.allow = map (svc: "${svc.name}:443") [services.inference services.agent services.search];
       devices.kvm.repos = ["open-lavatory/ecosystem"];
+      devices.gpus =
+        {
+          v3x-mediabus = {
+            "0000:01:00.0" = {
+              renderNode = "/dev/dri/renderD129";
+              driver = "nvidia";
+              deviceNode = "/dev/nvidia0";
+            };
+            "0000:05:00.0" = {
+              renderNode = "/dev/dri/renderD128";
+              driver = "nvidia";
+              deviceNode = "/dev/nvidia1";
+            };
+          };
+          v3x-fighter."0000:01:00.0" = {
+            renderNode = "/dev/dri/renderD129";
+            driver = "nvidia";
+            deviceNode = "/dev/nvidia0";
+          };
+        }.${
+          config.networking.hostName
+        } or {
+        };
       kinds = {
         all.skills = lib.attrValues (agentConfigs.skillsOf pkgs agentConfigs.targets.kettle.all);
         all.systemPrompt = agentConfigs.promptOf pkgs agentConfigs.targets.kettle.all;
