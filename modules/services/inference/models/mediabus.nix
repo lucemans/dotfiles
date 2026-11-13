@@ -1,4 +1,8 @@
-{mediabusModels, ...}: {
+{
+  inputs,
+  mediabusModels,
+  ...
+}: {
   _module.args = {
     mediabusModels = {
       "qwen3.6-35b-a3b" = {
@@ -636,6 +640,11 @@
     };
 
     served = engine mediabusModels;
+    fish = import ../speech/fish-drama3.nix {
+      inherit pkgs;
+      source = inputs.audiocpp-src;
+      dir = modelsDir;
+    };
   in {
     systemd.tmpfiles.rules = [
       "d ${modelsDir} 0755 root root -"
@@ -652,7 +661,7 @@
       serviceConfig = {
         Type = "exec";
         RemainAfterExit = true;
-        ExecStart = lib.getExe (import ../engine/model-fetch.nix {inherit lib pkgs;} served.files);
+        ExecStart = lib.getExe (import ../engine/model-fetch.nix {inherit lib pkgs;} (served.files ++ [fish.file]));
         Restart = "on-failure";
         RestartSec = "5min";
       };
@@ -676,12 +685,13 @@
           every = "5s";
         };
 
-        models = served.swap;
+        models = served.swap // {"fish-drama3" = fish.swap;};
 
         groups.local-gpu = {
           swap = true;
           exclusive = true;
           members = [
+            "fish-drama3"
             "qwen3.6-35b-a3b"
             "flint-1"
             "nanbeige4.3-33b"
