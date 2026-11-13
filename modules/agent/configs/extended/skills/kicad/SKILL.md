@@ -5,7 +5,7 @@ description: Drive KiCad's PCB editor or 3D viewer on a run's desktop with the d
 
 # KiCad on the desktop
 
-Feel free to use computer tools, kicad IPC, or script your way out of it for large things or related pieces.
+Use computer tools, kicad IPC, or script your way out of it for large things or related pieces.
 
 ## Environment
 
