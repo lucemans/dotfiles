@@ -21,6 +21,12 @@ _: {
           rss.url = "https://blog.ethereum.org/en/feed.xml";
         }
         {
+          key = "slop-computer";
+          name = "slop.computer";
+          kind = "rss";
+          rss.url = "https://slop.computer/feed.xml";
+        }
+        {
           key = "ens-blog";
           name = "ENS Blog";
           kind = "rss";
@@ -58,7 +64,7 @@ _: {
         {
           name = "news";
           title = "News";
-          sources = ["hacker-news" "twir" "nos" "nu" "ethereum-blog"];
+          sources = ["hacker-news" "twir" "nos" "nu" "ethereum-blog" "slop-computer"];
         }
       ];
     };
