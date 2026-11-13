@@ -76,6 +76,7 @@ image = "mdi:ceiling-light"
 fit = "contain"
 anchor = "top_center"
 scale_percent = 50
+tint = "$(hass.default:light.dining_light_1_light.color)"
 
 [[panels.controls.default_state.layers]]
 kind = "border"
@@ -122,6 +123,7 @@ image = "mdi:ceiling-light"
 fit = "contain"
 anchor = "top_center"
 scale_percent = 50
+tint = "$(hass.default:light.dining_light_2_light_2.color)"
 
 [[panels.controls.default_state.layers]]
 kind = "border"
@@ -168,6 +170,7 @@ image = "mdi:led-strip-variant"
 fit = "contain"
 anchor = "top_center"
 scale_percent = 50
+tint = "$(hass.default:light.living_east_strip.color)"
 
 [[panels.controls.default_state.layers]]
 kind = "border"
@@ -268,6 +271,7 @@ image = "mdi:led-strip-variant"
 fit = "contain"
 anchor = "top_center"
 scale_percent = 50
+tint = "$(hass.default:light.skadis_led_strip_a_light.color)"
 
 [[panels.controls.default_state.layers]]
 kind = "border"
@@ -314,6 +318,7 @@ image = "mdi:led-strip-variant"
 fit = "contain"
 anchor = "top_center"
 scale_percent = 50
+tint = "$(hass.default:light.skadis_led_strip_b_light_2.color)"
 
 [[panels.controls.default_state.layers]]
 kind = "border"
@@ -550,6 +555,7 @@ image = "mdi:led-strip-variant"
 fit = "contain"
 anchor = "top_center"
 scale_percent = 50
+tint = "$(hass.default:light.kitchen_strip_light.color)"
 
 [[panels.controls.default_state.layers]]
 kind = "border"
@@ -596,6 +602,7 @@ image = "mdi:lightbulb"
 fit = "contain"
 anchor = "top_center"
 scale_percent = 50
+tint = "$(hass.default:light.ikea_of_sweden_tradfribulbe27wwclear250lm_light.color)"
 
 [[panels.controls.default_state.layers]]
 kind = "border"
@@ -887,6 +894,7 @@ image = "mdi:grid"
 fit = "contain"
 anchor = "top_center"
 scale_percent = 50
+tint = "$(hass.default:light.wled_2.color)"
 
 [[panels.controls.default_state.layers]]
 kind = "text"
