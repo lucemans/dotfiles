@@ -955,11 +955,11 @@
         "rust-overlay": "rust-overlay_8"
       },
       "locked": {
-        "lastModified": 1792098819,
-        "narHash": "sha256-OILp9MiREK4T8iZZZTemoT88hyKVkqgZldWdmjGts5g=",
+        "lastModified": 1794543174,
+        "narHash": "sha256-BY1rIETPzVszw0cuPWbtzdKoFc/o68GRVt2vVdZqX64=",
         "owner": "v3xlabs",
         "repo": "launchpi",
-        "rev": "a7a1f3a607492e818afd137ddeae80343412c4d3",
+        "rev": "9ce289d97905cc985d305d2b20d3ddf8965f4ef7",
         "type": "github"
       },
       "original": {
