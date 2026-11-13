@@ -48,7 +48,7 @@ in {
         generator = "endpoint";
         endpoint = {
           baseUrl = "https://${services.inference.name}/v1";
-          model = "v3x-m/nex-n2.5-mini";
+          model = "v3x-m/titlegen";
           apiKeyFile = config.sops.secrets.v3x_inference_token.path;
         };
       };

@@ -520,6 +520,33 @@
         concurrencyLimit = 8;
       };
 
+      "titlegen" = {
+        litellm.model_info = {
+          input_cost_per_token = 0.00000005;
+          mode = "chat";
+          output_cost_per_token = 0.00000005;
+        };
+        weights = {
+          repo = "LiquidAI/LFM3-1.7B-GGUF";
+          rev = "bad5729bba61d076fff20d2548e62526665af215";
+          files."LFM3-1.7B-Q8_0.gguf" = "8f6b24182258205e9e01e21f1f24a1f208c1e8115578825d202ce39976af20b6";
+        };
+        args = [
+          "--gpu-layers all"
+          "--split-mode none"
+          "--main-gpu 1"
+          "--ctx-size 16384"
+          "--flash-attn on"
+          "--jinja"
+          "--temp 0.1"
+          "--top-k 50"
+          "--repeat-penalty 1.1"
+          "--parallel 2"
+          "--no-webui"
+        ];
+        concurrencyLimit = 4;
+      };
+
       "bonsai-2-27b" = {
         litellm.model_info = {
           input_cost_per_token = 0.0000001;
@@ -542,29 +569,6 @@
         ];
         ttl = 900;
         concurrencyLimit = 2;
-      };
-
-      "pplx-decider-flash" = {
-        litellm.model_name = "pplx-decider-flash";
-        litellm.model_info = {
-          mode = "decisions";
-        };
-        weights = {
-          repo = "perplexity-ai/pplx-decider-flash-gguf-v1.2";
-          rev = "2514d5f0b7fbbe1ee1bfec9ffb5801a60289b4cc";
-          files."decider-flash-v1.2-q8_0.gguf" = "ffb27ade8976765b0e6943a0b7f5f3fd0f7042d45ad90256a76d608bcd3942c2";
-        };
-        fileArgs."--mmproj".files."mmproj-decider-flash-v1.2-f16.gguf" = "b2459e42a5f12c9ecbc81742a91cb93b6bbe5082297b4aa9578d453ddcbecfab";
-        args = [
-          "--ctx-size 8192"
-          "--batch-size 8192"
-          "--ubatch-size 8192"
-          "--flash-attn on"
-          "--parallel 1"
-          "--no-webui"
-        ];
-        ttl = 900;
-        concurrencyLimit = 16;
       };
 
       "humanizer-12b" = {
@@ -716,6 +720,7 @@
             "sage-a1.5"
             "bonsai-2-27b"
             "arete-27b"
+            "nex-n2.5-mini"
           ];
         };
 
@@ -724,7 +729,7 @@
           exclusive = false;
           persistent = true;
           members = [
-            "nex-n2.5-mini"
+            "titlegen"
           ];
         };
       };
