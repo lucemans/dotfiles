@@ -18,6 +18,7 @@
     ./framesh.nix
     ./voxtype.nix
     ./doubletake.nix
+    ./uxplay.nix
     ./agentsview.nix
     ./auto-commit.nix
     ./clearurls-clipboard.nix
