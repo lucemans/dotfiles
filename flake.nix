@@ -4,6 +4,10 @@
       url = "github:0xShug0/audio.cpp/eeeca9e88b42509707486efb37bb5edb3b1ca48e";
       flake = false;
     };
+    zonos3-src = {
+      url = "github:Zyphra/ZONOS3-Mini/bcb66617512e4d09082438ade8be764af3213327";
+      flake = false;
+    };
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     prisma-nixpkgs.url = "github:NixOS/nixpkgs/5ed627539ac84809c78b2dd6d26a5cebeb5ae269";
     nixpkgs-litellm.url = "github:NixOS/nixpkgs/9efb001ca77459072832ddf26b31e36ea7c6fe46";

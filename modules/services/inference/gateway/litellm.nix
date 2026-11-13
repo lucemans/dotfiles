@@ -221,6 +221,28 @@ in {
               }
               {
                 litellm_params = {
+                  api_base = "http://${services.llamaMediabus.upstream}/v1";
+                  api_key = "local";
+                  model = "openai/zonos3-cave";
+                };
+                model_info = {
+                  mode = "audio_speech";
+                };
+                model_name = "v3x-m/zonos3-cave";
+              }
+              {
+                litellm_params = {
+                  api_base = "http://${services.llamaMediabus.upstream}/v1";
+                  api_key = "local";
+                  model = "openai/zonos3-ada";
+                };
+                model_info = {
+                  mode = "audio_speech";
+                };
+                model_name = "v3x-m/zonos3-ada";
+              }
+              {
+                litellm_params = {
                   api_base = "https://zeroparams.itdata.nu/v1";
                   api_key = "os.environ/ZEROPARAMS_API_KEY";
                   model = "openai/jonatan";

@@ -30,11 +30,13 @@ _: {
     clones = ["glados" "cave" "ada" "elmo"];
     cloneNames = map (voice: "${voice}-clone") clones;
     fishNames = map (voice: "${voice}-fish") clones;
+    zonosNames = map (voice: "${voice}-zonos") ["cave" "ada"];
 
     voiceMenu = pkgs.writeText "tts-voice-menu" (
       lib.concatStringsSep "\n" (
         cloneNames
         ++ fishNames
+        ++ zonosNames
         ++ ["ada" "ada-google" "elmo"]
         ++ piper.names
         ++ ["ada-changer" "elmo-changer" "voicelines"]
@@ -58,7 +60,7 @@ _: {
       glados = "GLaDOS, the Genetic Lifeform and Disk Operating System, the AI who runs the Aperture Science Enrichment Center in Valve's Portal games. Coldly polite and passive-aggressive, with dry, cutting sarcasm about testing, science, cake and neurotoxin, and thinly veiled insults.";
     };
     personas = pkgs.linkFarm "tts-personas" (
-      lib.genAttrs (["ada" "elmo"] ++ piper.names ++ cloneNames ++ fishNames) (
+      lib.genAttrs (["ada" "elmo"] ++ piper.names ++ cloneNames ++ fishNames ++ zonosNames) (
         name: pkgs.writeText "tts-persona-${name}" characters.${lib.head (lib.splitString "-" name)}
       )
     );
@@ -179,6 +181,15 @@ _: {
               --rate 44100
               --timeout 120
               --reference "${references}/''${choice%-fish}.wav")
+            ;;
+          *-zonos)
+            session=(44100 ${lib.getExe speech-stream}
+              --api http://${services.llamaMediabus.upstream}/v1
+              --model "zonos3-''${choice%-zonos}"
+              --token ${config.sops.secrets.v3x_inference_token.path}
+              --rate 44100
+              --timeout 60
+              --voice "''${choice%-zonos}")
             ;;
           ada) session=(${toString rvc.rate} ${lib.getExe rvc.ada.stream}) ;;
           elmo) session=(${toString rvc.rate} ${lib.getExe rvc.elmo.stream}) ;;

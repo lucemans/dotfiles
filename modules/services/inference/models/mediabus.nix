@@ -648,19 +648,21 @@
   }: let
     modelsDir = "/var/lib/llama-models";
 
+    cpuFlags = [
+      "GGML_SSE42"
+      "GGML_AVX"
+      "GGML_F16C"
+      "GGML_FMA"
+      "GGML_AVX2"
+      "GGML_BMI2"
+      "GGML_AVX512"
+      "GGML_AVX512_VBMI"
+      "GGML_AVX512_VNNI"
+      "GGML_AVX512_BF16"
+    ];
+
     engine = import ../engine {inherit lib pkgs;} {
-      cpuFlags = [
-        "GGML_SSE42"
-        "GGML_AVX"
-        "GGML_F16C"
-        "GGML_FMA"
-        "GGML_AVX2"
-        "GGML_BMI2"
-        "GGML_AVX512"
-        "GGML_AVX512_VBMI"
-        "GGML_AVX512_VNNI"
-        "GGML_AVX512_BF16"
-      ];
+      inherit cpuFlags;
       flashAttnQuants = "q4_0-q4_0;q8_0-q8_0;f16-f16";
       fetch = "runtime";
       dir = modelsDir;
@@ -670,6 +672,11 @@
     fish = import ../speech/fish-drama3.nix {
       inherit pkgs;
       source = inputs.audiocpp-src;
+      dir = modelsDir;
+    };
+    zonos = import ../speech/zonos3.nix {
+      inherit pkgs cpuFlags;
+      source = inputs.zonos3-src;
       dir = modelsDir;
     };
   in {
@@ -685,7 +692,7 @@
       serviceConfig = {
         Type = "exec";
         RemainAfterExit = true;
-        ExecStart = lib.getExe (import ../engine/model-fetch.nix {inherit lib pkgs;} (served.files ++ [fish.file]));
+        ExecStart = lib.getExe (import ../engine/model-fetch.nix {inherit lib pkgs;} (served.files ++ [fish.file] ++ zonos.files));
         Restart = "on-failure";
         RestartSec = "5min";
       };
@@ -708,7 +715,7 @@
           every = "5s";
         };
 
-        models = served.swap // {"fish-drama3" = fish.swap;};
+        models = served.swap // {"fish-drama3" = fish.swap;} // zonos.swap;
 
         groups.local-gpu = {
           swap = true;
@@ -732,6 +739,13 @@
           members = [
             "titlegen"
           ];
+        };
+
+        groups.cpu-speech = {
+          swap = false;
+          exclusive = false;
+          persistent = true;
+          members = builtins.attrNames zonos.swap;
         };
       };
     };

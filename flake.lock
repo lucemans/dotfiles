@@ -1606,7 +1606,8 @@
         "voice-channel": "voice-channel",
         "voxtype": "voxtype",
         "wrapper-modules": "wrapper-modules",
-        "wrappers": "wrappers"
+        "wrappers": "wrappers",
+        "zonos3-src": "zonos3-src"
       }
     },
     "rust-analyzer-src": {
@@ -2394,6 +2395,23 @@
       "original": {
         "owner": "Lassulus",
         "repo": "wrappers",
+        "type": "github"
+      }
+    },
+    "zonos3-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1794539065,
+        "narHash": "sha256-QV4Lp6r0gnB4vyHi/TWdnPvE3q98e/S6poMxpOrUXm8=",
+        "owner": "Zyphra",
+        "repo": "ZONOS3-Mini",
+        "rev": "bcb66617512e4d09082438ade8be764af3213327",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Zyphra",
+        "repo": "ZONOS3-Mini",
+        "rev": "bcb66617512e4d09082438ade8be764af3213327",
         "type": "github"
       }
     }
