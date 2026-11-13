@@ -669,9 +669,16 @@
     };
 
     served = engine mediabusModels;
-    fish = import ../speech/fish-drama3.nix {
+    audio = import ../speech/audiocpp.nix {
       inherit pkgs;
       source = inputs.audiocpp-src;
+    };
+    fish = import ../speech/fish-drama3.nix {
+      inherit pkgs audio;
+      dir = modelsDir;
+    };
+    qwen3Tts = import ../speech/qwen3-tts.nix {
+      inherit pkgs audio;
       dir = modelsDir;
     };
     zonos = import ../speech/zonos3.nix {
@@ -692,7 +699,7 @@
       serviceConfig = {
         Type = "exec";
         RemainAfterExit = true;
-        ExecStart = lib.getExe (import ../engine/model-fetch.nix {inherit lib pkgs;} (served.files ++ [fish.file] ++ zonos.files));
+        ExecStart = lib.getExe (import ../engine/model-fetch.nix {inherit lib pkgs;} (served.files ++ [fish.file qwen3Tts.file] ++ zonos.files));
         Restart = "on-failure";
         RestartSec = "5min";
       };
@@ -715,13 +722,20 @@
           every = "5s";
         };
 
-        models = served.swap // {"fish-drama3" = fish.swap;} // zonos.swap;
+        models =
+          served.swap
+          // {
+            "fish-drama3" = fish.swap;
+            "qwen3-tts" = qwen3Tts.swap;
+          }
+          // zonos.swap;
 
         groups.local-gpu = {
           swap = true;
           exclusive = true;
           members = [
             "fish-drama3"
+            "qwen3-tts"
             "qwen3.6-35b-a3b"
             "flint-1"
             "nanbeige4.3-33b"

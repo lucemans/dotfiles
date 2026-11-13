@@ -223,6 +223,17 @@ in {
                 litellm_params = {
                   api_base = "http://${services.llamaMediabus.upstream}/v1";
                   api_key = "local";
+                  model = "openai/qwen3-tts";
+                };
+                model_info = {
+                  mode = "audio_speech";
+                };
+                model_name = "v3x-m/qwen3-tts";
+              }
+              {
+                litellm_params = {
+                  api_base = "http://${services.llamaMediabus.upstream}/v1";
+                  api_key = "local";
                   model = "openai/zonos3-cave";
                 };
                 model_info = {
