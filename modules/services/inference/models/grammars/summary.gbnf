@@ -1,0 +1,10 @@
+# The JSON object Kettle parses as a turn summary, with its length limits.
+root ::= "{" ws "\"one_line\":" ws line "," ws "\"paragraph\":" ws para "," ws "\"what_changed\":" ws items ws "}"
+ws ::= [ ]?
+first ::= [^"\\\x00-\x20\x7f]
+plain ::= [^"\\\x00-\x1f\x7f]
+esc ::= "\\" ["\\/bfnrt]
+line ::= "\"" first plain{0,238} "\""
+para ::= "\"" first (plain | esc){0,1198} "\""
+item ::= "\"" first (plain | esc){0,398} "\""
+items ::= "[" ws (item (ws "," ws item){0,11})? ws "]"

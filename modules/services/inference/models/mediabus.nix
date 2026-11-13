@@ -548,6 +548,65 @@
         concurrencyLimit = 4;
       };
 
+      # The grammar applies to every request, so this model only writes chat titles.
+      "title" = {
+        litellm.model_info = {
+          input_cost_per_token = 0.00000005;
+          mode = "chat";
+          output_cost_per_token = 0.00000005;
+        };
+        weights = {
+          repo = "bartowski/Qwen2.5-1.5B-Instruct-GGUF";
+          rev = "9eadc66189c7641e1ddd226b8267a9119b2ce2d4";
+          files."Qwen2.5-1.5B-Instruct-Q8_0.gguf" = "7185d306cf45956c8c017cd0d3b05ecc6bc18b3ea8eb5c240dce40e87563db7f";
+        };
+        args = [
+          "--gpu-layers all"
+          "--split-mode none"
+          "--main-gpu 1"
+          "--ctx-size 16384"
+          "--flash-attn on"
+          "--jinja"
+          "--temp 0.1"
+          "--top-k 50"
+          "--repeat-penalty 1.1"
+          "--grammar-file ${./grammars/title.gbnf}"
+          "--parallel 2"
+          "--no-webui"
+        ];
+        ttl = 900;
+        concurrencyLimit = 4;
+      };
+
+      # The grammar makes every answer the JSON object Kettle parses as a turn summary.
+      "summarizer" = {
+        litellm.model_info = {
+          input_cost_per_token = 0.00000005;
+          mode = "chat";
+          output_cost_per_token = 0.00000005;
+        };
+        weights = {
+          repo = "LiquidAI/LFM3-1.7B-GGUF";
+          rev = "bad5729bba61d076fff20d2548e62526665af215";
+          files."LFM3-1.7B-Q8_0.gguf" = "8f6b24182258205e9e01e21f1f24a1f208c1e8115578825d202ce39976af20b6";
+        };
+        args = [
+          "--gpu-layers all"
+          "--split-mode none"
+          "--main-gpu 1"
+          "--ctx-size 32768"
+          "--flash-attn on"
+          "--jinja"
+          "--reasoning off"
+          "--temp 0.3"
+          "--grammar-file ${./grammars/summary.gbnf}"
+          "--parallel 2"
+          "--no-webui"
+        ];
+        ttl = 900;
+        concurrencyLimit = 4;
+      };
+
       "bonsai-2-27b" = {
         litellm.model_info = {
           input_cost_per_token = 0.0000001;
@@ -747,11 +806,13 @@
         };
 
         groups.smol = {
-          swap = true;
+          swap = false;
           exclusive = false;
           persistent = true;
           members = [
             "titlegen"
+            "title"
+            "summarizer"
           ];
         };
 
