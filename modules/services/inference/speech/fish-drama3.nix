@@ -81,7 +81,7 @@
           "fish_drama3.codec_encoder_chunk_samples" = 131072;
         };
         default_request_options.max_tokens = 500;
-        voice_presets = {
+        voice_presets = rec {
           cave = {
             voice_ref = "${builtins.head caveClips}";
             reference_text = (builtins.head caveLines).text;
@@ -94,6 +94,17 @@
             voice_ref = "${references}/ada.wav";
             reference_text = references.said.ada;
           };
+          alloy = cave;
+          ash = cave;
+          ballad = cave;
+          coral = cave;
+          echo = cave;
+          fable = cave;
+          nova = cave;
+          onyx = cave;
+          sage = cave;
+          shimmer = cave;
+          verse = cave;
         };
       }
     ];
