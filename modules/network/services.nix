@@ -52,14 +52,14 @@ in {
       name = "media.${zone}";
       title = "Media";
       icon = "jellyfin";
-      upstream = "10.90.0.11:8096";
+      upstream = "${hosts.v3x-mediabus.address}:8096";
       access = ["f0" "f1" "f2"];
     };
     fmedia = {
       name = "fmedia.${zone}";
       title = "Requests";
       icon = "jellyseerr";
-      upstream = "10.90.0.11:5055";
+      upstream = "${hosts.v3x-mediabus.address}:5055";
       access = ["f0" "f1" "f2"];
     };
     music = {
@@ -189,63 +189,63 @@ in {
       name = "shelf.${zone}";
       title = "Shelf";
       icon = "kavita";
-      upstream = "10.90.0.11:5000";
+      upstream = "${hosts.v3x-mediabus.address}:5000";
       access = [];
     };
     sinkarr = {
       name = "sinkarr.${zone}";
       title = "Sinkarr";
       icon = "qbit";
-      upstream = "10.90.0.11:8080";
+      upstream = "${hosts.v3x-mediabus.address}:8080";
       access = [];
     };
     linkarr = {
       name = "linkarr.${zone}";
       title = "Linkarr";
       icon = "prowlarr";
-      upstream = "10.90.0.11:9696";
+      upstream = "${hosts.v3x-mediabus.address}:9696";
       access = [];
     };
     showarr = {
       name = "showarr.${zone}";
       title = "Showarr";
       icon = "sonar";
-      upstream = "10.90.0.11:8989";
+      upstream = "${hosts.v3x-mediabus.address}:8989";
       access = [];
     };
     movarr = {
       name = "movarr.${zone}";
       title = "Movarr";
       icon = "radar";
-      upstream = "10.90.0.11:7878";
+      upstream = "${hosts.v3x-mediabus.address}:7878";
       access = [];
     };
     listenarr = {
       name = "listenarr.${zone}";
       title = "Listenarr";
       icon = "lidarr";
-      upstream = "10.90.0.11:8686";
+      upstream = "${hosts.v3x-mediabus.address}:8686";
       access = [];
     };
     bookarr = {
       name = "bookarr.${zone}";
       title = "Bookarr";
       icon = "chaptarr";
-      upstream = "10.90.0.11:8789";
+      upstream = "${hosts.v3x-mediabus.address}:8789";
       access = [];
     };
     titlarr = {
       name = "titlarr.${zone}";
       title = "Titlarr";
       icon = "bazarr";
-      upstream = "10.90.0.11:6767";
+      upstream = "${hosts.v3x-mediabus.address}:6767";
       access = [];
     };
     coatarr = {
       name = "coatarr.${zone}";
       title = "Coatarr";
       icon = "jackett";
-      upstream = "10.90.0.11:9117";
+      upstream = "${hosts.v3x-mediabus.address}:9117";
       access = [];
     };
     files = {
@@ -259,7 +259,7 @@ in {
       name = "gallery.${zone}";
       title = "Photos";
       icon = "immich";
-      upstream = "10.90.0.11:2283";
+      upstream = "${hosts.v3x-mediabus.address}:2283";
       access = [];
     };
   };
