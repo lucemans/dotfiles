@@ -19,9 +19,9 @@ _: {
 
     piper = import ./piper.nix pkgs;
     rvc = import ./rvc pkgs;
-    glados = import ./glados pkgs;
+    glados = (import ./references.nix pkgs).glados;
     hear = import ./hear pkgs;
-    references = import ./references.nix pkgs;
+    cloneFiles = (import ../../services/inference/speech/clones.nix pkgs).files;
     inherit (import ../../network/services.nix) services;
     ada-google-speak =
       import ./ada-google pkgs config.sops.secrets.google_tts_key.path;
@@ -180,7 +180,7 @@ _: {
               --token ${config.sops.secrets.v3x_inference_token.path}
               --rate 44100
               --timeout 120
-              --reference "${references}/''${choice%-fish}.wav")
+              --reference "${cloneFiles}/''${choice%-fish}.wav")
             ;;
           *-zonos)
             session=(44100 ${lib.getExe speech-stream}

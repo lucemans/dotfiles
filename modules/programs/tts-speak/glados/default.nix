@@ -15,6 +15,8 @@ pkgs: let
     )
   );
 in {
+  inherit lines;
+
   audio =
     pkgs.runCommand "glados-voicelines" {
       nativeBuildInputs = [pkgs.curl];

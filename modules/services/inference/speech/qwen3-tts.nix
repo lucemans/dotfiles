@@ -3,7 +3,7 @@
   audio,
   dir,
 }: let
-  references = import ../../../programs/tts-speak/references.nix pkgs;
+  clones = import ./clones.nix pkgs;
   filename = "Qwen3-TTS-12Hz-1.7B-Base-GGUF/qwen3-tts-12hz-1.7b-base-q8_0_v2.gguf";
   file = {
     repo = "audio-cpp/audio.cpp-gguf";
@@ -13,10 +13,12 @@
     gated = false;
     dest = "${dir}/audio-cpp--audio.cpp-gguf/${filename}";
   };
-  preset = name: {
-    voice_ref = "${references}/${name}.wav";
-    reference_text = references.said.${name};
-  };
+  presets =
+    pkgs.lib.mapAttrs (_: preset: {
+      voice_ref = preset.qwen.clip;
+      reference_text = preset.qwen.text;
+    })
+    (pkgs.lib.filterAttrs (_: preset: preset ? qwen) clones.presets);
   serverConfig = (pkgs.formats.json {}).generate "qwen3-tts.json" {
     host = "127.0.0.1";
     backend = "cuda";
@@ -30,23 +32,7 @@
         path = file.dest;
         task = "tts";
         mode = "offline";
-        voice_presets = rec {
-          glados = preset "glados";
-          cave = preset "cave";
-          ada = preset "ada";
-          elmo = preset "elmo";
-          alloy = cave;
-          ash = cave;
-          ballad = cave;
-          coral = cave;
-          echo = cave;
-          fable = cave;
-          nova = cave;
-          onyx = cave;
-          sage = cave;
-          shimmer = cave;
-          verse = cave;
-        };
+        voice_presets = presets // pkgs.lib.genAttrs clones.openai (_: presets.cave);
       }
     ];
   };

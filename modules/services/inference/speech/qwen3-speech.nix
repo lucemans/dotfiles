@@ -10,8 +10,7 @@ _: {
     model = "Qwen/Qwen3-TTS-12Hz-1.7B-Base";
     revision = "fd4b254389122332181a7c3db7f27e918eec64e3";
 
-    references = import ../../../programs/tts-speak/references.nix pkgs;
-    voices = ["glados" "cave" "ada" "elmo"];
+    voices = pkgs.lib.filterAttrs (_: preset: preset ? qwen) (import ./clones.nix pkgs).presets;
 
     # The upstream qwen3_tts.yaml from v0.30.0, sized for one listener on a
     # 12 GB card that llama.cpp shares: 64 parallel sequences become 4, and
@@ -148,15 +147,15 @@ _: {
         until curl --silent --fail http://127.0.0.1:${toString port}/v1/audio/voices > /dev/null; do
           sleep 5
         done
-        ${pkgs.lib.concatMapStrings (voice: ''
+        ${pkgs.lib.concatStrings (pkgs.lib.mapAttrsToList (voice: preset: ''
             curl --silent --show-error --fail \
-              --form audio_sample=@${references}/${voice}.wav \
+              --form audio_sample=@${preset.qwen.clip} \
               --form name=${voice} \
               --form consent=luc \
-              --form ref_text=\<${references}/${voice}.txt \
+              --form ref_text=\<${pkgs.writeText "${voice}-reference.txt" preset.qwen.text} \
               http://127.0.0.1:${toString port}/v1/audio/voices
           '')
-          voices}
+          voices)}
       '';
     };
   };

@@ -74,15 +74,7 @@
     url = "https://huggingface.co/${repo}/resolve/${rev}/gguf/spk-encoder.gguf";
     sha256 = "9539f340b70be246005403b9c254732e180e85e0b3c57fb1973f0d6bc6c59bdc";
   };
-  caveClip = pkgs.fetchurl {
-    url = "https://huggingface.co/datasets/lucemans/cave-johnson/resolve/1159e788bfead6604b19f2433f6bcb3df867fa44/data/wav-44100/Cave_Johnson_fifties_intro01.wav";
-    sha256 = "2c1505ec9eae5658dfbff605e4447cc7d16dcb008b03657cff1098ef2b6c6b23";
-  };
-  references = import ../../../programs/tts-speak/references.nix pkgs;
-  clips = {
-    cave = caveClip;
-    ada = "${references}/ada.wav";
-  };
+  clips = lib.mapAttrs (_: preset: preset.zonos.clip) (lib.filterAttrs (_: preset: preset ? zonos) (import ./clones.nix pkgs).presets);
 
   voices = pkgs.runCommand "zonos3-voices" {nativeBuildInputs = [package pkgs.ffmpeg-headless];} ''
     mkdir $out
