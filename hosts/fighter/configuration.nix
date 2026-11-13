@@ -23,6 +23,7 @@
       self.nixosModules.midjournal
       self.nixosModules.voxtype
       self.nixosModules.kettleClient
+      self.nixosModules.duplexClient
       self.nixosModules.kettleRunner
     ];
 

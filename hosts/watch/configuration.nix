@@ -16,6 +16,7 @@ _: {
       self.nixosModules.ingestarr
       self.nixosModules.mailStore
       self.nixosModules.ntfy
+      self.nixosModules.duplex
       self.nixosModules.backup
     ];
 
@@ -78,6 +79,7 @@ _: {
           }
           "/var/lib/cli-proxy-api"
           "/var/lib/docker"
+          "/var/lib/duplex-server"
           "/var/lib/nixos"
           {
             directory = "/var/lib/private/ingestarr";

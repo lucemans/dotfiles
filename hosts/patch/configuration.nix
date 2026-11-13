@@ -21,6 +21,7 @@
       # self.nixosModules.keyhold
       # self.nixosModules.midjournal
       self.nixosModules.kettleClient
+      self.nixosModules.duplexClient
     ];
 
     system.stateVersion = "25.05";

@@ -178,6 +178,13 @@ in {
       upstream = "${hosts.v3x-watch.address}:2586";
       access = [];
     };
+    duplex = {
+      name = "duplex.${zone}";
+      title = "Duplex";
+      icon = "bin";
+      upstream = "${hosts.v3x-watch.address}:8472";
+      access = [];
+    };
     shelf = {
       name = "shelf.${zone}";
       title = "Shelf";
@@ -268,7 +275,7 @@ in {
     }
     {
       title = "Tools";
-      services = ["code" "forge" "chat" "usage" "agent" "inference" "llamaTeapot" "llamaMediabus"];
+      services = ["code" "forge" "chat" "duplex" "usage" "agent" "inference" "llamaTeapot" "llamaMediabus"];
     }
     {
       title = "Media";
