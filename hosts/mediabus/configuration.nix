@@ -13,6 +13,7 @@ _: {
       self.nixosModules.dns
       self.nixosModules.immich
       self.nixosModules.mediabusInference
+      self.nixosModules.fishDrama3Speech
       self.nixosModules.backup
       self.nixosModules.kettleForge
       self.nixosModules.kettleCode

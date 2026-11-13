@@ -44,6 +44,23 @@
         "type": "github"
       }
     },
+    "audiocpp-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1794527321,
+        "narHash": "sha256-docyhmWOjeT9043b6tw7VyiqlDerk4xcKp71lppKg0s=",
+        "owner": "0xShug0",
+        "repo": "audio.cpp",
+        "rev": "eeeca9e88b42509707486efb37bb5edb3b1ca48e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "0xShug0",
+        "repo": "audio.cpp",
+        "rev": "eeeca9e88b42509707486efb37bb5edb3b1ca48e",
+        "type": "github"
+      }
+    },
     "auto-commit": {
       "inputs": {
         "nixpkgs": [
@@ -1500,6 +1517,7 @@
       "inputs": {
         "activate-linux": "activate-linux",
         "attic": "attic",
+        "audiocpp-src": "audiocpp-src",
         "auto-commit": "auto-commit",
         "deploy-rs": "deploy-rs",
         "disko": "disko",
