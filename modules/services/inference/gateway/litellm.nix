@@ -210,6 +210,17 @@ in {
               }
               {
                 litellm_params = {
+                  api_base = "http://${services.llamaMediabus.upstream}/v1";
+                  api_key = "local";
+                  model = "openai/fish-drama3";
+                };
+                model_info = {
+                  mode = "audio_speech";
+                };
+                model_name = "v3x-m/fish-drama3";
+              }
+              {
+                litellm_params = {
                   api_base = "https://zeroparams.itdata.nu/v1";
                   api_key = "os.environ/ZEROPARAMS_API_KEY";
                   model = "openai/jonatan";
