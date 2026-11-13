@@ -58,13 +58,20 @@ _: {
           kind = "rss";
           rss.url = "https://www.nu.nl/rss/Algemeen";
         }
+        {
+          key = "hackaday";
+          name = "Hackaday";
+          kind = "rss";
+          rss.url = "https://hackaday.com/feed/";
+          max_age = "2160h";
+        }
       ];
 
       collections = [
         {
           name = "news";
           title = "News";
-          sources = ["hacker-news" "twir" "nos" "nu" "ethereum-blog" "slop-computer"];
+          sources = ["hacker-news" "twir" "nos" "nu" "ethereum-blog" "slop-computer" "hackaday"];
         }
       ];
     };
