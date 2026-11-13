@@ -10,7 +10,9 @@ _: {
     model = "Qwen/Qwen3-TTS-12Hz-1.7B-Base";
     revision = "fd4b254389122332181a7c3db7f27e918eec64e3";
 
-    voices = pkgs.lib.filterAttrs (_: preset: preset ? qwen) (import ./clones.nix pkgs).presets;
+    voices =
+      pkgs.lib.filterAttrs (_: preset: preset ? qwen && pkgs.lib.hasPrefix builtins.storeDir (toString preset.qwen.clip))
+      (import ./clones.nix pkgs).presets;
 
     # The upstream qwen3_tts.yaml from v0.30.0, sized for one listener on a
     # 12 GB card that llama.cpp shares: 64 parallel sequences become 4, and

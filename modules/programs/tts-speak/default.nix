@@ -19,7 +19,7 @@ _: {
 
     piper = import ./piper.nix pkgs;
     rvc = import ./rvc pkgs;
-    glados = (import ./references.nix pkgs).glados;
+    inherit ((import ./references.nix pkgs)) glados;
     hear = import ./hear pkgs;
     cloneFiles = (import ../../services/inference/speech/clones.nix pkgs).files;
     inherit (import ../../network/services.nix) services;

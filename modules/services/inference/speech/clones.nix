@@ -58,6 +58,9 @@ pkgs: let
 
     ${lib.concatStrings (lib.mapAttrsToList (name: file: "cp ${file} $out/${name}.txt\n") words)}
   '';
+
+  jakobClip = "/var/lib/llama-models/voices/jakob.wav";
+  jakobText = "Okay, so, I've been messing around with this voice-cloning stuff, and I'm actually pretty curious to see how well it works. Because, like, the thing is, it's one thing to make it sound like my voice, but it's a whole different thing to make it sound like I'm actually talking.";
 in {
   inherit files;
 
@@ -99,6 +102,17 @@ in {
     elmo.qwen = {
       clip = "${files}/elmo.wav";
       text = elmoText;
+    };
+
+    jakob = {
+      fish = {
+        clip = jakobClip;
+        text = jakobText;
+      };
+      qwen = {
+        clip = jakobClip;
+        text = jakobText;
+      };
     };
   };
 
