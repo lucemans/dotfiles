@@ -23,6 +23,7 @@ pkgs: let
 in
   pkgs.runCommand "tts-voice-references" {
     nativeBuildInputs = [pkgs.sox pkgs.piper-tts];
+    passthru = {inherit said;};
   } ''
     mkdir -p $out
     export HOME=$TMPDIR

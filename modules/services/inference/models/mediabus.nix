@@ -538,6 +538,7 @@
           "--ctx-size 16384"
           "--flash-attn on"
           "--jinja"
+          "--reasoning off"
           "--temp 0.1"
           "--top-k 50"
           "--repeat-penalty 1.1"

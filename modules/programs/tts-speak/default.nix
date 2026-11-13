@@ -21,6 +21,7 @@ _: {
     rvc = import ./rvc pkgs;
     glados = import ./glados pkgs;
     hear = import ./hear pkgs;
+    references = import ./references.nix pkgs;
     inherit (import ../../network/services.nix) services;
     ada-google-speak =
       import ./ada-google pkgs config.sops.secrets.google_tts_key.path;
@@ -28,10 +29,12 @@ _: {
     # Voices the Qwen3-TTS server on teapot clones, named as it knows them.
     clones = ["glados" "cave" "ada" "elmo"];
     cloneNames = map (voice: "${voice}-clone") clones;
+    fishNames = map (voice: "${voice}-fish") clones;
 
     voiceMenu = pkgs.writeText "tts-voice-menu" (
       lib.concatStringsSep "\n" (
         cloneNames
+        ++ fishNames
         ++ ["ada" "ada-google" "elmo"]
         ++ piper.names
         ++ ["ada-changer" "elmo-changer" "voicelines"]
@@ -55,7 +58,7 @@ _: {
       glados = "GLaDOS, the Genetic Lifeform and Disk Operating System, the AI who runs the Aperture Science Enrichment Center in Valve's Portal games. Coldly polite and passive-aggressive, with dry, cutting sarcasm about testing, science, cake and neurotoxin, and thinly veiled insults.";
     };
     personas = pkgs.linkFarm "tts-personas" (
-      lib.genAttrs (["ada" "elmo"] ++ piper.names ++ cloneNames) (
+      lib.genAttrs (["ada" "elmo"] ++ piper.names ++ cloneNames ++ fishNames) (
         name: pkgs.writeText "tts-persona-${name}" characters.${lib.head (lib.splitString "-" name)}
       )
     );
@@ -167,6 +170,15 @@ _: {
               --model v3x-t/qwen3-tts
               --token ${config.sops.secrets.v3x_inference_token.path}
               --voice "''${choice%-clone}")
+            ;;
+          *-fish)
+            session=(44100 ${lib.getExe speech-stream}
+              --api http://${services.llamaMediabus.upstream}/v1
+              --model fish-drama3
+              --token ${config.sops.secrets.v3x_inference_token.path}
+              --rate 44100
+              --timeout 120
+              --reference "${references}/''${choice%-fish}.wav")
             ;;
           ada) session=(${toString rvc.rate} ${lib.getExe rvc.ada.stream}) ;;
           elmo) session=(${toString rvc.rate} ${lib.getExe rvc.elmo.stream}) ;;
