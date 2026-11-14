@@ -528,9 +528,9 @@
           output_cost_per_token = 0.00000005;
         };
         weights = {
-          repo = "bartowski/Qwen2.5-1.5B-Instruct-GGUF";
-          rev = "9eadc66189c7641e1ddd226b8267a9119b2ce2d4";
-          files."Qwen2.5-1.5B-Instruct-Q8_0.gguf" = "7185d306cf45956c8c017cd0d3b05ecc6bc18b3ea8eb5c240dce40e87563db7f";
+          repo = "unsloth/Qwen3-4B-Instruct-2507-GGUF";
+          rev = "a06e946bb6b655725eafa393f4a9745d460374c9";
+          files."Qwen3-4B-Instruct-2507-Q4_K_M.gguf" = "3605803b982cb64aead44f6c1b2ae36e3acdb41d8e46c8a94c6533bc4c67e597";
         };
         args = [
           "--gpu-layers all"
