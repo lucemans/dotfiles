@@ -520,36 +520,8 @@
         concurrencyLimit = 8;
       };
 
-      "titlegen" = {
-        litellm.model_info = {
-          input_cost_per_token = 0.00000005;
-          mode = "chat";
-          output_cost_per_token = 0.00000005;
-        };
-        weights = {
-          repo = "LiquidAI/LFM3-1.7B-GGUF";
-          rev = "bad5729bba61d076fff20d2548e62526665af215";
-          files."LFM3-1.7B-Q8_0.gguf" = "8f6b24182258205e9e01e21f1f24a1f208c1e8115578825d202ce39976af20b6";
-        };
-        args = [
-          "--gpu-layers all"
-          "--split-mode none"
-          "--main-gpu 1"
-          "--ctx-size 16384"
-          "--flash-attn on"
-          "--jinja"
-          "--reasoning off"
-          "--temp 0.1"
-          "--top-k 50"
-          "--repeat-penalty 1.1"
-          "--parallel 2"
-          "--no-webui"
-        ];
-        concurrencyLimit = 4;
-      };
-
       # The grammar applies to every request, so this model only writes chat titles.
-      "title" = {
+      "titlegen" = {
         litellm.model_info = {
           input_cost_per_token = 0.00000005;
           mode = "chat";
@@ -574,7 +546,7 @@
           "--parallel 2"
           "--no-webui"
         ];
-        ttl = 900;
+        ttl = 0;
         concurrencyLimit = 4;
       };
 
@@ -603,7 +575,7 @@
           "--parallel 2"
           "--no-webui"
         ];
-        ttl = 900;
+        ttl = 0;
         concurrencyLimit = 4;
       };
 
@@ -811,7 +783,6 @@
           persistent = true;
           members = [
             "titlegen"
-            "title"
             "summarizer"
           ];
         };

@@ -51,6 +51,17 @@ in {
           model = "v3x-m/titlegen";
           apiKeyFile = config.sops.secrets.v3x_inference_token.path;
         };
+        maxTokens = 32;
+      };
+
+      turnSummaries = {
+        endpoint = {
+          baseUrl = "https://${services.inference.name}/v1";
+          model = "v3x-m/summarizer";
+          apiKeyFile = config.sops.secrets.v3x_inference_token.path;
+        };
+        thinkingOff = true;
+        maxTokens = 3072;
       };
 
       integrations.litellm = {
