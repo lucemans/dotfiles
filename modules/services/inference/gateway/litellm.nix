@@ -192,6 +192,7 @@ in {
                 };
                 model_info = {
                   health_check_voice = "glados-original";
+                  input_cost_per_character = 0.000001;
                   mode = "audio_speech";
                 };
                 model_name = "v3x-t/piper";
@@ -204,6 +205,7 @@ in {
                 };
                 model_info = {
                   health_check_voice = "glados";
+                  input_cost_per_character = 0.000015;
                   mode = "audio_speech";
                 };
                 model_name = "v3x-t/qwen3-tts";
@@ -215,6 +217,7 @@ in {
                   model = "openai/fish-drama3";
                 };
                 model_info = {
+                  input_cost_per_character = 0.00003;
                   mode = "audio_speech";
                 };
                 model_name = "v3x-m/fish-drama3";
@@ -226,6 +229,7 @@ in {
                   model = "openai/qwen3-tts";
                 };
                 model_info = {
+                  input_cost_per_character = 0.000015;
                   mode = "audio_speech";
                 };
                 model_name = "v3x-m/qwen3-tts";
@@ -237,6 +241,7 @@ in {
                   model = "openai/zonos3-cave";
                 };
                 model_info = {
+                  input_cost_per_character = 0.000005;
                   mode = "audio_speech";
                 };
                 model_name = "v3x-m/zonos3-cave";
@@ -248,6 +253,7 @@ in {
                   model = "openai/zonos3-ada";
                 };
                 model_info = {
+                  input_cost_per_character = 0.000005;
                   mode = "audio_speech";
                 };
                 model_name = "v3x-m/zonos3-ada";
