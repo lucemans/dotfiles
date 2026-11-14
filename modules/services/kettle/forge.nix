@@ -3,7 +3,6 @@ _: let
   inherit (import ../../network/hosts.nix) hosts;
   inherit (import ../../network/services.nix) services;
 in {
-  # Needs inputs.kettle-forge.nixosModules.default.
   flake.nixosModules.kettleForge = {config, ...}: {
     assertions = [
       {
@@ -17,7 +16,6 @@ in {
       kettle_forge_github_token.mode = "0400";
     };
 
-    # No firewall port: wg0 already accepts the trusted subnet.
     services.kettle-forge = {
       enable = true;
       oidcClientSecretFile = config.sops.secrets.kettle_forge_oidc_client_secret.path;
@@ -44,7 +42,6 @@ in {
       };
     };
 
-    # For `kettle-forge admin` and `k5f` on the host.
     environment.systemPackages = [config.services.kettle-forge.package];
   };
 }

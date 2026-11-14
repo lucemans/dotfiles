@@ -181,6 +181,20 @@ in {
           database_url = "os.environ/DATABASE_URL";
         };
         model_list = let
+          zonosModels =
+            map (voice: {
+              litellm_params = {
+                api_base = "http://${services.llamaMediabus.upstream}/v1";
+                api_key = "local";
+                model = "openai/zonos3-${voice}";
+              };
+              model_info = {
+                input_cost_per_character = 0.000005;
+                mode = "audio_speech";
+              };
+              model_name = "v3x-m/zonos3-${voice}";
+            })
+            (lib.attrNames (lib.filterAttrs (_: preset: preset ? zonos) (import ../speech/clones.nix pkgs inputs.inference-data).presets));
           models =
             localModels
             ++ [
@@ -234,30 +248,9 @@ in {
                 };
                 model_name = "v3x-m/qwen3-tts";
               }
-              {
-                litellm_params = {
-                  api_base = "http://${services.llamaMediabus.upstream}/v1";
-                  api_key = "local";
-                  model = "openai/zonos3-cave";
-                };
-                model_info = {
-                  input_cost_per_character = 0.000005;
-                  mode = "audio_speech";
-                };
-                model_name = "v3x-m/zonos3-cave";
-              }
-              {
-                litellm_params = {
-                  api_base = "http://${services.llamaMediabus.upstream}/v1";
-                  api_key = "local";
-                  model = "openai/zonos3-ada";
-                };
-                model_info = {
-                  input_cost_per_character = 0.000005;
-                  mode = "audio_speech";
-                };
-                model_name = "v3x-m/zonos3-ada";
-              }
+            ]
+            ++ zonosModels
+            ++ [
               {
                 litellm_params = {
                   api_base = "https://zeroparams.itdata.nu/v1";

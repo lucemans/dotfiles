@@ -42,7 +42,6 @@ _: {
     virtualisation.docker.enable = true;
 
     nixpkgs.config.allowUnfree = true;
-    # The RTX 3080 Ti, Ampere, compute capability 8.6.
     nixpkgs.config.cudaCapabilities = ["8.6"];
     hardware.graphics.enable = true;
     services.xserver.videoDrivers = ["nvidia"];

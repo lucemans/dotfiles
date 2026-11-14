@@ -358,15 +358,16 @@
         "rust-overlay": "rust-overlay"
       },
       "locked": {
-        "lastModified": 1794568477,
-        "narHash": "sha256-/Gvu7DEFuifoUTL0MDTkoCtQE9GpfEopqgbjRY0iA6o=",
-        "ref": "refs/heads/master",
-        "rev": "458ff6174737b77e89f3e6e2a37d3db17885c4ab",
-        "revCount": 55,
+        "lastModified": 1794684987,
+        "narHash": "sha256-8kPIzgYzM20IMFAq+HZi8yvrkQ6CvrrTvdXzwW1WccQ=",
+        "ref": "refs/tags/v0.0.2",
+        "rev": "eb7264a898f60bd5c14b34e57e1b31d6ed7dbad1",
+        "revCount": 95,
         "type": "git",
         "url": "ssh://git@100.127.0.11:2222/v3xlabs/duplex.git"
       },
       "original": {
+        "ref": "refs/tags/v0.0.2",
         "type": "git",
         "url": "ssh://git@100.127.0.11:2222/v3xlabs/duplex.git"
       }
@@ -857,6 +858,24 @@
         "type": "github"
       }
     },
+    "inference-data": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1794691495,
+        "lfs": true,
+        "narHash": "sha256-yTHwIYyrWrY5TZlsQin7BEhbD65EIgG54q1elqPZ9wQ=",
+        "ref": "refs/heads/master",
+        "rev": "341efdafe1d240f5271ae57ddb4ab97cdf5c456d",
+        "revCount": 3,
+        "type": "git",
+        "url": "ssh://git@100.127.0.11:2222/lucemans/inference-data.git"
+      },
+      "original": {
+        "lfs": true,
+        "type": "git",
+        "url": "ssh://git@100.127.0.11:2222/lucemans/inference-data.git"
+      }
+    },
     "ingestarr": {
       "inputs": {
         "crane": "crane_3",
@@ -909,11 +928,11 @@
         "nixpkgs": "nixpkgs_4"
       },
       "locked": {
-        "lastModified": 1794671747,
-        "narHash": "sha256-4/6xvzpE9+bt3nlv8Dl6s1ufkxQHrazI0X8BIM17nJY=",
+        "lastModified": 1794678135,
+        "narHash": "sha256-JSZzmjk1zylrgGA5ER7g7d7Yt4dyQ6asyd67JK8tJ7I=",
         "ref": "refs/heads/master",
-        "rev": "6b5ba41b5013a8fc0f3b7609b940542a2a53af48",
-        "revCount": 199,
+        "rev": "1f218458a901374bb9b018b1dad6f83402deb4b0",
+        "revCount": 200,
         "type": "git",
         "url": "ssh://git@100.127.0.11:2222/v3xlabs/kettle-forge.git"
       },
@@ -1603,6 +1622,7 @@
         "gitgui": "gitgui",
         "herdr": "herdr",
         "home-manager": "home-manager",
+        "inference-data": "inference-data",
         "ingestarr": "ingestarr",
         "kettle-code": "kettle-code",
         "kettle-forge": "kettle-forge",

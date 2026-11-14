@@ -1,4 +1,3 @@
-# Wallpaper, launcher icon, and base16 palette (kitty and future apps).
 let
   themeName = "dracula";
 

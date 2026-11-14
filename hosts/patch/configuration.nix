@@ -33,9 +33,6 @@
 
     boot.kernelParams = ["amdgpu.abmlevel=0"];
 
-    # The laptop boots with the scripted initrd on 25.05. nixpkgs unstable
-    # enables the systemd initrd by default, which handles LUKS prompts and
-    # absent devices differently.
     boot.initrd.systemd.enable = false;
 
     zramSwap.enable = true;
@@ -122,7 +119,7 @@
     hardware.rtl-sdr.enable = true;
     services.udev.packages = [pkgs.rtl-sdr];
     users.groups.plugdev = {};
-    # rtl-sdr cannot claim the device while the kernel DVB drivers hold it.
+
     boot.blacklistedKernelModules = ["dvb_usb_rtl28xxu" "rtl2832" "rtl2832_sdr"];
 
     services.tailscale.enable = true;

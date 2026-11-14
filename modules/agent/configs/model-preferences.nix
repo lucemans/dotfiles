@@ -1,4 +1,3 @@
-# Model IDs used by the preference skill and OMP roles/reviewers.
 {
   anthropic_haiku = "anthropic/claude-haiku-5-5";
   anthropic_sonnet = "anthropic/claude-sonnet-5-5";

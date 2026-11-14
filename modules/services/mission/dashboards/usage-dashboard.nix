@@ -275,7 +275,6 @@ let
     ];
   };
 
-  # The backend parser emits columns in key order, so the table restores the declared order.
   table = {
     id,
     title,

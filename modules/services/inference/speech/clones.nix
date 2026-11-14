@@ -1,7 +1,7 @@
 # The voice-clone presets. Per preset name and per model: the reference audio
 # file and the words spoken in it. A model offers the presets that have its
 # key and no others. ZONOS3 clones from the audio alone, so it has no text.
-pkgs: let
+pkgs: inferenceData: let
   inherit (pkgs) lib;
   references = import ../../../programs/tts-speak/references.nix pkgs;
   rvc = import ../../../programs/tts-speak/rvc pkgs;
@@ -34,12 +34,22 @@ pkgs: let
   adaText = "Welcome, pioneer. I am ADA, your artificial directory and assistant. Please remember that productivity is the key to a successful FICSIT career.";
   elmoText = "Hi! Elmo is so happy to see you! Elmo was just playing with Dorothy, and now Elmo wants to play with you too.";
 
-  words = lib.mapAttrs (name: text: pkgs.writeText "${name}-reference.txt" text) {
-    glados = gladosText;
-    cave = caveIntroText;
-    ada = adaText;
-    elmo = elmoText;
-  };
+  # Private voices, one folder each in the inference-data repo; its README
+  # describes voice.nix. Without that repo there are none.
+  voicesDir = "${inferenceData}/voices";
+  voices = lib.optionalAttrs (builtins.pathExists voicesDir) (
+    lib.mapAttrs (name: _: import "${voicesDir}/${name}/voice.nix")
+    (lib.filterAttrs (_: type: type == "directory") (builtins.readDir voicesDir))
+  );
+  fishVoices = lib.filterAttrs (_: voice: voice ? fish) voices;
+
+  words = lib.mapAttrs (name: text: pkgs.writeText "${name}-reference.txt" text) ({
+      glados = gladosText;
+      cave = caveIntroText;
+      ada = adaText;
+      elmo = elmoText;
+    }
+    // lib.mapAttrs (_: voice: voice.fish.text) fishVoices);
 
   # One directory of <name>.wav and <name>.txt, which tts-speak hands to the
   # speech server as a reference.
@@ -50,6 +60,7 @@ pkgs: let
     sox ${references.glados.audio}/0.wav ${references.glados.audio}/1.wav $out/glados.wav
 
     cp ${caveIntro} $out/cave.wav
+    ${lib.concatStrings (lib.mapAttrsToList (name: voice: "cp ${voice.fish.clip} $out/${name}.wav\n") fishVoices)}
 
     ${lib.getExe rvc.ada.stream} < ${words.ada} \
       | sox -t raw -r ${toString rvc.rate} -e signed -b 16 -c 1 - $out/ada.wav
@@ -59,12 +70,7 @@ pkgs: let
     ${lib.concatStrings (lib.mapAttrsToList (name: file: "cp ${file} $out/${name}.txt\n") words)}
   '';
 
-  jakobClip = "/var/lib/llama-models/voices/jakob.wav";
-  jakobText = "Okay, so, I've been messing around with this voice-cloning stuff, and I'm actually pretty curious to see how well it works. Because, like, the thing is, it's one thing to make it sound like my voice, but it's a whole different thing to make it sound like I'm actually talking.";
-in {
-  inherit files;
-
-  presets = {
+  builtIn = {
     glados.qwen = {
       clip = "${files}/glados.wav";
       text = gladosText;
@@ -103,19 +109,16 @@ in {
       clip = "${files}/elmo.wav";
       text = elmoText;
     };
-
-    jakob = {
-      fish = {
-        clip = jakobClip;
-        text = jakobText;
-      };
-      qwen = {
-        clip = jakobClip;
-        text = jakobText;
-      };
-    };
   };
 
   # The voice names OpenAI clients send, which fish and qwen answer with the cave preset.
   openai = ["alloy" "ash" "ballad" "coral" "echo" "fable" "nova" "onyx" "sage" "shimmer" "verse"];
-}
+  taken = lib.attrNames (builtins.intersectAttrs voices (builtIn // lib.genAttrs openai (_: null)));
+in
+  assert lib.assertMsg (taken == []) "inference-data voices reuse names of this repo: ${toString taken}"; {
+    inherit files openai;
+
+    personas = lib.mapAttrs (_: voice: voice.persona) (lib.filterAttrs (_: voice: voice ? persona) voices);
+
+    presets = builtIn // lib.mapAttrs (_: voice: removeAttrs voice ["persona"]) voices;
+  }

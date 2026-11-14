@@ -33,13 +33,7 @@
       });
       settings = pkgs.writeText "pi-settings.json" (builtins.toJSON {
         enableInstallTelemetry = false;
-        # Let pi's fullscreen TUI own mouse selection and copy the underlying
-        # message text to the clipboard (OSC 52) instead of the terminal
-        # grabbing padded/soft-wrapped screen cells. Only takes effect in
-        # fullscreen TUI mode.
         fullscreenCopyOnSelect = true;
-        # The sandbox home is a tmpfs, so extensions that `herdr integration
-        # install pi` puts in ~/.pi/agent/extensions are never seen there.
         extensions = [
           "${inputs.herdr}/src/integration/assets/pi/herdr-agent-state.ts"
           "${./herdr-metadata.ts}"

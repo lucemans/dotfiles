@@ -1,7 +1,4 @@
 let
-  # Commands that never change repository state. The runtime Git shim allows
-  # only these commands, with `branch` and `tag` handled separately because
-  # their mutation behavior depends on arguments.
   gitReadOnly = [
     "blame"
     "cat-file"
@@ -29,9 +26,6 @@ let
     "whatchanged"
   ];
 
-  # The mutating commands consumed by the tripwire and Claude permissions.
-  # `branch`, `tag`, `reflog`, and `worktree` stay out: the runtime Git shim
-  # checks their read forms itself.
   gitMutations = [
     "add"
     "am"
@@ -62,8 +56,6 @@ in {
     mutations = builtins.concatStringsSep "|" gitMutations;
     readOnly = builtins.concatStringsSep "|" gitReadOnly;
   in {
-    # The sandbox's git: inspection passes through, and every mutation stays
-    # with the user.
     packages.agent-git = pkgs.writeShellScriptBin "git" ''
       args=("$@")
       while [ "$#" -gt 0 ]; do
@@ -113,8 +105,6 @@ in {
           exec ${pkgs.git}/bin/git --no-optional-locks "''${args[@]}"
           ;;
         worktree)
-          # `remove` and `move` change directories in the writable worktree
-          # base, which the read-only git directory does not protect.
           if [ "''${2:-}" = list ]; then
             exec ${pkgs.git}/bin/git --no-optional-locks "''${args[@]}"
           fi
@@ -137,13 +127,6 @@ in {
         '') ["sops" "sudo"];
     };
 
-    # A PreToolUse hook. It runs before the permission rules, so it sees the
-    # attempt first and the deny list in ../harnesses/claude stays as the
-    # backstop for anything the patterns miss.
-    #
-    # Each match adds its own tier to the session total, and three ends the
-    # session. So the direct attempt warns, a detour around it warns harder,
-    # and the two together are already terminal.
     packages.agent-tripwire = pkgs.writeShellApplication {
       name = "agent-tripwire";
       runtimeInputs = [pkgs.jq pkgs.coreutils pkgs.gnugrep];

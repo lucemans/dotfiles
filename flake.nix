@@ -72,11 +72,17 @@
     # `--override-input dotfiles-private path:./nix/private-stub`
     dotfiles-private.url = "git+ssh://git@100.127.0.11:2222/lucemans/dotfiles-private.git";
 
+    # `--override-input inference-data path:./nix/private-stub`, which has no voices
+    inference-data = {
+      url = "git+ssh://git@100.127.0.11:2222/lucemans/inference-data.git?lfs=1";
+      flake = false;
+    };
+
     kettle-forge.url = "git+ssh://git@100.127.0.11:2222/v3xlabs/kettle-forge.git";
     kettle-code.url = "git+ssh://git@100.127.0.11:2222/v3xlabs/kettle-code.git";
     ingestarr.url = "git+ssh://git@100.127.0.11:2222/v3xlabs/ingestarr.git";
     ingestarr.inputs.nixpkgs.follows = "nixpkgs";
-    duplex.url = "git+ssh://git@100.127.0.11:2222/v3xlabs/duplex.git";
+    duplex.url = "git+ssh://git@100.127.0.11:2222/v3xlabs/duplex.git?ref=refs/tags/v0.0.2";
     duplex.inputs.nixpkgs.follows = "nixpkgs";
   };
 

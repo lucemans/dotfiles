@@ -2,7 +2,11 @@ _: {
   # Qwen3-TTS through vLLM-Omni, which clones a voice from a short clip and its
   # transcript. vLLM-Omni and its CUDA stack are not in nixpkgs, so the
   # upstream image runs as a container.
-  flake.nixosModules.qwen3Speech = {pkgs, ...}: let
+  flake.nixosModules.qwen3Speech = {
+    pkgs,
+    inputs,
+    ...
+  }: let
     port = 8084;
     stateDir = "/var/lib/qwen3-speech";
     name = "qwen3-tts";
@@ -11,8 +15,8 @@ _: {
     revision = "fd4b254389122332181a7c3db7f27e918eec64e3";
 
     voices =
-      pkgs.lib.filterAttrs (_: preset: preset ? qwen && pkgs.lib.hasPrefix builtins.storeDir (toString preset.qwen.clip))
-      (import ./clones.nix pkgs).presets;
+      pkgs.lib.filterAttrs (_: preset: preset ? qwen)
+      (import ./clones.nix pkgs inputs.inference-data).presets;
 
     # The upstream qwen3_tts.yaml from v0.30.0, sized for one listener on a
     # 12 GB card that llama.cpp shares: 64 parallel sequences become 4, and

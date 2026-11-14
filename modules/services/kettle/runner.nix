@@ -70,7 +70,6 @@ in {
           ANTHROPIC_API_KEY="${config.sops.placeholder.v3x_agent_token}"
         '';
       };
-      # Mounted into every run, so the runner user must be able to read it.
       kettle_runner_inference_token = {
         owner = "kettle-runner";
         mode = "0400";
@@ -132,11 +131,6 @@ in {
             smol = preferences.anthropic_haiku;
             task = preferences.anthropic_sonnet;
           };
-          # compaction.modelThresholds = {
-          #   "anthropic/claude-opus-5-5" = "f300000";
-          #   "openai/gpt-6.1-sol" = "f250000";
-          #   "openai/gpt-6.1-terra" = "f250000";
-          # };
           providers.maxInFlightRequests = {
             anthropic = 3;
             openai = 3;

@@ -24,11 +24,9 @@ _: {
     sops.defaultSopsFile = ../../config/mediabus.sops.yaml;
     v3x.backup = {
       enable = true;
-      # Both are btrfs subvolumes, so each is snapshotted before it is read.
       paths = [
         "/data"
         "/var/lib/immich"
-        # Luc enables these once the deployment works, so no broken state is backed up.
         # "/var/lib/kettle-forge"
         # "/var/lib/kettle-code"
       ];
@@ -65,7 +63,7 @@ _: {
     systemd.services.kettle-code.serviceConfig = {
       CPUWeight = 200;
       IOWeight = 200;
-      OOMScoreAdjust = -900; # k5c goes last
+      OOMScoreAdjust = -900;
     };
     nix.daemonCPUSchedPolicy = "batch";
     nix.daemonIOSchedClass = "idle";
@@ -90,14 +88,12 @@ _: {
       before = ["docker.service"];
     };
 
-    # The NFS servers trust numeric ids (sec=sys), so these must match the ids that own the shares.
     users.groups.dockeruser.gid = 3000;
     users.users.dockeruser = {
       uid = 3000;
       group = "dockeruser";
       isSystemUser = true;
     };
-    # Owns the NAS shares. The *arr containers run with this gid.
     users.groups.storage.gid = 987;
     users.users.luc.extraGroups = ["docker" "dockeruser" "video"];
 
@@ -105,8 +101,6 @@ _: {
       "d /data 0775 dockeruser root -"
     ];
 
-    # Mounted on first access, so a NAS that is down at boot does not block boot or fail the
-    # containers that need it. A container that finds the share unreachable fails and restarts.
     fileSystems."/mnt/nas" = {
       device = "10.90.0.10:/";
       fsType = "nfs";

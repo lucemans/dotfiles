@@ -37,7 +37,6 @@
       "emSign ECC Root CA - G3"
     ];
 
-    # cache.v3x.host resolves and routes only over the wg0 tunnel.
     nix.settings = {
       substituters = lib.mkIf onTunnel ["https://cache.v3x.host/v3x"];
       trusted-public-keys = lib.mkIf onTunnel ["v3x:KkXZj5H0cOzciurQuabgGocSsZjXZplwgqVWh8Va5s8="];
@@ -47,7 +46,6 @@
     };
 
     environment.systemPackages = with pkgs; [
-      # inputs.attic.packages.${pkgs.stdenv.hostPlatform.system}.attic
       nil
       nixd
       statix

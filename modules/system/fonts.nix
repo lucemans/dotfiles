@@ -4,8 +4,6 @@
     pkgs,
     ...
   }: let
-    # Each generic family resolves to its Latin face first, then the CJK face
-    # for the text's language, so Latin letters never come from a CJK font.
     generics = {
       sans-serif = {
         latin = "Noto Sans";
@@ -21,9 +19,6 @@
       };
     };
 
-    # Han characters are shared across these languages but drawn differently
-    # in each, so a tagged page gets its own region's glyphs. Untagged text,
-    # and zh-TW or zh-Hant, gets Traditional Chinese.
     regions = [
       {
         langs = ["zh-cn" "zh-sg" "zh-hans"];
@@ -44,10 +39,6 @@
     ];
     fallback = "TC";
 
-    # `prepend` inserts right before the matched generic name, so each rule
-    # lands after the ones before it: Latin, then the tagged region, then the
-    # fallback. These run ahead of the stock language lists in 65-nonlatin.conf,
-    # which would otherwise pick a Korean or Japanese face for Chinese text.
     prepend = generic: family: tests: ''
       <match target="pattern">
         ${tests}<test name="family"><string>${generic}</string></test>

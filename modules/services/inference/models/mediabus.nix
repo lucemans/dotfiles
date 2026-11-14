@@ -700,20 +700,21 @@
     };
 
     served = engine mediabusModels;
+    clones = import ../speech/clones.nix pkgs inputs.inference-data;
     audio = import ../speech/audiocpp.nix {
       inherit pkgs;
       source = inputs.audiocpp-src;
     };
     fish = import ../speech/fish-drama3.nix {
-      inherit pkgs audio;
+      inherit pkgs audio clones;
       dir = modelsDir;
     };
     qwen3Tts = import ../speech/qwen3-tts.nix {
-      inherit pkgs audio;
+      inherit pkgs audio clones;
       dir = modelsDir;
     };
     zonos = import ../speech/zonos3.nix {
-      inherit pkgs cpuFlags;
+      inherit pkgs cpuFlags clones;
       source = inputs.zonos3-src;
       dir = modelsDir;
     };

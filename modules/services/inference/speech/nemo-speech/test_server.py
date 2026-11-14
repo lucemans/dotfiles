@@ -50,7 +50,6 @@ def fail(message):
 
 
 def wait_ready(limit=900):
-    # The server binds its port after loading and warming up the model.
     deadline = time.monotonic() + limit
     while time.monotonic() < deadline:
         if server.poll() is not None:
@@ -124,7 +123,6 @@ try:
     plain = transcribe()
     assert PHRASE in plain.lower(), f"HTTP transcript: {plain!r}"
 
-    # An unknown phrase must be accepted and must not break recognition.
     boosted = transcribe(speech_contexts=json.dumps([{"phrases": ["Kowalczyk"], "boost": 2.5}]))
     assert PHRASE in boosted.lower(), f"boosted HTTP transcript: {boosted!r}"
 
@@ -140,7 +138,5 @@ except BaseException as error:
 
 server.terminate()
 output = server.communicate(timeout=60)[0]
-# A GGUF without the embedded tokenizer accepts speech_contexts and logs this
-# line instead of boosting.
 assert "boosting disabled" not in output, f"word boosting is inactive\n{output}"
 print("ok:", plain)

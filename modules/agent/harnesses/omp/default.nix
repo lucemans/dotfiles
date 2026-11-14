@@ -87,7 +87,6 @@
                 ownedBy = ["openai"];
                 authoritative = true;
               };
-              # CLIProxyAPI lists these as chat rows but serves them on its OpenAI image route.
               models = map (id: {
                 inherit id;
                 api = "openai-images";
@@ -148,8 +147,6 @@
                 authoritative = true;
               };
               modelOverrides = let
-                # K3.1 Pro refuses `thinking.type = "disabled"` (400 at the gateway), so
-                # requiresEffort clamps thinking-off to the lowest effort.
                 k31 = name: {
                   inherit name;
                   contextWindow = 1048576;
@@ -193,7 +190,6 @@
             apiKey = "!${pkgs.coreutils}/bin/cat ${lib.escapeShellArg config.sops.secrets.v3x_inference_token.path}";
             authHeader = true;
             discovery.type = "litellm";
-            # LiteLLM discovery drops non-chat modes, so those rows are declared here.
             models = [
               {
                 id = "v3x-t/embeddinggemma-2";
@@ -212,7 +208,6 @@
                 api = "openai-speech";
               }
               {
-                # The LiteLLM pass-through to llama-swap's clef-flash, outside its model list.
                 id = "clef-flash";
                 api = "typesafe";
                 baseUrl = "https://${services.inference.name}";
@@ -224,13 +219,6 @@
       settings = pkgs.writeText "omp-settings.yml" ''
         theme:
           dark: titanium-v3x
-        # Use the shared `playwright` MCP server from the base toolset for the
-        # browser, exactly like the claude-code and opencode harnesses. OMP's
-        # built-in browser is disabled because its native "freeze owned browser
-        # tabs at turn settle" step issues a synchronous CDP round-trip on the
-        # main thread with no timeout; when that browser daemon wedges it locks
-        # up the whole agent (same class of main-thread stall as the old git
-        # subprocess issue).
         browser:
           enabled: false
         advisor:
@@ -241,7 +229,6 @@
             anthropic: 3
             moonshot: 3
             meta: 3
-        # The `web` role itself sits in each profile's role overlay.
         retry:
           fallbackChains:
             web: [web/hosted]
@@ -264,19 +251,12 @@
           unexpectedStopDetection: smart
         memory:
           backend: mnemopi
-        # MNEMOPI_EMBEDDING_API_KEY and MNEMOPI_EMBEDDING_DIM come from the
-        # sandbox environment: these settings take neither a command nor the dimension.
         mnemopi:
           scoping: per-project-tagged
           embeddingModel: v3x-t/embeddinggemma-2
           embeddingApiUrl: https://${services.inference.name}/v1
       '';
 
-      # A profile is a role map, and may pin subagent models through
-      # `agentModelOverrides` and add `settings` to its overlay. A fresh session
-      # starts on the profile's default model; a resumed one keeps the model it
-      # recorded, which is also how `agent` finds the profile that owns a
-      # session. The toolsets extension records the session's toolsets the same way.
       profile = entry:
         entry
         // {
@@ -296,19 +276,13 @@
             "--extension"
             "${./code-blocks.ts}"
           ];
-          # A profile with a catalog leaves --model to the picked entry.
           start = lib.optionals (!(entry ? catalog)) ["--model" "@default"];
         };
 
       tiny = "v3x-inference/v3x-m/minicpm5-2b";
-      # Answers `read <image>?q=` for a model that takes no images. Unset, OMP
-      # falls back to a built-in model the gateway does not route.
       vision = preferences.anthropic_opus;
-      # Our SearXNG first, then the session model's own hosted search.
       web = "web/searxng";
-      # A decision model: native judgments for `find`, stop detection and TTSR.
       judge = "v3x-inference/clef-flash";
-      # Mnemopi's fact extraction; the `tiny` fallback is too small for it.
       memory = preferences.openai_luna;
     in {
       glyph = "󰚩";
@@ -384,16 +358,9 @@
             inherit tiny;
             smol = "v3x-inference/v3x-t/qwen3.6-35b-a3b";
             slow = "v3x-inference/v3x-m/qwen3.8-27b";
-            # On the other host, so it does not swap clef-flash off teapot's GPU.
             memory = "v3x-inference/v3x-m/qwen3.6-35b-a3b";
-            # No local model takes images; this makes image questions fail instead of leaving.
             vision = "@default";
           };
-          # No automatic call leaves our hosts. With the gateway providers off, a
-          # subagent pinned to a cloud model fails, so those run on local roles.
-          # Image generation and describing pasted images need cloud models. A
-          # per-project bank keeps memories out of the global bank that cloud
-          # sessions recall.
           agentModelOverrides =
             lib.mapAttrs' (name: _: lib.nameValuePair "${name}-reviewer" "@slow") pinned
             // {comment-sicko = "@smol";};
@@ -410,17 +377,11 @@
           color = "148;163;184";
           blurb = "OpenRouter";
           logo = ../../../../assets/icons/openrouter.png;
-          # `default` is deliberately absent: the picked OpenRouter model
-          # arrives as --model, so a stale fallback here could silently win
-          # instead.
           modelRoles = {
             inherit tiny;
             smol = preferences.openai_luna;
             slow = preferences.openai_astra;
           };
-          # LiteLLM is the authority, not OpenRouter's public catalog: a
-          # model absent from the proxy cannot be routed, so it must not be
-          # offered. Wildcard routes are expanded into concrete ids.
           catalog = {
             url = "https://${services.inference.name}/v1/models?return_wildcard_routes=true";
             token = config.sops.secrets.v3x_inference_token.path;

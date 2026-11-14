@@ -13,8 +13,6 @@ in {
     network = "librechat";
     stateDir = "/var/lib/librechat";
 
-    # Pinned so the firewall rule below can name the bridge, and so the
-    # subnet matches the one the proxy allows.
     bridge = "librechat0";
 
     inference = "${config.services.litellm.host}:${toString config.services.litellm.port}";
@@ -22,16 +20,12 @@ in {
     searxServer = config.services.searx.settings.server;
     searx = "${searxServer.bind_address}:${toString searxServer.port}";
 
-    # Ports on the hub that containers reach: the proxy, and the two services
-    # they talk to directly.
     hubPorts = [
       "443"
       (toString config.services.litellm.port)
       (toString searxServer.port)
     ];
 
-    # Pinned so the bind mounted data directories keep one owner across
-    # rebuilds. The images expect to run as the directory owner.
     id = 2379;
     runAs = "${toString id}:${toString id}";
 
@@ -47,13 +41,10 @@ in {
 
     onNetwork = ["--network=${network}"];
 
-    # The wildcard passthrough is not a model anyone can pick from a list.
     models =
       lib.filter (name: name != "*")
       (map (model: model.model_name) config.services.litellm.settings.model_list);
 
-    # Our instance disables most of what LibreChat asks for by default, and
-    # SearXNG answers an unknown engine with fewer results rather than an error.
     searxEngines =
       lib.filter
       (engine:
@@ -68,18 +59,12 @@ in {
 
       webSearch = {
         searchProvider = "searxng";
-        # Checked against webSearchKeys, which rejects a literal value here and
-        # then leaves the provider unconfigured. The address is passed in as
-        # SEARXNG_INSTANCE_URL below.
         searxngInstanceUrl = "\${SEARXNG_INSTANCE_URL}";
         searxngSearchOptions.engines = searxEngines;
 
-        # Keenable needs no key; every reranker does.
         scraperProvider = "keenable";
         rerankerType = "none";
 
-        # The guard blocks private destinations at connect time, and our own
-        # instance is one.
         allowedAddresses = [searx];
       };
 
@@ -156,10 +141,6 @@ in {
       '';
     };
 
-    # Container traffic to a tunnel address arrives on the bridge rather than
-    # on wg0, so it misses the tunnel accept rule. litellm and searx are
-    # reached directly; 443 reaches kanidm through the proxy, because kanidm
-    # hands out discovery endpoints on its public origin.
     networking.firewall.extraCommands = ''
       iptables -A nixos-fw -i ${bridge} -s ${containers} \
         -d ${config.v3x.address} -p tcp \
@@ -174,7 +155,6 @@ in {
       "d ${stateDir}/meili 0750 librechat librechat -"
       "d ${stateDir}/mongo 0750 librechat librechat -"
       "d ${stateDir}/uploads 0750 librechat librechat -"
-      # The postgres entrypoint chowns this to its own user on first start.
       "d ${stateDir}/pgdata 0700 root root -"
     ];
 
@@ -187,8 +167,6 @@ in {
           user = runAs;
           dependsOn = ["librechat-mongodb" "librechat-rag"];
 
-          # The tunnel names live in the host's /etc/hosts, which a container
-          # does not inherit, and the host does not run the tunnel resolver.
           extraOptions = onNetwork ++ ["--add-host=${services.auth.name}:${config.v3x.address}"];
           ports = ["${config.v3x.address}:${toString port}:${toString port}"];
           environmentFiles = [config.sops.templates.teapot_librechat_env.path];
@@ -206,20 +184,14 @@ in {
             LIBRECHAT_TEMP_CREDENTIALS_PATH = "/app/data/.env.temp";
             SEARXNG_INSTANCE_URL = "http://${searx}";
 
-            # Discovery appends the well-known path to this base url itself.
             OPENID_ISSUER = "https://${services.auth.name}/oauth2/openid/librechat";
             OPENID_CLIENT_ID = "librechat";
             OPENID_CALLBACK_URL = "/oauth/openid/callback";
             OPENID_SCOPE = "openid profile email";
-            # Kanidm maps name from displayname and emits no given_name, so
-            # the default chain falls through to the mail address.
             OPENID_NAME_CLAIM = "name";
             OPENID_BUTTON_LABEL = "Sign in with v3x";
-            # Kanidm rejects an authorization code flow without PKCE.
             OPENID_USE_PKCE = "true";
 
-            # Without this the scheduler refuses to arm and schedule writes
-            # answer 503, because it cannot prove it is the only replica.
             SCHEDULES_SINGLE_PROCESS = "true";
 
             ALLOW_EMAIL_LOGIN = "false";
@@ -322,7 +294,6 @@ in {
           '';
         };
 
-        # ports binds a tunnel address that does not exist until wg0 is up.
         docker-librechat = {
           after = ["librechat-network.service" "wireguard-wg0.service"];
           requires = ["librechat-network.service"];

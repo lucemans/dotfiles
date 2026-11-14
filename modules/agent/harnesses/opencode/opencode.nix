@@ -57,8 +57,6 @@
 
     environment.systemPackages = [
       self.packages.${pkgs.stdenv.hostPlatform.system}.opencode
-      # opencode2
-      # opencode2Update
     ];
 
     environment.sessionVariables = {
@@ -93,8 +91,6 @@
       blurb = "OpenCode";
       logo = ../../../../assets/icons/opencode.png;
       package = self.packages.${pkgs.stdenv.hostPlatform.system}.opencode;
-      # The sandbox points OPENCODE_CONFIG here, and OpenCode merges it over the
-      # global config, whose servers are only base.
       mcp = {
         path = "/etc/agent/opencode.json";
         key = "mcp";

@@ -3,6 +3,7 @@ _: {
     pkgs,
     lib,
     config,
+    inputs,
     ...
   }: let
     replacements = {
@@ -21,16 +22,23 @@ _: {
     rvc = import ./rvc pkgs;
     inherit ((import ./references.nix pkgs)) glados;
     hear = import ./hear pkgs;
-    cloneFiles = (import ../../services/inference/speech/clones.nix pkgs).files;
+    cloneSet = import ../../services/inference/speech/clones.nix pkgs inputs.inference-data;
     inherit (import ../../network/services.nix) services;
     ada-google-speak =
       import ./ada-google pkgs config.sops.secrets.google_tts_key.path;
 
     # Voices the Qwen3-TTS server on teapot clones, named as it knows them.
-    clones = ["glados" "cave" "ada" "elmo"];
+    # Only voices with a persona are offered, since the model needs one to
+    # stay in character.
+    voicesWith = model:
+      lib.filter (voice: characters ? ${voice})
+      (lib.attrNames (lib.filterAttrs (_: preset: preset ? ${model}) cloneSet.presets));
+    clones = voicesWith "qwen";
     cloneNames = map (voice: "${voice}-clone") clones;
-    fishNames = map (voice: "${voice}-fish") clones;
-    zonosNames = map (voice: "${voice}-zonos") ["cave" "ada"];
+    # The fish entries send their clip from cloneSet.files: the clips of this
+    # repo's voices, and the fish clips of the private ones.
+    fishNames = map (voice: "${voice}-fish") (lib.sort lib.lessThan (lib.filter (voice: !(cloneSet.personas ? ${voice})) clones ++ lib.filter (voice: cloneSet.personas ? ${voice}) (voicesWith "fish")));
+    zonosNames = map (voice: "${voice}-zonos") (voicesWith "zonos");
 
     voiceMenu = pkgs.writeText "tts-voice-menu" (
       lib.concatStringsSep "\n" (
@@ -52,16 +60,19 @@ _: {
     );
 
     # Handed to the model with every request, so the replies it proposes stay
-    # in character. The piper voices are named <character>-<variant>.
-    characters = {
-      ada = "ADA, the Artificial Directory and Assistant of FICSIT Inc. from the factory game Satisfactory by Coffee Stain Studios. A calm, formal corporate AI who addresses pioneers about productivity, efficiency, compliance and FICSIT, with deadpan and faintly passive-aggressive humour.";
-      elmo = "Elmo, the furry red three-and-a-half-year-old monster from Sesame Street. He always talks about himself in the third person, as in \"Elmo loves you!\", is endlessly cheerful, curious and giggly, and loves his goldfish Dorothy, crayons and hugs.";
-      cave = "Cave Johnson, the founder and CEO of Aperture Science from Valve's Portal 2. A loud, brash, overconfident showman who announces reckless science, goes off on tangents, and rants about lemons, moon rocks and his assistant Caroline.";
-      glados = "GLaDOS, the Genetic Lifeform and Disk Operating System, the AI who runs the Aperture Science Enrichment Center in Valve's Portal games. Coldly polite and passive-aggressive, with dry, cutting sarcasm about testing, science, cake and neurotoxin, and thinly veiled insults.";
-    };
+    # in character. The piper voices are named <character>-<variant>, the
+    # clones <voice>-<model>.
+    characters =
+      {
+        ada = "ADA, the Artificial Directory and Assistant of FICSIT Inc. from the factory game Satisfactory by Coffee Stain Studios. A calm, formal corporate AI who addresses pioneers about productivity, efficiency, compliance and FICSIT, with deadpan and faintly passive-aggressive humour.";
+        elmo = "Elmo, the furry red three-and-a-half-year-old monster from Sesame Street. He always talks about himself in the third person, as in \"Elmo loves you!\", is endlessly cheerful, curious and giggly, and loves his goldfish Dorothy, crayons and hugs.";
+        cave = "Cave Johnson, the founder and CEO of Aperture Science from Valve's Portal 2. A loud, brash, overconfident showman who announces reckless science, goes off on tangents, and rants about lemons, moon rocks and his assistant Caroline.";
+        glados = "GLaDOS, the Genetic Lifeform and Disk Operating System, the AI who runs the Aperture Science Enrichment Center in Valve's Portal games. Coldly polite and passive-aggressive, with dry, cutting sarcasm about testing, science, cake and neurotoxin, and thinly veiled insults.";
+      }
+      // cloneSet.personas;
     personas = pkgs.linkFarm "tts-personas" (
       lib.genAttrs (["ada" "elmo"] ++ piper.names ++ cloneNames ++ fishNames ++ zonosNames) (
-        name: pkgs.writeText "tts-persona-${name}" characters.${lib.head (lib.splitString "-" name)}
+        name: pkgs.writeText "tts-persona-${name}" characters.${lib.removeSuffix "-${lib.last (lib.splitString "-" name)}" name}
       )
     );
 
@@ -180,7 +191,7 @@ _: {
               --token ${config.sops.secrets.v3x_inference_token.path}
               --rate 44100
               --timeout 120
-              --reference "${cloneFiles}/''${choice%-fish}.wav")
+              --reference "${cloneSet.files}/''${choice%-fish}.wav")
             ;;
           *-zonos)
             session=(44100 ${lib.getExe speech-stream}

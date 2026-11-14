@@ -3,6 +3,7 @@
   source,
   dir,
   cpuFlags,
+  clones,
 }: let
   inherit (pkgs) lib;
 
@@ -74,7 +75,7 @@
     url = "https://huggingface.co/${repo}/resolve/${rev}/gguf/spk-encoder.gguf";
     sha256 = "9539f340b70be246005403b9c254732e180e85e0b3c57fb1973f0d6bc6c59bdc";
   };
-  clips = lib.mapAttrs (_: preset: preset.zonos.clip) (lib.filterAttrs (_: preset: preset ? zonos) (import ./clones.nix pkgs).presets);
+  clips = lib.mapAttrs (_: preset: preset.zonos.clip) (lib.filterAttrs (_: preset: preset ? zonos) clones.presets);
 
   voices = pkgs.runCommand "zonos3-voices" {nativeBuildInputs = [package pkgs.ffmpeg-headless];} ''
     mkdir $out

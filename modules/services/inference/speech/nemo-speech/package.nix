@@ -9,16 +9,9 @@
   abseil-cpp,
   cudaPackages,
   autoAddDriverRunpath,
-  # CUDA build, or the CPU-only one the checks run.
   cuda ? true,
-  # Turing, Ampere (A4000, RTX 30), Ada and consumer Blackwell. A host that sets
-  # nixpkgs.config.cudaCapabilities passes its own list here and compiles one
-  # architecture instead of four, which is most of the build time.
   cudaCapabilities ? ["7.5" "8.6" "8.9" "12.0"],
 }: let
-  # llama.cpp provides ggml and cpp-httplib serves HTTP. Upstream wires both in
-  # as submodules, which fetchFromGitHub leaves empty, so each is pinned at the
-  # commit the pinned tree records for it (the same two as at v0.2.0).
   llamaCpp = fetchFromGitHub {
     owner = "ggml-org";
     repo = "llama.cpp";
@@ -32,15 +25,11 @@
     hash = "sha256-4Y3BSo4LvCBwO6tsCYUlmFt/HrieS1p1MViN0Ac+Isk=";
   };
 
-  # nvcc only supports the host compilers its CUDA release was tested with.
   effectiveStdenv =
     if cuda
     then cudaPackages.backendStdenv
     else stdenv;
 
-  # "8.6" becomes "86-real". ggml rewrites 12x to 12xa, which Blackwell needs
-  # for its FP4 instructions. Real code only, since the capabilities list is
-  # the set of GPUs the host owns.
   cudaArchitectures = lib.concatMapStringsSep ";" (capability: "${lib.replaceStrings ["."] [""] capability}-real") cudaCapabilities;
 in
   effectiveStdenv.mkDerivation {
@@ -59,9 +48,6 @@ in
       [
         cmake
         ninja
-        # cmake/llama_cpp.cmake runs `git apply` for patches/ on a copy of
-        # llama.cpp at configure time. It works on a tree that is not a
-        # checkout, but needs the binary.
         git
       ]
       ++ lib.optionals cuda [
@@ -72,7 +58,6 @@ in
     buildInputs =
       [
         sentencepiece
-        # sentencepiece 0.2.1 headers include Abseil, and the ASR library links it.
         abseil-cpp
       ]
       ++ lib.optionals cuda (with cudaPackages; [
@@ -81,9 +66,6 @@ in
         libcublas
       ]);
 
-    # The upstream cpu-server and cuda-server presets, minus what a dictation
-    # server never calls: TTS, NMT, the microphone and the playground's
-    # TLS. ASR, diarization, the CLI and the HTTP/WebSocket server stay.
     cmakeFlags =
       [
         (lib.cmakeFeature "CMAKE_BUILD_TYPE" "Release")
@@ -99,7 +81,6 @@ in
         (lib.cmakeBool "NEMO_SPEECH_BUILD_TESTS" false)
         (lib.cmakeBool "NEMO_SPEECH_BUILD_TOOLS" false)
         (lib.cmakeBool "GGML_LLAMAFILE" true)
-        # -march=native would tie the store path to the builder's CPU.
         (lib.cmakeBool "GGML_NATIVE" false)
         (lib.cmakeBool "GGML_CUDA" cuda)
       ]

@@ -15,14 +15,8 @@
 
     selfpkgs = self.packages.${pkgs.stdenv.hostPlatform.system};
 
-    # A project's own .claude/settings.local.json is writable by whoever works
-    # in the project, and managed settings are the only tier that outranks it.
-    # These mirror the prohibitions in configs/local/SYSTEM.md so they cannot be widened from
-    # inside a project. Read-only git stays allowed, as the policy intends.
     gitMutations = map (subcommand: "Bash(git ${subcommand}:*)") tripwire.gitMutations;
 
-    # Claude has no `enabled` and no `timeout`. Its deferred tool schemas keep an
-    # unused server out of the context window.
     mcpServers =
       lib.mapAttrs (
         name: s:
@@ -59,7 +53,6 @@
       promptFile = ".claude/CLAUDE.md";
     };
 
-    # The matching token is carried by the agent env file, not by this module.
     sops.secrets.v3x_agent_token.owner = "luc";
 
     environment.etc."claude-code/managed-settings.json".text = builtins.toJSON {
@@ -73,9 +66,6 @@
         {serverUrl = "https://gmailmcp.googleapis.com/*";}
       ];
 
-      # PreToolUse runs ahead of the permission rules below, so the tripwire
-      # sees the attempt, counts it, and answers with prose the model can act
-      # on. The deny list stays as the backstop for whatever it does not match.
       hooks.PreToolUse = [
         {
           matcher = "Bash|Read|Edit|Write|Glob|Grep|NotebookEdit";

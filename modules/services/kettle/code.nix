@@ -3,7 +3,6 @@ _: let
   inherit (import ../../network/hosts.nix) hosts;
   inherit (import ../../network/services.nix) services;
 in {
-  # Needs inputs.kettle-code.nixosModules.default.
   flake.nixosModules.kettleCode = {config, ...}: {
     assertions = [
       {
@@ -12,11 +11,8 @@ in {
       }
     ];
 
-    # Also declared by kettleRunner; the same empty declaration merges.
     sops.secrets.v3x_inference_token = {};
 
-    # No firewall port: the hub's proxy and editors come over wg0, which
-    # already accepts the trusted subnet.
     services.kettle-code = {
       enable = true;
       bind = "0.0.0.0:${toString code.port}";

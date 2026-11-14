@@ -20,8 +20,6 @@ in {
         K5C_URL = codeUrl;
         K5F_URL = "https://${services.forge.name}";
       };
-      # The desktop app rewrites this file on every connect, so it cannot be a
-      # read-only store link.
       home.activation.kettleDesktopServer = lib.hm.dag.entryAfter ["writeBoundary"] ''
         run install -D -m 0644 ${pkgs.writeText "server" "${codeUrl}\n"} \
           ${lib.escapeShellArg "${config.xdg.configHome}/company.v3x.kettlecode/server"}

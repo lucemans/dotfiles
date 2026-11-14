@@ -2,8 +2,8 @@
   pkgs,
   audio,
   dir,
+  clones,
 }: let
-  clones = import ./clones.nix pkgs;
   filename = "drama-3-backbone-8bit-experts-Q2_K.gguf";
   file = {
     repo = "Jmica/Drama-3-GGUF";

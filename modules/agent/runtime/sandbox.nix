@@ -10,8 +10,6 @@
   worktreeBase,
 }: let
   inherit (harnesses) claude opencode pi omp;
-  # Shadow git, sops and sudo on PATH, so these safeguards from tripwire.nix
-  # win over any tool that ships its own.
   safeguards = lib.makeBinPath [selfpkgs.agent-git selfpkgs.agent-prohibited];
   secrets = lib.concatMapStringsSep " " lib.escapeShellArg secretPaths;
   tools = [
@@ -46,13 +44,6 @@
   cacert = "${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt";
   herdrRelay = selfpkgs.herdr-relay;
 
-  # Each sandbox runs its own rootless X server as a client of the host
-  # compositor, so X11 apps get windows without reaching the host's X server,
-  # whose clients can read and type into each other. `-nolisten local` drops
-  # the abstract socket: the sandbox shares the host network namespace, where
-  # that socket would be visible to the host and to every other sandbox. The
-  # display number skips any abstract socket already there, because libxcb
-  # tries that before the socket file and would reach the host's server.
   privateX = pkgs.writeShellScript "agent-private-x" ''
     for n in $(${pkgs.coreutils}/bin/seq 100 199); do
       if ! ${pkgs.gnugrep}/bin/grep -q "@/tmp/.X11-unix/X$n\$" /proc/net/unix; then
@@ -73,8 +64,6 @@
     exec "$@"
   '';
 
-  # A toolset's servers become entries in each harness's MCP config, its
-  # packages join PATH and its devices are bound into the sandbox.
   toolsManifest = pkgs.writeText "agent-toolsets.json" (builtins.toJSON {
     toolsets = builtins.listToAttrs (map (t:
       lib.nameValuePair t.name {
@@ -85,43 +74,28 @@
     configs = map (h: h.mcp) (lib.filter (h: h ? mcp) (lib.attrValues harnesses));
   });
 in
-  # Runs the given command in the sandbox around the project at $PWD.
   pkgs.writeShellApplication {
     name = "agent-sandbox";
     runtimeInputs = [pkgs.bubblewrap pkgs.coreutils pkgs.git pkgs.jq];
-    # Single-quoted $names in the jq programs below are jq variables, not shell
-    # expansions.
     excludeShellChecks = ["SC2016"];
     text = ''
       project="$(realpath "$PWD")"
 
-      # The sandbox covers the primary checkout and every worktree of its repository,
-      # so a session can /move between them. The git directory stays read-only:
-      # worktrees and branches are created on the host, never by the agent.
-      # Launching inside a linked worktree resolves the repository it belongs to,
-      # because its .git file points at the primary checkout.
       primary="$project"
       gitdir=""
       if gitdir="$(git -C "$project" rev-parse --path-format=absolute --git-common-dir 2>/dev/null)"; then
         primary="$(dirname "$gitdir")"
       fi
 
-      # The primary checkout is bound after the home binds, so a repository at
-      # $HOME or above it would hide them and expose all of $HOME.
       if [ "$primary" = / ] || [ "$primary" = "$HOME" ] || [ "''${HOME#"$primary"/}" != "$HOME" ]; then
         echo "agent: refusing to sandbox $project, its repository $primary contains $HOME" >&2
         exit 1
       fi
 
-      # One base per repository, bound as a directory instead of per worktree, so a
-      # worktree created mid-session appears without relaunching. ~/dev/wt itself is
-      # never bound, so another project's worktrees, and those of a same-named
-      # repository elsewhere, stay out of reach.
       worktrees="${worktreeBase}"
       mkdir -p "$worktrees"
 
       roots=(--bind "$primary" "$primary" --bind "$worktrees" "$worktrees")
-      # A linked worktree outside the base, or a subdirectory launch, is bound as well.
       if [ "$project" != "$primary" ]; then
         roots+=(--bind "$project" "$project")
       fi
@@ -129,8 +103,6 @@ in
         roots+=(--ro-bind "$gitdir" "$gitdir")
       fi
 
-      # Decisions stay on this host, outside the repository. One directory per
-      # primary checkout, so every worktree of a repository shares its trail.
       trail="$HOME/.local/state/agent/trails/$(printf '%s' "''${primary#/}" | tr / -)"
       mkdir -p "$trail"
 
@@ -138,9 +110,6 @@ in
       mkdir -p "$nixcache" "$HOME/.local/share/opencode" "$HOME/.local/state/opencode" \
         "$HOME/.cache/ms-playwright" "$HOME/.pi/agent/sessions" "$HOME/.omp/agent"
 
-      # Herdr injects its API socket into pane processes, and that socket opens panes
-      # on the host, outside this sandbox. The relay takes its place: it pins this
-      # pane and forwards agent state reports only.
       herdr=()
       if [ "''${HERDR_ENV:-}" = 1 ] && [ -n "''${HERDR_PANE_ID:-}" ] && [ -n "''${HERDR_SOCKET_PATH:-}" ]; then
         relay="$XDG_RUNTIME_DIR/agent-herdr-$$.sock"
@@ -167,18 +136,14 @@ in
         fi
       fi
 
-      # Only the current user and group, so the host account list stays out.
       exec 3<<<"$USER:x:$(id -u):$(id -g):$USER:$HOME:${bash}"
       exec 4<<<"$(id -gn):x:$(id -g):"
 
-      # Every session has base. AGENT_TOOLSETS names the toolsets added to it.
       read -ra chosen <<<"base ''${AGENT_TOOLSETS:-}"
       toolpath="$(jq -r '[.toolsets[$ARGS.positional[]].bin | select(. != "")] | join(":")' ${toolsManifest} --args "''${chosen[@]}")"
       mapfile -t devices < <(jq -r '[.toolsets[$ARGS.positional[]].devices[]] | unique[]' ${toolsManifest} --args "''${chosen[@]}")
       servers="$(jq -c '[.toolsets[$ARGS.positional[]].servers[]] | unique' ${toolsManifest} --args "''${chosen[@]}")"
 
-      # Each harness MCP config goes to bwrap through a descriptor, so a launch
-      # leaves no file behind.
       configs=()
       mapfile -t paths < <(jq -r '.configs[].path' ${toolsManifest})
       for i in "''${!paths[@]}"; do
@@ -202,8 +167,6 @@ in
         --ro-bind /etc/nix/nix.conf /etc/nix/nix.conf
         --ro-bind /etc/nix/registry.json /etc/nix/registry.json
         --ro-bind /etc/resolv.conf /etc/resolv.conf
-        # The v3x zone is served from networking.hosts, not from a resolver, so an
-        # internal name is unreachable without this.
         --ro-bind /etc/hosts /etc/hosts
         --ro-bind-data 3 /etc/passwd
         --ro-bind-data 4 /etc/group
@@ -250,9 +213,6 @@ in
         --bind "$HOME/.local/state/opencode" "$HOME/.local/state/opencode"
         --ro-bind "$HOME/.config/plan-env-md/config" "$HOME/.config/plan-env-md/config"
         --setenv OPENCODE_DISABLE_CHANNEL_DB 1
-        # OpenCode merges this over its global config. A bind over the global
-        # file fails, because home-manager makes it a symlink into the store and
-        # bwrap cannot follow that while it builds the sandbox root.
         --setenv OPENCODE_CONFIG "${opencode.mcp.path}"
 
         --dir "$XDG_RUNTIME_DIR"
@@ -273,19 +233,12 @@ in
         fi
       done
 
-      # The webcam nodes are absent from the sandbox devtmpfs, and their numbering
-      # follows what is plugged in, so bind the ones that exist at launch. Access
-      # rests on the host video group, which survives the user namespace as an
-      # unmapped supplementary gid.
       for device in /dev/video*; do
         if [ -e "$device" ]; then
           args+=(--dev-bind "$device" "$device")
         fi
       done
 
-      # OpenGL and EGL load their vendor libraries from /run/opengl-driver, a
-      # link into the store, which is already bound. The NVIDIA libraries also
-      # need the driver's own device nodes; /dev/dri alone is not enough.
       if [ -e /run/opengl-driver ]; then
         args+=(--symlink "$(readlink -f /run/opengl-driver)" /run/opengl-driver)
       fi
@@ -295,8 +248,6 @@ in
         fi
       done
 
-      # A rotating /run/secrets generation reports as a missing path, which bwrap only
-      # says is an unreadable source. Name the secret instead.
       for secret in ${secrets}; do
         if [ ! -e "$secret" ]; then
           echo "agent: $secret is not available, has sops run on this host?" >&2
@@ -305,15 +256,10 @@ in
         args+=(--ro-bind "$secret" "$secret")
       done
 
-      # Herdr sees bwrap as the pane process, never the harness inside it. The hint
-      # names the screen manifest to evaluate; it stays on this process, because bwrap
-      # clears the environment it passes on.
       case "$1" in
         omp | claude | opencode | pi) export HERDR_AGENT="$1" ;;
       esac
 
-      # Sourced in the sandbox rather than passed with --setenv, which would publish
-      # every value through bwrap's argv in /proc.
       command=(
         "${bash}" -c 'set -a; . "$1"; set +a; shift; exec "$@"'
         agent "${envFile}" "$@"

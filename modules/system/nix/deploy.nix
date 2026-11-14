@@ -9,8 +9,6 @@
       hostname = name;
       sshUser = "luc";
       user = "root";
-      # deploy-rs opens the activation and its confirmation waiter at the same
-      # time; without a shared master they race for the key passphrase prompt.
       sshOpts = [
         "-o"
         "ControlMaster=auto"

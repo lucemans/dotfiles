@@ -1,12 +1,7 @@
-# OMP for Kettle Runner: the providers and the pinned reviewers. Runs use
-# Kettle Code's own OMP (18.11), so this follows modules/agent/harnesses/omp
-# except where 18.11 differs: the gateway's OpenAI models go over
-# `openai-responses`, and the reviewers read 18.11's bundled prompt.
 {
   inputs,
   lib,
   pkgs,
-  # Host path of the v3x-inference key, which OMP reads at each request.
   inferenceToken,
 }: let
   inherit (import ../../network/services.nix) services;
@@ -34,8 +29,6 @@
     auth = "apiKey";
   };
 in {
-  # One `<name>-reviewer.md` per pinned model, each the bundled reviewer prompt
-  # with only the model changed.
   reviewers = lib.mapAttrsToList (name: model:
     pkgs.writeText "${name}-reviewer.md" (assert lib.assertMsg (lib.all (field: lib.hasInfix field reviewer) reviewerFields)
       "omp: the bundled reviewer.md frontmatter changed, update reviewerFields";
@@ -59,7 +52,6 @@ in {
             ownedBy = ["openai"];
             authoritative = true;
           };
-          # CLIProxyAPI lists these as chat rows but serves them on its OpenAI image route.
           models = map (id: {
             inherit id;
             api = "openai-images";
@@ -120,8 +112,6 @@ in {
             authoritative = true;
           };
           modelOverrides = let
-            # K3.1 Pro refuses `thinking.type = "disabled"` (400 at the gateway), so
-            # requiresEffort clamps thinking-off to the lowest effort.
             k31 = name: {
               inherit name;
               contextWindow = 1048576;
@@ -165,7 +155,6 @@ in {
         apiKey = "!${pkgs.coreutils}/bin/cat ${lib.escapeShellArg inferenceToken}";
         authHeader = true;
         discovery.type = "litellm";
-        # LiteLLM discovery drops non-chat modes, so those rows are declared here.
         models = [
           {
             id = "v3x-t/embeddinggemma-2";
@@ -184,7 +173,6 @@ in {
             api = "openai-speech";
           }
           {
-            # The LiteLLM pass-through to llama-swap's clef-flash, outside its model list.
             id = "clef-flash";
             api = "typesafe";
             baseUrl = "https://${services.inference.name}";

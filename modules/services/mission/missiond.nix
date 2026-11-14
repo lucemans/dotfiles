@@ -44,8 +44,6 @@
       openFirewall = false;
       adminKeyFile = config.sops.secrets.missiond_admin_key.path;
 
-      # A systemd unit does not inherit the user's PATH, and the display commands
-      # are run by name rather than by store path.
       extraPackages = [
         config.programs.niri.package
         pkgs.ddcutil
@@ -54,7 +52,6 @@
       ];
 
       settings = {
-        # name = "Mission";
         device_id = "v3x-mission";
 
         chromium.binary_path = "${pkgs.chromium}/bin/chromium";

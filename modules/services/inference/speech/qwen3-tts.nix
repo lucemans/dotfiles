@@ -2,8 +2,8 @@
   pkgs,
   audio,
   dir,
+  clones,
 }: let
-  clones = import ./clones.nix pkgs;
   filename = "Qwen3-TTS-12Hz-1.7B-Base-GGUF/qwen3-tts-12hz-1.7b-base-q8_0_v2.gguf";
   file = {
     repo = "audio-cpp/audio.cpp-gguf";
